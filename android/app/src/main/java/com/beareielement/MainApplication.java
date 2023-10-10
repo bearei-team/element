@@ -1,4 +1,4 @@
-package com.element;
+package com.beareielement;
 
 import android.app.Application;
 import com.facebook.react.PackageList;
