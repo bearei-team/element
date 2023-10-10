@@ -6,7 +6,7 @@
  */
 
 import React, {FC} from 'react';
-import StorybookUIRoot from './.storybook';
+import {StorybookUIRoot} from '../.ondevice/Storybook';
 
 const App: FC = (): React.JSX.Element => <StorybookUIRoot />;
 
