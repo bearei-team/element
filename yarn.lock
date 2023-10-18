@@ -1841,7 +1841,7 @@ __metadata:
     "@babel/core": ^7.20.0
     "@babel/preset-env": ^7.20.0
     "@babel/runtime": ^7.20.0
-    "@bearei/theme": ^1.3.2
+    "@bearei/theme": ^1.3.4
     "@react-native-async-storage/async-storage": ^1.19.3
     "@react-native-community/datetimepicker": ^7.6.0
     "@react-native-community/slider": ^4.4.3
@@ -1881,15 +1881,17 @@ __metadata:
     storybook: ^6.5.0
     styled-components: 6.0.7
     typescript: ^4.8.4
+    ulid: ^2.3.0
+    use-immer: ^0.9.0
     webpack: ^5.88.2
     yarn: ^1.22.19
   languageName: unknown
   linkType: soft
 
-"@bearei/theme@npm:^1.3.2":
-  version: 1.3.2
-  resolution: "@bearei/theme@npm:1.3.2"
-  checksum: 4f8884d26ccd914cdbb7e431485d322cd93641b5b2ef575ce21bcbba5d8ff39260aa55a7679f13593914ae89f8fab890d330731200ea39dabd3629252a9fad0d
+"@bearei/theme@npm:^1.3.4":
+  version: 1.3.4
+  resolution: "@bearei/theme@npm:1.3.4"
+  checksum: d6e7aecba959be158e16eb570b0cedee6b14a4be4f7f88557e8d6314025d89fa140a5e907b735d644442ae8a544835da6f629b2a6c69a54580d9a3d9c374a2f4
   languageName: node
   linkType: hard
 
@@ -18003,6 +18005,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ulid@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "ulid@npm:2.3.0"
+  bin:
+    ulid: ./bin/cli.js
+  checksum: d6dbf253fdc189f60fe2829d934ee5447b3dab62d05449a2e0fe89670d77087dd6eba4f844a69f9ffdb01384ec6fd97bdd9be638fc67d593569a45e8969f1e69
+  languageName: node
+  linkType: hard
+
 "unbox-primitive@npm:^1.0.2":
   version: 1.0.2
   resolution: "unbox-primitive@npm:1.0.2"
@@ -18349,6 +18360,16 @@ __metadata:
     punycode: ^1.4.1
     qs: ^6.11.2
   checksum: f9e7886f46a16f96d2e42fbcc5d682c231c55ef5442c1ff66150c0f6556f6e3a97d094a84f51be15ec2432711d212eb60426659ce418f5fcadeaa3f601532c4e
+  languageName: node
+  linkType: hard
+
+"use-immer@npm:^0.9.0":
+  version: 0.9.0
+  resolution: "use-immer@npm:0.9.0"
+  peerDependencies:
+    immer: ">=2.0.0"
+    react: ^16.8.0 || ^17.0.1 || ^18.0.0
+  checksum: 3f02e31d38f354125e6cffaaed0a08d9bf122b9df261aa7b38a25246813b3bd8b22bf97b192099d4e84adcfbbb07e69e14ba29520e0ac8d93f3991ef3a3652b4
   languageName: node
   linkType: hard
 

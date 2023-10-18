@@ -2,13 +2,13 @@ import {FC, ReactNode, useEffect, useId, useState} from 'react';
 import {GestureResponderEvent} from 'react-native';
 
 export type State = 'enabled' | 'hovered' | 'focused' | 'pressed' | 'disabled';
-
+export type Type = 'filled' | 'outlined' | 'text' | 'elevated';
 export interface BasicButtonProps {
     icon?: ReactNode;
-    disabled?: boolean;
+    disable?: boolean;
     loading?: boolean;
     label?: ReactNode;
-    type?: 'filled' | 'outlined' | 'text';
+    type?: Type;
     onPress?: (e: GestureResponderEvent) => void;
 }
 
@@ -21,6 +21,7 @@ export interface ButtonProps extends BasicButtonProps {
 export interface ButtonChildrenProps extends BasicButtonProps {
     id: string;
     state: State;
+    showIcon: boolean;
     children?: ReactNode;
     handleState: (state: State) => void;
 }
@@ -32,14 +33,14 @@ export type ButtonContainerProps = ButtonChildrenProps;
 export const Basic: FC<ButtonProps> = props => {
     const id = useId();
     const [state, setIsState] = useState<State>('enabled');
-    const {renderIcon, renderMain, renderContainer, icon, loading, disabled, ...args} = props;
+    const {renderIcon, renderMain, renderContainer, icon, loading, disable, ...args} = props;
     const handleState = (value: State) => {
         if (state !== 'disabled') {
             setIsState(value);
         }
     };
 
-    const childrenProps = {...args, id, loading, disabled, state, handleState};
+    const childrenProps = {...args, id, loading, state, showIcon: !!icon, handleState};
     const iconNode = icon && renderIcon?.({...childrenProps, children: icon});
     const main = renderMain({...childrenProps});
     const container = renderContainer({
@@ -53,10 +54,10 @@ export const Basic: FC<ButtonProps> = props => {
     });
 
     useEffect(() => {
-        if (typeof disabled === 'boolean') {
-            setIsState(disabled ? 'disabled' : 'enabled');
+        if (typeof disable === 'boolean') {
+            setIsState(disable ? 'disabled' : 'enabled');
         }
-    }, [disabled]);
+    }, [disable]);
 
     return container;
 };
