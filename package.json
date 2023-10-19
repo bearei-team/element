@@ -22,8 +22,7 @@
         "react-native": "^0.72.5",
         "styled-components": "6.0.7",
         "ulid": "^2.3.0",
-        "use-immer": "^0.9.0",
-        "yarn": "^1.22.19"
+        "use-immer": "^0.9.0"
     },
     "devDependencies": {
         "@babel/core": "^7.20.0",

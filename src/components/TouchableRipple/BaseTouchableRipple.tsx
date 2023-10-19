@@ -8,7 +8,7 @@ import {
     ViewProps,
 } from 'react-native';
 import {useImmer} from 'use-immer';
-import {BaseRippleProps} from './Ripple/BaseRipple';
+import {RippleAnimationOut, BaseRippleProps} from './Ripple/BaseRipple';
 import {Ripple} from './Ripple/Ripple';
 import {ulid} from 'ulid';
 
@@ -17,20 +17,19 @@ export interface TouchableRippleProps
     children?: ReactNode;
 }
 
-export type RenderTouchableRippleContainerProps = TouchableRippleProps;
-export type RenderTouchableRippleMainProps = ViewProps;
+export type RenderContainerProps = TouchableRippleProps;
+export type RenderMainProps = ViewProps;
 export interface BaseTouchableRippleProps extends TouchableRippleProps {
-    renderMain: (props: RenderTouchableRippleMainProps) => React.JSX.Element;
-    renderContainer: (props: RenderTouchableRippleContainerProps) => React.JSX.Element;
+    renderMain: (props: RenderMainProps) => React.JSX.Element;
+    renderContainer: (props: RenderContainerProps) => React.JSX.Element;
 }
 
 export type Ripple = {
     touchableEvent: NativeTouchEvent;
-    animationOut?: (finished: () => void) => number;
+    animatedOut?: RippleAnimationOut;
 };
 
 export type RippleSequence = Record<string, Ripple>;
-
 export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     onPressIn,
     onPressOut,
@@ -39,53 +38,51 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     renderContainer,
     underlayColor,
     ...args
-}) => {
+}): React.JSX.Element => {
     const id = useId();
-    const [state, setState] = useImmer('out');
+    const [state, setState] = useImmer<'pressIn' | 'pressOut'>('pressOut');
     const [layout, setLayout] = useImmer({} as LayoutRectangle);
-    const [ripple, setRipple] = useImmer<RippleSequence>({});
+    const [rippleSequence, setRippleSequence] = useImmer<RippleSequence>({});
     const processLayout = (event: LayoutChangeEvent): void => {
         onLayout?.(event);
         setLayout(() => event.nativeEvent.layout);
     };
 
     const processRippleAnimationEnd = useCallback(
-        (sequence: string, animationOut: (finished: () => void) => void): void => {
-            setRipple(draft => {
-                draft[sequence].animationOut = animationOut;
+        (sequence: string, animatedOut: RippleAnimationOut): void => {
+            setRippleSequence(draft => {
+                draft[sequence].animatedOut = animatedOut;
             });
         },
-        [setRipple],
+        [setRippleSequence],
     );
 
     const processRippleOut = useCallback((): void => {
-        const rippleOut = ([sequence, {animationOut}]: [string, Ripple]) =>
-            animationOut?.(() =>
-                setRipple(draft => {
+        const rippleOut = ([sequence, {animatedOut}]: [string, Ripple]): number | undefined =>
+            animatedOut?.(() =>
+                setRippleSequence(draft => {
                     delete draft[sequence];
                 }),
             );
 
-        Object.entries(ripple).forEach(rippleOut);
-    }, [ripple, setRipple]);
+        Object.entries(rippleSequence).forEach(rippleOut);
+    }, [rippleSequence, setRippleSequence]);
 
     const handlePressIn = (event: GestureResponderEvent): void => {
         onPressIn?.(event);
-
-        setRipple(draft => {
-            draft[ulid()] = {touchableEvent: event.nativeEvent, animationOut: undefined};
+        setRippleSequence(draft => {
+            draft[ulid()] = {touchableEvent: event.nativeEvent, animatedOut: undefined};
         });
 
-        setState(() => 'in');
+        setState(() => 'pressIn');
     };
 
     const handlePressOut = (event: GestureResponderEvent): void => {
         onPressOut?.(event);
-
-        setState(() => 'out');
+        setState(() => 'pressOut');
     };
 
-    const ripples = Object.entries(ripple).map(([sequence, {touchableEvent}]) => (
+    const ripples = Object.entries(rippleSequence).map(([sequence, {touchableEvent}]) => (
         <Ripple
             key={`ripple_${sequence}`}
             sequence={sequence}
@@ -107,10 +104,10 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     });
 
     useEffect(() => {
-        if (state === 'out') {
+        if (state === 'pressOut') {
             processRippleOut();
         }
-    }, [processRippleOut, ripple, setRipple, state]);
+    }, [processRippleOut, state]);
 
     return container;
 };

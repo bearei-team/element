@@ -1,4 +1,4 @@
-// import 'styled-components/native';
+import 'styled-components/native';
 import {Theme} from '@bearei/theme';
 
 declare module 'styled-components/native' {
