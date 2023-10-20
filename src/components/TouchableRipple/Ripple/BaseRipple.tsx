@@ -1,42 +1,25 @@
 import {FC, useCallback, useEffect, useId} from 'react';
-import {
-    Animated,
-    I18nManager,
-    LayoutRectangle,
-    NativeTouchEvent,
-    View,
-    ViewProps,
-} from 'react-native';
+import {Animated, I18nManager, View, ViewProps} from 'react-native';
 import {baseRadius} from './Ripple.styles';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {UTIL} from '../../../utils/util';
 import {useTheme} from 'styled-components/native';
-
-export type RippleAnimationOut = (finished: () => void) => number;
-export interface BaseRippleProps extends ViewProps {
-    sequence?: string;
-    centered?: boolean;
-    underlayColor?: string;
-    touchableLayout: LayoutRectangle;
-    touchableEvent: NativeTouchEvent;
-    onAnimationEnd: (sequence: string, animatedOut: RippleAnimationOut) => void;
-}
+import {RippleProps} from './Ripple';
 
 export interface RenderContainerProps extends ViewProps {
     x: number;
     y: number;
     isRTL: boolean;
-    underlayColor?: string;
 }
 
 export type RenderMainProps = Animated.AnimatedProps<ViewProps & React.RefAttributes<View>> &
-    Pick<BaseRippleProps, 'underlayColor'>;
-export interface RippleProps extends BaseRippleProps {
+    Pick<RippleProps, 'underlayColor'>;
+export interface BaseRippleProps extends RippleProps {
     renderMain: (props: RenderMainProps) => React.JSX.Element;
     renderContainer: (props: RenderContainerProps) => React.JSX.Element;
 }
 
-export const BaseRipple: FC<RippleProps> = ({
+export const BaseRipple: FC<BaseRippleProps> = ({
     sequence,
     centered = false,
     underlayColor,
@@ -98,7 +81,7 @@ export const BaseRipple: FC<RippleProps> = ({
 
     const main = renderMain({
         id,
-        underlayColor: underlayColor ?? theme.palette.surface.onSurface,
+        underlayColor,
         style: {transform: [{scale}], opacity},
     });
 

@@ -1,23 +1,17 @@
-import {FC, ReactNode, useCallback, useEffect, useId} from 'react';
+import {FC, useCallback, useEffect, useId} from 'react';
 import {
     GestureResponderEvent,
     LayoutChangeEvent,
     LayoutRectangle,
     NativeTouchEvent,
-    PressableProps,
     ViewProps,
 } from 'react-native';
 import {useImmer} from 'use-immer';
-import {RippleAnimationOut, BaseRippleProps} from './Ripple/BaseRipple';
-import {Ripple} from './Ripple/Ripple';
+import {Ripple, RippleAnimationOut} from './Ripple/Ripple';
 import {ulid} from 'ulid';
+import {TouchableRippleProps} from './TouchableRipple';
 
-export interface TouchableRippleProps
-    extends Omit<PressableProps & Pick<BaseRippleProps, 'underlayColor' | 'centered'>, 'children'> {
-    children?: ReactNode;
-}
-
-export type RenderContainerProps = TouchableRippleProps;
+export type RenderContainerProps = Omit<TouchableRippleProps, 'centered'>;
 export type RenderMainProps = ViewProps;
 export interface BaseTouchableRippleProps extends TouchableRippleProps {
     renderMain: (props: RenderMainProps) => React.JSX.Element;
@@ -36,7 +30,9 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     onLayout,
     renderMain,
     renderContainer,
+    children,
     underlayColor,
+
     ...args
 }): React.JSX.Element => {
     const id = useId();
@@ -93,7 +89,16 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
         />
     ));
 
-    const main = renderMain({id, children: ripples});
+    const main = renderMain({
+        id,
+        children: (
+            <>
+                {children}
+                {ripples}
+            </>
+        ),
+    });
+
     const container = renderContainer({
         ...args,
         id,

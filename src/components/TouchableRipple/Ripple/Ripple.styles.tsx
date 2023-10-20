@@ -1,13 +1,14 @@
 import styled, {css} from 'styled-components/native';
-import {RenderContainerProps} from './BaseRipple';
+import {RenderContainerProps, RenderMainProps} from './BaseRipple';
 import {Animated} from 'react-native';
 
-export type ContainerProps = Pick<RenderContainerProps, 'x' | 'y' | 'isRTL' | 'underlayColor'>;
-export type MainProps = Pick<ContainerProps, 'underlayColor'>;
+export type ContainerProps = Pick<RenderContainerProps, 'x' | 'y' | 'isRTL'>;
+export type MainProps = Pick<RenderMainProps, 'underlayColor'>;
 
 export const baseRadius = 10;
 export const Container = styled.View<ContainerProps>`
     position: absolute;
+    z-index: -1;
 
     ${({x, isRTL}) =>
         isRTL
@@ -28,8 +29,8 @@ export const Main = styled(Animated.View)<MainProps>`
     height: ${baseRadius * 2}px;
     border-radius: ${baseRadius * 2}px;
 
-    ${({underlayColor}) =>
+    ${({underlayColor, theme}) =>
         css`
-            background-color: ${underlayColor};
+            background-color: ${underlayColor ?? theme.palette.surface.onSurface};
         `}
 `;

@@ -1,11 +1,13 @@
 import {Container, Main} from './TouchableRipple.styles';
-import {FC} from 'react';
-import {
-    TouchableRippleProps,
-    RenderContainerProps,
-    RenderMainProps,
-    BaseTouchableRipple,
-} from './BaseTouchableRipple';
+import {FC, ReactNode} from 'react';
+import {RenderContainerProps, RenderMainProps, BaseTouchableRipple} from './BaseTouchableRipple';
+import {PressableProps} from 'react-native';
+import {RippleProps} from './Ripple/Ripple';
+
+export interface TouchableRippleProps
+    extends Omit<PressableProps & Pick<RippleProps, 'underlayColor' | 'centered'>, 'children'> {
+    children?: ReactNode;
+}
 
 export const TouchableRipple: FC<TouchableRippleProps> = (props): React.JSX.Element => {
     const renderContainer = ({

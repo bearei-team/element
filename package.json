@@ -15,7 +15,7 @@
         "build-storybook": "build-storybook"
     },
     "dependencies": {
-        "@bearei/theme": "^1.3.4",
+        "@bearei/theme": "^1.3.5",
         "add": "^2.0.6",
         "immer": "^10.0.3",
         "react": "^18.2.0",

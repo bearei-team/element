@@ -1,25 +1,29 @@
 import {FC, memo} from 'react';
-import {BaseRipple, BaseRippleProps, RenderContainerProps, RenderMainProps} from './BaseRipple';
+import {BaseRipple, RenderContainerProps, RenderMainProps} from './BaseRipple';
 import {Container, Main} from './Ripple.styles';
+import {LayoutRectangle, NativeTouchEvent, ViewProps} from 'react-native';
 
-export interface RippleProps extends BaseRippleProps {}
+export type RippleAnimationOut = (finished: () => void) => number;
+export interface RippleProps extends ViewProps {
+    sequence?: string;
+    centered?: boolean;
+    underlayColor?: string;
+    touchableLayout: LayoutRectangle;
+    touchableEvent: NativeTouchEvent;
+    onAnimationEnd: (sequence: string, animatedOut: RippleAnimationOut) => void;
+}
+
 export const Ripple: FC<RippleProps> = memo((props: RippleProps): React.JSX.Element => {
     const renderContainer = ({
         id,
         children,
         x,
         y,
-        underlayColor,
+
         isRTL,
         ...args
     }: RenderContainerProps): React.JSX.Element => (
-        <Container
-            {...args}
-            testID={`ripple__container--${id}`}
-            x={x}
-            y={y}
-            isRTL={isRTL}
-            underlayColor={underlayColor}>
+        <Container {...args} testID={`ripple__container--${id}`} x={x} y={y} isRTL={isRTL}>
             {children}
         </Container>
     );
