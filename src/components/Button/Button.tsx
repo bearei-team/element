@@ -1,8 +1,10 @@
 import {FC, ReactNode} from 'react';
-import {BaseButton, RenderContainerProps, RenderIconProps, RenderMainProps} from './BaseButton';
-import {Container, Icon, Label, Main} from './Button.styles';
+import {BaseButton, RenderProps} from './BaseButton';
+import {Label, Main} from './Button.styles';
 import {PressableProps} from 'react-native';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
+import {Elevation} from '../Elevation/Elevation';
+import {Shape} from '../Shape/Shape';
 
 export type Type = 'filled' | 'outlined' | 'text' | 'elevated';
 export interface ButtonProps extends Omit<PressableProps, 'children'> {
@@ -15,26 +17,21 @@ export interface ButtonProps extends Omit<PressableProps, 'children'> {
 }
 
 export const Button: FC<ButtonProps> = props => {
-    const renderContainer = ({id, children, ...args}: RenderContainerProps) => (
-        <Container testID={`button__container--${id}`} role="button">
-            <TouchableRipple {...args}>{children} </TouchableRipple>
-        </Container>
-    );
+    const render = ({id, elevationLevel, label, ...args}: RenderProps) => {
+        const main = (
+            <Main testID={`button--${id}`}>
+                <Label testID={`button__label--${id}`}>{label}</Label>
+            </Main>
+        );
 
-    const renderMain = ({id, label}: RenderMainProps) => (
-        <Main testID={`button__main--${id}`}>
-            <Label testID={`button__label--${id}`}>{label}</Label>
-        </Main>
-    );
+        return (
+            <Elevation level={elevationLevel} shape="full" role="button">
+                <Shape shape="full">
+                    <TouchableRipple {...args}>{main}</TouchableRipple>
+                </Shape>
+            </Elevation>
+        );
+    };
 
-    const renderIcon = ({id}: RenderIconProps) => <Icon testID={`button__icon--${id}`}></Icon>;
-
-    return (
-        <BaseButton
-            {...props}
-            renderContainer={renderContainer}
-            renderMain={renderMain}
-            renderIcon={renderIcon}
-        />
-    );
+    return <BaseButton {...props} render={render} />;
 };

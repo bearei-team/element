@@ -1,22 +1,21 @@
 import {FC, useCallback, useEffect, useId} from 'react';
 import {Animated, I18nManager, View, ViewProps} from 'react-native';
-import {baseRadius} from './Ripple.styles';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {UTIL} from '../../../utils/util';
 import {useTheme} from 'styled-components/native';
 import {RippleProps} from './Ripple';
 
-export interface RenderContainerProps extends ViewProps {
+export interface RenderProps extends Animated.AnimatedProps<ViewProps & React.RefAttributes<View>> {
     x: number;
     y: number;
+    width: number;
+    hight: number;
     isRTL: boolean;
+    underlayColor: RippleProps['underlayColor'];
 }
 
-export type RenderMainProps = Animated.AnimatedProps<ViewProps & React.RefAttributes<View>> &
-    Pick<RippleProps, 'underlayColor'>;
 export interface BaseRippleProps extends RippleProps {
-    renderMain: (props: RenderMainProps) => React.JSX.Element;
-    renderContainer: (props: RenderContainerProps) => React.JSX.Element;
+    render: (props: RenderProps) => React.JSX.Element;
 }
 
 export const BaseRipple: FC<BaseRippleProps> = ({
@@ -25,15 +24,14 @@ export const BaseRipple: FC<BaseRippleProps> = ({
     underlayColor,
     touchableEvent,
     touchableLayout,
-    onAnimationEnd,
-    renderMain,
-    renderContainer,
+    onAnimatedEnd,
+    render,
     ...args
 }): React.JSX.Element => {
     const id = useId();
     const theme = useTheme();
-    const [scaleAnimation] = useAnimatedValue(0);
-    const [opacityAnimation] = useAnimatedValue(0);
+    const [scaleAnimated] = useAnimatedValue(0);
+    const [opacityAnimated] = useAnimatedValue(0);
     const {width, height} = touchableLayout;
     const centerX = width / 2;
     const centerY = height / 2;
@@ -44,12 +42,12 @@ export const BaseRipple: FC<BaseRippleProps> = ({
     const offsetX = Math.abs(centerX - locationX);
     const offsetY = Math.abs(centerY - locationY);
     const radius = Math.sqrt(Math.pow(centerX + offsetX, 2) + Math.pow(centerY + offsetY, 2));
-    const scale = scaleAnimation.interpolate({
+    const scale = scaleAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [0.5 / baseRadius, radius / baseRadius],
+        outputRange: [0.1, 1],
     });
 
-    const opacity = opacityAnimation.interpolate({
+    const opacity = opacityAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [1, 0],
     });
@@ -58,45 +56,42 @@ export const BaseRipple: FC<BaseRippleProps> = ({
         const animatedTiming = UTIL.animatedTiming(theme);
         const animatedIn = (finished: () => void): number =>
             requestAnimationFrame(() =>
-                animatedTiming(scaleAnimation, {
+                animatedTiming(scaleAnimated, {
                     toValue: 1,
-                    easing: 'linear',
-                    duration: 'medium1',
+                    easing: 'standard',
+                    duration: Math.min(radius * 2, 350),
                 }).start(finished),
             );
 
         const animatedOut = (finished: () => void): number =>
             requestAnimationFrame(() =>
-                animatedTiming(opacityAnimation, {
+                animatedTiming(opacityAnimated, {
                     toValue: 1,
-                    easing: 'linear',
-                    duration: 'medium1',
+                    easing: 'standard',
+                    duration: 'short3',
                 }).start(finished),
             );
 
-        const finished = (): void => onAnimationEnd?.(sequence ?? id, animatedOut);
+        const finished = (): void => onAnimatedEnd?.(sequence ?? id, animatedOut);
 
         animatedIn(finished);
-    }, [id, onAnimationEnd, opacityAnimation, scaleAnimation, sequence, theme]);
+    }, [id, onAnimatedEnd, opacityAnimated, radius, scaleAnimated, sequence, theme]);
 
-    const main = renderMain({
-        id,
-        underlayColor,
-        style: {transform: [{scale}], opacity},
-    });
-
-    const container = renderContainer({
+    const ripple = render({
         ...args,
         id,
-        x: locationX - baseRadius,
-        y: locationY - baseRadius,
+        x: locationX,
+        y: locationY,
+        width: radius * 2,
+        hight: radius * 2,
         isRTL: I18nManager.isRTL,
-        children: main,
+        underlayColor,
+        style: {opacity, transform: [{translateY: -radius}, {translateX: -radius}, {scale}]},
     });
 
     useEffect(() => {
         processAnimatedTiming();
     }, [processAnimatedTiming]);
 
-    return container;
+    return ripple;
 };

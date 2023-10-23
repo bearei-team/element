@@ -1,6 +1,6 @@
-import {Container, Main} from './TouchableRipple.styles';
-import {FC, ReactNode} from 'react';
-import {RenderContainerProps, RenderMainProps, BaseTouchableRipple} from './BaseTouchableRipple';
+import {Container} from './TouchableRipple.styles';
+import {FC, ReactNode, memo} from 'react';
+import {BaseTouchableRipple, RenderProps} from './BaseTouchableRipple';
 import {PressableProps} from 'react-native';
 import {RippleProps} from './Ripple/Ripple';
 
@@ -9,22 +9,12 @@ export interface TouchableRippleProps
     children?: ReactNode;
 }
 
-export const TouchableRipple: FC<TouchableRippleProps> = (props): React.JSX.Element => {
-    const renderContainer = ({
-        id,
-        children,
-        ...containerProps
-    }: RenderContainerProps): React.JSX.Element => (
-        <Container {...containerProps} testID={`touchableRipple__container--${id}`}>
+export const TouchableRipple: FC<TouchableRippleProps> = memo((props): React.JSX.Element => {
+    const render = ({id, children, ...args}: RenderProps): React.JSX.Element => (
+        <Container {...args} testID={`touchableRipple--${id}`}>
             {children}
         </Container>
     );
 
-    const renderMain = ({id, children}: RenderMainProps): React.JSX.Element => (
-        <Main testID={`touchableRipple__main--${id}`}>{children}</Main>
-    );
-
-    return (
-        <BaseTouchableRipple {...props} renderMain={renderMain} renderContainer={renderContainer} />
-    );
-};
+    return <BaseTouchableRipple {...props} render={render} />;
+});

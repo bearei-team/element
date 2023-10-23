@@ -3,31 +3,7 @@ import {ButtonProps} from './Button';
 
 export type ContainerProps = Pick<ButtonProps, 'type'>;
 export type MainProps = Pick<ButtonProps, 'type'>;
-export const Container = styled.View<ContainerProps>`
-    overflow: hidden;
-
-    ${({theme}) => css`
-        border-top-left-radius: ${theme.shape.full.topLeft}px;
-        border-top-right-radius: ${theme.shape.full.topRight}px;
-        border-bottom-left-radius: ${theme.shape.full.bottomLeft}px;
-        border-bottom-right-radius: ${theme.shape.full.bottomLeft}px;
-    `}
-
-    ${({theme, type = 'filled'}) => {
-        const themeType = {
-            filled: css`
-                background-color: ${theme.palette.primary.primary};
-            `,
-
-            outlined: css``,
-            text: css``,
-            elevated: css``,
-        };
-
-        return themeType[type];
-    }}
-`;
-
+export const Container = styled.View<ContainerProps>``;
 export const Main = styled.View<MainProps>`
     display: flex;
     height: 40px;
@@ -39,6 +15,7 @@ export const Main = styled.View<MainProps>`
     ${({theme, type = 'filled'}) => {
         const themeType = {
             filled: css`
+                background-color: ${theme.palette.primary.primary};
                 padding-block: ${theme.spacing.small + 2}px;
                 padding-inline: ${theme.spacing.large}px;
             `,

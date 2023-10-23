@@ -1,7 +1,6 @@
 import styled from 'styled-components/native';
 
-export const Container = styled.Pressable``;
-export const Main = styled.View`
+export const Container = styled.Pressable`
     position: relative;
     overflow: hidden;
 `;

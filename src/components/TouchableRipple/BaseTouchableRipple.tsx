@@ -4,23 +4,20 @@ import {
     LayoutChangeEvent,
     LayoutRectangle,
     NativeTouchEvent,
-    ViewProps,
 } from 'react-native';
 import {useImmer} from 'use-immer';
-import {Ripple, RippleAnimationOut} from './Ripple/Ripple';
+import {Ripple, RippleAnimatedOut} from './Ripple/Ripple';
 import {ulid} from 'ulid';
 import {TouchableRippleProps} from './TouchableRipple';
 
-export type RenderContainerProps = Omit<TouchableRippleProps, 'centered'>;
-export type RenderMainProps = ViewProps;
+export type RenderProps = Omit<TouchableRippleProps, 'centered'>;
 export interface BaseTouchableRippleProps extends TouchableRippleProps {
-    renderMain: (props: RenderMainProps) => React.JSX.Element;
-    renderContainer: (props: RenderContainerProps) => React.JSX.Element;
+    render: (props: RenderProps) => React.JSX.Element;
 }
 
 export type Ripple = {
     touchableEvent: NativeTouchEvent;
-    animatedOut?: RippleAnimationOut;
+    animatedOut?: RippleAnimatedOut;
 };
 
 export type RippleSequence = Record<string, Ripple>;
@@ -28,11 +25,9 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     onPressIn,
     onPressOut,
     onLayout,
-    renderMain,
-    renderContainer,
+    render,
     children,
     underlayColor,
-
     ...args
 }): React.JSX.Element => {
     const id = useId();
@@ -44,8 +39,8 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
         setLayout(() => event.nativeEvent.layout);
     };
 
-    const processRippleAnimationEnd = useCallback(
-        (sequence: string, animatedOut: RippleAnimationOut): void => {
+    const processRippleAnimatedEnd = useCallback(
+        (sequence: string, animatedOut: RippleAnimatedOut): void => {
             setRippleSequence(draft => {
                 draft[sequence].animatedOut = animatedOut;
             });
@@ -85,11 +80,12 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
             underlayColor={underlayColor}
             touchableLayout={layout}
             touchableEvent={touchableEvent}
-            onAnimationEnd={processRippleAnimationEnd}
+            onAnimatedEnd={processRippleAnimatedEnd}
         />
     ));
 
-    const main = renderMain({
+    const touchableRipple = render({
+        ...args,
         id,
         children: (
             <>
@@ -97,12 +93,6 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
                 {ripples}
             </>
         ),
-    });
-
-    const container = renderContainer({
-        ...args,
-        id,
-        children: main,
         onLayout: processLayout,
         onPressIn: handlePressIn,
         onPressOut: handlePressOut,
@@ -114,5 +104,5 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
         }
     }, [processRippleOut, state]);
 
-    return container;
+    return touchableRipple;
 };

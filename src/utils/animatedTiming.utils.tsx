@@ -1,5 +1,5 @@
 import {Theme, TransitionOptions} from '@bearei/theme';
-import {Animated, Easing} from 'react-native';
+import {Animated, Easing, Platform} from 'react-native';
 
 export interface AnimatedTimingProps extends TransitionOptions {
     toValue: number;
@@ -17,6 +17,6 @@ export const animatedTiming =
             toValue,
             easing: Easing.bezier(bezier.x0, bezier.y0, bezier.x1, bezier.y1),
             duration: transitionDuration,
-            useNativeDriver: true,
+            useNativeDriver: Platform.OS !== 'web',
         });
     };
