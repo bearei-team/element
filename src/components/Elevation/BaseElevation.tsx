@@ -10,6 +10,14 @@ export type RenderProps = ElevationProps & {
     shadowStyle: {
         opacity0: Animated.AnimatedInterpolation<string | number>;
         opacity1: Animated.AnimatedInterpolation<string | number>;
+        offset0: {
+            width: Animated.AnimatedInterpolation<string | number>;
+            height: Animated.AnimatedInterpolation<string | number>;
+        };
+        offset1: {
+            width: Animated.AnimatedInterpolation<string | number>;
+            height: Animated.AnimatedInterpolation<string | number>;
+        };
         width: number;
         height: number;
     };
@@ -21,58 +29,76 @@ export interface BaseElevationProps extends ElevationProps {
 
 export const BaseElevation: FC<BaseElevationProps> = ({
     render,
-    level = 0,
+    level = 3,
     onLayout,
     ...args
 }): React.JSX.Element => {
     const id = useId();
     const theme = useTheme();
     const [layout, setLayout] = useImmer({width: 0, height: 0} as LayoutRectangle);
-    const [shadow0Animated] = useAnimatedValue(0);
-    const [shadow1Animated] = useAnimatedValue(0);
-    const opacity0 = shadow0Animated.interpolate({
-        inputRange: [0, 1, 2, 3, 4, 5],
-        outputRange: [
-            theme.elevation.level0.shadow0.opacity,
-            theme.elevation.level1.shadow0.opacity,
-            theme.elevation.level2.shadow0.opacity,
-            theme.elevation.level3.shadow0.opacity,
-            theme.elevation.level4.shadow0.opacity,
-            theme.elevation.level5.shadow0.opacity,
-        ],
-    });
+    const [offsetX0Animated] = useAnimatedValue(0);
+    const [offsetY0Animated] = useAnimatedValue(0);
+    const [offsetX1Animated] = useAnimatedValue(0);
+    const [offsetY1Animated] = useAnimatedValue(0);
 
-    const opacity1 = shadow1Animated.interpolate({
-        inputRange: [0, 1, 2, 3, 4, 5],
-        outputRange: [
-            theme.elevation.level0.shadow1.opacity,
-            theme.elevation.level1.shadow1.opacity,
-            theme.elevation.level2.shadow1.opacity,
-            theme.elevation.level3.shadow1.opacity,
-            theme.elevation.level4.shadow1.opacity,
-            theme.elevation.level5.shadow1.opacity,
-        ],
-    });
+    const offset0 = {
+        width: offsetX0Animated.interpolate({
+            inputRange: [0, 1],
+            outputRange: [2, 10],
+        }),
+        height: offsetY0Animated.interpolate({
+            inputRange: [0, 1, 2],
+            outputRange: [0, 1, 2],
+        }),
+    };
 
-    const processAnimatedTiming = useCallback((): void => {
-        const animatedTiming = UTIL.animatedTiming(theme);
-        const runAnimated = (): number =>
-            requestAnimationFrame(() => {
-                animatedTiming(shadow0Animated, {
-                    toValue: level,
-                    easing: 'standardDecelerate',
-                    duration: 'medium1',
-                }).start();
+    const processAnimatedTiming = useCallback(
+        (toLevel: number, finished?: () => void): void => {
+            const animatedTiming = UTIL.animatedTiming(theme);
+            const runAnimated = (): number =>
+                requestAnimationFrame(() => {
+                    // animatedTiming(shadow0Animated, {
+                    //     toValue: toLevel,
+                    //     easing: 'standardDecelerate',
+                    //     duration: 'medium1',
+                    // }).start();
 
-                animatedTiming(shadow1Animated, {
-                    toValue: level,
-                    easing: 'standardDecelerate',
-                    duration: 'medium1',
-                }).start();
-            });
+                    // animatedTiming(shadow1Animated, {
+                    //     toValue: toLevel,
+                    //     easing: 'standardDecelerate',
+                    //     duration: 'medium1',
+                    // }).start(finished);
 
-        runAnimated();
-    }, [level, shadow0Animated, shadow1Animated, theme]);
+                    console.info(666666);
+                    animatedTiming(offsetX0Animated, {
+                        toValue: 1,
+                        easing: 'standardDecelerate',
+                        duration: 'medium1',
+                    }).start();
+
+                    // animatedTiming(offsetY0Animated, {
+                    //     toValue: 1,
+                    //     easing: 'standardDecelerate',
+                    //     duration: 'medium1',
+                    // }).start(finished);
+
+                    // animatedTiming(offsetX1Animated, {
+                    //     toValue: 1,
+                    //     easing: 'standardDecelerate',
+                    //     duration: 'medium1',
+                    // }).start();
+
+                    // animatedTiming(offsetY1Animated, {
+                    //     toValue: 1,
+                    //     easing: 'standardDecelerate',
+                    //     duration: 'medium1',
+                    // }).start(finished);
+                });
+
+            runAnimated();
+        },
+        [offsetX0Animated, theme],
+    );
 
     const processLayout = (event: LayoutChangeEvent): void => {
         onLayout?.(event);
@@ -83,13 +109,17 @@ export const BaseElevation: FC<BaseElevationProps> = ({
         ...args,
         id,
         level,
-        shadowStyle: {opacity0, opacity1, width: layout.width, height: layout.height},
+        shadowStyle: {
+            offset0,
+            width: layout.width,
+            height: layout.height,
+        },
         onLayout: processLayout,
     });
 
     useEffect(() => {
-        layout.width !== 0 && processAnimatedTiming();
-    }, [layout, processAnimatedTiming]);
+        processAnimatedTiming(level);
+    }, [level, processAnimatedTiming]);
 
     return elevation;
 };

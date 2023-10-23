@@ -38,7 +38,7 @@
         "@storybook/addon-essentials": "^6.5.13",
         "@storybook/addon-links": "^6.5.13",
         "@storybook/addon-ondevice-actions": "^6.5.1",
-        "@storybook/addon-ondevice-backgrounds": "^6.5.1",
+        "@storybook/addon-ondevice-backgrounds": "^6.5.14",
         "@storybook/addon-ondevice-controls": "^6.5.1",
         "@storybook/addon-ondevice-notes": "^6.5.1",
         "@storybook/addon-react-native-web": "^0.0.21",

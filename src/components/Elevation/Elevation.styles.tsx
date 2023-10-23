@@ -16,12 +16,7 @@ export const Shadow0 = styled(ShapeContainer)<ShadowProps>`
     ${({theme, level = 0}) => {
         const levelString = `level${level}` as keyof Elevation;
 
-        return css`
-            shadow-color: ${theme.palette.shadow.shadow};
-            shadow-offset: ${theme.elevation[levelString].shadow0.x}px
-                ${theme.elevation[levelString].shadow0.y}px;
-            shadow-radius: ${theme.elevation[levelString].shadow0.blur}px;
-        `;
+        return css``;
     }};
 `;
 
@@ -32,11 +27,12 @@ export const Shadow1 = styled(ShapeContainer)<ShadowProps>`
     ${({theme, level = 0}) => {
         const levelString = `level${level}` as keyof Elevation;
 
-        return css`
-            shadow-color: ${theme.palette.shadow.shadow};
-            shadow-offset: ${theme.elevation[levelString].shadow1.x}px
-                ${theme.elevation[levelString].shadow0.y}px;
-            shadow-radius: ${theme.elevation[levelString].shadow1.blur}px;
-        `;
+        console.info(
+            theme.elevation[levelString].shadow1.x,
+            theme.elevation[levelString].shadow1.y,
+            theme.elevation[levelString].shadow1.opacity,
+        );
+
+        return css``;
     }};
 `;

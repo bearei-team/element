@@ -7,6 +7,7 @@ export type ContainerProps = RenderProps;
 export const Container = styled(Animated.View)<ContainerProps>`
     position: absolute;
     border-radius: 50%;
+    z-index: 100;
 
     ${({x, isRTL}) =>
         isRTL
@@ -26,6 +27,8 @@ export const Container = styled(Animated.View)<ContainerProps>`
 
     ${({underlayColor, theme}) =>
         css`
-            background-color: ${underlayColor ?? theme.palette.surface.onSurface};
+            background-color: ${underlayColor
+                ? theme.color.rgba(underlayColor, 0.12)
+                : theme.palette.surface.onSurface};
         `}
 `;
