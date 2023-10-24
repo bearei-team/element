@@ -2,29 +2,22 @@ import {FC, useCallback, useEffect, useId} from 'react';
 import {
     GestureResponderEvent,
     LayoutChangeEvent,
-    LayoutRectangle,
-    NativeTouchEvent,
     MouseEvent,
     NativeSyntheticEvent,
     TargetedEvent,
 } from 'react-native';
 import {useImmer} from 'use-immer';
-import {Ripple, RippleAnimatedOut} from './Ripple/Ripple';
-import {ulid} from 'ulid';
+import {Ripple, RippleAnimatedOut, RippleProps} from './Ripple/Ripple';
 import {TouchableRippleProps} from './TouchableRipple';
-import {HoveredProps} from '../Hovered/Hovered';
-import {State} from '../../common/interface';
+import {State} from '../common/interface';
 
-export type RenderProps = Omit<TouchableRippleProps, 'centered'> & {hoveredProps: HoveredProps};
+export type RenderProps = Omit<TouchableRippleProps, 'centered'> & {hoveredProps: any};
 export interface BaseTouchableRippleProps extends TouchableRippleProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
-
-export type Ripple = {
-    touchableEvent: NativeTouchEvent;
+export interface Ripple extends Pick<RippleProps, 'location'> {
     animatedOut?: RippleAnimatedOut;
-};
-
+}
 export interface ProcessStateOptions {
     callback?: () => void;
     event?: GestureResponderEvent;
@@ -43,41 +36,53 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     children,
     underlayColor,
     disabled = false,
-    ...args
-}): React.JSX.Element => {
+    ...renderProps
+}) => {
     const id = useId();
     const [state, setState] = useImmer<State>('enabled');
-    const [layout, setLayout] = useImmer({} as LayoutRectangle);
+    const [layout, setLayout] = useImmer({} as RippleProps['touchableLayout']);
     const [rippleSequence, setRippleSequence] = useImmer<RippleSequence>({});
-    const processState = (nextState: State, {event, callback}: ProcessStateOptions): void => {
-        if (state !== 'disabled') {
-            callback?.();
+    const processPressed = (event: GestureResponderEvent) => {
+        const {locationX, locationY} = event.nativeEvent;
 
-            if (nextState === 'pressed') {
-                setRippleSequence(draft => {
-                    draft[ulid()] = {touchableEvent: event!.nativeEvent, animatedOut: undefined};
-                });
+        setRippleSequence(draft => {
+            draft[`${Date.now()}`] = {
+                location: {locationX, locationY},
+                animatedOut: undefined,
+            };
+        });
+    };
+
+    const processState = (nextState: State, {event, callback}: ProcessStateOptions) => {
+        if (state !== 'disabled') {
+            if (nextState === 'pressed' && event) {
+                processPressed(event);
             }
 
             setState(() => nextState);
+            callback?.();
         }
     };
 
-    const processLayout = (event: LayoutChangeEvent): void => {
+    const processLayout = (event: LayoutChangeEvent) => {
+        const {width, height} = event.nativeEvent.layout;
+
+        setLayout(() => ({width, height}));
         onLayout?.(event);
-        setLayout(() => event.nativeEvent.layout);
     };
 
     const processRippleAnimatedEnd = useCallback(
-        (sequence: string, animatedOut: RippleAnimatedOut): void => {
+        (sequence: string, animatedOut: RippleAnimatedOut) => {
             setRippleSequence(draft => {
-                draft[sequence].animatedOut = animatedOut;
+                if (draft[sequence]) {
+                    draft[sequence].animatedOut = animatedOut;
+                }
             });
         },
         [setRippleSequence],
     );
 
-    const processRippleOut = useCallback((): void => {
+    const processRippleOut = useCallback(() => {
         const rippleOut = ([sequence, {animatedOut}]: [string, Ripple]): number | undefined =>
             animatedOut?.(() =>
                 setRippleSequence(draft => {
@@ -88,31 +93,31 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
         Object.entries(rippleSequence).forEach(rippleOut);
     }, [rippleSequence, setRippleSequence]);
 
-    const handlePressIn = (event: GestureResponderEvent): void =>
+    const handlePressIn = (event: GestureResponderEvent) =>
         processState('pressed', {event, callback: () => onPressIn?.(event)});
 
-    const handlePressOut = (event: GestureResponderEvent): void =>
+    const handlePressOut = (event: GestureResponderEvent) =>
         processState('hovered', {callback: () => onPressOut?.(event)});
 
-    const handleHoverIn = (event: MouseEvent): void =>
+    const handleHoverIn = (event: MouseEvent) =>
         processState('hovered', {callback: () => onHoverIn?.(event)});
 
-    const handleHoverOut = (event: MouseEvent): void =>
+    const handleHoverOut = (event: MouseEvent) =>
         processState('enabled', {callback: () => onHoverOut?.(event)});
 
-    const handleFocus = (event: NativeSyntheticEvent<TargetedEvent>): void =>
+    const handleFocus = (event: NativeSyntheticEvent<TargetedEvent>) =>
         processState('focused', {callback: () => onFocus?.(event)});
 
-    const handleBlur = (event: NativeSyntheticEvent<TargetedEvent>): void =>
+    const handleBlur = (event: NativeSyntheticEvent<TargetedEvent>) =>
         processState('enabled', {callback: () => onBlur?.(event)});
 
-    const ripples = Object.entries(rippleSequence).map(([sequence, {touchableEvent}]) => (
+    const ripples = Object.entries(rippleSequence).map(([sequence, {location}]) => (
         <Ripple
             key={`ripple_${sequence}`}
             sequence={sequence}
             underlayColor={underlayColor}
             touchableLayout={layout}
-            touchableEvent={touchableEvent}
+            location={location}
             onAnimatedEnd={processRippleAnimatedEnd}
         />
     ));
@@ -127,7 +132,7 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     };
 
     const touchableRipple = render({
-        ...args,
+        ...renderProps,
         id,
         hoveredProps,
         children: (

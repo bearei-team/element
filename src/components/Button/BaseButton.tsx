@@ -4,14 +4,11 @@ import {ButtonProps} from './Button';
 import {useImmer} from 'use-immer';
 import {useTheme} from 'styled-components/native';
 import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
-import {ElevationProps} from '../Elevation/Elevation';
-import {State} from '../../common/interface';
-import {ShapeProps} from '../Shape/Shape';
+import {State} from '../common/interface';
 
-export type ElevationLevel = ElevationProps['level'];
+// export type ElevationLevel = ElevationProps['level'];
 export type RenderProps = ButtonProps & {
-    elevationProps: ElevationProps;
-    shapeProps: ShapeProps;
+    // elevationProps: ElevationProps;
     touchableRippleProps: TouchableRippleProps;
     state: State;
     showIcon?: boolean;
@@ -38,33 +35,31 @@ export const BaseButton: FC<BaseButtonProps> = ({
     const id = useId();
     const theme = useTheme();
     const [state, setState] = useImmer<State>('enabled');
-    const [elevationLevel, setElevationLevel] = useImmer<ElevationLevel>(0);
+    // const [elevationLevel, setElevationLevel] = useImmer<number>(0);
     const processState = (nextState: State, callback?: () => void): void => {
         if (state !== 'disabled') {
             callback?.();
             setState(() => nextState);
 
             if (type === 'filled' || type === 'elevated') {
-                processElevationLevel(nextState);
+                // processElevationLevel(nextState);
             }
         }
     };
 
-    const processElevationLevel = (nextState: State): void => {
-        const elevation = {
-            hovered: 1,
-            enabled: 0,
-            pressed: 0,
-            focused: 0,
-            disabled: 0,
-        };
+    // const processElevationLevel = (nextState: State): void => {
+    //     const elevation = {
+    //         hovered: 1,
+    //         enabled: 0,
+    //         pressed: 0,
+    //         focused: 0,
+    //         disabled: 0,
+    //     };
 
-        console.info(type === 'elevated' ? elevation[nextState] + 1 : elevation[nextState]);
-
-        setElevationLevel(() =>
-            type === 'elevated' ? elevation[nextState] + 1 : elevation[nextState],
-        );
-    };
+    //     setElevationLevel(() =>
+    //         type === 'elevated' ? elevation[nextState] + 1 : elevation[nextState],
+    //     );
+    // };
 
     const handleHoverIn = (event: MouseEvent): void =>
         processState('hovered', () => onHoverIn?.(event));
@@ -84,20 +79,20 @@ export const BaseButton: FC<BaseButtonProps> = ({
     const handleBlur = (event: NativeSyntheticEvent<TargetedEvent>): void =>
         processState('enabled', () => onBlur?.(event));
 
-    const elevationProps: ElevationProps = {level: elevationLevel, shape: 'full'};
-    const shapeProps: ShapeProps = {
-        shape: 'full',
-        ...(type === 'outlined' && {
-            border: {
-                width: 1,
-                style: 'solid',
-                color:
-                    state === 'disabled'
-                        ? theme.color.rgba(theme.palette.surface.onSurface, 0.12)
-                        : theme.palette.outline.outline,
-            },
-        }),
-    };
+    // const elevationProps: ElevationProps = {level: elevationLevel, shape: 'full'};
+    // const shapeProps: ShapeProps = {
+    //     shape: 'full',
+    //     ...(type === 'outlined' && {
+    //         border: {
+    //             width: 1,
+    //             style: 'solid',
+    //             color:
+    //                 state === 'disabled'
+    //                     ? theme.color.rgba(theme.palette.surface.onSurface, 0.12)
+    //                     : theme.palette.outline.outline,
+    //         },
+    //     }),
+    // };
 
     const touchableRippleProps = {
         ...args,
@@ -121,8 +116,8 @@ export const BaseButton: FC<BaseButtonProps> = ({
         label,
         icon,
         showIcon: !!icon,
-        elevationProps,
-        shapeProps,
+        // elevationProps,
+        // shapeProps,
         touchableRippleProps,
     });
 
@@ -132,11 +127,11 @@ export const BaseButton: FC<BaseButtonProps> = ({
         }
     }, [disabled, setState]);
 
-    useEffect(() => {
-        if (type === 'elevated') {
-            setElevationLevel(() => 1);
-        }
-    }, [setElevationLevel, type]);
+    // useEffect(() => {
+    //     if (type === 'elevated') {
+    //         setElevationLevel(() => 1);
+    //     }
+    // }, [setElevationLevel, type]);
 
     return button;
 };

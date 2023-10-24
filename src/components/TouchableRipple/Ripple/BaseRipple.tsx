@@ -4,7 +4,6 @@ import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {UTIL} from '../../../utils/util';
 import {useTheme} from 'styled-components/native';
 import {RippleProps} from './Ripple';
-
 export interface RenderProps extends Animated.AnimatedProps<ViewProps & React.RefAttributes<View>> {
     x: number;
     y: number;
@@ -22,12 +21,12 @@ export const BaseRipple: FC<BaseRippleProps> = ({
     sequence,
     centered = false,
     underlayColor,
-    touchableEvent,
+    location,
     touchableLayout,
     onAnimatedEnd,
     render,
-    ...args
-}): React.JSX.Element => {
+    ...renderProps
+}) => {
     const id = useId();
     const theme = useTheme();
     const [scaleAnimated] = useAnimatedValue(0);
@@ -35,10 +34,7 @@ export const BaseRipple: FC<BaseRippleProps> = ({
     const {width, height} = touchableLayout;
     const centerX = width / 2;
     const centerY = height / 2;
-    const {locationX, locationY} = centered
-        ? {locationX: centerX, locationY: centerY}
-        : touchableEvent;
-
+    const {locationX, locationY} = centered ? {locationX: centerX, locationY: centerY} : location;
     const offsetX = Math.abs(centerX - locationX);
     const offsetY = Math.abs(centerY - locationY);
     const radius = Math.sqrt(Math.pow(centerX + offsetX, 2) + Math.pow(centerY + offsetY, 2));
@@ -52,7 +48,7 @@ export const BaseRipple: FC<BaseRippleProps> = ({
         outputRange: [1, 0],
     });
 
-    const processAnimatedTiming = useCallback((): void => {
+    const processAnimatedTiming = useCallback(() => {
         const animatedTiming = UTIL.animatedTiming(theme);
         const animatedIn = (finished: () => void): number =>
             requestAnimationFrame(() =>
@@ -72,13 +68,13 @@ export const BaseRipple: FC<BaseRippleProps> = ({
                 }).start(finished),
             );
 
-        const finished = (): void => onAnimatedEnd?.(sequence ?? id, animatedOut);
+        const finished = () => onAnimatedEnd?.(sequence ?? id, animatedOut);
 
         animatedIn(finished);
     }, [id, onAnimatedEnd, opacityAnimated, radius, scaleAnimated, sequence, theme]);
 
     const ripple = render({
-        ...args,
+        ...renderProps,
         id,
         x: locationX,
         y: locationY,

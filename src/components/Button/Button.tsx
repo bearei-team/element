@@ -3,8 +3,6 @@ import {BaseButton, RenderProps} from './BaseButton';
 import {Icon, Label, Main} from './Button.styles';
 import {PressableProps} from 'react-native';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
-import {Elevation} from '../Elevation/Elevation';
-import {Shape} from '../Shape/Shape';
 
 export type Type = 'filled' | 'outlined' | 'text' | 'elevated';
 export interface ButtonProps extends Omit<PressableProps, 'children'> {
@@ -23,8 +21,6 @@ export const Button: FC<ButtonProps> = props => {
         state,
         icon,
         type,
-        elevationProps,
-        shapeProps,
         touchableRippleProps,
         showIcon,
     }: RenderProps) => {
@@ -38,11 +34,9 @@ export const Button: FC<ButtonProps> = props => {
         );
 
         return (
-            <Elevation {...elevationProps} role="button">
-                <Shape {...shapeProps}>
-                    <TouchableRipple {...touchableRippleProps}>{main}</TouchableRipple>
-                </Shape>
-            </Elevation>
+            <TouchableRipple {...touchableRippleProps} shapeProps={{shape: 'full'}}>
+                {main}
+            </TouchableRipple>
         );
     };
 

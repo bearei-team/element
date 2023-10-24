@@ -1,12 +1,11 @@
 import styled, {css} from 'styled-components/native';
-import {Animated} from 'react-native';
 import {RenderProps} from './BaseRipple';
+import {Shape} from '../../Common/Shape.styles';
 
 export type ContainerProps = RenderProps;
-
-export const Container = styled(Animated.View)<ContainerProps>`
+export const Container = styled(Shape)<ContainerProps>`
     position: absolute;
-    border-radius: 50%;
+    pointer-events: none;
     z-index: 100;
 
     ${({x, isRTL}) =>
@@ -17,18 +16,15 @@ export const Container = styled(Animated.View)<ContainerProps>`
             : css`
                   left: ${x}px;
               `}
-
     ${({y, width, hight}) => css`
         top: ${y}px;
         width: ${width}px;
         height: ${hight}px;
     `}
-
-
-    ${({underlayColor, theme}) =>
+        ${({underlayColor, theme}) =>
         css`
             background-color: ${underlayColor
                 ? theme.color.rgba(underlayColor, 0.12)
                 : theme.palette.surface.onSurface};
-        `}
+        `};
 `;

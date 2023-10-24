@@ -1,13 +1,14 @@
 import styled, {css} from 'styled-components/native';
 import {ButtonProps} from './Button';
-import {State} from '../../common/interface';
+import {State} from '../common/interface';
 
 export type MainProps = Pick<ButtonProps, 'type'> & {state: State; showIcon?: boolean};
 export type Label = MainProps;
-
 export const Main = styled.View<MainProps>`
     display: flex;
     flex-direction: row;
+    justify-content: center;
+    align-items: center;
     height: 40px;
 
     ${({theme}) => css`
@@ -18,22 +19,22 @@ export const Main = styled.View<MainProps>`
         const themeType = {
             filled: css`
                 background-color: ${theme.palette.primary.primary};
-                padding-block: ${theme.spacing.small + 2}px;
-                padding-inline: ${theme.spacing.large}px;
+                padding-vertical: ${theme.spacing.small + 2}px;
+                padding-horizontal: ${theme.spacing.large}px;
             `,
 
             outlined: css`
-                padding-block: ${theme.spacing.small + 2}px;
-                padding-inline: ${theme.spacing.large}px;
+                padding-vertical: ${theme.spacing.small + 2}px;
+                padding-horizontal: ${theme.spacing.large}px;
             `,
             text: css`
-                padding-block: ${theme.spacing.small + 2}px;
-                padding-inline: ${theme.spacing.medium - 4}px;
+                padding-vertical: ${theme.spacing.small + 2}px;
+                padding-horizontal: ${theme.spacing.medium - 4}px;
             `,
             elevated: css`
                 background-color: ${theme.palette.surface.surfaceContainerLow};
-                padding-block: ${theme.spacing.small + 2}px;
-                padding-inline: ${theme.spacing.large}px;
+                padding-vertical: ${theme.spacing.small + 2}px;
+                padding-horizontal: ${theme.spacing.large}px;
             `,
         };
 
@@ -57,15 +58,15 @@ export const Main = styled.View<MainProps>`
     ${({theme, type = 'filled', showIcon}) => {
         const themeType = {
             filled: css`
-                padding-inline-start: ${theme.spacing.medium}px;
+                padding-horizontal-start: ${theme.spacing.medium}px;
             `,
 
             outlined: css`
-                padding-inline-start: ${theme.spacing.medium}px;
+                padding-horizontal-start: ${theme.spacing.medium}px;
             `,
             text: css`
-                padding-inline-start: ${theme.spacing.medium - 4}px;
-                padding-inline-end: ${theme.spacing.medium}px;
+                padding-horizontal-start: ${theme.spacing.medium - 4}px;
+                padding-horizontal-end: ${theme.spacing.medium}px;
             `,
             elevated: css``,
         };

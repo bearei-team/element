@@ -1,10 +1,16 @@
 import styled, {css} from 'styled-components/native';
-import {ShapeProps} from './Shape';
-import {Animated} from 'react-native';
+import {Shape as ThemeShape} from '@bearei/theme';
 
-export type ContainerProps = Pick<ShapeProps, 'shape' | 'border'>;
+export interface ShapeProps {
+    shape?: keyof ThemeShape;
+    border?: {
+        width?: number;
+        style?: 'dotted' | 'solid' | 'dashed';
+        color?: string;
+    };
+}
 
-export const Container = styled(Animated.View)<ContainerProps>`
+export const Shape = styled.View<ShapeProps>`
     overflow: hidden;
 
     ${({theme, shape = 'none'}) => css`
