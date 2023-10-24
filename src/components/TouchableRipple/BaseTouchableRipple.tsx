@@ -5,6 +5,7 @@ import {
     MouseEvent,
     NativeSyntheticEvent,
     TargetedEvent,
+    Platform,
 } from 'react-native';
 import {useImmer} from 'use-immer';
 import {Ripple, RippleAnimatedOut, RippleProps} from './Ripple/Ripple';
@@ -42,6 +43,7 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     const [state, setState] = useImmer<State>('enabled');
     const [layout, setLayout] = useImmer({} as RippleProps['touchableLayout']);
     const [rippleSequence, setRippleSequence] = useImmer<RippleSequence>({});
+    const mobile = Platform.OS === 'ios' || Platform.OS === 'android';
     const processPressed = (event: GestureResponderEvent) => {
         const {locationX, locationY} = event.nativeEvent;
 
@@ -97,7 +99,7 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
         processState('pressed', {event, callback: () => onPressIn?.(event)});
 
     const handlePressOut = (event: GestureResponderEvent) =>
-        processState('hovered', {callback: () => onPressOut?.(event)});
+        processState(mobile ? 'enabled' : 'hovered', {callback: () => onPressOut?.(event)});
 
     const handleHoverIn = (event: MouseEvent) =>
         processState('hovered', {callback: () => onHoverIn?.(event)});
@@ -151,10 +153,10 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     });
 
     useEffect(() => {
-        if (state === 'hovered') {
-            processRippleOut();
-        }
-    }, [processRippleOut, state]);
+        mobile
+            ? state === 'enabled' && processRippleOut()
+            : state === 'hovered' && processRippleOut();
+    }, [mobile, processRippleOut, state]);
 
     useEffect(() => {
         if (disabled) {

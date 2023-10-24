@@ -1,25 +1,42 @@
-// import styled from 'styled-components/native';
-// import {ElevationProps} from './Elevation';
-// import {Container as ShapeContainer} from '../../common/Shape.styles';
+import styled, {css} from 'styled-components/native';
+import {ElevationProps} from './Elevation';
+import {Elevation} from '@bearei/theme';
+import {Shape} from '../Common/Shape.styles';
 
-// export type ShadowProps = Pick<ElevationProps, 'level'>;
+export const Container = styled(Shape)<ElevationProps>`
+    ${({theme}) => css`
+        background-color: ${theme.palette.primary.onPrimary};
+    `};
 
-// export const Container = styled.View`
-//     position: relative;
-//     width: 140px;
-//     height: 40px;
-//     background-color: red;
-// `;
+    ${({theme, level = 0}) => {
+        const levelString: keyof Elevation = `level${level}`;
 
-// export const Shadow0 = styled(ShapeContainer)<ShadowProps>`
-//     /* position: absolute; */
-//     /* z-index: -2; */
-//     width: 140px;
-//     height: 40px;
-//     background-color: red;
-// `;
+        return css`
+            shadow-color: ${theme.palette.shadow.shadow};
+            shadow-offset: ${theme.elevation[levelString].shadow0.x}px
+                ${theme.elevation[levelString].shadow0.y}px;
 
-// export const Shadow1 = styled(ShapeContainer)<ShadowProps>`
-//     position: absolute;
-//     /* z-index: -1; */
-// `;
+            shadow-radius: ${theme.elevation[levelString].shadow0.blur}px;
+            elevation: ${theme.elevation[levelString].shadow0.elevation};
+        `;
+    }};
+`;
+
+export const Main = styled(Shape)<ElevationProps>`
+    ${({theme}) => css`
+        background-color: ${theme.palette.primary.onPrimary};
+    `};
+
+    ${({theme, level = 0}) => {
+        const levelString: keyof Elevation = `level${level}`;
+
+        return css`
+            shadow-color: ${theme.palette.shadow.shadow};
+            shadow-offset: ${theme.elevation[levelString].shadow1.x}px
+                ${theme.elevation[levelString].shadow1.y}px;
+
+            shadow-radius: ${theme.elevation[levelString].shadow1.blur}px;
+            elevation: ${theme.elevation[levelString].shadow1.elevation};
+        `;
+    }};
+`;

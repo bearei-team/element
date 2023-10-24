@@ -16,12 +16,14 @@ export const Container = styled(Shape)<ContainerProps>`
             : css`
                   left: ${x}px;
               `}
+
     ${({y, width, hight}) => css`
         top: ${y}px;
         width: ${width}px;
         height: ${hight}px;
     `}
-        ${({underlayColor, theme}) =>
+
+    ${({underlayColor, theme}) =>
         css`
             background-color: ${underlayColor
                 ? theme.color.rgba(underlayColor, 0.12)

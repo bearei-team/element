@@ -1,10 +1,13 @@
 import styled, {css} from 'styled-components/native';
 import {ButtonProps} from './Button';
 import {State} from '../common/interface';
+import {Shape} from '../Common/Shape.styles';
 
 export type MainProps = Pick<ButtonProps, 'type'> & {state: State; showIcon?: boolean};
-export type Label = MainProps;
-export const Main = styled.View<MainProps>`
+export type LabelProps = MainProps;
+export const Main = styled(Shape)<MainProps>`
+    overflow: hidden;
+    pointer-events: none;
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -75,7 +78,7 @@ export const Main = styled.View<MainProps>`
     }}
 `;
 
-export const Label = styled.Text<Label>`
+export const Label = styled.Text<LabelProps>`
     ${({theme}) => css`
         font-size: ${theme.typography.label.large.size}px;
         font-style: ${theme.typography.label.large.style};

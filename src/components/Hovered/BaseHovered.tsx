@@ -14,7 +14,7 @@
 //     state: propsState,
 //     disabled = false,
 //     ...args
-// }): React.JSX.Element => {
+// }) => {
 //     const id = useId();
 //     const theme = useTheme();
 //     const [opacityAnimated] = useAnimatedValue(0);

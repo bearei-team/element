@@ -13,8 +13,8 @@ export interface TouchableRippleProps
     shapeProps?: ShapeProps;
 }
 
-export const TouchableRipple: FC<TouchableRippleProps> = memo((props): React.JSX.Element => {
-    const render = ({id, children, shapeProps, ...args}: RenderProps): React.JSX.Element => (
+export const TouchableRipple: FC<TouchableRippleProps> = memo(props => {
+    const render = ({id, children, shapeProps, ...args}: RenderProps) => (
         <Container {...args} testID={`touchableRipple--${id}`}>
             <Main {...shapeProps} testID={`touchableRipple__main--${id}`}>
                 {children}

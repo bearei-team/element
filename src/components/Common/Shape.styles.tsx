@@ -11,8 +11,6 @@ export interface ShapeProps {
 }
 
 export const Shape = styled.View<ShapeProps>`
-    overflow: hidden;
-
     ${({theme, shape = 'none'}) => css`
         border-top-left-radius: ${theme.shape[shape].topLeft}px;
         border-top-right-radius: ${theme.shape[shape].topRight}px;

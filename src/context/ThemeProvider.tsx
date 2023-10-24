@@ -8,10 +8,7 @@ export interface ThemeProps {
     theme?: Theme;
 }
 
-export const ThemeProvider: FC<ThemeProps> = ({
-    children,
-    theme: themeProvider,
-}): React.JSX.Element => {
+export const ThemeProvider: FC<ThemeProps> = ({children, theme: themeProvider}) => {
     const colorScheme = useColorScheme() ?? 'light';
 
     return (

@@ -1,15 +1,23 @@
 import {FC, useEffect, useId} from 'react';
-import {GestureResponderEvent, MouseEvent, NativeSyntheticEvent, TargetedEvent} from 'react-native';
+import {
+    GestureResponderEvent,
+    MouseEvent,
+    NativeSyntheticEvent,
+    Platform,
+    TargetedEvent,
+} from 'react-native';
 import {ButtonProps} from './Button';
 import {useImmer} from 'use-immer';
 import {useTheme} from 'styled-components/native';
 import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {State} from '../common/interface';
+import {ElevationProps} from '../Elevation/Elevation';
+import {ShapeProps} from '../Common/Shape.styles';
 
-// export type ElevationLevel = ElevationProps['level'];
 export type RenderProps = ButtonProps & {
-    // elevationProps: ElevationProps;
+    elevationProps: ElevationProps;
     touchableRippleProps: TouchableRippleProps;
+    shapeProps: ShapeProps;
     state: State;
     showIcon?: boolean;
 };
@@ -31,68 +39,67 @@ export const BaseButton: FC<BaseButtonProps> = ({
     onBlur,
     disabled = false,
     ...args
-}): React.JSX.Element => {
+}) => {
     const id = useId();
     const theme = useTheme();
     const [state, setState] = useImmer<State>('enabled');
-    // const [elevationLevel, setElevationLevel] = useImmer<number>(0);
-    const processState = (nextState: State, callback?: () => void): void => {
+    const [elevationLevel, setElevationLevel] = useImmer<ElevationProps['level']>(0);
+    const mobile = Platform.OS === 'ios' || Platform.OS === 'android';
+    const processState = (nextState: State, callback?: () => void) => {
         if (state !== 'disabled') {
             callback?.();
             setState(() => nextState);
 
             if (type === 'filled' || type === 'elevated') {
-                // processElevationLevel(nextState);
+                processElevationLevel(nextState);
             }
         }
     };
 
-    // const processElevationLevel = (nextState: State): void => {
-    //     const elevation = {
-    //         hovered: 1,
-    //         enabled: 0,
-    //         pressed: 0,
-    //         focused: 0,
-    //         disabled: 0,
-    //     };
+    const processElevationLevel = (nextState: State) => {
+        const elevation = {
+            hovered: 1,
+            enabled: 0,
+            pressed: 0,
+            focused: 0,
+            disabled: 0,
+        };
 
-    //     setElevationLevel(() =>
-    //         type === 'elevated' ? elevation[nextState] + 1 : elevation[nextState],
-    //     );
-    // };
+        setElevationLevel(() =>
+            type === 'elevated' ? elevation[nextState] + 1 : elevation[nextState],
+        );
+    };
 
-    const handleHoverIn = (event: MouseEvent): void =>
-        processState('hovered', () => onHoverIn?.(event));
-
-    const handleHoverOut = (event: MouseEvent): void =>
-        processState('enabled', () => onHoverOut?.(event));
-
-    const handlePressIn = (event: GestureResponderEvent): void =>
+    const handlePressIn = (event: GestureResponderEvent) =>
         processState('pressed', () => onPressIn?.(event));
 
-    const handlePressOut = (event: GestureResponderEvent): void =>
-        processState('hovered', () => onPressOut?.(event));
+    const handlePressOut = (event: GestureResponderEvent) =>
+        processState(mobile ? 'enabled' : 'hovered', () => onPressOut?.(event));
 
-    const handleFocus = (event: NativeSyntheticEvent<TargetedEvent>): void =>
+    const handleHoverIn = (event: MouseEvent) => processState('hovered', () => onHoverIn?.(event));
+    const handleHoverOut = (event: MouseEvent) =>
+        processState('enabled', () => onHoverOut?.(event));
+
+    const handleFocus = (event: NativeSyntheticEvent<TargetedEvent>) =>
         processState('focused', () => onFocus?.(event));
 
-    const handleBlur = (event: NativeSyntheticEvent<TargetedEvent>): void =>
+    const handleBlur = (event: NativeSyntheticEvent<TargetedEvent>) =>
         processState('enabled', () => onBlur?.(event));
 
-    // const elevationProps: ElevationProps = {level: elevationLevel, shape: 'full'};
-    // const shapeProps: ShapeProps = {
-    //     shape: 'full',
-    //     ...(type === 'outlined' && {
-    //         border: {
-    //             width: 1,
-    //             style: 'solid',
-    //             color:
-    //                 state === 'disabled'
-    //                     ? theme.color.rgba(theme.palette.surface.onSurface, 0.12)
-    //                     : theme.palette.outline.outline,
-    //         },
-    //     }),
-    // };
+    const elevationProps: ElevationProps = {level: elevationLevel};
+    const shapeProps: ShapeProps = {
+        shape: 'full',
+        ...(type === 'outlined' && {
+            border: {
+                width: 1,
+                style: 'solid',
+                color:
+                    state === 'disabled'
+                        ? theme.color.rgba(theme.palette.surface.onSurface, 0.12)
+                        : theme.palette.outline.outline,
+            },
+        }),
+    };
 
     const touchableRippleProps = {
         ...args,
@@ -116,8 +123,8 @@ export const BaseButton: FC<BaseButtonProps> = ({
         label,
         icon,
         showIcon: !!icon,
-        // elevationProps,
-        // shapeProps,
+        shapeProps,
+        elevationProps,
         touchableRippleProps,
     });
 

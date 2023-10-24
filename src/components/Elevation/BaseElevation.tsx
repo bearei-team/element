@@ -1,99 +1,87 @@
-// import {FC, useCallback, useEffect, useId} from 'react';
-// import {ElevationProps} from './Elevation';
-// import {useAnimatedValue} from '../../hooks/useAnimatedValue';
-// import {UTIL} from '../../utils/util';
-// import {useTheme} from 'styled-components/native';
-// import {LayoutChangeEvent, LayoutRectangle} from 'react-native';
-// import {useImmer} from 'use-immer';
+import {FC, useCallback, useEffect, useId} from 'react';
+import {ElevationProps} from './Elevation';
+import {useTheme} from 'styled-components/native';
+import {Animated} from 'react-native';
+import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {UTIL} from '../../utils/util';
 
-// export type RenderProps = ElevationProps & {
-//     shadowStyle: {
-//         width: number;
-//         height: number;
-//     };
-// };
+export type RenderProps = ElevationProps & {
+    shadowStyle: {
+        shadowOpacity0: Animated.AnimatedInterpolation<string | number>;
+        shadowOpacity1: Animated.AnimatedInterpolation<string | number>;
+    };
+};
 
-// export interface BaseElevationProps extends ElevationProps {
-//     render: (props: RenderProps) => React.JSX.Element;
-// }
+export interface BaseElevationProps extends ElevationProps {
+    render: (props: RenderProps) => React.JSX.Element;
+}
 
-// export const BaseElevation: FC<BaseElevationProps> = ({
-//     render,
-//     level = 3,
-//     onLayout,
-//     ...args
-// }): React.JSX.Element => {
-//     const id = useId();
-//     const theme = useTheme();
-//     const [layout, setLayout] = useImmer({width: 0, height: 0} as LayoutRectangle);
+export const BaseElevation: FC<BaseElevationProps> = ({level, render, ...renderProps}) => {
+    const id = useId();
+    const theme = useTheme();
+    const [opacity0Animated] = useAnimatedValue(0);
+    const [opacity1Animated] = useAnimatedValue(0);
+    const shadowOpacity0 = opacity0Animated.interpolate({
+        inputRange: [0, 1, 2, 3, 4, 5],
+        outputRange: [
+            theme.elevation.level0.shadow0.opacity,
+            theme.elevation.level1.shadow0.opacity,
+            theme.elevation.level2.shadow0.opacity,
+            theme.elevation.level3.shadow0.opacity,
+            theme.elevation.level4.shadow0.opacity,
+            theme.elevation.level5.shadow0.opacity,
+        ],
+    });
 
-//     // const processAnimatedTiming = useCallback(
-//     //     (toLevel: number, finished?: () => void): void => {
-//     //         const animatedTiming = UTIL.animatedTiming(theme);
-//     //         const runAnimated = (): number =>
-//     //             requestAnimationFrame(() => {
-//     //                 // animatedTiming(shadow0Animated, {
-//     //                 //     toValue: toLevel,
-//     //                 //     easing: 'standardDecelerate',
-//     //                 //     duration: 'medium1',
-//     //                 // }).start();
+    const shadowOpacity1 = opacity1Animated.interpolate({
+        inputRange: [0, 1, 2, 3, 4, 5],
+        outputRange: [
+            theme.elevation.level0.shadow1.opacity,
+            theme.elevation.level1.shadow1.opacity,
+            theme.elevation.level2.shadow1.opacity,
+            theme.elevation.level3.shadow1.opacity,
+            theme.elevation.level4.shadow1.opacity,
+            theme.elevation.level5.shadow1.opacity,
+        ],
+    });
 
-//     //                 // animatedTiming(shadow1Animated, {
-//     //                 //     toValue: toLevel,
-//     //                 //     easing: 'standardDecelerate',
-//     //                 //     duration: 'medium1',
-//     //                 // }).start(finished);
+    const processAnimatedTiming = useCallback(
+        (value: ElevationProps['level'] = 0) => {
+            const animatedTiming = UTIL.animatedTiming(theme);
+            const animated0In = (): number =>
+                requestAnimationFrame(() =>
+                    animatedTiming(opacity0Animated, {
+                        toValue: value,
+                        easing: 'standard',
+                        duration: 'short3',
+                    }).start(),
+                );
 
-//     //                 console.info(666666);
-//     //                 animatedTiming(offsetX0Animated, {
-//     //                     toValue: 1,
-//     //                     easing: 'standardDecelerate',
-//     //                     duration: 'medium1',
-//     //                 }).start();
+            const animated1In = (): number =>
+                requestAnimationFrame(() =>
+                    animatedTiming(opacity1Animated, {
+                        toValue: value,
+                        easing: 'standard',
+                        duration: 'short3',
+                    }).start(),
+                );
 
-//     //                 // animatedTiming(offsetY0Animated, {
-//     //                 //     toValue: 1,
-//     //                 //     easing: 'standardDecelerate',
-//     //                 //     duration: 'medium1',
-//     //                 // }).start(finished);
+            animated0In();
+            animated1In();
+        },
+        [opacity0Animated, opacity1Animated, theme],
+    );
 
-//     //                 // animatedTiming(offsetX1Animated, {
-//     //                 //     toValue: 1,
-//     //                 //     easing: 'standardDecelerate',
-//     //                 //     duration: 'medium1',
-//     //                 // }).start();
+    const elevation = render({
+        ...renderProps,
+        id,
+        level,
+        shadowStyle: {shadowOpacity0, shadowOpacity1},
+    });
 
-//     //                 // animatedTiming(offsetY1Animated, {
-//     //                 //     toValue: 1,
-//     //                 //     easing: 'standardDecelerate',
-//     //                 //     duration: 'medium1',
-//     //                 // }).start(finished);
-//     //             });
+    useEffect(() => {
+        processAnimatedTiming(level);
+    }, [level, processAnimatedTiming]);
 
-//     //         runAnimated();
-//     //     },
-//     //     [offsetX0Animated, theme],
-//     // );
-
-//     const processLayout = (event: LayoutChangeEvent): void => {
-//         onLayout?.(event);
-//         setLayout(() => event.nativeEvent.layout);
-//     };
-
-//     const elevation = render({
-//         ...args,
-//         id,
-//         level,
-//         shadowStyle: {
-//             width: layout.width,
-//             height: layout.height,
-//         },
-//         onLayout: processLayout,
-//     });
-
-//     // useEffect(() => {
-//     //     processAnimatedTiming(level);
-//     // }, [level, processAnimatedTiming]);
-
-//     return elevation;
-// };
+    return elevation;
+};

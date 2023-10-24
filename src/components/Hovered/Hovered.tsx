@@ -13,8 +13,8 @@
 //     disabled: boolean;
 // }
 
-// export const Hovered: FC<HoveredProps> = memo((props): React.JSX.Element => {
-//     const render = ({id, ...args}: RenderProps): React.JSX.Element => (
+// export const Hovered: FC<HoveredProps> = memo((props) => {
+//     const render = ({id, ...args}: RenderProps) => (
 //         <>{args.width !== 0 && <Container {...args} testID={`hovered--${id}`} />}</>
 //     );
 
