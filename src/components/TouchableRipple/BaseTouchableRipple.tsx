@@ -5,14 +5,15 @@ import {
     MouseEvent,
     NativeSyntheticEvent,
     TargetedEvent,
-    Platform,
 } from 'react-native';
 import {useImmer} from 'use-immer';
 import {Ripple, RippleAnimatedOut, RippleProps} from './Ripple/Ripple';
 import {TouchableRippleProps} from './TouchableRipple';
 import {State} from '../common/interface';
+import {HoveredProps} from '../Hovered/Hovered';
+import {useTheme} from 'styled-components/native';
 
-export type RenderProps = Omit<TouchableRippleProps, 'centered'> & {hoveredProps: any};
+export type RenderProps = Omit<TouchableRippleProps, 'centered'> & {hoveredProps?: HoveredProps};
 export interface BaseTouchableRippleProps extends TouchableRippleProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
@@ -25,6 +26,16 @@ export interface ProcessStateOptions {
 }
 
 export type RippleSequence = Record<string, Ripple>;
+export type RenderRipplesOptions = Pick<
+    RippleProps,
+    'underlayColor' | 'touchableLayout' | 'onAnimatedEnd'
+>;
+
+const renderRipples = (rippleSequence: RippleSequence, options: RenderRipplesOptions) =>
+    Object.entries(rippleSequence).map(([sequence, {location}]) => (
+        <Ripple {...options} key={`ripple_${sequence}`} sequence={sequence} location={location} />
+    ));
+
 export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     onPressIn,
     onPressOut,
@@ -40,10 +51,11 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     ...renderProps
 }) => {
     const id = useId();
+    const theme = useTheme();
     const [state, setState] = useImmer<State>('enabled');
     const [layout, setLayout] = useImmer({} as RippleProps['touchableLayout']);
     const [rippleSequence, setRippleSequence] = useImmer<RippleSequence>({});
-    const mobile = Platform.OS === 'ios' || Platform.OS === 'android';
+    const mobile = theme.OS === 'ios' || theme.OS === 'android';
     const processPressed = (event: GestureResponderEvent) => {
         const {locationX, locationY} = event.nativeEvent;
 
@@ -113,25 +125,19 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     const handleBlur = (event: NativeSyntheticEvent<TargetedEvent>) =>
         processState('enabled', {callback: () => onBlur?.(event)});
 
-    const ripples = Object.entries(rippleSequence).map(([sequence, {location}]) => (
-        <Ripple
-            key={`ripple_${sequence}`}
-            sequence={sequence}
-            underlayColor={underlayColor}
-            touchableLayout={layout}
-            location={location}
-            onAnimatedEnd={processRippleAnimatedEnd}
-        />
-    ));
-
-    const hoveredProps = {
-        underlayColor,
-        width: layout.width,
-        height: layout.height,
-        disabled,
-        state:
-            state === 'hovered' || state === 'focused' || state === 'enabled' ? state : undefined,
-    };
+    const hoveredProps =
+        theme.os !== 'ios' || theme.os !== 'android'
+            ? {
+                  underlayColor,
+                  width: layout.width,
+                  height: layout.height,
+                  disabled,
+                  state:
+                      state === 'hovered' || state === 'focused' || state === 'enabled'
+                          ? state
+                          : undefined,
+              }
+            : undefined;
 
     const touchableRipple = render({
         ...renderProps,
@@ -140,7 +146,11 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
         children: (
             <>
                 {children}
-                {ripples}
+                {renderRipples(rippleSequence, {
+                    underlayColor,
+                    touchableLayout: layout,
+                    onAnimatedEnd: processRippleAnimatedEnd,
+                })}
             </>
         ),
         onLayout: processLayout,

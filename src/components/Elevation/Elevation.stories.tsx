@@ -11,6 +11,6 @@ export default {
 export const ElevationTEST: StoryObj<ElevationProps> = {
     args: {
         level: 3,
-        children: <View style={{width: 200, height: 40}} />,
+        children: <View style={{width: 200, height: 40, backgroundColor: 'red'}} />,
     },
 };

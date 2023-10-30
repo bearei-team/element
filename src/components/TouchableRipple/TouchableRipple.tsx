@@ -4,7 +4,7 @@ import {BaseTouchableRipple, RenderProps} from './BaseTouchableRipple';
 import {PressableProps} from 'react-native';
 import {RippleProps} from './Ripple/Ripple';
 import {ShapeProps} from '../Common/Shape.styles';
-// import {Hovered} from '../Hovered/Hovered';
+import {Hovered} from '../Hovered/Hovered';
 
 export interface TouchableRippleProps
     extends Omit<PressableProps & Pick<RippleProps, 'underlayColor' | 'centered'>, 'children'> {
@@ -14,11 +14,13 @@ export interface TouchableRippleProps
 }
 
 export const TouchableRipple: FC<TouchableRippleProps> = memo(props => {
-    const render = ({id, children, shapeProps, ...args}: RenderProps) => (
+    const render = ({id, children, shapeProps, hoveredProps, ...args}: RenderProps) => (
         <Container {...args} testID={`touchableRipple--${id}`}>
             <Main {...shapeProps} testID={`touchableRipple__main--${id}`}>
                 {children}
             </Main>
+
+            {hoveredProps && <Hovered {...hoveredProps} />}
         </Container>
     );
 

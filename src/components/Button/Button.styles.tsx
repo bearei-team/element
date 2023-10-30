@@ -6,7 +6,6 @@ import {Shape} from '../Common/Shape.styles';
 export type MainProps = Pick<ButtonProps, 'type'> & {state: State; showIcon?: boolean};
 export type LabelProps = MainProps;
 export const Main = styled(Shape)<MainProps>`
-    overflow: hidden;
     pointer-events: none;
     display: flex;
     flex-direction: row;
@@ -25,7 +24,6 @@ export const Main = styled(Shape)<MainProps>`
                 padding-vertical: ${theme.spacing.small + 2}px;
                 padding-horizontal: ${theme.spacing.large}px;
             `,
-
             outlined: css`
                 padding-vertical: ${theme.spacing.small + 2}px;
                 padding-horizontal: ${theme.spacing.large}px;

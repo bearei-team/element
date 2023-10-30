@@ -3,40 +3,31 @@ import {ElevationProps} from './Elevation';
 import {Elevation} from '@bearei/theme';
 import {Shape} from '../Common/Shape.styles';
 
-export const Container = styled(Shape)<ElevationProps>`
+export interface ShadowProps extends Pick<ElevationProps, 'level'> {
+    shadow: 0 | 1;
+}
+
+export const Container = styled(Shape)<ShadowProps>`
+    pointer-events: none;
+
     ${({theme}) => css`
         background-color: ${theme.palette.primary.onPrimary};
     `};
 
-    ${({theme, level = 0}) => {
+    ${({theme, level = 0, shadow = 0}) => {
         const levelString: keyof Elevation = `level${level}`;
+        const shadowString = `shadow${shadow}` as 'shadow0' | 'shadow1';
 
         return css`
             shadow-color: ${theme.palette.shadow.shadow};
-            shadow-offset: ${theme.elevation[levelString].shadow0.x}px
-                ${theme.elevation[levelString].shadow0.y}px;
+            shadow-offset: ${theme.elevation[levelString][shadowString].x}px
+                ${theme.elevation[levelString][shadowString].y}px;
 
-            shadow-radius: ${theme.elevation[levelString].shadow0.blur}px;
-            elevation: ${theme.elevation[levelString].shadow0.elevation};
+            shadow-radius: ${theme.elevation[levelString][shadowString].blur}px;
+            shadow-opacity: ${theme.elevation[levelString][shadowString].opacity};
+            elevation: ${theme.elevation[levelString][shadowString].elevation};
         `;
     }};
 `;
 
-export const Main = styled(Shape)<ElevationProps>`
-    ${({theme}) => css`
-        background-color: ${theme.palette.primary.onPrimary};
-    `};
-
-    ${({theme, level = 0}) => {
-        const levelString: keyof Elevation = `level${level}`;
-
-        return css`
-            shadow-color: ${theme.palette.shadow.shadow};
-            shadow-offset: ${theme.elevation[levelString].shadow1.x}px
-                ${theme.elevation[levelString].shadow1.y}px;
-
-            shadow-radius: ${theme.elevation[levelString].shadow1.blur}px;
-            elevation: ${theme.elevation[levelString].shadow1.elevation};
-        `;
-    }};
-`;
+export const Main = styled(Container)``;

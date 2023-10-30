@@ -1,4 +1,4 @@
-import {Animated, ViewProps} from 'react-native';
+import {ViewProps} from 'react-native';
 import {FC, memo} from 'react';
 import {BaseElevation, RenderProps} from './BaseElevation';
 import {Container, Main} from './Elevation.styles';
@@ -9,24 +9,13 @@ export interface ElevationProps extends ViewProps {
 }
 
 export const Elevation: FC<ElevationProps> = memo(props => {
-    const render = ({id, level, shadowStyle, shapeProps, children}: RenderProps) => {
-        const AnimatedContainer = Animated.createAnimatedComponent(Container);
-        const AnimatedMain = Animated.createAnimatedComponent(Main);
-
+    const render = ({id, level, shapeProps, children}: RenderProps) => {
         return (
-            <AnimatedContainer
-                {...shapeProps}
-                testID={`elevation--${id}`}
-                level={level}
-                style={{shadowOpacity: shadowStyle.shadowOpacity0}}>
-                <AnimatedMain
-                    {...shapeProps}
-                    testID={`elevation__main--${id}`}
-                    level={level}
-                    style={{shadowOpacity: shadowStyle.shadowOpacity1}}>
+            <Container {...shapeProps} testID={`elevation--${id}`} level={level} shadow={0}>
+                <Main {...shapeProps} testID={`elevation__main--${id}`} level={level} shadow={1}>
                     {children}
-                </AnimatedMain>
-            </AnimatedContainer>
+                </Main>
+            </Container>
         );
     };
 

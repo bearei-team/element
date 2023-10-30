@@ -14,12 +14,12 @@ export const Filled: StoryObj<ButtonProps> = {
     },
 };
 
-// export const FilledDisabled: StoryObj<ButtonProps> = {
-//     args: {
-//         label: 'Label',
-//         disabled: true,
-//     },
-// };
+export const FilledDisabled: StoryObj<ButtonProps> = {
+    args: {
+        label: 'Label',
+        disabled: true,
+    },
+};
 
 // export const ShowIconFilled: StoryObj<ButtonProps> = {
 //     args: {

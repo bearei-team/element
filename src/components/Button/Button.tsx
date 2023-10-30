@@ -1,4 +1,4 @@
-import {FC, ReactNode} from 'react';
+import {FC, ReactNode, memo} from 'react';
 import {BaseButton, RenderProps} from './BaseButton';
 import {Icon, Label, Main} from './Button.styles';
 import {PressableProps} from 'react-native';
@@ -15,7 +15,7 @@ export interface ButtonProps extends Omit<PressableProps, 'children'> {
     children?: ReactNode;
 }
 
-export const Button: FC<ButtonProps> = props => {
+export const Button: FC<ButtonProps> = memo(props => {
     const render = ({
         id,
         label,
@@ -51,4 +51,4 @@ export const Button: FC<ButtonProps> = props => {
     };
 
     return <BaseButton {...props} render={render} />;
-};
+});
