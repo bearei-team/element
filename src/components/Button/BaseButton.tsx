@@ -134,11 +134,11 @@ export const BaseButton: FC<BaseButtonProps> = ({
         }
     }, [disabled, setState]);
 
-    // useEffect(() => {
-    //     if (type === 'elevated') {
-    //         setElevationLevel(() => 1);
-    //     }
-    // }, [setElevationLevel, type]);
+    useEffect(() => {
+        if (type === 'elevated') {
+            setElevationLevel(() => 1);
+        }
+    }, [setElevationLevel, type]);
 
     return button;
 };

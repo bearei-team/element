@@ -6,7 +6,7 @@ export type ContainerProps = RenderProps;
 export const Container = styled(Shape)<ContainerProps>`
     position: absolute;
     pointer-events: none;
-    z-index: 100;
+    z-index: 128;
 
     ${({x, isRTL}) =>
         isRTL
