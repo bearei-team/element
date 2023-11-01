@@ -1,11 +1,5 @@
 import {FC, useEffect, useId} from 'react';
-import {
-    GestureResponderEvent,
-    MouseEvent,
-    NativeSyntheticEvent,
-    Platform,
-    TargetedEvent,
-} from 'react-native';
+import {GestureResponderEvent, MouseEvent, NativeSyntheticEvent, TargetedEvent} from 'react-native';
 import {ButtonProps} from './Button';
 import {useImmer} from 'use-immer';
 import {useTheme} from 'styled-components/native';
@@ -44,7 +38,7 @@ export const BaseButton: FC<BaseButtonProps> = ({
     const theme = useTheme();
     const [state, setState] = useImmer<State>('enabled');
     const [elevationLevel, setElevationLevel] = useImmer<ElevationProps['level']>(0);
-    const mobile = Platform.OS === 'ios' || Platform.OS === 'android';
+    const mobile = theme.OS === 'ios' || theme.OS === 'android';
     const processState = (nextState: State, callback?: () => void) => {
         if (state !== 'disabled') {
             callback?.();

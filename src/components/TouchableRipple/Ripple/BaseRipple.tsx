@@ -55,7 +55,7 @@ export const BaseRipple: FC<BaseRippleProps> = ({
                 animatedTiming(scaleAnimated, {
                     toValue: 1,
                     easing: 'standard',
-                    duration: Math.min(radius * 2, 350),
+                    duration: Math.min(radius * 2, 200),
                 }).start(finished),
             );
 

@@ -1,11 +1,11 @@
 import {FC, memo} from 'react';
 import {BaseRipple, RenderProps} from './BaseRipple';
 import {Container} from './Ripple.styles';
-import {LayoutRectangle, NativeTouchEvent, ViewProps} from 'react-native';
+import {LayoutRectangle, NativeTouchEvent, View, ViewProps} from 'react-native';
 import {Animated} from 'react-native';
 
 export type RippleAnimatedOut = (finished: () => void) => number;
-export interface RippleProps extends ViewProps {
+export interface RippleProps extends Animated.AnimatedProps<ViewProps & React.RefAttributes<View>> {
     sequence?: string;
     centered?: boolean;
     underlayColor?: string;

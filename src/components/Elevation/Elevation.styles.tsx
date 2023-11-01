@@ -7,7 +7,19 @@ export interface ShadowProps extends Pick<ElevationProps, 'level'> {
     shadow: 0 | 1;
 }
 
-export const Container = styled(Shape)<ShadowProps>`
+export const Container = styled.View`
+    position: relative;
+`;
+
+export const Main = styled(Shape)`
+    position: absolute;
+    z-index: 2;
+`;
+
+export const Shadow0 = styled(Shape)<ShadowProps>`
+    position: absolute;
+    z-index: 0;
+
     ${({theme}) => css`
         background-color: ${theme.palette.primary.onPrimary};
     `};
@@ -22,10 +34,12 @@ export const Container = styled(Shape)<ShadowProps>`
                 ${theme.elevation[levelString][shadowString].y}px;
 
             shadow-radius: ${theme.elevation[levelString][shadowString].blur}px;
-            shadow-opacity: ${theme.elevation[levelString][shadowString].opacity};
+            shadow-opacity: 1;
             elevation: ${theme.elevation[levelString][shadowString].elevation};
         `;
     }};
 `;
 
-export const Main = styled(Container)``;
+export const Shadow1 = styled(Shadow0)`
+    z-index: 1;
+`;
