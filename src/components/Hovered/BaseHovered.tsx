@@ -20,7 +20,7 @@ export const BaseHovered: FC<BaseHoveredProps> = ({
     const [opacityAnimated] = useAnimatedValue(0);
     const animatedTiming = UTIL.animatedTiming(theme);
     const animatedIn = useCallback(
-        (): number =>
+        () =>
             requestAnimationFrame(() =>
                 animatedTiming(opacityAnimated, {
                     toValue: 1,
@@ -32,7 +32,7 @@ export const BaseHovered: FC<BaseHoveredProps> = ({
     );
 
     const animatedOut = useCallback(
-        (): number =>
+        () =>
             requestAnimationFrame(() =>
                 animatedTiming(opacityAnimated, {
                     toValue: 0,

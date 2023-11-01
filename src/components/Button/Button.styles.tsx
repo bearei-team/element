@@ -11,7 +11,6 @@ export const Main = styled(Shape)<MainProps>`
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    height: 40px;
 
     ${({theme}) => css`
         gap: ${theme.spacing.small}px;
@@ -37,20 +36,31 @@ export const Main = styled(Shape)<MainProps>`
                 padding-vertical: ${theme.spacing.small + 2}px;
                 padding-horizontal: ${theme.spacing.large}px;
             `,
+            tonal: css`
+                background-color: ${theme.palette.secondary.secondaryContainer};
+                padding-vertical: ${theme.spacing.small + 2}px;
+                padding-horizontal: ${theme.spacing.large}px;
+            `,
         };
 
         return themeType[type];
     }}
 
     ${({theme, state, type = 'filled'}) => {
+        const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
         const themeType = {
             filled: css`
-                background-color: ${theme.color.rgba(theme.palette.surface.onSurface, 0.12)};
+                background-color: ${disabledColor};
             `,
 
             outlined: css``,
             text: css``,
-            elevated: css``,
+            elevated: css`
+                background-color: ${disabledColor};
+            `,
+            tonal: css`
+                background-color: ${disabledColor};
+            `,
         };
 
         return state === 'disabled' && themeType[type];
@@ -69,7 +79,12 @@ export const Main = styled(Shape)<MainProps>`
                 padding-horizontal-start: ${theme.spacing.medium - 4}px;
                 padding-horizontal-end: ${theme.spacing.medium}px;
             `,
-            elevated: css``,
+            elevated: css`
+                padding-horizontal-start: ${theme.spacing.medium}px;
+            `,
+            tonal: css`
+                padding-horizontal-start: ${theme.spacing.medium}px;
+            `,
         };
 
         return showIcon && themeType[type];
@@ -100,6 +115,9 @@ export const Label = styled.Text<LabelProps>`
             `,
             elevated: css`
                 color: ${theme.palette.primary.primary};
+            `,
+            tonal: css`
+                color: ${theme.palette.secondary.onSecondaryContainer};
             `,
         };
 

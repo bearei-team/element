@@ -9,9 +9,13 @@ export interface ElevationProps extends ViewProps {
 }
 
 export const Elevation: FC<ElevationProps> = memo(props => {
-    const render = ({id, level, shapeProps, children}: RenderProps) => {
+    const render = ({id, level, shapeProps, children, ...containerProps}: RenderProps) => {
         return (
-            <Container {...shapeProps} testID={`elevation--${id}`} level={level} shadow={0}>
+            <Container
+                {...{...shapeProps, ...containerProps}}
+                testID={`elevation--${id}`}
+                level={level}
+                shadow={0}>
                 <Main {...shapeProps} testID={`elevation__main--${id}`} level={level} shadow={1}>
                     {children}
                 </Main>

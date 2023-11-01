@@ -50,7 +50,9 @@ export const BaseButton: FC<BaseButtonProps> = ({
             callback?.();
             setState(() => nextState);
 
-            if (type === 'filled' || type === 'elevated') {
+            const isProcessElevation = type === 'filled' || type === 'elevated' || type === 'tonal';
+
+            if (isProcessElevation) {
                 processElevationLevel(nextState);
             }
         }
@@ -96,17 +98,24 @@ export const BaseButton: FC<BaseButtonProps> = ({
                 color:
                     state === 'disabled'
                         ? theme.color.rgba(theme.palette.surface.onSurface, 0.12)
+                        : state === 'focused'
+                        ? theme.palette.primary.primary
                         : theme.palette.outline.outline,
             },
         }),
     };
 
+    const underlay = {
+        filled: theme.palette.primary.onPrimary,
+        outlined: theme.palette.primary.primary,
+        text: theme.palette.primary.primary,
+        elevated: theme.palette.primary.primary,
+        tonal: theme.palette.secondary.onSecondaryContainer,
+    };
+
     const touchableRippleProps = {
         ...args,
-        underlayColor:
-            type === 'outlined' || type === 'text'
-                ? theme.palette.primary.primary
-                : theme.palette.primary.onPrimary,
+        underlayColor: underlay[type],
         disabled,
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
@@ -135,10 +144,10 @@ export const BaseButton: FC<BaseButtonProps> = ({
     }, [disabled, setState]);
 
     useEffect(() => {
-        if (type === 'elevated') {
+        if (type === 'elevated' && !disabled) {
             setElevationLevel(() => 1);
         }
-    }, [setElevationLevel, type]);
+    }, [disabled, setElevationLevel, type]);
 
     return button;
 };

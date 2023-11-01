@@ -7,10 +7,7 @@ export interface AnimatedTimingProps extends TransitionOptions {
 
 export const animatedTiming =
     (theme: Theme) =>
-    (
-        animation: Animated.Value,
-        {toValue, duration, easing}: AnimatedTimingProps,
-    ): Animated.CompositeAnimation => {
+    (animation: Animated.Value, {toValue, duration, easing}: AnimatedTimingProps) => {
         const {duration: transitionDuration, bezier} = theme.transition({duration, easing});
 
         return Animated.timing(animation, {

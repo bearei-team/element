@@ -1,11 +1,10 @@
 import styled, {css} from 'styled-components/native';
-
-import {Animated} from 'react-native';
 import {HoveredProps} from './Hovered';
+import {Shape} from '../Common/Shape.styles';
 
 export type ContainerProps = Pick<HoveredProps, 'width' | 'height' | 'underlayColor'>;
 
-export const Container = styled(Animated.View)<ContainerProps>`
+export const Container = styled(Shape)<ContainerProps>`
     position: absolute;
     pointer-events: none;
 

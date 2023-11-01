@@ -8,8 +8,6 @@ export interface ShadowProps extends Pick<ElevationProps, 'level'> {
 }
 
 export const Container = styled(Shape)<ShadowProps>`
-    pointer-events: none;
-
     ${({theme}) => css`
         background-color: ${theme.palette.primary.onPrimary};
     `};

@@ -8,8 +8,6 @@ export interface ThemeProps {
     theme?: Theme;
 }
 
-export type Device = 'mobile' | 'pc' | 'web';
-
 export const ThemeProvider: FC<ThemeProps> = ({children, theme: themeProvider}) => {
     const colorScheme = useColorScheme() ?? 'light';
     const OS = Platform.OS;

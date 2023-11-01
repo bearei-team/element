@@ -14,8 +14,8 @@ export interface TouchableRippleProps
 }
 
 export const TouchableRipple: FC<TouchableRippleProps> = memo(props => {
-    const render = ({id, children, shapeProps, hoveredProps, ...args}: RenderProps) => (
-        <Container {...args} testID={`touchableRipple--${id}`}>
+    const render = ({id, children, shapeProps, hoveredProps, ...containerProps}: RenderProps) => (
+        <Container {...containerProps} testID={`touchableRipple--${id}`}>
             <Main {...shapeProps} testID={`touchableRipple__main--${id}`}>
                 {children}
             </Main>

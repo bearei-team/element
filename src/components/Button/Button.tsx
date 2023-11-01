@@ -5,7 +5,7 @@ import {PressableProps} from 'react-native';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Elevation} from '../Elevation/Elevation';
 
-export type Type = 'filled' | 'outlined' | 'text' | 'elevated';
+export type Type = 'filled' | 'outlined' | 'text' | 'elevated' | 'tonal';
 export interface ButtonProps extends Omit<PressableProps, 'children'> {
     icon?: React.JSX.Element;
     type?: Type;
@@ -26,10 +26,12 @@ export const Button: FC<ButtonProps> = memo(props => {
         touchableRippleProps,
         showIcon,
         shapeProps,
+        ...containerProps
     }: RenderProps) => {
+        const {border, ...restShapeProps} = shapeProps;
         const main = (
             <Main
-                {...shapeProps}
+                {...restShapeProps}
                 testID={`button--${id}`}
                 state={state}
                 type={type}
@@ -42,11 +44,13 @@ export const Button: FC<ButtonProps> = memo(props => {
         );
 
         return (
-            <TouchableRipple {...touchableRippleProps} shapeProps={shapeProps} role="button">
-                <Elevation {...elevationProps} shapeProps={shapeProps}>
+            <Elevation {...elevationProps} shapeProps={{border, ...restShapeProps}} role="button">
+                <TouchableRipple
+                    {...{...touchableRippleProps, ...containerProps}}
+                    shapeProps={restShapeProps}>
                     {main}
-                </Elevation>
-            </TouchableRipple>
+                </TouchableRipple>
+            </Elevation>
         );
     };
 

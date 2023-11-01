@@ -97,7 +97,7 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     );
 
     const processRippleOut = useCallback(() => {
-        const rippleOut = ([sequence, {animatedOut}]: [string, Ripple]): number | undefined =>
+        const rippleOut = ([sequence, {animatedOut}]: [string, Ripple]) =>
             animatedOut?.(() =>
                 setRippleSequence(draft => {
                     delete draft[sequence];
@@ -132,6 +132,7 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
                   width: layout.width,
                   height: layout.height,
                   disabled,
+                  shapeProps: renderProps.shapeProps,
                   state:
                       state === 'hovered' || state === 'focused' || state === 'enabled'
                           ? state
