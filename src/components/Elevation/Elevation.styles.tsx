@@ -7,7 +7,7 @@ export interface ShadowProps extends Pick<ElevationProps, 'level'> {
     shadow: 0 | 1;
 }
 
-export const Container = styled.View`
+export const Container = styled(Shape)`
     position: relative;
 `;
 

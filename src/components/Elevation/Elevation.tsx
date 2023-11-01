@@ -12,7 +12,7 @@ export const Elevation: FC<ElevationProps> = memo(props => {
     const render = ({
         id,
         level,
-        shapeProps,
+        shapeProps = {},
         children,
         shadowStyle,
         onLayout,
@@ -21,20 +21,21 @@ export const Elevation: FC<ElevationProps> = memo(props => {
         const AnimatedShadow0 = Animated.createAnimatedComponent(Shadow0);
         const AnimatedShadow1 = Animated.createAnimatedComponent(Shadow1);
         const {width, height, opacity0, opacity1} = shadowStyle;
+        const {border, ...restShapeProps} = shapeProps;
 
         return (
             <Container
-                {...{...shapeProps, ...containerProps}}
-                style={{width, height}}
-                testID={`elevation--${id}`}>
-                <Main {...shapeProps} testID={`elevation__main--${id}`} onLayout={onLayout}>
+                {...{...restShapeProps, ...containerProps, border}}
+                testID={`elevation--${id}`}
+                style={{width, height}}>
+                <Main {...restShapeProps} testID={`elevation__main--${id}`} onLayout={onLayout}>
                     {children}
                 </Main>
 
                 {width !== 0 && (
                     <>
                         <AnimatedShadow0
-                            {...shapeProps}
+                            {...restShapeProps}
                             testID={`elevation__shadow0--${id}`}
                             level={level}
                             shadow={0}
@@ -42,7 +43,7 @@ export const Elevation: FC<ElevationProps> = memo(props => {
                         />
 
                         <AnimatedShadow1
-                            {...shapeProps}
+                            {...restShapeProps}
                             testID={`elevation__shadow1--${id}`}
                             level={level}
                             shadow={1}

@@ -4,7 +4,6 @@ import {View} from 'react-native';
 
 export default {
     title: 'components/Elevation',
-    argTypes: {onPress: {action: 'pressed'}},
     component: Elevation,
 } as Meta<typeof Elevation>;
 
