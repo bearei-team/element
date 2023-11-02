@@ -18,6 +18,10 @@ export const DividerHorizontalSmall: StoryObj<DividerProps> = {
     args: {size: 'small'},
 };
 
+export const DividerSubheader: StoryObj<DividerProps> = {
+    args: {layout: 'horizontal', subheader: 'Subheader'},
+};
+
 export const DividerVerticalLarge: StoryObj<DividerProps> = {
     args: {size: 'large', layout: 'vertical'},
 };

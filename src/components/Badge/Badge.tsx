@@ -10,10 +10,10 @@ export interface BadgeProps extends ViewProps {
 }
 
 export const Badge: FC<BadgeProps> = memo(props => {
-    const render = ({id, label, size, ...containerProps}: RenderProps) => {
+    const render = ({id, label, ...containerProps}: RenderProps) => {
         return (
-            <Container {...containerProps} testID={`badge--${id}`} shape="full" size={size}>
-                <Label testID={`badge__main--${id}`}>{size !== 'small' ? label : ''}</Label>
+            <Container {...containerProps} testID={`badge--${id}`} shape="full">
+                <Label testID={`badge__main--${id}`}>{label}</Label>
             </Container>
         );
     };

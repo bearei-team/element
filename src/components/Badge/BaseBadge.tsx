@@ -10,7 +10,7 @@ export const BaseBadge: FC<BaseDividerProps> = ({render, label = 0, ...renderPro
     const id = useId();
     const badge = render({
         ...renderProps,
-        label: Number(label) > 99 ? '99+' : label,
+        label: renderProps.size !== 'small' ? (Number(label) > 99 ? '99+' : label) : '',
         id,
     });
 

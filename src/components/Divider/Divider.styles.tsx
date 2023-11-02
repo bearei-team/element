@@ -4,11 +4,19 @@ import {DividerProps} from './Divider';
 export type ContainerProps = Pick<DividerProps, 'layout' | 'size'>;
 
 export const Container = styled.View<ContainerProps>`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+
+    ${({theme}) => css`
+        gap: ${theme.spacing.extraSmall}px;
+    `}
+
     ${({layout = 'horizontal'}) => {
         const themeType = {
             horizontal: css`
                 width: 320px;
-                height: 1px;
             `,
             vertical: css`
                 width: 1px;
@@ -43,13 +51,27 @@ export const Container = styled.View<ContainerProps>`
         };
 
         return themeType[size];
-    }}
+    }};
 `;
 
 export const Main = styled.View`
-    flex: 1;
+    align-self: stretch;
+    min-height: 1px;
 
     ${({theme}) => css`
         background-color: ${theme.palette.outline.outlineVariant};
+    `}
+`;
+
+export const Subheader = styled.Text`
+    align-self: stretch;
+
+    ${({theme}) => css`
+        font-size: ${theme.typography.title.small.size}px;
+        font-style: ${theme.typography.title.small.style};
+        font-weight: ${theme.typography.title.small.weight};
+        line-height: ${theme.typography.title.small.lineHeight}px;
+        letter-spacing: ${theme.typography.title.small.letterSpacing}px;
+        color: ${theme.palette.surface.onSurfaceVariant};
     `}
 `;

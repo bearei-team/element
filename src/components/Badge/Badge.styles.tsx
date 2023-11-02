@@ -21,7 +21,11 @@ export const Container = styled(Shape)<ContainerProps>`
                 max-width: 34px;
             `,
 
-            medium: css``,
+            medium: css`
+                padding-horizontal: ${theme.spacing.extraSmall}px;
+                min-width: 16px;
+                max-width: 34px;
+            `,
 
             small: css`
                 padding-horizontal: ${theme.spacing.extraSmall - 2}px;
