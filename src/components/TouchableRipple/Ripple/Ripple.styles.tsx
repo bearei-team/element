@@ -3,6 +3,7 @@ import {RenderProps} from './BaseRipple';
 import {Shape} from '../../Common/Shape.styles';
 
 export type ContainerProps = RenderProps;
+
 export const Container = styled(Shape)<ContainerProps>`
     position: absolute;
     pointer-events: none;

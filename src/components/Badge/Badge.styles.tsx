@@ -5,9 +5,10 @@ import {Shape} from '../Common/Shape.styles';
 export type ContainerProps = Pick<BadgeProps, 'size'>;
 
 export const Container = styled(Shape)<ContainerProps>`
-    display: inline-flex;
+    display: flex;
     justify-content: center;
     align-items: center;
+    pointer-events: none;
 
     ${({theme}) => css`
         background-color: ${theme.palette.error.error};

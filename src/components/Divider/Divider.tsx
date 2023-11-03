@@ -1,10 +1,10 @@
-import {FC, forwardRef, memo} from 'react';
+import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {View, ViewProps} from 'react-native';
 import {Container, Main, Subheader} from './Divider.styles';
 import {BaseDivider, RenderProps} from './BaseDivider';
 import {Layout, Size} from '../common/interface';
 
-export interface DividerProps extends ViewProps {
+export interface DividerProps extends Partial<ViewProps & RefAttributes<View>> {
     subheader?: string;
     layout?: Layout;
     size?: Size;

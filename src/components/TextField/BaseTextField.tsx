@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect, useId, useRef} from 'react';
+import {FC, RefObject, useCallback, useEffect, useId, useRef} from 'react';
 import {TextFieldProps} from './TextField';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {
@@ -50,7 +50,7 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
     const [trailingIconShow, setTrailingIconShow] = useImmer(false);
     const [focusedAnimated] = useAnimatedValue(0);
     const [trailingIconAnimated] = useAnimatedValue(0);
-    const inputRef = ref ?? textFieldRef;
+    const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const inputHeight = focusedAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [0, 24, 24],

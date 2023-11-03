@@ -5,7 +5,7 @@ import {LayoutRectangle, NativeTouchEvent, View, ViewProps} from 'react-native';
 import {Animated} from 'react-native';
 
 export type RippleAnimatedOut = (finished: () => void) => number;
-export interface RippleProps extends Animated.AnimatedProps<ViewProps & React.RefAttributes<View>> {
+export interface RippleProps extends Partial<ViewProps & React.RefAttributes<View>> {
     sequence?: string;
     centered?: boolean;
     underlayColor?: string;
@@ -14,7 +14,7 @@ export interface RippleProps extends Animated.AnimatedProps<ViewProps & React.Re
     onAnimatedEnd: (sequence: string, animatedOut: RippleAnimatedOut) => void;
 }
 
-const ForwardRefRipple = forwardRef<View | Animated.LegacyRef<View>, RippleProps>((props, ref) => {
+const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => {
     const AnimatedContainer = Animated.createAnimatedComponent(Container);
     const render = ({id, ...containerProps}: RenderProps) => (
         <AnimatedContainer {...containerProps} ref={ref} testID={`ripple--${id}`} shape="full" />

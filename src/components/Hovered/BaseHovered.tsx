@@ -18,7 +18,7 @@ export const BaseHovered: FC<BaseHoveredProps> = ({
     render,
     state: propsState,
     disabled = false,
-    ...args
+    ...renderProps
 }) => {
     const id = useId();
     const theme = useTheme();
@@ -49,7 +49,7 @@ export const BaseHovered: FC<BaseHoveredProps> = ({
     }, [disabled, opacityAnimated, processAnimatedTiming, propsState]);
 
     return render({
-        ...args,
+        ...renderProps,
         id,
         style: {
             opacity: opacityAnimated.interpolate({

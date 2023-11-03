@@ -1,4 +1,4 @@
-import {FC, ReactNode, forwardRef, memo} from 'react';
+import {FC, ReactNode, RefAttributes, forwardRef, memo} from 'react';
 import {BaseButton, RenderProps} from './BaseButton';
 import {Icon, Label, Main} from './Button.styles';
 import {PressableProps, View} from 'react-native';
@@ -6,7 +6,7 @@ import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Elevation} from '../Elevation/Elevation';
 
 export type Type = 'filled' | 'outlined' | 'text' | 'elevated' | 'tonal';
-export interface ButtonProps extends Omit<PressableProps, 'children'> {
+export interface ButtonProps extends Partial<PressableProps & RefAttributes<View>> {
     icon?: React.JSX.Element;
     type?: Type;
     label?: ReactNode;

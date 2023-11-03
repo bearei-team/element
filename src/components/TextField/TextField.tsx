@@ -1,4 +1,4 @@
-import {FC, memo} from 'react';
+import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, TextInput, TextInputProps} from 'react-native';
 import {
     ActiveIndicator,
@@ -13,15 +13,14 @@ import {
 import {BaseTextField, RenderProps} from './BaseTextField';
 
 export type Type = 'filled' | 'outlined';
-export interface TextFieldProps extends TextInputProps {
+export interface TextFieldProps extends Partial<TextInputProps & RefAttributes<TextInput>> {
     label?: string;
     type?: Type;
     trailingIcon?: React.JSX.Element;
     supportingText?: string;
-    ref?: React.RefObject<TextInput>;
 }
 
-export const TextField: FC<TextFieldProps> = memo(props => {
+const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
     const AnimatedLabel = Animated.createAnimatedComponent(Label);
     const AnimatedTextInput = Animated.createAnimatedComponent(Input);
     const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
@@ -78,5 +77,7 @@ export const TextField: FC<TextFieldProps> = memo(props => {
         </Container>
     );
 
-    return <BaseTextField {...props} render={render} />;
+    return <BaseTextField {...props} ref={ref} render={render} />;
 });
+
+export const TextField: FC<TextFieldProps> = memo(ForwardRefTextField);
