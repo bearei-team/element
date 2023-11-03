@@ -38,19 +38,19 @@ export const BaseRipple: FC<BaseRippleProps> = ({
     const offsetX = Math.abs(centerX - locationX);
     const offsetY = Math.abs(centerY - locationY);
     const radius = Math.sqrt(Math.pow(centerX + offsetX, 2) + Math.pow(centerY + offsetY, 2));
-    const scale = scaleAnimated.interpolate({
+    const rippleScale = scaleAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [0.1, 1],
     });
 
-    const opacity = opacityAnimated.interpolate({
+    const rippleOpacity = opacityAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [1, 0],
     });
 
     const processAnimatedTiming = useCallback(() => {
         const animatedTiming = UTIL.animatedTiming(theme);
-        const animatedIn = (finished: () => void): number =>
+        const animatedIn = (finished: () => void) =>
             requestAnimationFrame(() =>
                 animatedTiming(scaleAnimated, {
                     toValue: 1,
@@ -59,7 +59,7 @@ export const BaseRipple: FC<BaseRippleProps> = ({
                 }).start(finished),
             );
 
-        const animatedOut = (finished: () => void): number =>
+        const animatedOut = (finished: () => void) =>
             requestAnimationFrame(() =>
                 animatedTiming(opacityAnimated, {
                     toValue: 1,
@@ -73,7 +73,11 @@ export const BaseRipple: FC<BaseRippleProps> = ({
         animatedIn(finished);
     }, [id, onAnimatedEnd, opacityAnimated, radius, scaleAnimated, sequence, theme]);
 
-    const ripple = render({
+    useEffect(() => {
+        processAnimatedTiming();
+    }, [processAnimatedTiming]);
+
+    return render({
         ...renderProps,
         id,
         x: locationX,
@@ -82,12 +86,9 @@ export const BaseRipple: FC<BaseRippleProps> = ({
         hight: radius * 2,
         isRTL: I18nManager.isRTL,
         underlayColor,
-        style: {opacity, transform: [{translateY: -radius}, {translateX: -radius}, {scale}]},
+        style: {
+            opacity: rippleOpacity,
+            transform: [{translateY: -radius}, {translateX: -radius}, {scale: rippleScale}],
+        },
     });
-
-    useEffect(() => {
-        processAnimatedTiming();
-    }, [processAnimatedTiming]);
-
-    return ripple;
 };

@@ -36,6 +36,7 @@ export const TextField: FC<TextFieldProps> = memo(props => {
         inputStyle,
         trailingIconShow,
         label,
+        supportingText,
         onPress,
         ...textInputProps
     }: RenderProps) => (
@@ -71,7 +72,7 @@ export const TextField: FC<TextFieldProps> = memo(props => {
             </Main>
 
             <SupportingText testID={`textfield__supportingText--${id}`}>
-                {'SupportingText'}
+                {supportingText}
             </SupportingText>
         </Container>
     );
