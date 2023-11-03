@@ -15,15 +15,12 @@ export interface RippleProps extends Animated.AnimatedProps<ViewProps & React.Re
 }
 
 export const Ripple: FC<RippleProps> = memo((props: RippleProps) => {
-    const render = ({id, children, ...animatedContainerProps}: RenderProps) => {
-        const AnimatedContainer = Animated.createAnimatedComponent(Container);
-
-        return (
-            <AnimatedContainer {...animatedContainerProps} testID={`ripple--${id}`} shape="full">
-                {children}
-            </AnimatedContainer>
-        );
-    };
+    const AnimatedContainer = Animated.createAnimatedComponent(Container);
+    const render = ({id, children, ...containerProps}: RenderProps) => (
+        <AnimatedContainer {...containerProps} testID={`ripple--${id}`} shape="full">
+            {children}
+        </AnimatedContainer>
+    );
 
     return <BaseRipple {...props} render={render} />;
 });

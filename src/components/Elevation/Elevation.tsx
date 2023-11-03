@@ -9,6 +9,9 @@ export interface ElevationProps extends ViewProps {
 }
 
 export const Elevation: FC<ElevationProps> = memo(props => {
+    const AnimatedShadow0 = Animated.createAnimatedComponent(Shadow0);
+    const AnimatedShadow1 = Animated.createAnimatedComponent(Shadow1);
+
     const render = ({
         id,
         level,
@@ -18,8 +21,6 @@ export const Elevation: FC<ElevationProps> = memo(props => {
         onLayout,
         ...containerProps
     }: RenderProps) => {
-        const AnimatedShadow0 = Animated.createAnimatedComponent(Shadow0);
-        const AnimatedShadow1 = Animated.createAnimatedComponent(Shadow1);
         const {width, height, opacity0, opacity1} = shadowStyle;
         const {border, ...restShapeProps} = shapeProps;
 

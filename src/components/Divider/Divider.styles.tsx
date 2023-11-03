@@ -16,28 +16,27 @@ export const Container = styled.View<ContainerProps>`
     ${({layout = 'horizontal'}) => {
         const themeType = {
             horizontal: css`
-                width: 320px;
+                min-width: 320px;
             `,
             vertical: css`
                 width: 1px;
-                height: 120px;
+                min-height: 120px;
             `,
         };
 
         return themeType[layout];
     }}
-
-    ${({theme, size = 'medium', layout = 'horizontal'}) => {
+        ${({theme, size = 'medium', layout = 'horizontal'}) => {
         const themeType = {
             large: css``,
 
             medium:
                 layout === 'horizontal'
                     ? css`
-                          padding-start: ${theme.spacing.medium}px;
+                          padding-horizontal-start: ${theme.spacing.medium}px;
                       `
                     : css`
-                          padding-top: ${theme.spacing.medium}px;
+                          padding-vertical-start: ${theme.spacing.medium}px;
                       `,
 
             small:
@@ -55,6 +54,7 @@ export const Container = styled.View<ContainerProps>`
 `;
 
 export const Main = styled.View`
+    flex: 1;
     align-self: stretch;
     min-height: 1px;
 

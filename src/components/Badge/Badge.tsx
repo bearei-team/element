@@ -13,7 +13,7 @@ export const Badge: FC<BadgeProps> = memo(props => {
     const render = ({id, label, ...containerProps}: RenderProps) => {
         return (
             <Container {...containerProps} testID={`badge--${id}`} shape="full">
-                <Label testID={`badge__main--${id}`}>{label}</Label>
+                <Label testID={`badge__label--${id}`}>{label}</Label>
             </Container>
         );
     };

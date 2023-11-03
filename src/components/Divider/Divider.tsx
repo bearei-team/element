@@ -16,7 +16,9 @@ export const Divider: FC<DividerProps> = memo(props => {
             <Container {...containerProps} testID={`divider--${id}`}>
                 <Main testID={`divider__main--${id}`} />
 
-                {subheader && <Subheader>{subheader}</Subheader>}
+                {subheader && (
+                    <Subheader testID={`divider__subheader--${id}`}>{subheader}</Subheader>
+                )}
             </Container>
         );
     };
