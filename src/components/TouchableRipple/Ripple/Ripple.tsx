@@ -1,4 +1,4 @@
-import {FC, memo} from 'react';
+import {FC, forwardRef, memo} from 'react';
 import {BaseRipple, RenderProps} from './BaseRipple';
 import {Container} from './Ripple.styles';
 import {LayoutRectangle, NativeTouchEvent, View, ViewProps} from 'react-native';
@@ -14,11 +14,13 @@ export interface RippleProps extends Animated.AnimatedProps<ViewProps & React.Re
     onAnimatedEnd: (sequence: string, animatedOut: RippleAnimatedOut) => void;
 }
 
-export const Ripple: FC<RippleProps> = memo((props: RippleProps) => {
+const ForwardRefRipple = forwardRef<View | Animated.LegacyRef<View>, RippleProps>((props, ref) => {
     const AnimatedContainer = Animated.createAnimatedComponent(Container);
     const render = ({id, ...containerProps}: RenderProps) => (
-        <AnimatedContainer {...containerProps} testID={`ripple--${id}`} shape="full" />
+        <AnimatedContainer {...containerProps} ref={ref} testID={`ripple--${id}`} shape="full" />
     );
 
     return <BaseRipple {...props} render={render} />;
 });
+
+export const Ripple: FC<RippleProps> = memo(ForwardRefRipple);

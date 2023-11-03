@@ -38,23 +38,25 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
     render,
     onBlur,
     onChangeText,
+    ref,
     type = 'filled',
     trailingIcon = <Text>{'X'}</Text>,
     ...renderProps
 }) => {
     const id = useId();
     const theme = useTheme();
-    const inputRef = useRef<TextInput>(null);
+    const textFieldRef = useRef<TextInput>(null);
     const [value, setValue] = useImmer('');
     const [trailingIconShow, setTrailingIconShow] = useImmer(false);
-    const [focusAnimated] = useAnimatedValue(0);
-    const [iconAnimated] = useAnimatedValue(0);
-    const inputHeight = focusAnimated.interpolate({
+    const [focusedAnimated] = useAnimatedValue(0);
+    const [trailingIconAnimated] = useAnimatedValue(0);
+    const inputRef = ref ?? textFieldRef;
+    const inputHeight = focusedAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [0, 24, 24],
     });
 
-    const labelSize = focusAnimated.interpolate({
+    const labelSize = focusedAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [
             theme.typography.body.large.size,
@@ -63,7 +65,7 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         ],
     });
 
-    const labelLineHeight = focusAnimated.interpolate({
+    const labelLineHeight = focusedAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [
             theme.typography.body.large.lineHeight,
@@ -72,7 +74,7 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         ],
     });
 
-    const labelLineLetterSpacing = focusAnimated.interpolate({
+    const labelLineLetterSpacing = focusedAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [
             theme.typography.body.large.letterSpacing,
@@ -81,7 +83,7 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         ],
     });
 
-    const labelColor = focusAnimated.interpolate({
+    const labelColor = focusedAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [
             theme.palette.surface.onSurfaceVariant,
@@ -90,12 +92,12 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         ],
     });
 
-    const activeIndicatorHeight = focusAnimated.interpolate({
+    const activeIndicatorHeight = focusedAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [1, 2, 2],
     });
 
-    const activeIndicatorColor = focusAnimated.interpolate({
+    const activeIndicatorColor = focusedAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [
             theme.palette.surface.onSurfaceVariant,
@@ -104,7 +106,7 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         ],
     });
 
-    const trailingIconOpacity = iconAnimated.interpolate({
+    const trailingIconOpacity = trailingIconAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 1],
     });
@@ -128,37 +130,31 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
 
     const handlePress = () =>
         processAnimatedTiming(1, {
-            animatedValue: focusAnimated,
+            animatedValue: focusedAnimated,
             finished: () => inputRef.current?.focus(),
         });
 
-    const handleBlur = useCallback(
-        (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
-            onBlur?.(event);
+    const handleBlur = (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
+        onBlur?.(event);
 
-            if (!value) {
-                processAnimatedTiming(0, {animatedValue: focusAnimated});
-            }
-        },
-        [focusAnimated, onBlur, processAnimatedTiming, value],
-    );
+        if (!value) {
+            processAnimatedTiming(0, {animatedValue: focusedAnimated});
+        }
+    };
 
-    const handleChangeText = useCallback(
-        (text: string) => {
-            onChangeText?.(text);
-            setValue(() => text);
-        },
-        [onChangeText, setValue],
-    );
+    const handleChangeText = (text: string) => {
+        onChangeText?.(text);
+        setValue(() => text);
+    };
 
     useEffect(() => {
         const show = !!value;
 
         setTrailingIconShow(() => show);
-        processAnimatedTiming(show ? 1 : 0, {animatedValue: iconAnimated});
-    }, [focusAnimated, iconAnimated, processAnimatedTiming, setTrailingIconShow, value]);
+        processAnimatedTiming(show ? 1 : 0, {animatedValue: trailingIconAnimated});
+    }, [processAnimatedTiming, setTrailingIconShow, trailingIconAnimated, value]);
 
-    const textField = render({
+    return render({
         ...renderProps,
         type,
         trailingIcon,
@@ -182,6 +178,4 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         onBlur: handleBlur,
         id,
     });
-
-    return textField;
 };

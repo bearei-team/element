@@ -1,4 +1,4 @@
-import {FC, useEffect, useId} from 'react';
+import {FC, useCallback, useEffect, useId} from 'react';
 import {GestureResponderEvent, MouseEvent, NativeSyntheticEvent, TargetedEvent} from 'react-native';
 import {ButtonProps} from './Button';
 import {useImmer} from 'use-immer';
@@ -13,7 +13,7 @@ export type RenderProps = ButtonProps & {
     touchableRippleProps: TouchableRippleProps;
     shapeProps: ShapeProps;
     state: State;
-    showIcon?: boolean;
+    showIcon: boolean;
 };
 
 export interface BaseButtonProps extends ButtonProps {
@@ -39,48 +39,72 @@ export const BaseButton: FC<BaseButtonProps> = ({
     const [state, setState] = useImmer<State>('enabled');
     const [elevationLevel, setElevationLevel] = useImmer<ElevationProps['level']>(0);
     const mobile = theme.OS === 'ios' || theme.OS === 'android';
-    const processState = (nextState: State, callback?: () => void) => {
-        if (state !== 'disabled') {
-            callback?.();
-            setState(() => nextState);
+    const processElevationLevel = useCallback(
+        (nextState: State) => {
+            const elevation = {
+                hovered: 1,
+                enabled: 0,
+                pressed: 0,
+                focused: 0,
+                disabled: 0,
+            };
 
-            const isProcessElevation = type === 'filled' || type === 'elevated' || type === 'tonal';
+            setElevationLevel(() =>
+                type === 'elevated' ? elevation[nextState] + 1 : elevation[nextState],
+            );
+        },
+        [setElevationLevel, type],
+    );
 
-            if (isProcessElevation) {
-                processElevationLevel(nextState);
+    const processState = useCallback(
+        (nextState: State, callback?: () => void) => {
+            if (state !== 'disabled') {
+                callback?.();
+                setState(() => nextState);
+
+                const isProcessElevation =
+                    type === 'filled' || type === 'elevated' || type === 'tonal';
+
+                if (isProcessElevation) {
+                    processElevationLevel(nextState);
+                }
             }
-        }
-    };
+        },
+        [processElevationLevel, setState, state, type],
+    );
 
-    const processElevationLevel = (nextState: State) => {
-        const elevation = {
-            hovered: 1,
-            enabled: 0,
-            pressed: 0,
-            focused: 0,
-            disabled: 0,
-        };
+    const handlePressIn = useCallback(
+        (event: GestureResponderEvent) => processState('pressed', () => onPressIn?.(event)),
+        [onPressIn, processState],
+    );
 
-        setElevationLevel(() =>
-            type === 'elevated' ? elevation[nextState] + 1 : elevation[nextState],
-        );
-    };
+    const handlePressOut = useCallback(
+        (event: GestureResponderEvent) =>
+            processState(mobile ? 'enabled' : 'hovered', () => onPressOut?.(event)),
+        [mobile, onPressOut, processState],
+    );
 
-    const handlePressIn = (event: GestureResponderEvent) =>
-        processState('pressed', () => onPressIn?.(event));
+    const handleHoverIn = useCallback(
+        (event: MouseEvent) => processState('hovered', () => onHoverIn?.(event)),
+        [onHoverIn, processState],
+    );
 
-    const handlePressOut = (event: GestureResponderEvent) =>
-        processState(mobile ? 'enabled' : 'hovered', () => onPressOut?.(event));
+    const handleHoverOut = useCallback(
+        (event: MouseEvent) => processState('enabled', () => onHoverOut?.(event)),
+        [onHoverOut, processState],
+    );
 
-    const handleHoverIn = (event: MouseEvent) => processState('hovered', () => onHoverIn?.(event));
-    const handleHoverOut = (event: MouseEvent) =>
-        processState('enabled', () => onHoverOut?.(event));
+    const handleFocus = useCallback(
+        (event: NativeSyntheticEvent<TargetedEvent>) =>
+            processState('focused', () => onFocus?.(event)),
+        [onFocus, processState],
+    );
 
-    const handleFocus = (event: NativeSyntheticEvent<TargetedEvent>) =>
-        processState('focused', () => onFocus?.(event));
-
-    const handleBlur = (event: NativeSyntheticEvent<TargetedEvent>) =>
-        processState('enabled', () => onBlur?.(event));
+    const handleBlur = useCallback(
+        (event: NativeSyntheticEvent<TargetedEvent>) =>
+            processState('enabled', () => onBlur?.(event)),
+        [onBlur, processState],
+    );
 
     const elevationProps: ElevationProps = {level: elevationLevel};
     const shapeProps: ShapeProps = {
@@ -119,18 +143,6 @@ export const BaseButton: FC<BaseButtonProps> = ({
         onBlur: handleBlur,
     };
 
-    const button = render({
-        id,
-        type,
-        state,
-        label,
-        icon,
-        showIcon: !!icon,
-        shapeProps,
-        elevationProps,
-        touchableRippleProps,
-    });
-
     useEffect(() => {
         if (disabled) {
             setState(() => 'disabled');
@@ -143,5 +155,15 @@ export const BaseButton: FC<BaseButtonProps> = ({
         }
     }, [disabled, setElevationLevel, type]);
 
-    return button;
+    return render({
+        id,
+        type,
+        state,
+        label,
+        icon,
+        showIcon: !!icon,
+        shapeProps,
+        elevationProps,
+        touchableRippleProps,
+    });
 };

@@ -1,5 +1,6 @@
 import styled, {css} from 'styled-components/native';
 import {Shape as ThemeShape} from '@bearei/theme';
+import {View} from 'react-native';
 
 export interface ShapeProps {
     shape?: keyof ThemeShape;
@@ -10,7 +11,7 @@ export interface ShapeProps {
     };
 }
 
-export const Shape = styled.View<ShapeProps>`
+export const Shape = styled(View)<ShapeProps>`
     ${({theme, shape = 'none'}) => css`
         border-top-left-radius: ${theme.shape[shape].topLeft}px;
         border-top-right-radius: ${theme.shape[shape].topRight}px;

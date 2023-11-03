@@ -1,9 +1,10 @@
 import styled, {css} from 'styled-components/native';
 import {DividerProps} from './Divider';
+import {View} from 'react-native';
 
 export type ContainerProps = Pick<DividerProps, 'layout' | 'size'>;
 
-export const Container = styled.View<ContainerProps>`
+export const Container = styled(View)<ContainerProps>`
     display: flex;
     flex-direction: column;
     justify-content: center;

@@ -11,6 +11,7 @@ export interface TouchableRippleProps
     children?: ReactNode;
     disabled?: boolean;
     shapeProps?: ShapeProps;
+    ref?: React.Ref<View>;
 }
 
 export const TouchableRipple: FC<TouchableRippleProps> = memo(

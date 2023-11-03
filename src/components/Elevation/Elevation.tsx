@@ -1,5 +1,5 @@
-import {Animated, ViewProps} from 'react-native';
-import React, {FC, memo} from 'react';
+import {Animated, View, ViewProps} from 'react-native';
+import React, {FC, forwardRef, memo} from 'react';
 import {BaseElevation, RenderProps} from './BaseElevation';
 import {Container, Main, Shadow0, Shadow1} from './Elevation.styles';
 import {ShapeProps} from '../Common/Shape.styles';
@@ -8,7 +8,7 @@ export interface ElevationProps extends ViewProps {
     shapeProps?: ShapeProps;
 }
 
-export const Elevation: FC<ElevationProps> = memo(props => {
+const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
     const AnimatedShadow0 = Animated.createAnimatedComponent(Shadow0);
     const AnimatedShadow1 = Animated.createAnimatedComponent(Shadow1);
 
@@ -27,6 +27,7 @@ export const Elevation: FC<ElevationProps> = memo(props => {
         return (
             <Container
                 {...{...restShapeProps, ...containerProps, border}}
+                ref={ref}
                 testID={`elevation--${id}`}
                 style={{width, height}}>
                 <Main {...restShapeProps} testID={`elevation__main--${id}`} onLayout={onLayout}>
@@ -58,3 +59,5 @@ export const Elevation: FC<ElevationProps> = memo(props => {
 
     return <BaseElevation {...props} render={render} />;
 });
+
+export const Elevation: FC<ElevationProps> = memo(ForwardRefElevation);

@@ -1,5 +1,5 @@
 import {FC, memo} from 'react';
-import {Animated, TextInputProps} from 'react-native';
+import {Animated, TextInput, TextInputProps} from 'react-native';
 import {
     ActiveIndicator,
     Container,
@@ -18,6 +18,7 @@ export interface TextFieldProps extends TextInputProps {
     type?: Type;
     trailingIcon?: React.JSX.Element;
     supportingText?: string;
+    ref?: React.RefObject<TextInput>;
 }
 
 export const TextField: FC<TextFieldProps> = memo(props => {

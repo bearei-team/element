@@ -15,6 +15,10 @@ export interface RenderProps extends ElevationProps {
     };
 }
 
+export interface ProcessAnimatedTimingOptions {
+    animatedValue: Animated.Value;
+}
+
 export interface BaseElevationProps extends ElevationProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
@@ -28,9 +32,8 @@ export const BaseElevation: FC<BaseElevationProps> = ({
     const id = useId();
     const theme = useTheme();
     const [layout, setLayout] = useImmer({} as RenderProps['shadowStyle']);
-    const [shadow0OpacityAnimated] = useAnimatedValue(0);
-    const [shadow1OpacityAnimated] = useAnimatedValue(0);
-    const shadow0Opacity = shadow0OpacityAnimated.interpolate({
+    const [shadowAnimated] = useAnimatedValue(0);
+    const shadow0Opacity = shadowAnimated.interpolate({
         inputRange: [0, 1, 2, 3, 4, 5],
         outputRange: [
             theme.elevation.level0.shadow0.opacity,
@@ -42,7 +45,7 @@ export const BaseElevation: FC<BaseElevationProps> = ({
         ],
     });
 
-    const shadow1Opacity = shadow1OpacityAnimated.interpolate({
+    const shadow1Opacity = shadowAnimated.interpolate({
         inputRange: [0, 1, 2, 3, 4, 5],
         outputRange: [
             theme.elevation.level0.shadow1.opacity,
@@ -62,50 +65,36 @@ export const BaseElevation: FC<BaseElevationProps> = ({
     };
 
     const processAnimatedTiming = useCallback(
-        (toValue: ElevationProps['level'] = 0) => {
+        (toValue: ElevationProps['level'] = 0, {animatedValue}: ProcessAnimatedTimingOptions) => {
             const animatedTiming = UTIL.animatedTiming(theme);
-            const shadow0Animated = (): number =>
+            const animated = (): number =>
                 requestAnimationFrame(() =>
-                    animatedTiming(shadow0OpacityAnimated, {
+                    animatedTiming(animatedValue, {
                         toValue,
                         easing: 'standard',
                         duration: 'short3',
                     }).start(),
                 );
 
-            const shadow1Animated = (): number =>
-                requestAnimationFrame(() =>
-                    animatedTiming(shadow1OpacityAnimated, {
-                        toValue,
-                        easing: 'standard',
-                        duration: 'short3',
-                    }).start(),
-                );
-
-            shadow0Animated();
-            shadow1Animated();
+            animated();
         },
-        [shadow0OpacityAnimated, shadow1OpacityAnimated, theme],
+        [theme],
     );
 
-    const shadowStyle = {
-        width: layout.width,
-        height: layout.height,
-        opacity0: shadow0Opacity,
-        opacity1: shadow1Opacity,
-    };
+    useEffect(() => {
+        processAnimatedTiming(level, {animatedValue: shadowAnimated});
+    }, [shadowAnimated, level, processAnimatedTiming]);
 
-    const elevation = render({
+    return render({
         ...renderProps,
         id,
         level,
-        shadowStyle,
+        shadowStyle: {
+            width: layout.width,
+            height: layout.height,
+            opacity0: shadow0Opacity,
+            opacity1: shadow1Opacity,
+        },
         onLayout: processLayout,
     });
-
-    useEffect(() => {
-        processAnimatedTiming(level);
-    }, [level, processAnimatedTiming]);
-
-    return elevation;
 };

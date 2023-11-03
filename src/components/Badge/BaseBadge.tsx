@@ -1,18 +1,23 @@
 import {FC, useId} from 'react';
 import {BadgeProps} from './Badge';
 
-export interface RenderProps extends BadgeProps {}
+export type RenderProps = BadgeProps;
 export interface BaseDividerProps extends BadgeProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const BaseBadge: FC<BaseDividerProps> = ({render, label = 0, ...renderProps}) => {
+export const BaseBadge: FC<BaseDividerProps> = ({
+    render,
+    label = 0,
+    size = 'medium',
+    ...renderProps
+}) => {
     const id = useId();
-    const badge = render({
+
+    return render({
         ...renderProps,
-        label: renderProps.size !== 'small' ? (Number(label) > 99 ? '99+' : label) : '',
+        size,
+        label: size !== 'small' ? (Number(label) > 99 ? '99+' : label) : '',
         id,
     });
-
-    return badge;
 };

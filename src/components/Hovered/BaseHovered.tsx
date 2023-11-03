@@ -3,10 +3,15 @@ import {HoveredProps} from './Hovered';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 import {useTheme} from 'styled-components/native';
+import {Animated} from 'react-native';
 
 export type RenderProps = Omit<HoveredProps, 'state' | 'disabled'>;
 export interface BaseHoveredProps extends HoveredProps {
     render: (props: RenderProps) => React.JSX.Element;
+}
+
+export interface ProcessAnimatedTimingOptions {
+    animatedValue: Animated.Value;
 }
 
 export const BaseHovered: FC<BaseHoveredProps> = ({
@@ -18,32 +23,32 @@ export const BaseHovered: FC<BaseHoveredProps> = ({
     const id = useId();
     const theme = useTheme();
     const [opacityAnimated] = useAnimatedValue(0);
-    const animatedTiming = UTIL.animatedTiming(theme);
-    const animatedIn = useCallback(
-        () =>
-            requestAnimationFrame(() =>
-                animatedTiming(opacityAnimated, {
-                    toValue: 1,
-                    easing: 'standard',
-                    duration: 'short3',
-                }).start(),
-            ),
-        [animatedTiming, opacityAnimated],
+    const processAnimatedTiming = useCallback(
+        (toValue: number, {animatedValue}: ProcessAnimatedTimingOptions) => {
+            const animatedTiming = UTIL.animatedTiming(theme);
+            const animated = () =>
+                requestAnimationFrame(() =>
+                    animatedTiming(animatedValue, {
+                        toValue,
+                        easing: 'standard',
+                        duration: 'short3',
+                    }).start(),
+                );
+
+            animated();
+        },
+        [theme],
     );
 
-    const animatedOut = useCallback(
-        () =>
-            requestAnimationFrame(() =>
-                animatedTiming(opacityAnimated, {
-                    toValue: 0,
-                    easing: 'standard',
-                    duration: 'short3',
-                }).start(),
-            ),
-        [animatedTiming, opacityAnimated],
-    );
+    useEffect(() => {
+        if (propsState && !disabled) {
+            processAnimatedTiming(propsState === 'hovered' || propsState === 'focused' ? 1 : 0, {
+                animatedValue: opacityAnimated,
+            });
+        }
+    }, [disabled, opacityAnimated, processAnimatedTiming, propsState]);
 
-    const hovered = render({
+    return render({
         ...args,
         id,
         style: {
@@ -53,12 +58,4 @@ export const BaseHovered: FC<BaseHoveredProps> = ({
             }),
         },
     });
-
-    useEffect(() => {
-        if (propsState && !disabled) {
-            propsState === 'hovered' || propsState === 'focused' ? animatedIn() : animatedOut();
-        }
-    }, [animatedIn, animatedOut, disabled, propsState]);
-
-    return hovered;
 };

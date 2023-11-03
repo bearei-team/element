@@ -1,7 +1,7 @@
-import {FC, ReactNode, memo} from 'react';
+import {FC, ReactNode, forwardRef, memo} from 'react';
 import {BaseButton, RenderProps} from './BaseButton';
 import {Icon, Label, Main} from './Button.styles';
-import {PressableProps} from 'react-native';
+import {PressableProps, View} from 'react-native';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Elevation} from '../Elevation/Elevation';
 
@@ -15,7 +15,7 @@ export interface ButtonProps extends Omit<PressableProps, 'children'> {
     children?: ReactNode;
 }
 
-export const Button: FC<ButtonProps> = memo(props => {
+const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
     const render = ({
         id,
         label,
@@ -47,6 +47,7 @@ export const Button: FC<ButtonProps> = memo(props => {
             <Elevation {...elevationProps} shapeProps={{border, ...restShapeProps}} role="button">
                 <TouchableRipple
                     {...{...touchableRippleProps, ...containerProps}}
+                    ref={ref}
                     shapeProps={restShapeProps}>
                     {main}
                 </TouchableRipple>
@@ -56,3 +57,5 @@ export const Button: FC<ButtonProps> = memo(props => {
 
     return <BaseButton {...props} render={render} />;
 });
+
+export const Button: FC<ButtonProps> = memo(ForwardRefButton);
