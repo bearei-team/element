@@ -13,7 +13,9 @@ import {State} from '../common/interface';
 import {HoveredProps} from '../Hovered/Hovered';
 import {useTheme} from 'styled-components/native';
 
-export type RenderProps = Omit<TouchableRippleProps, 'centered'> & {hoveredProps?: HoveredProps};
+export interface RenderProps extends Omit<TouchableRippleProps, 'centered'> {
+    hoveredProps?: HoveredProps;
+}
 export interface BaseTouchableRippleProps extends TouchableRippleProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
@@ -21,8 +23,8 @@ export interface Ripple extends Pick<RippleProps, 'location'> {
     animatedOut?: RippleAnimatedOut;
 }
 export interface ProcessStateOptions {
-    callback?: () => void;
     event?: GestureResponderEvent;
+    callback?: () => void;
 }
 
 export type RippleSequence = Record<string, Ripple>;
@@ -125,25 +127,34 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     const handleBlur = (event: NativeSyntheticEvent<TargetedEvent>) =>
         processState('enabled', {callback: () => onBlur?.(event)});
 
-    const hoveredProps =
-        theme.os !== 'ios' || theme.os !== 'android'
-            ? {
-                  underlayColor,
-                  width: layout.width,
-                  height: layout.height,
-                  disabled,
-                  shapeProps: renderProps.shapeProps,
-                  state:
-                      state === 'hovered' || state === 'focused' || state === 'enabled'
-                          ? state
-                          : undefined,
-              }
-            : undefined;
+    useEffect(() => {
+        mobile
+            ? state === 'enabled' && processRippleOut()
+            : state === 'hovered' && processRippleOut();
+    }, [mobile, processRippleOut, state]);
 
-    const touchableRipple = render({
+    useEffect(() => {
+        if (disabled) {
+            setState(() => 'disabled');
+        }
+    }, [disabled, setState]);
+
+    return render({
         ...renderProps,
+        ...(!mobile && {
+            hoveredProps: {
+                underlayColor,
+                width: layout.width,
+                height: layout.height,
+                disabled,
+                shapeProps: renderProps.shapeProps,
+                state:
+                    state === 'hovered' || state === 'focused' || state === 'enabled'
+                        ? state
+                        : undefined,
+            },
+        }),
         id,
-        hoveredProps,
         children: (
             <>
                 {children}
@@ -162,18 +173,4 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
         onFocus: handleFocus,
         onBlur: handleBlur,
     });
-
-    useEffect(() => {
-        mobile
-            ? state === 'enabled' && processRippleOut()
-            : state === 'hovered' && processRippleOut();
-    }, [mobile, processRippleOut, state]);
-
-    useEffect(() => {
-        if (disabled) {
-            setState(() => 'disabled');
-        }
-    }, [disabled, setState]);
-
-    return touchableRipple;
 };
