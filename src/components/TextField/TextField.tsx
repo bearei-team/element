@@ -1,5 +1,5 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, TextInput, TextInputProps} from 'react-native';
+import {Animated, Pressable, TextInput, TextInputProps} from 'react-native';
 import {
     ActiveIndicator,
     Container,
@@ -11,6 +11,7 @@ import {
     Input,
 } from './TextField.styles';
 import {BaseTextField, RenderProps} from './BaseTextField';
+import {Hovered} from '../Hovered/Hovered';
 
 export type Type = 'filled' | 'outlined';
 export interface TextFieldProps extends Partial<TextInputProps & RefAttributes<TextInput>> {
@@ -18,6 +19,7 @@ export interface TextFieldProps extends Partial<TextInputProps & RefAttributes<T
     type?: Type;
     trailingIcon?: React.JSX.Element;
     supportingText?: string;
+    disabled?: boolean;
 }
 
 const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
@@ -38,10 +40,18 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         label,
         supportingText,
         onPress,
+        onTailingIconPress,
+        onMainLayout,
+        hoveredProps,
         ...textInputProps
     }: RenderProps) => (
         <Container testID={`textfield__container--${id}`} onPress={onPress}>
-            <Main testID={`textField__main--${id}`} shape="extraSmallTop" type={type}>
+            <Main
+                testID={`textField__main--${id}`}
+                shape="extraSmallTop"
+                type={type}
+                trailingIconShow={trailingIconShow}
+                onLayout={onMainLayout}>
                 <Content testID={`textField__content--${id}`}>
                     <AnimatedLabel testID={`textfield__label--${id}`} style={labelStyle}>
                         {label}
@@ -56,11 +66,13 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                 </Content>
 
                 {trailingIconShow && (
-                    <AnimatedTrailingIcon
-                        testID={`textfield__trailingIcon--${id}`}
-                        style={trailingIconStyle}>
-                        {trailingIcon}
-                    </AnimatedTrailingIcon>
+                    <Pressable onPress={onTailingIconPress}>
+                        <AnimatedTrailingIcon
+                            testID={`textfield__trailingIcon--${id}`}
+                            style={trailingIconStyle}>
+                            {trailingIcon}
+                        </AnimatedTrailingIcon>
+                    </Pressable>
                 )}
 
                 {type === 'filled' && (
@@ -69,6 +81,8 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                         style={activeIndicatorStyle}
                     />
                 )}
+
+                {hoveredProps && <Hovered {...hoveredProps} />}
             </Main>
 
             <SupportingText testID={`textfield__supportingText--${id}`}>

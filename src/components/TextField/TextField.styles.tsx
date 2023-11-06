@@ -3,8 +3,8 @@ import {TextFieldProps} from './TextField';
 import {Shape} from '../Common/Shape.styles';
 import {TextInput} from 'react-native';
 
-export type MainProps = Pick<TextFieldProps, 'type'>;
-export interface LabelProps extends MainProps {}
+export type MainProps = Pick<TextFieldProps, 'type'> & {trailingIconShow: boolean};
+export interface LabelProps extends Omit<MainProps, 'trailingIconShow'> {}
 
 export const Container = styled.Pressable`
     display: flex;
@@ -16,14 +16,24 @@ export const Container = styled.Pressable`
 `;
 
 export const Main = styled(Shape)<MainProps>`
+    position: relative;
     display: flex;
     flex-direction: row;
     align-items: center;
 
-    ${({theme}) => css`
-        padding-vertical: ${theme.spacing.extraSmall}px;
-        padding-start: ${theme.spacing.medium}px;
-    `}
+    ${({theme}) =>
+        css`
+            padding-vertical: ${theme.spacing.extraSmall}px;
+        `}
+
+    ${({theme, trailingIconShow}) =>
+        trailingIconShow
+            ? css`
+                  padding-start: ${theme.spacing.medium}px;
+              `
+            : css`
+                  padding-horizontal: ${theme.spacing.medium}px;
+              `}
 
     ${({theme, type = 'filled'}) => {
         const themeType = {

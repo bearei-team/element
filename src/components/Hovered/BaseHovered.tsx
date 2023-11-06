@@ -16,7 +16,7 @@ export interface ProcessAnimatedTimingOptions {
 
 export const BaseHovered: FC<BaseHoveredProps> = ({
     render,
-    state: propsState,
+    state,
     disabled = false,
     ...renderProps
 }) => {
@@ -41,12 +41,12 @@ export const BaseHovered: FC<BaseHoveredProps> = ({
     );
 
     useEffect(() => {
-        if (propsState && !disabled) {
-            processAnimatedTiming(propsState === 'hovered' || propsState === 'focused' ? 1 : 0, {
+        if (state && !disabled) {
+            processAnimatedTiming(state === 'hovered' || state === 'focused' ? 1 : 0, {
                 animatedValue: opacityAnimated,
             });
         }
-    }, [disabled, opacityAnimated, processAnimatedTiming, propsState]);
+    }, [disabled, opacityAnimated, processAnimatedTiming, state]);
 
     return render({
         ...renderProps,
@@ -54,7 +54,7 @@ export const BaseHovered: FC<BaseHoveredProps> = ({
         style: {
             opacity: opacityAnimated.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, propsState === 'focused' ? 0.12 : 0.08],
+                outputRange: [0, state === 'focused' ? 0.12 : 0.08],
             }),
         },
     });

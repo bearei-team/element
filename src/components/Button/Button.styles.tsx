@@ -3,8 +3,8 @@ import {ButtonProps} from './Button';
 import {State} from '../common/interface';
 import {Shape} from '../Common/Shape.styles';
 
-export type MainProps = Pick<ButtonProps, 'type'> & {state: State; showIcon?: boolean};
-export type LabelProps = MainProps;
+export type MainProps = Pick<ButtonProps, 'type'> & {state: State; showIcon: boolean};
+export type LabelProps = Omit<MainProps, 'showIcon'>;
 export const Main = styled(Shape)<MainProps>`
     pointer-events: none;
     display: flex;
@@ -69,21 +69,21 @@ export const Main = styled(Shape)<MainProps>`
     ${({theme, type = 'filled', showIcon}) => {
         const themeType = {
             filled: css`
-                padding-horizontal-start: ${theme.spacing.medium}px;
+                padding-start: ${theme.spacing.medium}px;
             `,
 
             outlined: css`
-                padding-horizontal-start: ${theme.spacing.medium}px;
+                padding-start: ${theme.spacing.medium}px;
             `,
             text: css`
-                padding-horizontal-start: ${theme.spacing.medium - 4}px;
+                padding-start: ${theme.spacing.medium - 4}px;
                 padding-horizontal-end: ${theme.spacing.medium}px;
             `,
             elevated: css`
-                padding-horizontal-start: ${theme.spacing.medium}px;
+                padding-start: ${theme.spacing.medium}px;
             `,
             tonal: css`
-                padding-horizontal-start: ${theme.spacing.medium}px;
+                padding-start: ${theme.spacing.medium}px;
             `,
         };
 

@@ -4,6 +4,7 @@ import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {
     Animated,
     GestureResponderEvent,
+    LayoutChangeEvent,
     NativeSyntheticEvent,
     Text,
     TextInput,
@@ -14,6 +15,9 @@ import {
 import {useTheme} from 'styled-components/native';
 import {UTIL} from '../../utils/util';
 import {useImmer} from 'use-immer';
+import {State} from '../common/interface';
+import {RippleProps} from '../TouchableRipple/Ripple/Ripple';
+import {HoveredProps} from '../Hovered/Hovered';
 
 export interface RenderProps extends TextFieldProps {
     labelStyle: Animated.WithAnimatedObject<TextStyle>;
@@ -22,7 +26,10 @@ export interface RenderProps extends TextFieldProps {
     trailingIconStyle: Animated.WithAnimatedObject<ViewStyle>;
     trailingIconShow: boolean;
     inputRef: React.RefObject<TextInput>;
+    hoveredProps?: HoveredProps;
     onPress: (event: GestureResponderEvent) => void;
+    onTailingIconPress: (event: GestureResponderEvent) => void;
+    onMainLayout: (event: LayoutChangeEvent) => void;
 }
 
 export interface ProcessAnimatedTimingOptions {
@@ -41,16 +48,20 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
     ref,
     type = 'filled',
     trailingIcon = <Text>{'X'}</Text>,
+    disabled,
     ...renderProps
 }) => {
     const id = useId();
     const theme = useTheme();
+    const [state, setState] = useImmer<State>('enabled');
+    const [mainLayout, setMainLayout] = useImmer({} as RippleProps['touchableLayout']);
     const textFieldRef = useRef<TextInput>(null);
     const [value, setValue] = useImmer('');
     const [trailingIconShow, setTrailingIconShow] = useImmer(false);
     const [focusedAnimated] = useAnimatedValue(0);
     const [trailingIconAnimated] = useAnimatedValue(0);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
+    const mobile = theme.OS === 'ios' || theme.OS === 'android';
     const inputHeight = focusedAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [0, 24, 24],
@@ -111,6 +122,12 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         outputRange: [0, 1],
     });
 
+    const processMainLayout = (event: LayoutChangeEvent) => {
+        const {width, height} = event.nativeEvent.layout;
+
+        setMainLayout(() => ({width, height}));
+    };
+
     const processAnimatedTiming = useCallback(
         (toValue: number, {animatedValue, finished}: ProcessAnimatedTimingOptions) => {
             const animatedTiming = UTIL.animatedTiming(theme);
@@ -147,15 +164,46 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         setValue(() => text);
     };
 
+    const handleTailingIconPress = () => {
+        setValue(() => '');
+        inputRef.current?.focus();
+    };
+
     useEffect(() => {
         const show = !!value;
 
-        setTrailingIconShow(() => show);
-        processAnimatedTiming(show ? 1 : 0, {animatedValue: trailingIconAnimated});
+        if (show) {
+            setTrailingIconShow(() => show);
+            processAnimatedTiming(1, {animatedValue: trailingIconAnimated});
+        } else {
+            processAnimatedTiming(0, {
+                animatedValue: trailingIconAnimated,
+                finished: () => setTrailingIconShow(() => show),
+            });
+        }
     }, [processAnimatedTiming, setTrailingIconShow, trailingIconAnimated, value]);
+
+    useEffect(() => {
+        if (disabled) {
+            setState(() => 'disabled');
+        }
+    }, [disabled, setState]);
 
     return render({
         ...renderProps,
+        ...(!mobile && {
+            hoveredProps: {
+                underlayColor: theme.palette.surface.onSurface,
+                width: mainLayout.width,
+                height: mainLayout.height,
+                disabled,
+                shapeProps: {shape: 'extraSmallTop'},
+                state:
+                    state === 'hovered' || state === 'focused' || state === 'enabled'
+                        ? state
+                        : undefined,
+            },
+        }),
         type,
         trailingIcon,
         activeIndicatorStyle: {
@@ -176,6 +224,8 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         onChangeText: handleChangeText,
         onPress: handlePress,
         onBlur: handleBlur,
+        onTailingIconPress: handleTailingIconPress,
+        onMainLayout: processMainLayout,
         id,
     });
 };
