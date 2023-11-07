@@ -12,3 +12,11 @@ export const Filled: StoryObj<TextFieldProps> = {
         supportingText: 'supportingText',
     },
 };
+
+export const FilledError: StoryObj<TextFieldProps> = {
+    args: {
+        label: 'Label',
+        supportingText: 'supportingText',
+        error: true,
+    },
+};

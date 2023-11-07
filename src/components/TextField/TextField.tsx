@@ -20,6 +20,7 @@ export interface TextFieldProps extends Partial<TextInputProps & RefAttributes<T
     trailingIcon?: React.JSX.Element;
     supportingText?: string;
     disabled?: boolean;
+    error?: boolean;
 }
 
 const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
@@ -27,6 +28,8 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
     const AnimatedTextInput = Animated.createAnimatedComponent(Input);
     const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
     const AnimatedTrailingIcon = Animated.createAnimatedComponent(TrailingIcon);
+    const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
+
     const render = ({
         id,
         trailingIcon,
@@ -34,18 +37,26 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         labelStyle,
         activeIndicatorStyle,
         trailingIconStyle,
+        supportingTextStyle,
         inputRef,
         inputStyle,
         trailingIconShow,
         label,
+        error,
         supportingText,
         onPress,
+        onHoverIn,
+        onHoverOut,
         onTailingIconPress,
         onMainLayout,
         hoveredProps,
         ...textInputProps
     }: RenderProps) => (
-        <Container testID={`textfield__container--${id}`} onPress={onPress}>
+        <Container
+            testID={`textfield__container--${id}`}
+            onPress={onPress}
+            onHoverIn={onHoverIn}
+            onHoverOut={onHoverOut}>
             <Main
                 testID={`textField__main--${id}`}
                 shape="extraSmallTop"
@@ -85,9 +96,12 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                 {hoveredProps && <Hovered {...hoveredProps} />}
             </Main>
 
-            <SupportingText testID={`textfield__supportingText--${id}`}>
+            <AnimatedSupportingText
+                testID={`textfield__supportingText--${id}`}
+                style={supportingTextStyle}
+                error={error}>
                 {supportingText}
-            </SupportingText>
+            </AnimatedSupportingText>
         </Container>
     );
 

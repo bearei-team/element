@@ -6,6 +6,8 @@ import {TextInput} from 'react-native';
 export type MainProps = Pick<TextFieldProps, 'type'> & {trailingIconShow: boolean};
 export interface LabelProps extends Omit<MainProps, 'trailingIconShow'> {}
 
+export type SupportingTextProps = Pick<TextFieldProps, 'error'>;
+
 export const Container = styled.Pressable`
     display: flex;
     flex-direction: column;
@@ -59,7 +61,6 @@ export const Label = styled.Text<LabelProps>`
 
 export const Content = styled.View`
     flex: 1;
-
     height: 48px;
     display: flex;
     flex-direction: column;
@@ -97,7 +98,7 @@ export const TrailingIcon = styled.View`
     `}
 `;
 
-export const SupportingText = styled.Text`
+export const SupportingText = styled.Text<SupportingTextProps>`
     ${({theme}) => css`
         font-size: ${theme.typography.body.small.size}px;
         font-style: ${theme.typography.body.small.style};
@@ -107,4 +108,10 @@ export const SupportingText = styled.Text`
         color: ${theme.palette.surface.onSurfaceVariant};
         padding-horizontal: ${theme.spacing.medium}px;
     `}
+
+    ${({theme, error}) =>
+        error &&
+        css`
+            color: ${theme.palette.error.error};
+        `}
 `;

@@ -47,6 +47,7 @@ export const BaseButton: FC<BaseButtonProps> = ({
                 pressed: 0,
                 focused: 0,
                 disabled: 0,
+                error: 0,
             };
 
             setElevationLevel(() =>
@@ -59,7 +60,6 @@ export const BaseButton: FC<BaseButtonProps> = ({
     const processState = useCallback(
         (nextState: State, callback?: () => void) => {
             if (state !== 'disabled') {
-                callback?.();
                 setState(() => nextState);
 
                 const isProcessElevation =
@@ -68,6 +68,8 @@ export const BaseButton: FC<BaseButtonProps> = ({
                 if (isProcessElevation) {
                     processElevationLevel(nextState);
                 }
+
+                callback?.();
             }
         },
         [processElevationLevel, setState, state, type],
