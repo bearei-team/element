@@ -1,7 +1,7 @@
 import styled, {css} from 'styled-components/native';
-import {ButtonProps} from './Button';
+import {Shape} from '../Common/Common.styles';
 import {State} from '../common/interface';
-import {Shape} from '../Common/Shape.styles';
+import {ButtonProps} from './Button';
 
 export type MainProps = Pick<ButtonProps, 'type'> & {state: State; showIcon: boolean};
 export type LabelProps = Omit<MainProps, 'showIcon'>;

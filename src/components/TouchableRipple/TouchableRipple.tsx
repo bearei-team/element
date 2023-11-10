@@ -1,10 +1,10 @@
-import {Container, Main} from './TouchableRipple.styles';
 import {FC, ReactNode, RefAttributes, forwardRef, memo} from 'react';
-import {BaseTouchableRipple, RenderProps} from './BaseTouchableRipple';
 import {PressableProps, View} from 'react-native';
-import {RippleProps} from './Ripple/Ripple';
-import {ShapeProps} from '../Common/Shape.styles';
+import {ShapeProps} from '../Common/Common.styles';
 import {Hovered} from '../Hovered/Hovered';
+import {BaseTouchableRipple, RenderProps} from './BaseTouchableRipple';
+import {RippleProps} from './Ripple/Ripple';
+import {Container, Main} from './TouchableRipple.styles';
 
 export interface TouchableRippleProps
     extends Omit<

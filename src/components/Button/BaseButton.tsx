@@ -1,19 +1,19 @@
 import {FC, useCallback, useEffect, useId} from 'react';
 import {GestureResponderEvent, MouseEvent, NativeSyntheticEvent, TargetedEvent} from 'react-native';
-import {ButtonProps} from './Button';
-import {useImmer} from 'use-immer';
 import {useTheme} from 'styled-components/native';
+import {useImmer} from 'use-immer';
+import {ShapeProps} from '../Common/Common.styles';
+import {ElevationProps} from '../Elevation/Elevation';
 import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {State} from '../common/interface';
-import {ElevationProps} from '../Elevation/Elevation';
-import {ShapeProps} from '../Common/Shape.styles';
+import {ButtonProps} from './Button';
 
 export type RenderProps = ButtonProps & {
     elevationProps: ElevationProps;
-    touchableRippleProps: TouchableRippleProps;
     shapeProps: ShapeProps;
-    state: State;
     showIcon: boolean;
+    state: State;
+    touchableRippleProps: TouchableRippleProps;
 };
 
 export interface BaseButtonProps extends ButtonProps {

@@ -1,7 +1,7 @@
-import styled, {css} from 'styled-components/native';
-import {ElevationProps} from './Elevation';
 import {Elevation} from '@bearei/theme';
-import {Shape} from '../Common/Shape.styles';
+import styled, {css} from 'styled-components/native';
+import {Shape} from '../Common/Common.styles';
+import {ElevationProps} from './Elevation';
 
 export interface ShadowProps extends Pick<ElevationProps, 'level'> {
     shadow: 0 | 1;

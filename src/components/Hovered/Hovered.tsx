@@ -1,9 +1,9 @@
+import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, View, ViewProps, ViewStyle} from 'react-native';
+import {ShapeProps} from '../Common/Common.styles';
+import {State} from '../common/interface';
 import {BaseHovered, RenderProps} from './BaseHovered';
 import {Container} from './Hovered.styles';
-import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {State} from '../common/interface';
-import {ShapeProps} from '../Common/Shape.styles';
 
 export interface HoveredProps extends Partial<ViewProps & RefAttributes<View>> {
     width?: number;

@@ -1,6 +1,6 @@
 import styled, {css} from 'styled-components/native';
+import {Shape} from '../Common/Common.styles';
 import {HoveredProps} from './Hovered';
-import {Shape} from '../Common/Shape.styles';
 
 export type ContainerProps = Pick<HoveredProps, 'underlayColor'>;
 

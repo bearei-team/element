@@ -1,7 +1,7 @@
-import styled, {css} from 'styled-components/native';
-import {TextFieldProps} from './TextField';
-import {Shape} from '../Common/Shape.styles';
 import {TextInput} from 'react-native';
+import styled, {css} from 'styled-components/native';
+import {Shape} from '../Common/Common.styles';
+import {TextFieldProps} from './TextField';
 
 export type MainProps = Pick<TextFieldProps, 'type'> & {trailingIconShow: boolean};
 export interface LabelProps extends Omit<MainProps, 'trailingIconShow'> {}
