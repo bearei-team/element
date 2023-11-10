@@ -29,6 +29,7 @@ export interface RenderProps extends TextFieldProps {
     trailingIconShow: boolean;
     inputRef: React.RefObject<TextInput>;
     hoveredProps?: HoveredProps;
+    mainLayout: RippleProps['touchableLayout'];
     onPress: (event: GestureResponderEvent) => void;
     onHoverIn: (event: MouseEvent) => void;
     onHoverOut: (event: MouseEvent) => void;
@@ -64,53 +65,49 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
     const id = useId();
     const theme = useTheme();
     const textFieldRef = useRef<TextInput>(null);
-    const [labeAnimated] = useAnimatedValue(0);
-    const [trailingIconAnimated] = useAnimatedValue(0);
-    const [activeIndicatorAnimated] = useAnimatedValue(0);
-    const [supportingTextAnimated] = useAnimatedValue(0);
     const [state, setState] = useImmer<State>('enabled');
     const [inputState, setInputState] = useImmer<State>('enabled');
     const [mainLayout, setMainLayout] = useImmer({} as RippleProps['touchableLayout']);
     const [value, setValue] = useImmer('');
     const [trailingIconShow, setTrailingIconShow] = useImmer(false);
+    const [labeAnimated] = useAnimatedValue(0);
+    const [inputAnimated] = useAnimatedValue(0);
+    const [trailingIconAnimated] = useAnimatedValue(0);
+    const [activeIndicatorAnimated] = useAnimatedValue(0);
+    const [supportingTextAnimated] = useAnimatedValue(0);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const mobile = theme.OS === 'ios' || theme.OS === 'android';
+    const {palette, typography, color} = theme;
+    const disabledColor = color.rgba(palette.surface.onSurface, 0.38);
+    const colorRange = error
+        ? [palette.error.error, palette.error.error, disabledColor]
+        : [palette.surface.onSurfaceVariant, palette.primary.primary, disabledColor];
 
-    const colorRange = [
-        error ? theme.palette.error.error : theme.palette.surface.onSurfaceVariant,
-        error ? theme.palette.error.error : theme.palette.primary.primary,
-        theme.palette.error.error,
-    ];
-
-    const inputHeight = labeAnimated.interpolate({
-        inputRange: [0, 1, 2],
-        outputRange: [0, 24, 24],
-    });
-
+    const inputHeight = inputAnimated.interpolate({inputRange: [0, 1], outputRange: [0, 24]});
     const labelSize = labeAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [
-            theme.typography.body.large.size,
-            theme.typography.label.small.size,
-            theme.typography.label.small.size,
+            typography.body.large.size,
+            typography.body.large.size,
+            typography.label.small.size,
         ],
     });
 
     const labelLineHeight = labeAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [
-            theme.typography.body.large.lineHeight,
-            theme.typography.label.small.lineHeight,
-            theme.typography.label.small.lineHeight,
+            typography.body.large.lineHeight,
+            typography.body.large.lineHeight,
+            typography.label.small.lineHeight,
         ],
     });
 
     const labelLineLetterSpacing = labeAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [
-            theme.typography.body.large.letterSpacing,
-            theme.typography.label.small.letterSpacing,
-            theme.typography.label.small.letterSpacing,
+            typography.body.large.letterSpacing,
+            typography.body.large.letterSpacing,
+            typography.label.small.letterSpacing,
         ],
     });
 
@@ -171,6 +168,7 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
                         }
                     });
                 },
+
                 pressed: () => {
                     processAnimatedTiming(1, {animatedValue: labeAnimated});
                     processAnimatedTiming(1, {
@@ -178,6 +176,7 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
                         finished: () => inputRef.current?.focus(),
                     });
                 },
+
                 error: () =>
                     setInputState(a => {
                         processAnimatedTiming(a === 'focused' ? 2 : 0, {
@@ -187,9 +186,14 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
                         processAnimatedTiming(2, {animatedValue: activeIndicatorAnimated});
                         processAnimatedTiming(1, {animatedValue: supportingTextAnimated});
                     }),
+
+                disabled: () => {
+                    processAnimatedTiming(3, {animatedValue: labeAnimated});
+                    processAnimatedTiming(3, {animatedValue: activeIndicatorAnimated});
+                },
+
                 hovered: undefined,
                 focused: undefined,
-                disabled: undefined,
             };
 
             stateAnimated[nextState]?.();
@@ -207,13 +211,11 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
 
     const processState = useCallback(
         (nextState: State, {element}: ProcessStateOptions) => {
-            if (!disabled) {
-                element === 'input' ? setInputState(() => nextState) : setState(() => nextState);
+            element === 'input' ? setInputState(() => nextState) : setState(() => nextState);
 
-                processStateAnimated(nextState, {element});
-            }
+            processStateAnimated(nextState, {element});
         },
-        [disabled, processStateAnimated, setInputState, setState],
+        [processStateAnimated, setInputState, setState],
     );
 
     const processMainLayout = (event: LayoutChangeEvent) => {
@@ -271,21 +273,21 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
 
     useEffect(() => {
         if (typeof disabled === 'boolean') {
-            setState(() => (disabled ? 'disabled' : 'enabled'));
+            processState(disabled ? 'disabled' : 'enabled', {element: 'container'});
         }
-    }, [disabled, setState]);
+    }, [disabled, processState]);
 
     useEffect(() => {
-        if (error) {
+        if (error && !disabled) {
             processState('error', {element: 'container'});
         }
-    }, [processState, error]);
+    }, [processState, error, disabled]);
 
     return render({
         ...renderProps,
         ...(!mobile && {
             hoveredProps: {
-                underlayColor: theme.palette.surface.onSurface,
+                underlayColor: palette.surface.onSurface,
                 width: mainLayout.width,
                 height: mainLayout.height,
                 disabled,
@@ -298,6 +300,8 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
                         : undefined,
             },
         }),
+        disabled,
+        mainLayout,
         type,
         error,
         trailingIcon,

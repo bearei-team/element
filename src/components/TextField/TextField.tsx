@@ -32,12 +32,12 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
 
     const render = ({
         id,
-        trailingIcon,
         type,
+        trailingIcon,
         labelStyle,
-        activeIndicatorStyle,
         trailingIconStyle,
         supportingTextStyle,
+        activeIndicatorStyle,
         inputRef,
         inputStyle,
         trailingIconShow,
@@ -94,6 +94,14 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                 )}
 
                 {hoveredProps && <Hovered {...hoveredProps} />}
+
+                {/* {disabled && (
+                    <Disabled
+                        testID={`textField__disabled--${id}`}
+                        style={{width: mainLayout.width, height: mainLayout.height}}
+                        shape="extraSmallTop"
+                    />
+                )} */}
             </Main>
 
             <AnimatedSupportingText

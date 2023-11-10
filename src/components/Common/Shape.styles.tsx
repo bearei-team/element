@@ -11,6 +11,11 @@ export interface ShapeProps {
     };
 }
 
+export interface DisabledProps {
+    width: number;
+    height: number;
+}
+
 export const Shape = styled(View)<ShapeProps>`
     ${({theme, shape = 'none'}) => css`
         border-top-left-radius: ${theme.shape[shape].topLeft}px;
@@ -31,4 +36,20 @@ export const Shape = styled(View)<ShapeProps>`
             `
         );
     }}
+`;
+
+export const Disabled = styled(Shape)<DisabledProps>`
+    position: absolute;
+    pointer-events: none;
+    top: 0;
+    left: 0;
+    z-index: 128;
+    opacity: 0.04;
+
+    ${({theme, width, height}) =>
+        css`
+            width: ${width}px;
+            height: ${height}px;
+            background-color: ${theme.palette.surface.onSurface};
+        `}
 `;

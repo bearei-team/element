@@ -5,7 +5,6 @@ import {TextInput} from 'react-native';
 
 export type MainProps = Pick<TextFieldProps, 'type'> & {trailingIconShow: boolean};
 export interface LabelProps extends Omit<MainProps, 'trailingIconShow'> {}
-
 export type SupportingTextProps = Pick<TextFieldProps, 'error'>;
 
 export const Container = styled.Pressable`
@@ -105,8 +104,8 @@ export const SupportingText = styled.Text<SupportingTextProps>`
         font-weight: ${theme.typography.body.small.weight};
         line-height: ${theme.typography.body.small.lineHeight}px;
         letter-spacing: ${theme.typography.body.small.letterSpacing}px;
-        color: ${theme.palette.surface.onSurfaceVariant};
         padding-horizontal: ${theme.spacing.medium}px;
+        color: ${theme.palette.surface.onSurfaceVariant};
     `}
 
     ${({theme, error}) =>
