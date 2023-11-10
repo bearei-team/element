@@ -26,16 +26,16 @@ export const Shadow0 = styled(Shape)<ShadowProps>`
 
     ${({theme, level = 0, shadow = 0}) => {
         const levelString: keyof Elevation = `level${level}`;
-        const shadowString = `shadow${shadow}` as 'shadow0' | 'shadow1';
+        const shadowString: 'shadow0' | 'shadow1' = `shadow${shadow}`;
 
         return css`
+            elevation: ${theme.elevation[levelString][shadowString].elevation};
             shadow-color: ${theme.palette.shadow.shadow};
             shadow-offset: ${theme.elevation[levelString][shadowString].x}px
                 ${theme.elevation[levelString][shadowString].y}px;
 
             shadow-radius: ${theme.elevation[levelString][shadowString].blur}px;
             shadow-opacity: 1;
-            elevation: ${theme.elevation[levelString][shadowString].elevation};
         `;
     }};
 `;

@@ -11,6 +11,8 @@ export interface ElevationProps extends Partial<ViewProps & RefAttributes<View>>
 const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
     const AnimatedShadow0 = Animated.createAnimatedComponent(Shadow0);
     const AnimatedShadow1 = Animated.createAnimatedComponent(Shadow1);
+    const AnimatedContainer = Animated.createAnimatedComponent(Container);
+
     const render = ({
         id,
         level,
@@ -22,13 +24,27 @@ const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
     }: RenderProps) => {
         const {width, height, opacity0, opacity1} = shadowStyle;
         const {border, ...restShapeProps} = shapeProps;
+        const isAnimatedInterpolation =
+            border && (typeof border?.color !== 'string' || typeof border?.width !== 'number');
 
         return (
-            <Container
-                {...{...restShapeProps, ...containerProps, border}}
+            <AnimatedContainer
+                {...{
+                    ...restShapeProps,
+                    ...containerProps,
+                    ...(!isAnimatedInterpolation && {border}),
+                }}
                 ref={ref}
                 testID={`elevation--${id}`}
-                style={{width, height}}>
+                style={{
+                    width,
+                    height,
+                    ...(isAnimatedInterpolation && {
+                        borderColor: border?.color,
+                        borderWidth: border?.width,
+                        borderStyle: border?.style,
+                    }),
+                }}>
                 <Main {...restShapeProps} testID={`elevation__main--${id}`} onLayout={onLayout}>
                     {children}
                 </Main>
@@ -52,7 +68,7 @@ const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
                         />
                     </>
                 )}
-            </Container>
+            </AnimatedContainer>
         );
     };
 

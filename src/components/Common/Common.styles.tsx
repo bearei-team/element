@@ -1,12 +1,12 @@
 import {Shape as ThemeShape} from '@bearei/theme';
-import {View} from 'react-native';
+import {Animated, View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 
 export interface ShapeProps {
     border?: {
-        color?: string;
+        color?: string | Animated.AnimatedInterpolation<string | number>;
         style?: 'dotted' | 'solid' | 'dashed';
-        width?: number;
+        width?: number | Animated.AnimatedInterpolation<string | number>;
     };
     shape?: keyof ThemeShape;
 }
@@ -26,9 +26,11 @@ const Shape = styled(View)<ShapeProps>`
 
     ${({border, theme}) => {
         const {color = theme.palette.primary, style = 'solid', width = 1} = border ?? {};
+        const isAnimatedInterpolation = typeof color !== 'string' || typeof width !== 'number';
 
         return (
             border &&
+            !isAnimatedInterpolation &&
             css`
                 border-color: ${color};
                 border-style: ${style};

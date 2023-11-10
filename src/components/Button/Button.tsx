@@ -1,50 +1,55 @@
 import {FC, ReactNode, RefAttributes, forwardRef, memo} from 'react';
+import {Animated, PressableProps, View} from 'react-native';
+import {Elevation} from '../Elevation/Elevation';
+import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {BaseButton, RenderProps} from './BaseButton';
 import {Icon, Label, Main} from './Button.styles';
-import {PressableProps, View} from 'react-native';
-import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
-import {Elevation} from '../Elevation/Elevation';
 
-export type Type = 'filled' | 'outlined' | 'text' | 'elevated' | 'tonal';
+export type Type = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
 export interface ButtonProps extends Partial<PressableProps & RefAttributes<View>> {
-    icon?: React.JSX.Element;
-    type?: Type;
-    label?: ReactNode;
-    disabled?: boolean;
-    loading?: boolean;
     children?: ReactNode;
+    disabled?: boolean;
+    icon?: React.JSX.Element;
+    label?: ReactNode;
+    loading?: boolean;
+    type?: Type;
 }
 
 const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
+    const MainContainer = Animated.createAnimatedComponent(Main);
+    const LabelContainer = Animated.createAnimatedComponent(Label);
+
     const render = ({
+        elevationProps,
+        icon,
         id,
         label,
-        state,
-        icon,
-        type,
-        elevationProps,
-        touchableRippleProps,
-        showIcon,
+        labelStyle,
+        mainStyle,
         shapeProps,
+        showIcon,
+        touchableRippleProps,
+        type,
         ...containerProps
     }: RenderProps) => {
         const {border, ...restShapeProps} = shapeProps;
         const main = (
-            <Main
+            <MainContainer
                 {...restShapeProps}
+                showIcon={showIcon}
+                style={mainStyle}
                 testID={`button--${id}`}
-                state={state}
-                type={type}
-                showIcon={showIcon}>
+                type={type}>
                 {showIcon && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
-                <Label testID={`button__label--${id}`} state={state} type={type}>
+
+                <LabelContainer style={labelStyle} testID={`button__label--${id}`} type={type}>
                     {label}
-                </Label>
-            </Main>
+                </LabelContainer>
+            </MainContainer>
         );
 
         return (
-            <Elevation {...elevationProps} shapeProps={{border, ...restShapeProps}} role="button">
+            <Elevation {...elevationProps} shapeProps={{border, ...restShapeProps}}>
                 <TouchableRipple
                     {...{...touchableRippleProps, ...containerProps}}
                     ref={ref}

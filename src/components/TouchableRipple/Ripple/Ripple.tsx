@@ -1,8 +1,7 @@
 import {FC, forwardRef, memo} from 'react';
+import {Animated, LayoutRectangle, NativeTouchEvent, View, ViewProps} from 'react-native';
 import {BaseRipple, RenderProps} from './BaseRipple';
 import {Container} from './Ripple.styles';
-import {LayoutRectangle, NativeTouchEvent, View, ViewProps} from 'react-native';
-import {Animated} from 'react-native';
 
 export type RippleAnimatedOut = (finished: () => void) => number;
 export interface RippleProps extends Partial<ViewProps & React.RefAttributes<View>> {

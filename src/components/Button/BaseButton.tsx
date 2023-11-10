@@ -1,5 +1,13 @@
 import {FC, useCallback, useEffect, useId} from 'react';
-import {GestureResponderEvent, MouseEvent, NativeSyntheticEvent, TargetedEvent} from 'react-native';
+import {
+    Animated,
+    GestureResponderEvent,
+    MouseEvent,
+    NativeSyntheticEvent,
+    TargetedEvent,
+    TextStyle,
+    ViewStyle,
+} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {ShapeProps} from '../Common/Common.styles';
@@ -7,9 +15,14 @@ import {ElevationProps} from '../Elevation/Elevation';
 import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {State} from '../common/interface';
 import {ButtonProps} from './Button';
+import {useAnimated} from './useAnimated';
+import {useShapeProps} from './useShapeProps';
+import {useTouchableRippleProps} from './useTouchableRippleProps';
 
 export type RenderProps = ButtonProps & {
     elevationProps: ElevationProps;
+    labelStyle: Animated.WithAnimatedObject<TextStyle>;
+    mainStyle: Animated.WithAnimatedObject<ViewStyle>;
     shapeProps: ShapeProps;
     showIcon: boolean;
     state: State;
@@ -21,33 +34,37 @@ export interface BaseButtonProps extends ButtonProps {
 }
 
 export const BaseButton: FC<BaseButtonProps> = ({
-    type = 'filled',
-    label,
+    disabled = false,
     icon,
-    render,
+    label,
+    onBlur,
+    onFocus,
     onHoverIn,
     onHoverOut,
     onPressIn,
     onPressOut,
-    onFocus,
-    onBlur,
-    disabled = false,
-    ...args
+    render,
+    type = 'filled',
+    ...renderProps
 }) => {
+    const [elevationLevel, setElevationLevel] = useImmer<ElevationProps['level']>(0);
+    const [state, setState] = useImmer<State>('enabled');
     const id = useId();
     const theme = useTheme();
-    const [state, setState] = useImmer<State>('enabled');
-    const [elevationLevel, setElevationLevel] = useImmer<ElevationProps['level']>(0);
+    const shapeProps = useShapeProps({type, state, disabled});
+    const touchableRippleProps = useTouchableRippleProps({type, disabled, ...renderProps});
+    const {backgroundColor, color} = useAnimated({type, disabled});
     const mobile = theme.OS === 'ios' || theme.OS === 'android';
+
     const processElevationLevel = useCallback(
         (nextState: State) => {
             const elevation = {
-                hovered: 1,
-                enabled: 0,
-                pressed: 0,
-                focused: 0,
                 disabled: 0,
+                enabled: 0,
                 error: 0,
+                focused: 0,
+                hovered: 1,
+                pressed: 0,
             };
 
             setElevationLevel(() =>
@@ -59,20 +76,16 @@ export const BaseButton: FC<BaseButtonProps> = ({
 
     const processState = useCallback(
         (nextState: State, callback?: () => void) => {
-            if (state !== 'disabled') {
-                setState(() => nextState);
+            const isProcessElevation = type === 'elevated' || type === 'filled' || type === 'tonal';
 
-                const isProcessElevation =
-                    type === 'filled' || type === 'elevated' || type === 'tonal';
-
-                if (isProcessElevation) {
-                    processElevationLevel(nextState);
-                }
-
-                callback?.();
+            if (isProcessElevation) {
+                processElevationLevel(nextState);
             }
+
+            callback?.();
+            setState(() => nextState);
         },
-        [processElevationLevel, setState, state, type],
+        [processElevationLevel, setState, type],
     );
 
     const handlePressIn = useCallback(
@@ -108,43 +121,6 @@ export const BaseButton: FC<BaseButtonProps> = ({
         [onBlur, processState],
     );
 
-    const elevationProps: ElevationProps = {level: elevationLevel};
-    const shapeProps: ShapeProps = {
-        shape: 'full',
-        ...(type === 'outlined' && {
-            border: {
-                width: 1,
-                style: 'solid',
-                color:
-                    state === 'disabled'
-                        ? theme.color.rgba(theme.palette.surface.onSurface, 0.12)
-                        : state === 'focused'
-                        ? theme.palette.primary.primary
-                        : theme.palette.outline.outline,
-            },
-        }),
-    };
-
-    const underlay = {
-        filled: theme.palette.primary.onPrimary,
-        outlined: theme.palette.primary.primary,
-        text: theme.palette.primary.primary,
-        elevated: theme.palette.primary.primary,
-        tonal: theme.palette.secondary.onSecondaryContainer,
-    };
-
-    const touchableRippleProps = {
-        ...args,
-        underlayColor: underlay[type],
-        disabled,
-        onHoverIn: handleHoverIn,
-        onHoverOut: handleHoverOut,
-        onPressIn: handlePressIn,
-        onPressOut: handlePressOut,
-        onFocus: handleFocus,
-        onBlur: handleBlur,
-    };
-
     useEffect(() => {
         if (disabled) {
             setState(() => 'disabled');
@@ -158,14 +134,24 @@ export const BaseButton: FC<BaseButtonProps> = ({
     }, [disabled, setElevationLevel, type]);
 
     return render({
-        id,
-        type,
-        state,
-        label,
+        elevationProps: {level: elevationLevel},
         icon,
-        showIcon: !!icon,
+        id,
+        label,
+        labelStyle: {color},
+        mainStyle: {backgroundColor},
         shapeProps,
-        elevationProps,
-        touchableRippleProps,
+        showIcon: !!icon,
+        state,
+        touchableRippleProps: {
+            ...touchableRippleProps,
+            onBlur: handleBlur,
+            onFocus: handleFocus,
+            onHoverIn: handleHoverIn,
+            onHoverOut: handleHoverOut,
+            onPressIn: handlePressIn,
+            onPressOut: handlePressOut,
+        },
+        type,
     });
 };

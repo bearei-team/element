@@ -1,138 +1,86 @@
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
-import {State} from '../common/interface';
 import {ButtonProps} from './Button';
 
-export type MainProps = Pick<ButtonProps, 'type'> & {state: State; showIcon: boolean};
+export type MainProps = Pick<ButtonProps, 'type'> & {showIcon: boolean};
 export type LabelProps = Omit<MainProps, 'showIcon'>;
-export const Main = styled(Shape)<MainProps>`
-    pointer-events: none;
+
+const Main = styled(Shape)<MainProps>`
+    align-items: center;
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center;
+    pointer-events: none;
 
     ${({theme}) => css`
         gap: ${theme.spacing.small}px;
     `}
 
     ${({theme, type = 'filled'}) => {
-        const themeType = {
-            filled: css`
-                background-color: ${theme.palette.primary.primary};
-                padding-vertical: ${theme.spacing.small + 2}px;
+        const mainType = {
+            elevated: css`
                 padding-horizontal: ${theme.spacing.large}px;
+                padding-vertical: ${theme.spacing.small + 2}px;
+            `,
+            filled: css`
+                padding-horizontal: ${theme.spacing.large}px;
+                padding-vertical: ${theme.spacing.small + 2}px;
             `,
             outlined: css`
-                padding-vertical: ${theme.spacing.small + 2}px;
                 padding-horizontal: ${theme.spacing.large}px;
+                padding-vertical: ${theme.spacing.small + 2}px;
             `,
             text: css`
-                padding-vertical: ${theme.spacing.small + 2}px;
                 padding-horizontal: ${theme.spacing.medium - 4}px;
-            `,
-            elevated: css`
-                background-color: ${theme.palette.surface.surfaceContainerLow};
                 padding-vertical: ${theme.spacing.small + 2}px;
-                padding-horizontal: ${theme.spacing.large}px;
             `,
             tonal: css`
-                background-color: ${theme.palette.secondary.secondaryContainer};
-                padding-vertical: ${theme.spacing.small + 2}px;
                 padding-horizontal: ${theme.spacing.large}px;
+                padding-vertical: ${theme.spacing.small + 2}px;
             `,
         };
 
-        return themeType[type];
+        return mainType[type];
     }}
 
-    ${({theme, state, type = 'filled'}) => {
-        const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
-        const themeType = {
-            filled: css`
-                background-color: ${disabledColor};
-            `,
-
-            outlined: css``,
-            text: css``,
+    ${({showIcon, theme, type = 'filled'}) => {
+        const mainType = {
             elevated: css`
-                background-color: ${disabledColor};
+                padding-start: ${theme.spacing.medium}px;
             `,
-            tonal: css`
-                background-color: ${disabledColor};
-            `,
-        };
-
-        return state === 'disabled' && themeType[type];
-    }}
-
-    ${({theme, type = 'filled', showIcon}) => {
-        const themeType = {
             filled: css`
                 padding-start: ${theme.spacing.medium}px;
             `,
-
             outlined: css`
                 padding-start: ${theme.spacing.medium}px;
             `,
             text: css`
-                padding-start: ${theme.spacing.medium - 4}px;
                 padding-horizontal-end: ${theme.spacing.medium}px;
-            `,
-            elevated: css`
-                padding-start: ${theme.spacing.medium}px;
+                padding-start: ${theme.spacing.medium - 4}px;
             `,
             tonal: css`
                 padding-start: ${theme.spacing.medium}px;
             `,
         };
 
-        return showIcon && themeType[type];
+        return showIcon && mainType[type];
     }}
 `;
 
-export const Label = styled.Text<LabelProps>`
+const Label = styled.Text<LabelProps>`
     ${({theme}) => css`
         font-size: ${theme.typography.label.large.size}px;
         font-style: ${theme.typography.label.large.style};
         font-weight: ${theme.typography.label.large.weight};
-        line-height: ${theme.typography.label.large.lineHeight}px;
         letter-spacing: ${theme.typography.label.large.letterSpacing}px;
-        color: ${theme.palette.primary.onPrimary};
+        line-height: ${theme.typography.label.large.lineHeight}px;
     `}
-
-    ${({theme, type = 'filled'}) => {
-        const themeType = {
-            filled: css`
-                color: ${theme.palette.primary.onPrimary};
-            `,
-
-            outlined: css`
-                color: ${theme.palette.primary.primary};
-            `,
-            text: css`
-                color: ${theme.palette.primary.primary};
-            `,
-            elevated: css`
-                color: ${theme.palette.primary.primary};
-            `,
-            tonal: css`
-                color: ${theme.palette.secondary.onSecondaryContainer};
-            `,
-        };
-
-        return themeType[type];
-    }}
-
-    ${({theme, state}) =>
-        state === 'disabled' &&
-        css`
-            color: ${theme.color.rgba(theme.palette.surface.onSurface, 0.38)};
-        `}
 `;
 
-export const Icon = styled.View`
-    width: 18px;
+const Icon = styled.View`
     height: 18px;
     overflow: hidden;
+    width: 18px;
 `;
+
+export {Icon, Label, Main};

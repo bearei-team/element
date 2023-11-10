@@ -1,8 +1,8 @@
 import {FC, useCallback, useEffect, useId} from 'react';
 import {I18nManager, View, ViewProps} from 'react-native';
+import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {UTIL} from '../../../utils/util';
-import {useTheme} from 'styled-components/native';
 import {RippleProps} from './Ripple';
 export interface RenderProps extends Partial<ViewProps & React.RefAttributes<View>> {
     x: number;
