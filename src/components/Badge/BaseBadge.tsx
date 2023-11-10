@@ -7,17 +7,18 @@ export interface BaseDividerProps extends BadgeProps {
 }
 
 export const BaseBadge: FC<BaseDividerProps> = ({
-    render,
     label = 0,
+    render,
     size = 'medium',
     ...renderProps
 }) => {
     const id = useId();
+    const labelText = Number(label) > 99 ? '99+' : label;
 
     return render({
         ...renderProps,
-        size,
-        label: size !== 'small' ? (Number(label) > 99 ? '99+' : label) : '',
         id,
+        label: size !== 'small' ? labelText : '',
+        size,
     });
 };

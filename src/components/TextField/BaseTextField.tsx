@@ -26,6 +26,7 @@ export interface RenderProps extends TextFieldProps {
     activeIndicatorStyle: Animated.WithAnimatedObject<ViewStyle>;
     supportingTextStyle: Animated.WithAnimatedObject<TextStyle>;
     trailingIconStyle: Animated.WithAnimatedObject<ViewStyle>;
+    containerStyle: Animated.WithAnimatedObject<ViewStyle>;
     trailingIconShow: boolean;
     inputRef: React.RefObject<TextInput>;
     hoveredProps?: HoveredProps;
@@ -75,6 +76,8 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
     const [trailingIconAnimated] = useAnimatedValue(0);
     const [activeIndicatorAnimated] = useAnimatedValue(0);
     const [supportingTextAnimated] = useAnimatedValue(0);
+    const [containerAnimated] = useAnimatedValue(0);
+
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const mobile = theme.OS === 'ios' || theme.OS === 'android';
     const {palette, typography, color} = theme;
@@ -82,6 +85,11 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
     const colorRange = error
         ? [palette.error.error, palette.error.error, disabledColor]
         : [palette.surface.onSurfaceVariant, palette.primary.primary, disabledColor];
+
+    const containerColor = containerAnimated.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 24],
+    });
 
     const inputHeight = inputAnimated.interpolate({inputRange: [0, 1], outputRange: [0, 24]});
     const labelSize = labeAnimated.interpolate({

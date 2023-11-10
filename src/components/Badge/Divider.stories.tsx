@@ -1,4 +1,4 @@
-import {StoryObj, Meta} from '@storybook/react';
+import {Meta, StoryObj} from '@storybook/react';
 import {Badge, BadgeProps} from './Badge';
 
 export default {
@@ -12,4 +12,8 @@ export const BadgeLarge: StoryObj<BadgeProps> = {
 
 export const BadgeSmall: StoryObj<BadgeProps> = {
     args: {size: 'small'},
+};
+
+export const BadgeMaxLabel: StoryObj<BadgeProps> = {
+    args: {size: 'large', label: 999},
 };

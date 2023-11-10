@@ -1,8 +1,8 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {View, ViewProps} from 'react-native';
+import {Size} from '../common/interface';
 import {Container, Label} from './Badge.styles';
 import {BaseBadge, RenderProps} from './BaseBadge';
-import {Size} from '../common/interface';
 
 export interface BadgeProps extends Partial<ViewProps & RefAttributes<View>> {
     label?: number | string;

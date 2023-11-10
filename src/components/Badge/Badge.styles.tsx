@@ -1,13 +1,12 @@
 import styled, {css} from 'styled-components/native';
-import {BadgeProps} from './Badge';
 import {Shape} from '../Common/Shape.styles';
+import {BadgeProps} from './Badge';
 
 export type ContainerProps = Pick<BadgeProps, 'size'>;
-
-export const Container = styled(Shape)<ContainerProps>`
-    display: flex;
-    justify-content: center;
+const Container = styled(Shape)<ContainerProps>`
     align-items: center;
+    display: inline-flex;
+    justify-content: center;
     pointer-events: none;
 
     ${({theme}) => css`
@@ -15,17 +14,17 @@ export const Container = styled(Shape)<ContainerProps>`
     `}
 
     ${({theme, size = 'medium'}) => {
-        const themeType = {
+        const containerSize = {
             large: css`
-                padding-horizontal: ${theme.spacing.extraSmall}px;
-                min-width: 16px;
                 max-width: 34px;
+                min-width: 16px;
+                padding-horizontal: ${theme.spacing.extraSmall}px;
             `,
 
             medium: css`
-                padding-horizontal: ${theme.spacing.extraSmall}px;
-                min-width: 16px;
                 max-width: 34px;
+                min-width: 16px;
+                padding-horizontal: ${theme.spacing.extraSmall}px;
             `,
 
             small: css`
@@ -34,20 +33,22 @@ export const Container = styled(Shape)<ContainerProps>`
             `,
         };
 
-        return themeType[size];
+        return containerSize[size];
     }}
 `;
 
-export const Label = styled.Text`
-    min-width: 2px;
+const Label = styled.Text`
     min-height: 2px;
+    min-width: 2px;
 
     ${({theme}) => css`
+        color: ${theme.palette.error.onError};
         font-size: ${theme.typography.label.small.size}px;
         font-style: ${theme.typography.label.small.style};
         font-weight: ${theme.typography.label.small.weight};
-        line-height: ${theme.typography.label.small.lineHeight}px;
         letter-spacing: ${theme.typography.label.small.letterSpacing}px;
-        color: ${theme.palette.error.onError};
+        line-height: ${theme.typography.label.small.lineHeight}px;
     `}
 `;
+
+export {Container, Label};
