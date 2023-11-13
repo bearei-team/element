@@ -85,9 +85,9 @@ export const useAnimated = ({type, disabled, state}: UseAnimatedOptions) => {
 
             requestAnimationFrame(() =>
                 animatedTiming(animation, {
-                    toValue: toValue,
-                    easing: 'standard',
                     duration: 'short3',
+                    easing: 'standard',
+                    toValue: toValue,
                 }).start(),
             );
         },

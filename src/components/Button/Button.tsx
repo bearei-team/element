@@ -2,6 +2,7 @@ import {FC, ReactNode, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, PressableProps, View} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
 import {Elevation} from '../Elevation/Elevation';
+import {Hovered} from '../Hovered/Hovered';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {BaseButton, RenderProps} from './BaseButton';
 import {Icon, Label, Main} from './Button.styles';
@@ -22,7 +23,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
     const LabelContainer = Animated.createAnimatedComponent(Label);
 
     const render = ({
-        elevationLevel,
+        elevation,
         icon,
         id,
         label,
@@ -56,7 +57,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
         );
 
         return (
-            <Elevation level={elevationLevel} shape={shape}>
+            <Elevation level={elevation} shape={shape}>
                 <TouchableRipple
                     {...containerProps}
                     onBlur={onBlur}
@@ -69,6 +70,8 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                     shape={shape}
                     underlayColor={underlayColor}>
                     {main}
+
+                    <Hovered />
                 </TouchableRipple>
             </Elevation>
         );

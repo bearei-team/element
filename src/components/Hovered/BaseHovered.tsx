@@ -1,9 +1,9 @@
 import {FC, useCallback, useEffect, useId} from 'react';
-import {HoveredProps} from './Hovered';
+import {Animated} from 'react-native';
+import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
-import {useTheme} from 'styled-components/native';
-import {Animated} from 'react-native';
+import {HoveredProps} from './Hovered';
 
 export type RenderProps = Omit<HoveredProps, 'state' | 'disabled'>;
 export interface BaseHoveredProps extends HoveredProps {

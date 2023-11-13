@@ -9,5 +9,5 @@ export default {
 } as Meta<typeof TouchableRipple>;
 
 export const Ripple: StoryObj<TouchableRippleProps> = {
-    args: {children: <Button />},
+    args: {children: <Button label="Ripple" />},
 };

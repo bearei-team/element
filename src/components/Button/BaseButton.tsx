@@ -18,12 +18,15 @@ import {useAnimated} from './useAnimated';
 import {useUnderlayColor} from './useUnderlayColor';
 
 export type RenderProps = ButtonProps & {
-    elevationLevel: ElevationProps['level'];
+    elevation: ElevationProps['level'];
     labelStyle: Animated.WithAnimatedObject<TextStyle>;
     mainStyle: Animated.WithAnimatedObject<ViewStyle>;
     showIcon: boolean;
     state: State;
     underlayColor: TouchableRippleProps['underlayColor'];
+
+    // width: number;
+    // height: number;
 };
 
 export interface BaseButtonProps extends ButtonProps {
@@ -41,10 +44,11 @@ export const BaseButton: FC<BaseButtonProps> = ({
     onPressIn,
     onPressOut,
     render,
+    shape = 'full',
     type = 'filled',
     ...renderProps
 }) => {
-    const [elevationLevel, setElevationLevel] = useImmer<ElevationProps['level']>(0);
+    const [elevation, setElevation] = useImmer<ElevationProps['level']>(0);
     const [state, setState] = useImmer<State>('enabled');
     const id = useId();
     const theme = useTheme();
@@ -57,9 +61,9 @@ export const BaseButton: FC<BaseButtonProps> = ({
         borderWidth: 1,
     };
 
-    const processElevationLevel = useCallback(
+    const processElevation = useCallback(
         (nextState: State) => {
-            const elevation = {
+            const level = {
                 disabled: 0,
                 enabled: 0,
                 error: 0,
@@ -68,11 +72,9 @@ export const BaseButton: FC<BaseButtonProps> = ({
                 pressed: 0,
             };
 
-            setElevationLevel(() =>
-                type === 'elevated' ? elevation[nextState] + 1 : elevation[nextState],
-            );
+            setElevation(() => (type === 'elevated' ? level[nextState] + 1 : level[nextState]));
         },
-        [setElevationLevel, type],
+        [setElevation, type],
     );
 
     const processState = useCallback(
@@ -80,13 +82,13 @@ export const BaseButton: FC<BaseButtonProps> = ({
             const isProcessElevation = type === 'elevated' || type === 'filled' || type === 'tonal';
 
             if (isProcessElevation) {
-                processElevationLevel(nextState);
+                processElevation(nextState);
             }
 
             callback?.();
             setState(() => nextState);
         },
-        [processElevationLevel, setState, type],
+        [processElevation, setState, type],
     );
 
     const handlePressIn = useCallback(
@@ -130,13 +132,13 @@ export const BaseButton: FC<BaseButtonProps> = ({
 
     useEffect(() => {
         if (type === 'elevated' && !disabled) {
-            setElevationLevel(() => 1);
+            setElevation(() => 1);
         }
-    }, [disabled, setElevationLevel, type]);
+    }, [disabled, setElevation, type]);
 
     return render({
         ...renderProps,
-        elevationLevel,
+        elevation,
         icon,
         id,
         label,
@@ -148,6 +150,7 @@ export const BaseButton: FC<BaseButtonProps> = ({
         onHoverOut: handleHoverOut,
         onPressIn: handlePressIn,
         onPressOut: handlePressOut,
+        shape,
         showIcon: !!icon,
         state,
         type,

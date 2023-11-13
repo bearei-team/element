@@ -12,7 +12,7 @@ import {State} from '../common/interface';
 import {Ripple, RippleAnimatedOut, RippleProps} from './Ripple/Ripple';
 import {TouchableRippleProps} from './TouchableRipple';
 
-export interface RenderProps extends Omit<TouchableRippleProps, 'centered'> {}
+export type RenderProps = Omit<TouchableRippleProps, 'centered'>;
 export interface BaseTouchableRippleProps extends TouchableRippleProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
