@@ -7,7 +7,7 @@ export default {
 } as Meta<typeof Badge>;
 
 export const BadgeLarge: StoryObj<BadgeProps> = {
-    args: {size: 'large', label: 17},
+    args: {size: 'large', label: 3},
 };
 
 export const BadgeSmall: StoryObj<BadgeProps> = {
