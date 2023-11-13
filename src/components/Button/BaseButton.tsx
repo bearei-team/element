@@ -17,17 +17,13 @@ import {ButtonProps} from './Button';
 import {useAnimated} from './useAnimated';
 import {useUnderlayColor} from './useUnderlayColor';
 
-export type RenderProps = ButtonProps & {
+export interface RenderProps extends ButtonProps {
     elevation: ElevationProps['level'];
-    labelStyle: Animated.WithAnimatedObject<TextStyle>;
-    mainStyle: Animated.WithAnimatedObject<ViewStyle>;
     showIcon: boolean;
     state: State;
     underlayColor: TouchableRippleProps['underlayColor'];
-
-    // width: number;
-    // height: number;
-};
+    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle>;
+}
 
 export interface BaseButtonProps extends ButtonProps {
     render: (props: RenderProps) => React.JSX.Element;
@@ -53,10 +49,10 @@ export const BaseButton: FC<BaseButtonProps> = ({
     const id = useId();
     const theme = useTheme();
     const [underlayColor] = useUnderlayColor({type});
-    const {backgroundColor, color, borderColor} = useAnimated({type, disabled, state});
+    const {backgroundColor, borderColor, color} = useAnimated({type, disabled, state});
     const mobile = theme.OS === 'ios' || theme.OS === 'android';
     const border = borderColor && {
-        borderColor: borderColor,
+        borderColor,
         borderStyle: 'solid' as ViewStyle['borderStyle'],
         borderWidth: 1,
     };
@@ -85,8 +81,8 @@ export const BaseButton: FC<BaseButtonProps> = ({
                 processElevation(nextState);
             }
 
-            callback?.();
             setState(() => nextState);
+            callback?.();
         },
         [processElevation, setState, type],
     );
@@ -142,14 +138,17 @@ export const BaseButton: FC<BaseButtonProps> = ({
         icon,
         id,
         label,
-        labelStyle: {color},
-        mainStyle: {backgroundColor, ...border},
         onBlur: handleBlur,
         onFocus: handleFocus,
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
         onPressIn: handlePressIn,
         onPressOut: handlePressOut,
+        renderStyle: {
+            backgroundColor,
+            color,
+            ...border,
+        },
         shape,
         showIcon: !!icon,
         state,

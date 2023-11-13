@@ -2,7 +2,12 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../../Common/Common.styles';
 import {RenderProps} from './BaseRipple';
 
-export type ContainerProps = RenderProps;
+export type ContainerProps = Omit<RenderProps, 'renderStyle'> & {
+    height: number;
+    width: number;
+    x: number;
+    y: number;
+};
 
 const Container = styled(Shape)<ContainerProps>`
     pointer-events: none;
@@ -18,8 +23,8 @@ const Container = styled(Shape)<ContainerProps>`
                   left: ${x}px;
               `}
 
-    ${({hight, width, y}) => css`
-        height: ${hight}px;
+    ${({height, width, y}) => css`
+        height: ${height}px;
         top: ${y}px;
         width: ${width}px;
     `}

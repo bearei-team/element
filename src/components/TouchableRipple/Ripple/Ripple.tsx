@@ -3,7 +3,7 @@ import {Animated, LayoutRectangle, NativeTouchEvent, View, ViewProps} from 'reac
 import {BaseRipple, RenderProps} from './BaseRipple';
 import {Container} from './Ripple.styles';
 
-export type RippleAnimatedOut = (finished: () => void) => number;
+export type RippleAnimatedOut = (finished?: () => void) => number;
 export interface RippleProps extends Partial<ViewProps & React.RefAttributes<View>> {
     centered?: boolean;
     location: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
@@ -15,9 +15,23 @@ export interface RippleProps extends Partial<ViewProps & React.RefAttributes<Vie
 
 const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => {
     const AnimatedContainer = Animated.createAnimatedComponent(Container);
-    const render = ({id, ...containerProps}: RenderProps) => (
-        <AnimatedContainer {...containerProps} ref={ref} shape="full" testID={`ripple--${id}`} />
-    );
+    const render = ({id, renderStyle, style, ...containerProps}: RenderProps) => {
+        const {width, height, x, y, ...containerStyle} = renderStyle;
+
+        return (
+            <AnimatedContainer
+                {...containerProps}
+                height={height}
+                ref={ref}
+                shape="full"
+                style={{...(typeof style === 'object' && style), ...containerStyle}}
+                testID={`ripple--${id}`}
+                width={width}
+                x={x}
+                y={y}
+            />
+        );
+    };
 
     return <BaseRipple {...props} render={render} />;
 });

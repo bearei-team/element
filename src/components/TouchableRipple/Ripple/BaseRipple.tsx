@@ -1,14 +1,18 @@
 import {FC, useId} from 'react';
-import {I18nManager} from 'react-native';
+import {Animated, I18nManager, ViewStyle} from 'react-native';
 import {RippleProps} from './Ripple';
 import {useAnimated} from './useAnimated';
 export interface RenderProps extends Partial<RippleProps> {
-    hight: number;
     isRTL: boolean;
+    renderStyle: Animated.WithAnimatedObject<
+        ViewStyle & {
+            height: number;
+            width: number;
+            x: number;
+            y: number;
+        }
+    >;
     underlayColor: RippleProps['underlayColor'];
-    width: number;
-    x: number;
-    y: number;
 }
 
 export interface BaseRippleProps extends RippleProps {
@@ -34,20 +38,20 @@ export const BaseRipple: FC<BaseRippleProps> = ({
     const offsetY = Math.abs(centerY - locationY);
     const radius = Math.sqrt(Math.pow(centerX + offsetX, 2) + Math.pow(centerY + offsetY, 2));
     const diameter = radius * 2;
-    const {scale, opacity} = useAnimated({onAnimatedEnd, sequence, minDuration: diameter});
+    const {opacity, scale} = useAnimated({onAnimatedEnd, sequence, minDuration: diameter});
 
     return render({
         ...renderProps,
-        hight: diameter,
         id,
         isRTL: I18nManager.isRTL,
-        style: {
+        renderStyle: {
+            height: diameter,
             opacity,
             transform: [{translateY: -radius}, {translateX: -radius}, {scale}],
+            width: diameter,
+            x: locationX,
+            y: locationY,
         },
         underlayColor,
-        width: diameter,
-        x: locationX,
-        y: locationY,
     });
 };

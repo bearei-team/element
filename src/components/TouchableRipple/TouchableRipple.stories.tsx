@@ -1,5 +1,5 @@
 import {Meta, StoryObj} from '@storybook/react';
-import {Button} from '../Button/Button';
+import {View} from 'react-native';
 import {TouchableRipple, TouchableRippleProps} from './TouchableRipple';
 
 export default {
@@ -9,5 +9,8 @@ export default {
 } as Meta<typeof TouchableRipple>;
 
 export const Ripple: StoryObj<TouchableRippleProps> = {
-    args: {children: <Button label="Ripple" />},
+    args: {
+        children: <View style={{width: 200, height: 40, backgroundColor: 'red'}} />,
+        underlayColor: '#000000',
+    },
 };

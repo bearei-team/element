@@ -12,11 +12,11 @@ export const useAnimated = ({minDuration, onAnimatedEnd, sequence}: UseAnimatedO
     const theme = useTheme();
     const [scaleAnimated] = useAnimatedValue(0);
     const [opacityAnimated] = useAnimatedValue(0);
-    const scale = scaleAnimated.interpolate({inputRange: [0, 1], outputRange: [0.1, 1]});
     const opacity = opacityAnimated.interpolate({inputRange: [0, 1], outputRange: [1, 0]});
+    const scale = scaleAnimated.interpolate({inputRange: [0, 1], outputRange: [0.1, 1]});
     const processAnimatedTiming = useCallback(() => {
         const animatedTiming = UTIL.animatedTiming(theme);
-        const animatedIn = (finished: () => void) =>
+        const animatedIn = (finished?: () => void) =>
             requestAnimationFrame(() =>
                 animatedTiming(scaleAnimated, {
                     duration: Math.min(minDuration, 200),
@@ -25,7 +25,7 @@ export const useAnimated = ({minDuration, onAnimatedEnd, sequence}: UseAnimatedO
                 }).start(finished),
             );
 
-        const animatedOut = (finished: () => void) =>
+        const animatedOut = (finished?: () => void) =>
             requestAnimationFrame(() =>
                 animatedTiming(opacityAnimated, {
                     duration: 'short3',
@@ -43,5 +43,5 @@ export const useAnimated = ({minDuration, onAnimatedEnd, sequence}: UseAnimatedO
         processAnimatedTiming();
     }, [processAnimatedTiming]);
 
-    return {scale, opacity};
+    return {opacity, scale};
 };

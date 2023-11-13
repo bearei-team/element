@@ -82,17 +82,6 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
         onLayout?.(event);
     };
 
-    const processRippleAnimatedEnd = useCallback(
-        (sequence: string, animatedOut: RippleAnimatedOut) => {
-            setRippleSequence(draft => {
-                if (draft[sequence]) {
-                    draft[sequence].animatedOut = animatedOut;
-                }
-            });
-        },
-        [setRippleSequence],
-    );
-
     const processRippleOut = useCallback(() => {
         const rippleOut = ([sequence, {animatedOut}]: [string, Ripple]) =>
             animatedOut?.(() =>
@@ -103,6 +92,23 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
 
         Object.entries(rippleSequence).forEach(rippleOut);
     }, [rippleSequence, setRippleSequence]);
+
+    const processRippleAnimatedEnd = useCallback(
+        (sequence: string, animatedOut: RippleAnimatedOut) => {
+            setState(curState => {
+                curState === 'enabled'
+                    ? animatedOut(() =>
+                          setRippleSequence(draft => {
+                              delete draft[sequence];
+                          }),
+                      )
+                    : setRippleSequence(draft => {
+                          draft[sequence] && (draft[sequence].animatedOut = animatedOut);
+                      });
+            });
+        },
+        [setRippleSequence, setState],
+    );
 
     const handlePressIn = (event: GestureResponderEvent) =>
         processState('pressed', {event, callback: () => onPressIn?.(event)});
@@ -123,10 +129,12 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
         processState('enabled', {callback: () => onBlur?.(event)});
 
     useEffect(() => {
-        mobile
-            ? state === 'enabled' && processRippleOut()
-            : state === 'hovered' && processRippleOut();
-    }, [mobile, processRippleOut, state]);
+        if (Object.keys(rippleSequence).length !== 0) {
+            mobile
+                ? state === 'enabled' && processRippleOut()
+                : state === 'hovered' && processRippleOut();
+        }
+    }, [mobile, processRippleOut, rippleSequence, state]);
 
     useEffect(() => {
         if (disabled) {

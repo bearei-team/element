@@ -21,36 +21,36 @@ export interface ButtonProps
 const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
     const MainContainer = Animated.createAnimatedComponent(Main);
     const LabelContainer = Animated.createAnimatedComponent(Label);
-
     const render = ({
         elevation,
         icon,
         id,
         label,
-        labelStyle,
-        mainStyle,
         onBlur,
         onFocus,
         onHoverIn,
         onHoverOut,
         onPressIn,
         onPressOut,
+        renderStyle,
         shape,
         showIcon,
+        style,
         type,
         underlayColor,
-        ...containerProps
+        ...touchableRippleProps
     }: RenderProps) => {
+        const {color, ...mainStyle} = renderStyle;
         const main = (
             <MainContainer
                 shape={shape}
                 showIcon={showIcon}
-                style={mainStyle}
+                style={{...(typeof style === 'object' && style), ...mainStyle}}
                 testID={`button--${id}`}
                 type={type}>
                 {showIcon && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
 
-                <LabelContainer style={labelStyle} testID={`button__label--${id}`} type={type}>
+                <LabelContainer style={{color}} testID={`button__label--${id}`} type={type}>
                     {label}
                 </LabelContainer>
             </MainContainer>
@@ -59,7 +59,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
         return (
             <Elevation level={elevation} shape={shape}>
                 <TouchableRipple
-                    {...containerProps}
+                    {...touchableRippleProps}
                     onBlur={onBlur}
                     onFocus={onFocus}
                     onHoverIn={onHoverIn}
