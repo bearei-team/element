@@ -8,7 +8,10 @@ import {Container, Main} from './TouchableRipple.styles';
 
 export interface TouchableRippleProps
     extends Omit<
-        PressableProps & Pick<RippleProps, 'underlayColor' | 'centered'> & RefAttributes<View>,
+        PressableProps &
+            Pick<RippleProps, 'underlayColor' | 'centered'> &
+            RefAttributes<View> &
+            Pick<ShapeProps, 'shape'>,
         'children'
     > {
     children?: ReactNode;
@@ -17,9 +20,9 @@ export interface TouchableRippleProps
 }
 
 const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>((props, ref) => {
-    const render = ({id, children, shapeProps, hoveredProps, ...containerProps}: RenderProps) => (
+    const render = ({id, children, hoveredProps, shape, ...containerProps}: RenderProps) => (
         <Container {...containerProps} ref={ref} testID={`touchableRipple--${id}`}>
-            <Main {...shapeProps} testID={`touchableRipple__main--${id}`}>
+            <Main testID={`touchableRipple__main--${id}`} shape={shape}>
                 {children}
             </Main>
 

@@ -1,12 +1,14 @@
 import {FC, ReactNode, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, PressableProps, View} from 'react-native';
+import {ShapeProps} from '../Common/Common.styles';
 import {Elevation} from '../Elevation/Elevation';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {BaseButton, RenderProps} from './BaseButton';
 import {Icon, Label, Main} from './Button.styles';
 
 export type Type = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
-export interface ButtonProps extends Partial<PressableProps & RefAttributes<View>> {
+export interface ButtonProps
+    extends Partial<PressableProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>> {
     children?: ReactNode;
     disabled?: boolean;
     icon?: React.JSX.Element;
@@ -20,22 +22,27 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
     const LabelContainer = Animated.createAnimatedComponent(Label);
 
     const render = ({
-        elevationProps,
+        elevationLevel,
         icon,
         id,
         label,
         labelStyle,
         mainStyle,
-        shapeProps,
+        onBlur,
+        onFocus,
+        onHoverIn,
+        onHoverOut,
+        onPressIn,
+        onPressOut,
+        shape,
         showIcon,
-        touchableRippleProps,
         type,
+        underlayColor,
         ...containerProps
     }: RenderProps) => {
-        const {border, ...restShapeProps} = shapeProps;
         const main = (
             <MainContainer
-                {...restShapeProps}
+                shape={shape}
                 showIcon={showIcon}
                 style={mainStyle}
                 testID={`button--${id}`}
@@ -49,11 +56,18 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
         );
 
         return (
-            <Elevation {...elevationProps} shapeProps={{border, ...restShapeProps}}>
+            <Elevation level={elevationLevel} shape={shape}>
                 <TouchableRipple
-                    {...{...touchableRippleProps, ...containerProps}}
+                    {...containerProps}
+                    onBlur={onBlur}
+                    onFocus={onFocus}
+                    onHoverIn={onHoverIn}
+                    onHoverOut={onHoverOut}
+                    onPressIn={onPressIn}
+                    onPressOut={onPressOut}
                     ref={ref}
-                    shapeProps={restShapeProps}>
+                    shape={shape}
+                    underlayColor={underlayColor}>
                     {main}
                 </TouchableRipple>
             </Elevation>

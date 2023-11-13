@@ -6,12 +6,12 @@ import {
     NativeSyntheticEvent,
     TargetedEvent,
 } from 'react-native';
+import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
+import {HoveredProps} from '../Hovered/Hovered';
+import {State} from '../common/interface';
 import {Ripple, RippleAnimatedOut, RippleProps} from './Ripple/Ripple';
 import {TouchableRippleProps} from './TouchableRipple';
-import {State} from '../common/interface';
-import {HoveredProps} from '../Hovered/Hovered';
-import {useTheme} from 'styled-components/native';
 
 export interface RenderProps extends Omit<TouchableRippleProps, 'centered'> {
     hoveredProps?: HoveredProps;
@@ -50,6 +50,7 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     children,
     underlayColor,
     disabled = false,
+    shape,
     ...renderProps
 }) => {
     const id = useId();

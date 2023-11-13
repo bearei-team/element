@@ -1,12 +1,11 @@
 import {useTheme} from 'styled-components/native';
-import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {Type} from './Button';
 
-export interface UseTouchableRipplePropsOptions extends TouchableRippleProps {
+export interface UseUnderlayColorOptions {
     type: Type;
 }
 
-export const useTouchableRippleProps = ({type, ...props}: UseTouchableRipplePropsOptions) => {
+export const useUnderlayColor = ({type}: UseUnderlayColorOptions) => {
     const {palette} = useTheme();
     const underlay = {
         elevated: palette.primary.primary,
@@ -16,8 +15,5 @@ export const useTouchableRippleProps = ({type, ...props}: UseTouchableRippleProp
         tonal: palette.secondary.onSecondaryContainer,
     };
 
-    return {
-        ...props,
-        underlayColor: underlay[type],
-    };
+    return [underlay[type]];
 };

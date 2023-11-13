@@ -1,16 +1,21 @@
-import {useCallback, useEffect} from 'react';
+import {useCallback, useEffect, useMemo} from 'react';
+import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
+import {State} from '../common/interface';
 import {Type} from './Button';
 
 export interface UseAnimatedOptions {
-    type: Type;
     disabled: boolean;
+    state: State;
+    type: Type;
 }
 
-export const useAnimated = ({type, disabled}: UseAnimatedOptions) => {
+export const useAnimated = ({type, disabled, state}: UseAnimatedOptions) => {
     const [colorAnimated] = useAnimatedValue(0);
+    const [borderAnimated] = useAnimatedValue(0);
+    const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
     const {color: themeColor, palette} = theme;
     const disabledColor = themeColor.rgba(palette.surface.onSurface, 0.12);
@@ -65,24 +70,48 @@ export const useAnimated = ({type, disabled}: UseAnimatedOptions) => {
 
     const backgroundColor = colorAnimated.interpolate(backgroundColorConfig[type]);
     const color = colorAnimated.interpolate(colorConfig[type]);
+    const borderColor = borderAnimated.interpolate({
+        inputRange: borderInputRange,
+        outputRange: [
+            theme.palette.outline.outline,
+            theme.palette.primary.primary,
+            theme.color.rgba(theme.palette.surface.onSurface, 0.12),
+        ],
+    });
+
     const processAnimatedTiming = useCallback(
-        (toValue: number) => {
+        (animation: Animated.Value, toValue: number) => {
             const animatedTiming = UTIL.animatedTiming(theme);
 
             requestAnimationFrame(() =>
-                animatedTiming(colorAnimated, {
+                animatedTiming(animation, {
                     toValue: toValue,
                     easing: 'standard',
                     duration: 'short3',
                 }).start(),
             );
         },
-        [colorAnimated, theme],
+        [theme],
     );
 
     useEffect(() => {
-        processAnimatedTiming(disabled ? 1 : 0);
-    }, [disabled, processAnimatedTiming]);
+        if (type === 'outlined') {
+            const value = disabled ? borderInputRange[borderInputRange.length - 1] : 0;
+            const toValue = state === 'focused' ? borderInputRange[1] : value;
 
-    return {backgroundColor, color};
+            processAnimatedTiming(borderAnimated, toValue);
+        }
+
+        processAnimatedTiming(colorAnimated, disabled ? 1 : 0);
+    }, [
+        borderAnimated,
+        borderInputRange,
+        colorAnimated,
+        disabled,
+        processAnimatedTiming,
+        state,
+        type,
+    ]);
+
+    return {backgroundColor, color, ...(type === 'outlined' && {borderColor})};
 };

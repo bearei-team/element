@@ -3,56 +3,40 @@ import {Animated, View, ViewProps} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
 import {BaseElevation, RenderProps} from './BaseElevation';
 import {Container, Main, Shadow0, Shadow1} from './Elevation.styles';
-export interface ElevationProps extends Partial<ViewProps & RefAttributes<View>> {
+export interface ElevationProps
+    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>> {
     level?: 0 | 1 | 2 | 3 | 4 | 5;
-    shapeProps?: ShapeProps;
 }
 
 const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
     const AnimatedShadow0 = Animated.createAnimatedComponent(Shadow0);
     const AnimatedShadow1 = Animated.createAnimatedComponent(Shadow1);
-    const AnimatedContainer = Animated.createAnimatedComponent(Container);
 
     const render = ({
         id,
         level,
-        shapeProps = {},
+        shape,
         children,
         shadowStyle,
         onLayout,
         ...containerProps
     }: RenderProps) => {
         const {width, height, opacity0, opacity1} = shadowStyle;
-        const {border, ...restShapeProps} = shapeProps;
-        const isAnimatedInterpolation =
-            border && (typeof border?.color !== 'string' || typeof border?.width !== 'number');
 
         return (
-            <AnimatedContainer
-                {...{
-                    ...restShapeProps,
-                    ...containerProps,
-                    ...(!isAnimatedInterpolation && {border}),
-                }}
+            <Container
+                {...containerProps}
                 ref={ref}
                 testID={`elevation--${id}`}
-                style={{
-                    width,
-                    height,
-                    ...(isAnimatedInterpolation && {
-                        borderColor: border?.color,
-                        borderWidth: border?.width,
-                        borderStyle: border?.style,
-                    }),
-                }}>
-                <Main {...restShapeProps} testID={`elevation__main--${id}`} onLayout={onLayout}>
+                style={{height, width}}>
+                <Main testID={`elevation__main--${id}`} onLayout={onLayout} shape={shape}>
                     {children}
                 </Main>
 
                 {width !== 0 && (
                     <>
                         <AnimatedShadow0
-                            {...restShapeProps}
+                            shape={shape}
                             testID={`elevation__shadow0--${id}`}
                             level={level}
                             shadow={0}
@@ -60,7 +44,7 @@ const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
                         />
 
                         <AnimatedShadow1
-                            {...restShapeProps}
+                            shape={shape}
                             testID={`elevation__shadow1--${id}`}
                             level={level}
                             shadow={1}
@@ -68,7 +52,7 @@ const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
                         />
                     </>
                 )}
-            </AnimatedContainer>
+            </Container>
         );
     };
 

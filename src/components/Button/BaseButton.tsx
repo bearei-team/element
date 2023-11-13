@@ -10,23 +10,20 @@ import {
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
-import {ShapeProps} from '../Common/Common.styles';
 import {ElevationProps} from '../Elevation/Elevation';
 import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {State} from '../common/interface';
 import {ButtonProps} from './Button';
 import {useAnimated} from './useAnimated';
-import {useShapeProps} from './useShapeProps';
-import {useTouchableRippleProps} from './useTouchableRippleProps';
+import {useUnderlayColor} from './useUnderlayColor';
 
 export type RenderProps = ButtonProps & {
-    elevationProps: ElevationProps;
+    elevationLevel: ElevationProps['level'];
     labelStyle: Animated.WithAnimatedObject<TextStyle>;
     mainStyle: Animated.WithAnimatedObject<ViewStyle>;
-    shapeProps: ShapeProps;
     showIcon: boolean;
     state: State;
-    touchableRippleProps: TouchableRippleProps;
+    underlayColor: TouchableRippleProps['underlayColor'];
 };
 
 export interface BaseButtonProps extends ButtonProps {
@@ -51,10 +48,14 @@ export const BaseButton: FC<BaseButtonProps> = ({
     const [state, setState] = useImmer<State>('enabled');
     const id = useId();
     const theme = useTheme();
-    const shapeProps = useShapeProps({type, state, disabled});
-    const touchableRippleProps = useTouchableRippleProps({type, disabled, ...renderProps});
-    const {backgroundColor, color} = useAnimated({type, disabled});
+    const [underlayColor] = useUnderlayColor({type});
+    const {backgroundColor, color, borderColor} = useAnimated({type, disabled, state});
     const mobile = theme.OS === 'ios' || theme.OS === 'android';
+    const border = borderColor && {
+        borderColor: borderColor,
+        borderStyle: 'solid' as ViewStyle['borderStyle'],
+        borderWidth: 1,
+    };
 
     const processElevationLevel = useCallback(
         (nextState: State) => {
@@ -134,24 +135,22 @@ export const BaseButton: FC<BaseButtonProps> = ({
     }, [disabled, setElevationLevel, type]);
 
     return render({
-        elevationProps: {level: elevationLevel},
+        ...renderProps,
+        elevationLevel,
         icon,
         id,
         label,
         labelStyle: {color},
-        mainStyle: {backgroundColor},
-        shapeProps,
+        mainStyle: {backgroundColor, ...border},
+        onBlur: handleBlur,
+        onFocus: handleFocus,
+        onHoverIn: handleHoverIn,
+        onHoverOut: handleHoverOut,
+        onPressIn: handlePressIn,
+        onPressOut: handlePressOut,
         showIcon: !!icon,
         state,
-        touchableRippleProps: {
-            ...touchableRippleProps,
-            onBlur: handleBlur,
-            onFocus: handleFocus,
-            onHoverIn: handleHoverIn,
-            onHoverOut: handleHoverOut,
-            onPressIn: handlePressIn,
-            onPressOut: handlePressOut,
-        },
         type,
+        underlayColor,
     });
 };

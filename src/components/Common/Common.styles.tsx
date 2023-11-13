@@ -1,11 +1,11 @@
 import {Shape as ThemeShape} from '@bearei/theme';
-import {Animated, View} from 'react-native';
+import {Animated, View, ViewStyle} from 'react-native';
 import styled, {css} from 'styled-components/native';
 
 export interface ShapeProps {
     border?: {
         color?: string | Animated.AnimatedInterpolation<string | number>;
-        style?: 'dotted' | 'solid' | 'dashed';
+        style?: ViewStyle['borderStyle'];
         width?: number | Animated.AnimatedInterpolation<string | number>;
     };
     shape?: keyof ThemeShape;
