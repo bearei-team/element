@@ -8,14 +8,11 @@ import {
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
-import {HoveredProps} from '../Hovered/Hovered';
 import {State} from '../common/interface';
 import {Ripple, RippleAnimatedOut, RippleProps} from './Ripple/Ripple';
 import {TouchableRippleProps} from './TouchableRipple';
 
-export interface RenderProps extends Omit<TouchableRippleProps, 'centered'> {
-    hoveredProps?: HoveredProps;
-}
+export interface RenderProps extends Omit<TouchableRippleProps, 'centered'> {}
 export interface BaseTouchableRippleProps extends TouchableRippleProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
@@ -39,18 +36,18 @@ const renderRipples = (rippleSequence: RippleSequence, options: RenderRipplesOpt
     ));
 
 export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
-    onPressIn,
-    onPressOut,
-    onLayout,
+    children,
+    disabled = false,
+    onBlur,
+    onFocus,
     onHoverIn,
     onHoverOut,
-    onFocus,
-    onBlur,
+    onLayout,
+    onPressIn,
+    onPressOut,
     render,
-    children,
-    underlayColor,
-    disabled = false,
     shape,
+    underlayColor,
     ...renderProps
 }) => {
     const id = useId();
@@ -64,18 +61,15 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
 
         setRippleSequence(draft => {
             draft[`${Date.now()}`] = {
-                location: {locationX, locationY},
                 animatedOut: undefined,
+                location: {locationX, locationY},
             };
         });
     };
 
     const processState = (nextState: State, {event, callback}: ProcessStateOptions) => {
         if (state !== 'disabled') {
-            if (nextState === 'pressed' && event) {
-                processPressed(event);
-            }
-
+            nextState === 'pressed' && event && processPressed(event);
             setState(() => nextState);
             callback?.();
         }
@@ -142,36 +136,24 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
 
     return render({
         ...renderProps,
-        ...(!mobile && {
-            hoveredProps: {
-                underlayColor,
-                width: layout.width,
-                height: layout.height,
-                disabled,
-                shapeProps: renderProps.shapeProps,
-                state:
-                    state === 'hovered' || state === 'focused' || state === 'enabled'
-                        ? state
-                        : undefined,
-            },
-        }),
-        id,
         children: (
             <>
                 {children}
                 {renderRipples(rippleSequence, {
-                    underlayColor,
-                    touchableLayout: layout,
                     onAnimatedEnd: processRippleAnimatedEnd,
+                    touchableLayout: layout,
+                    underlayColor,
                 })}
             </>
         ),
+        id,
+        onBlur: handleBlur,
+        onFocus: handleFocus,
+        onHoverIn: handleHoverIn,
+        onHoverOut: handleHoverOut,
         onLayout: processLayout,
         onPressIn: handlePressIn,
         onPressOut: handlePressOut,
-        onHoverIn: handleHoverIn,
-        onHoverOut: handleHoverOut,
-        onFocus: handleFocus,
-        onBlur: handleBlur,
+        shape,
     });
 };

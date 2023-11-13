@@ -1,4 +1,5 @@
-import {StoryObj, Meta} from '@storybook/react';
+import {Meta, StoryObj} from '@storybook/react';
+import {Button} from '../Button/Button';
 import {TouchableRipple, TouchableRippleProps} from './TouchableRipple';
 
 export default {
@@ -7,6 +8,6 @@ export default {
     component: TouchableRipple,
 } as Meta<typeof TouchableRipple>;
 
-export const Filled: StoryObj<TouchableRippleProps> = {
-    args: {},
+export const Ripple: StoryObj<TouchableRippleProps> = {
+    args: {children: <Button />},
 };

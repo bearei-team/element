@@ -4,12 +4,12 @@ import {RenderProps} from './BaseRipple';
 
 export type ContainerProps = RenderProps;
 
-export const Container = styled(Shape)<ContainerProps>`
-    position: absolute;
+const Container = styled(Shape)<ContainerProps>`
     pointer-events: none;
+    position: absolute;
     z-index: 128;
 
-    ${({x, isRTL}) =>
+    ${({isRTL, x}) =>
         isRTL
             ? css`
                   right: ${x}px;
@@ -18,16 +18,17 @@ export const Container = styled(Shape)<ContainerProps>`
                   left: ${x}px;
               `}
 
-    ${({y, width, hight}) => css`
+    ${({hight, width, y}) => css`
+        height: ${hight}px;
         top: ${y}px;
         width: ${width}px;
-        height: ${hight}px;
     `}
 
     ${({underlayColor, theme}) =>
+        underlayColor &&
         css`
-            background-color: ${underlayColor
-                ? theme.color.rgba(underlayColor, 0.12)
-                : theme.palette.surface.onSurface};
+            background-color: ${theme.color.rgba(underlayColor, 0.12)};
         `};
 `;
+
+export {Container};

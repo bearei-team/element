@@ -5,12 +5,12 @@ import {Container} from './Ripple.styles';
 
 export type RippleAnimatedOut = (finished: () => void) => number;
 export interface RippleProps extends Partial<ViewProps & React.RefAttributes<View>> {
-    sequence?: string;
     centered?: boolean;
-    underlayColor?: string;
-    touchableLayout: Pick<LayoutRectangle, 'width' | 'height'>;
     location: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     onAnimatedEnd: (sequence: string, animatedOut: RippleAnimatedOut) => void;
+    sequence?: string;
+    touchableLayout: Pick<LayoutRectangle, 'width' | 'height'>;
+    underlayColor?: string;
 }
 
 const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => {
