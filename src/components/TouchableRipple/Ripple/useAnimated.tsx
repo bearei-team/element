@@ -19,18 +19,18 @@ export const useAnimated = ({minDuration, onAnimatedEnd, sequence}: UseAnimatedO
         const animatedIn = (finished: () => void) =>
             requestAnimationFrame(() =>
                 animatedTiming(scaleAnimated, {
-                    toValue: 1,
-                    easing: 'emphasized',
                     duration: Math.min(minDuration, 200),
+                    easing: 'emphasized',
+                    toValue: 1,
                 }).start(finished),
             );
 
         const animatedOut = (finished: () => void) =>
             requestAnimationFrame(() =>
                 animatedTiming(opacityAnimated, {
-                    toValue: 1,
-                    easing: 'emphasized',
                     duration: 'short3',
+                    easing: 'emphasized',
+                    toValue: 1,
                 }).start(finished),
             );
 

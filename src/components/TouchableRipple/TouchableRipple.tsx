@@ -17,7 +17,7 @@ export interface TouchableRippleProps extends Omit<TouchableProps, 'children'> {
 const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>((props, ref) => {
     const render = ({id, children, shape, ...containerProps}: RenderProps) => (
         <Container {...containerProps} ref={ref} testID={`touchableRipple--${id}`}>
-            <Main testID={`touchableRipple__main--${id}`} shape={shape}>
+            <Main shape={shape} testID={`touchableRipple__main--${id}`}>
                 {children}
             </Main>
         </Container>

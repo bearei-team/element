@@ -16,7 +16,7 @@ export interface RippleProps extends Partial<ViewProps & React.RefAttributes<Vie
 const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => {
     const AnimatedContainer = Animated.createAnimatedComponent(Container);
     const render = ({id, ...containerProps}: RenderProps) => (
-        <AnimatedContainer {...containerProps} ref={ref} testID={`ripple--${id}`} shape="full" />
+        <AnimatedContainer {...containerProps} ref={ref} shape="full" testID={`ripple--${id}`} />
     );
 
     return <BaseRipple {...props} render={render} />;

@@ -13,48 +13,47 @@ const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
     const AnimatedShadow1 = Animated.createAnimatedComponent(Shadow1);
 
     const render = ({
+        children,
+        height,
         id,
         level,
-        shape,
-        children,
-        shadowStyle,
         onLayout,
+        opacity0,
+        opacity1,
+        shape,
+        width,
         ...containerProps
-    }: RenderProps) => {
-        const {width, height, opacity0, opacity1} = shadowStyle;
+    }: RenderProps) => (
+        <Container
+            {...containerProps}
+            ref={ref}
+            style={{height, width}}
+            testID={`elevation--${id}`}>
+            <Main onLayout={onLayout} shape={shape} testID={`elevation__main--${id}`}>
+                {children}
+            </Main>
 
-        return (
-            <Container
-                {...containerProps}
-                ref={ref}
-                testID={`elevation--${id}`}
-                style={{height, width}}>
-                <Main testID={`elevation__main--${id}`} onLayout={onLayout} shape={shape}>
-                    {children}
-                </Main>
+            {width !== 0 && (
+                <>
+                    <AnimatedShadow0
+                        level={level}
+                        shadow={0}
+                        shape={shape}
+                        style={{width, height, opacity: opacity0}}
+                        testID={`elevation__shadow0--${id}`}
+                    />
 
-                {width !== 0 && (
-                    <>
-                        <AnimatedShadow0
-                            shape={shape}
-                            testID={`elevation__shadow0--${id}`}
-                            level={level}
-                            shadow={0}
-                            style={{width, height, opacity: opacity0}}
-                        />
-
-                        <AnimatedShadow1
-                            shape={shape}
-                            testID={`elevation__shadow1--${id}`}
-                            level={level}
-                            shadow={1}
-                            style={{width, height, opacity: opacity1}}
-                        />
-                    </>
-                )}
-            </Container>
-        );
-    };
+                    <AnimatedShadow1
+                        level={level}
+                        shadow={1}
+                        shape={shape}
+                        style={{width, height, opacity: opacity1}}
+                        testID={`elevation__shadow1--${id}`}
+                    />
+                </>
+            )}
+        </Container>
+    );
 
     return <BaseElevation {...props} render={render} />;
 });

@@ -1,22 +1,14 @@
-import {FC, useCallback, useEffect, useId} from 'react';
-import {ElevationProps} from './Elevation';
-import {useAnimatedValue} from '../../hooks/useAnimatedValue';
-import {useTheme} from 'styled-components/native';
-import {UTIL} from '../../utils/util';
+import {FC, useId} from 'react';
 import {Animated, LayoutChangeEvent} from 'react-native';
 import {useImmer} from 'use-immer';
+import {ElevationProps} from './Elevation';
+import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends ElevationProps {
-    shadowStyle: {
-        width: number;
-        height: number;
-        opacity0: Animated.AnimatedInterpolation<string | number>;
-        opacity1: Animated.AnimatedInterpolation<string | number>;
-    };
-}
-
-export interface ProcessAnimatedTimingOptions {
-    animatedValue: Animated.Value;
+    width: number;
+    height: number;
+    opacity0: Animated.AnimatedInterpolation<string | number>;
+    opacity1: Animated.AnimatedInterpolation<string | number>;
 }
 
 export interface BaseElevationProps extends ElevationProps {
@@ -30,33 +22,8 @@ export const BaseElevation: FC<BaseElevationProps> = ({
     ...renderProps
 }) => {
     const id = useId();
-    const theme = useTheme();
-    const [layout, setLayout] = useImmer({} as RenderProps['shadowStyle']);
-    const [shadowAnimated] = useAnimatedValue(0);
-    const shadow0Opacity = shadowAnimated.interpolate({
-        inputRange: [0, 1, 2, 3, 4, 5],
-        outputRange: [
-            theme.elevation.level0.shadow0.opacity,
-            theme.elevation.level1.shadow0.opacity,
-            theme.elevation.level2.shadow0.opacity,
-            theme.elevation.level3.shadow0.opacity,
-            theme.elevation.level4.shadow0.opacity,
-            theme.elevation.level5.shadow0.opacity,
-        ],
-    });
-
-    const shadow1Opacity = shadowAnimated.interpolate({
-        inputRange: [0, 1, 2, 3, 4, 5],
-        outputRange: [
-            theme.elevation.level0.shadow1.opacity,
-            theme.elevation.level1.shadow1.opacity,
-            theme.elevation.level2.shadow1.opacity,
-            theme.elevation.level3.shadow1.opacity,
-            theme.elevation.level4.shadow1.opacity,
-            theme.elevation.level5.shadow1.opacity,
-        ],
-    });
-
+    const [layout, setLayout] = useImmer({} as Pick<RenderProps, 'width' | 'height'>);
+    const {shadow0Opacity, shadow1Opacity} = useAnimated({level});
     const processLayout = (event: LayoutChangeEvent) => {
         const {width, height} = event.nativeEvent.layout;
 
@@ -64,37 +31,14 @@ export const BaseElevation: FC<BaseElevationProps> = ({
         onLayout?.(event);
     };
 
-    const processAnimatedTiming = useCallback(
-        (toValue: ElevationProps['level'] = 0, {animatedValue}: ProcessAnimatedTimingOptions) => {
-            const animatedTiming = UTIL.animatedTiming(theme);
-            const animated = (): number =>
-                requestAnimationFrame(() =>
-                    animatedTiming(animatedValue, {
-                        toValue,
-                        easing: 'standard',
-                        duration: 'short3',
-                    }).start(),
-                );
-
-            animated();
-        },
-        [theme],
-    );
-
-    useEffect(() => {
-        processAnimatedTiming(level, {animatedValue: shadowAnimated});
-    }, [shadowAnimated, level, processAnimatedTiming]);
-
     return render({
         ...renderProps,
+        height: layout.height,
         id,
         level,
-        shadowStyle: {
-            width: layout.width,
-            height: layout.height,
-            opacity0: shadow0Opacity,
-            opacity1: shadow1Opacity,
-        },
         onLayout: processLayout,
+        opacity0: shadow0Opacity,
+        opacity1: shadow1Opacity,
+        width: layout.width,
     });
 };

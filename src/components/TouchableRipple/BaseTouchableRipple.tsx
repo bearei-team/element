@@ -46,7 +46,6 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     onPressIn,
     onPressOut,
     render,
-    shape,
     underlayColor,
     ...renderProps
 }) => {
@@ -70,6 +69,7 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     const processState = (nextState: State, {event, callback}: ProcessStateOptions) => {
         if (state !== 'disabled') {
             nextState === 'pressed' && event && processPressed(event);
+
             setState(() => nextState);
             callback?.();
         }
@@ -154,6 +154,5 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
         onLayout: processLayout,
         onPressIn: handlePressIn,
         onPressOut: handlePressOut,
-        shape,
     });
 };
