@@ -44,7 +44,6 @@ const Shape = styled(View)<ShapeProps>`
 const Disabled = styled(Shape)<DisabledProps>`
     left: 0;
     opacity: 0.04;
-    pointer-events: none;
     position: absolute;
     top: 0;
     z-index: 1024;

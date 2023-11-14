@@ -1,5 +1,5 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, View, ViewProps, ViewStyle} from 'react-native';
+import {Animated, View, ViewProps} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
 import {State} from '../common/interface';
 import {BaseHovered, RenderProps} from './BaseHovered';
@@ -7,11 +7,11 @@ import {Container} from './Hovered.styles';
 
 export interface HoveredProps
     extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>> {
-    height?: Animated.WithAnimatedObject<ViewStyle>['height'];
+    height?: number;
     opacity?: number;
     state?: State;
     underlayColor?: string;
-    width?: Animated.WithAnimatedObject<ViewStyle>['width'];
+    width?: number;
 }
 
 const ForwardRefHovered = forwardRef<View | Animated.LegacyRef<View>, HoveredProps>(

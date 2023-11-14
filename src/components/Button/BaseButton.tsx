@@ -24,7 +24,10 @@ export interface RenderProps extends ButtonProps {
     showIcon: boolean;
     state: State;
     underlayColor: TouchableRippleProps['underlayColor'];
-    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle>;
+    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
+        width: number;
+        height: number;
+    };
 }
 
 export interface BaseButtonProps extends ButtonProps {

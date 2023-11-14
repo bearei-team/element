@@ -1,6 +1,6 @@
 import {FC, ReactNode, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, PressableProps, View} from 'react-native';
-import {ShapeProps} from '../Common/Common.styles';
+import {Disabled, ShapeProps} from '../Common/Common.styles';
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
@@ -18,9 +18,6 @@ export interface ButtonProps
     type?: Type;
 }
 
-/**
- * TODO:hover Disabled
- */
 const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
     const MainContainer = Animated.createAnimatedComponent(Main);
     const LabelContainer = Animated.createAnimatedComponent(Label);
@@ -81,10 +78,20 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                         height={height}
                         shape={shape}
                         state={state}
+                        testID={`button__hovered--${id}`}
                         underlayColor={underlayColor}
                         width={width}
                     />
                 </TouchableRipple>
+
+                {state === 'disabled' && (
+                    <Disabled
+                        height={height}
+                        shape={shape}
+                        testID={`button__disabled--${id}`}
+                        width={width}
+                    />
+                )}
             </Elevation>
         );
     };
