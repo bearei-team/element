@@ -4,13 +4,17 @@ import {HoveredProps} from './Hovered';
 
 export type ContainerProps = Pick<HoveredProps, 'underlayColor'>;
 
-export const Container = styled(Shape)<ContainerProps>`
-    position: absolute;
-    pointer-events: none;
-    top: 0;
+const Container = styled(Shape)<ContainerProps>`
     left: 0;
+    pointer-events: none;
+    position: absolute;
+    top: 0;
 
-    ${({underlayColor}) => css`
-        background-color: ${underlayColor};
-    `}
+    ${({underlayColor}) =>
+        underlayColor &&
+        css`
+            background-color: ${underlayColor};
+        `}
 `;
+
+export {Container};

@@ -34,25 +34,21 @@ const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
                     {children}
                 </Main>
 
-                {width !== 0 && (
-                    <>
-                        <AnimatedShadow0
-                            level={level}
-                            shadow={0}
-                            shape={shape}
-                            style={{width, height, opacity: opacity0}}
-                            testID={`elevation__shadow0--${id}`}
-                        />
+                <AnimatedShadow0
+                    level={level}
+                    shadow={0}
+                    shape={shape}
+                    style={{width, height, opacity: opacity0}}
+                    testID={`elevation__shadow0--${id}`}
+                />
 
-                        <AnimatedShadow1
-                            level={level}
-                            shadow={1}
-                            shape={shape}
-                            style={{width, height, opacity: opacity1}}
-                            testID={`elevation__shadow1--${id}`}
-                        />
-                    </>
-                )}
+                <AnimatedShadow1
+                    level={level}
+                    shadow={1}
+                    shape={shape}
+                    style={{width, height, opacity: opacity1}}
+                    testID={`elevation__shadow1--${id}`}
+                />
             </Container>
         );
     };

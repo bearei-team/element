@@ -47,7 +47,7 @@ const Disabled = styled(Shape)<DisabledProps>`
     pointer-events: none;
     position: absolute;
     top: 0;
-    z-index: 128;
+    z-index: 1024;
 
     ${({height, theme, width}) =>
         css`

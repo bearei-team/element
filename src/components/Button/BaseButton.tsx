@@ -2,6 +2,8 @@ import {FC, useCallback, useEffect, useId} from 'react';
 import {
     Animated,
     GestureResponderEvent,
+    LayoutChangeEvent,
+    LayoutRectangle,
     MouseEvent,
     NativeSyntheticEvent,
     TargetedEvent,
@@ -37,6 +39,7 @@ export const BaseButton: FC<BaseButtonProps> = ({
     onFocus,
     onHoverIn,
     onHoverOut,
+    onLayout,
     onPressIn,
     onPressOut,
     render,
@@ -44,6 +47,7 @@ export const BaseButton: FC<BaseButtonProps> = ({
     type = 'filled',
     ...renderProps
 }) => {
+    const [layout, setLayout] = useImmer({} as Pick<LayoutRectangle, 'height' | 'width'>);
     const [elevation, setElevation] = useImmer<ElevationProps['level']>(0);
     const [state, setState] = useImmer<State>('enabled');
     const id = useId();
@@ -86,6 +90,13 @@ export const BaseButton: FC<BaseButtonProps> = ({
         },
         [processElevation, setState, type],
     );
+
+    const processLayout = (event: LayoutChangeEvent) => {
+        const {width, height} = event.nativeEvent.layout;
+
+        setLayout(() => ({width, height}));
+        onLayout?.(event);
+    };
 
     const handlePressIn = useCallback(
         (event: GestureResponderEvent) => processState('pressed', () => onPressIn?.(event)),
@@ -142,11 +153,14 @@ export const BaseButton: FC<BaseButtonProps> = ({
         onFocus: handleFocus,
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
+        onLayout: processLayout,
         onPressIn: handlePressIn,
         onPressOut: handlePressOut,
         renderStyle: {
             backgroundColor,
             color,
+            height: layout.height,
+            width: layout.width,
             ...border,
         },
         shape,

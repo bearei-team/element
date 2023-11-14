@@ -4,15 +4,10 @@ import {RippleProps} from './Ripple';
 import {useAnimated} from './useAnimated';
 export interface RenderProps extends Partial<RippleProps> {
     isRTL: boolean;
-    renderStyle: Animated.WithAnimatedObject<
-        ViewStyle & {
-            height: number;
-            width: number;
-            x: number;
-            y: number;
-        }
-    >;
+    renderStyle: Animated.WithAnimatedObject<ViewStyle & {height: number; width: number}>;
     underlayColor: RippleProps['underlayColor'];
+    x: number;
+    y: number;
 }
 
 export interface BaseRippleProps extends RippleProps {
@@ -49,9 +44,9 @@ export const BaseRipple: FC<BaseRippleProps> = ({
             opacity,
             transform: [{translateY: -radius}, {translateX: -radius}, {scale}],
             width: diameter,
-            x: locationX,
-            y: locationY,
         },
         underlayColor,
+        x: locationX,
+        y: locationY,
     });
 };

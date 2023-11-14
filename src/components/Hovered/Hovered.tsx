@@ -5,34 +5,25 @@ import {State} from '../common/interface';
 import {BaseHovered, RenderProps} from './BaseHovered';
 import {Container} from './Hovered.styles';
 
-export interface HoveredProps extends Partial<ViewProps & RefAttributes<View>> {
-    width?: number;
-    height?: number;
-    underlayColor?: string;
+export interface HoveredProps
+    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>> {
+    height?: Animated.WithAnimatedObject<ViewStyle>['height'];
     opacity?: number;
     state?: State;
-    disabled?: boolean;
-    shapeProps?: ShapeProps;
+    underlayColor?: string;
+    width?: Animated.WithAnimatedObject<ViewStyle>['width'];
 }
 
 const ForwardRefHovered = forwardRef<View | Animated.LegacyRef<View>, HoveredProps>(
     (props, ref) => {
         const AnimatedContainer = Animated.createAnimatedComponent(Container);
-        const render = ({id, shapeProps, width, height, style, ...containerProps}: RenderProps) => (
-            <>
-                {width !== 0 && (
-                    <AnimatedContainer
-                        {...{...shapeProps, ...containerProps}}
-                        ref={ref}
-                        testID={`hovered--${id}`}
-                        style={{
-                            ...(style as Animated.WithAnimatedObject<ViewStyle>),
-                            width,
-                            height,
-                        }}
-                    />
-                )}
-            </>
+        const render = ({id, renderStyle, style, ...containerProps}: RenderProps) => (
+            <AnimatedContainer
+                {...containerProps}
+                ref={ref}
+                style={{...(typeof style === 'object' && style), ...renderStyle}}
+                testID={`hovered--${id}`}
+            />
         );
 
         return <BaseHovered {...props} render={render} />;

@@ -49,11 +49,11 @@ export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
     underlayColor,
     ...renderProps
 }) => {
-    const id = useId();
-    const theme = useTheme();
     const [state, setState] = useImmer<State>('enabled');
     const [layout, setLayout] = useImmer({} as RippleProps['touchableLayout']);
     const [rippleSequence, setRippleSequence] = useImmer<RippleSequence>({});
+    const id = useId();
+    const theme = useTheme();
     const mobile = theme.OS === 'ios' || theme.OS === 'android';
     const processPressed = (event: GestureResponderEvent) => {
         const {locationX, locationY} = event.nativeEvent;
