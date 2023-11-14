@@ -1,34 +1,34 @@
+import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {DividerProps} from './Divider';
-import {View} from 'react-native';
 
 export type ContainerProps = Pick<DividerProps, 'layout' | 'size'>;
 
-export const Container = styled(View)<ContainerProps>`
+const Container = styled(View)<ContainerProps>`
+    align-items: flex-start;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: flex-start;
 
     ${({theme}) => css`
         gap: ${theme.spacing.extraSmall}px;
     `}
 
     ${({layout = 'horizontal'}) => {
-        const themeType = {
+        const containerLayout = {
             horizontal: css`
                 min-width: 320px;
             `,
             vertical: css`
-                width: 1px;
                 min-height: 120px;
+                width: 1px;
             `,
         };
 
-        return themeType[layout];
+        return containerLayout[layout];
     }}
-        ${({theme, size = 'medium', layout = 'horizontal'}) => {
-        const themeType = {
+        ${({layout = 'horizontal', size = 'medium', theme}) => {
+        const containerSize = {
             large: css``,
 
             medium:
@@ -50,13 +50,13 @@ export const Container = styled(View)<ContainerProps>`
                       `,
         };
 
-        return themeType[size];
+        return containerSize[size];
     }};
 `;
 
-export const Main = styled.View`
-    flex: 1;
+const Main = styled.View`
     align-self: stretch;
+    flex: 1;
     min-height: 1px;
 
     ${({theme}) => css`
@@ -64,15 +64,17 @@ export const Main = styled.View`
     `}
 `;
 
-export const Subheader = styled.Text`
+const Subheader = styled.Text`
     align-self: stretch;
 
     ${({theme}) => css`
+        color: ${theme.palette.surface.onSurfaceVariant};
         font-size: ${theme.typography.title.small.size}px;
         font-style: ${theme.typography.title.small.style};
         font-weight: ${theme.typography.title.small.weight};
-        line-height: ${theme.typography.title.small.lineHeight}px;
         letter-spacing: ${theme.typography.title.small.letterSpacing}px;
-        color: ${theme.palette.surface.onSurfaceVariant};
+        line-height: ${theme.typography.title.small.lineHeight}px;
     `}
 `;
+
+export {Container, Main, Subheader};

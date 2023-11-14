@@ -17,9 +17,9 @@ export const BaseDivider: FC<BaseDividerProps> = ({
 
     return render({
         ...renderProps,
+        id,
         layout,
         size: subheader && layout === 'horizontal' ? 'small' : size,
         subheader,
-        id,
     });
 };
