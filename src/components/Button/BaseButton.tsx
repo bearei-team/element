@@ -46,7 +46,6 @@ export const BaseButton: FC<BaseButtonProps> = ({
     onPressIn,
     onPressOut,
     render,
-    shape = 'full',
     type = 'filled',
     ...renderProps
 }) => {
@@ -160,13 +159,13 @@ export const BaseButton: FC<BaseButtonProps> = ({
         onPressIn: handlePressIn,
         onPressOut: handlePressOut,
         renderStyle: {
+            ...border,
             backgroundColor,
             color,
             height: layout.height,
             width: layout.width,
-            ...border,
         },
-        shape,
+        shape: 'full',
         showIcon: !!icon,
         state,
         type,

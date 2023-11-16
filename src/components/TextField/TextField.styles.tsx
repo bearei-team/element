@@ -21,6 +21,7 @@ const Main = styled(Shape)<MainProps>`
     display: flex;
     flex-direction: row;
     min-height: 48px;
+    position: relative;
 
     ${({theme}) =>
         css`
@@ -83,7 +84,7 @@ const ActiveIndicator = styled.View`
     bottom: 0;
 `;
 
-const TrailingIcon = styled.View`
+const Icon = styled.View`
     width: 48px;
     height: 48px;
     display: flex;
@@ -96,6 +97,9 @@ const TrailingIcon = styled.View`
     `}
 `;
 
+const TrailingIcon = styled(Icon)``;
+const LeadingIcon = styled(Icon)``;
+
 const SupportingText = styled.Text<SupportingTextProps>`
     ${({theme}) => css`
         font-size: ${theme.typography.body.small.size}px;
@@ -107,4 +111,4 @@ const SupportingText = styled.Text<SupportingTextProps>`
     `}
 `;
 
-export {ActiveIndicator, Container, Input, Label, Main, SupportingText, TrailingIcon};
+export {ActiveIndicator, Container, Input, Label, LeadingIcon, Main, SupportingText, TrailingIcon};

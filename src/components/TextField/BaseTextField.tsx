@@ -2,6 +2,8 @@ import {FC, RefObject, useCallback, useEffect, useId, useRef} from 'react';
 import {
     Animated,
     GestureResponderEvent,
+    LayoutChangeEvent,
+    LayoutRectangle,
     MouseEvent,
     NativeSyntheticEvent,
     Text,
@@ -13,13 +15,17 @@ import {useImmer} from 'use-immer';
 import {AnimatedInterpolation, State} from '../Common/interface';
 import {TextFieldProps} from './TextField';
 import {ProcessAnimatedTimingOptions, useAnimated} from './useAnimated';
+import {useUnderlayColor} from './useUnderlayColor';
 
 export interface RenderProps extends TextFieldProps {
-    trailingIconShow: boolean;
     inputRef: React.RefObject<TextInput>;
-    onPress: (event: GestureResponderEvent) => void;
+    inputState: State;
     onHoverIn: (event: MouseEvent) => void;
     onHoverOut: (event: MouseEvent) => void;
+    onPress: (event: GestureResponderEvent) => void;
+    state: State;
+    trailingIconShow: boolean;
+    underlayColor: string;
     renderStyle: Animated.WithAnimatedObject<
         ViewStyle & {
             activeIndicatorColor: AnimatedInterpolation;
@@ -31,7 +37,10 @@ export interface RenderProps extends TextFieldProps {
             labelSize: AnimatedInterpolation;
             supportingTextColor: AnimatedInterpolation;
         }
-    >;
+    > & {
+        height: number;
+        width: number;
+    };
 }
 
 export interface ProcessStateOptions extends Pick<ProcessAnimatedTimingOptions, 'finished'> {
@@ -46,19 +55,24 @@ export interface BaseTextFieldProps extends TextFieldProps {
 export const BaseTextField: FC<BaseTextFieldProps> = ({
     render,
     trailingIcon = <Text>{'X'}</Text>,
+    leadingIcon,
     ref,
     onFocus,
     onBlur,
     onChangeText,
     type = 'filled',
+    shape = 'extraSmallTop',
     error,
     placeholder,
     disabled,
+    onLayout,
     ...renderProps
 }) => {
     const [inputState, setInputState] = useImmer<State>('enabled');
     const [state, setState] = useImmer<State>('enabled');
     const [trailingIconShow, setTrailingIconShow] = useImmer(false);
+    const [layout, setLayout] = useImmer({} as Pick<LayoutRectangle, 'height' | 'width'>);
+    const [underlayColor] = useUnderlayColor({type});
     const [value, setValue] = useImmer('');
     const {onAnimated, ...animatedStyle} = useAnimated({filled: !!value || !!placeholder});
     const id = useId();
@@ -84,6 +98,13 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         },
         [inputState, onAnimated, processState, state],
     );
+
+    const processLayout = (event: LayoutChangeEvent) => {
+        const {width, height} = event.nativeEvent.layout;
+
+        setLayout(() => ({width, height}));
+        onLayout?.(event);
+    };
 
     const handlePress = () =>
         processState('pressed', {
@@ -129,17 +150,22 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         ...renderProps,
         id,
         inputRef,
+        leadingIcon,
         onBlur: handleBlur,
         onChangeText: handleChangeText,
         onFocus: handleFocus,
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
         onPress: handlePress,
+        onLayout: processLayout,
         placeholder,
-        renderStyle: animatedStyle,
+        renderStyle: {...animatedStyle, height: layout.height, width: layout.width},
+        state,
+        inputState,
         trailingIcon,
         trailingIconShow,
         type,
+        underlayColor,
         value,
     });
 };

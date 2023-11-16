@@ -21,17 +21,13 @@ export interface UseAnimatedOptions {
 export const useAnimated = ({filled}: UseAnimatedOptions) => {
     const theme = useTheme();
     const filledValue = filled ? 1 : 0;
-    const [inputAnimated] = useAnimatedValue(filledValue);
-    const [labeAnimated] = useAnimatedValue(filledValue);
     const [activeIndicatorAnimated] = useAnimatedValue(0);
     const [colorAnimated] = useAnimatedValue(1);
+    const [inputAnimated] = useAnimatedValue(filledValue);
+    const [labeAnimated] = useAnimatedValue(filledValue);
     const [supportingTextAnimated] = useAnimatedValue(1);
     const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
-    const inputHeight = inputAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 24],
-    });
-
+    const inputHeight = inputAnimated.interpolate({inputRange: [0, 1], outputRange: [0, 24]});
     const labelSize = labeAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [theme.typography.body.large.size, theme.typography.body.small.size],
@@ -108,24 +104,24 @@ export const useAnimated = ({filled}: UseAnimatedOptions) => {
         (nextState: State, {input, finished}: ProcessStateAnimatedOptions = {}) => {
             const stateAnimated = {
                 disabled: () => {
-                    processAnimatedTiming(0, {animatedValue: colorAnimated});
                     processAnimatedTiming(0, {animatedValue: activeIndicatorAnimated});
+                    processAnimatedTiming(0, {animatedValue: colorAnimated});
                     processAnimatedTiming(0, {animatedValue: supportingTextAnimated});
                 },
                 enabled: () => {
                     if (input) {
                         const toValue = filled ? 1 : 0;
 
+                        processAnimatedTiming(0, {animatedValue: activeIndicatorAnimated});
+                        processAnimatedTiming(1, {animatedValue: colorAnimated});
                         processAnimatedTiming(toValue, {animatedValue: inputAnimated});
                         processAnimatedTiming(toValue, {animatedValue: labeAnimated});
-                        processAnimatedTiming(1, {animatedValue: colorAnimated});
-                        processAnimatedTiming(0, {animatedValue: activeIndicatorAnimated});
                     }
                 },
                 error: () => {
                     processAnimatedTiming(1, {animatedValue: activeIndicatorAnimated});
-                    processAnimatedTiming(3, {animatedValue: colorAnimated});
                     processAnimatedTiming(2, {animatedValue: supportingTextAnimated});
+                    processAnimatedTiming(3, {animatedValue: colorAnimated});
                 },
                 focused: () => {
                     if (input) {
@@ -135,9 +131,9 @@ export const useAnimated = ({filled}: UseAnimatedOptions) => {
                 },
                 hovered: undefined,
                 pressed: () => {
+                    processAnimatedTiming(1, {animatedValue: colorAnimated});
                     processAnimatedTiming(1, {animatedValue: inputAnimated, finished});
                     processAnimatedTiming(1, {animatedValue: labeAnimated});
-                    processAnimatedTiming(1, {animatedValue: colorAnimated});
                 },
             };
 
@@ -155,14 +151,14 @@ export const useAnimated = ({filled}: UseAnimatedOptions) => {
     );
 
     return {
+        activeIndicatorColor,
+        activeIndicatorHeight,
         inputHeight,
         labelColor,
         labelLineHeight,
         labelLineLetterSpacing,
         labelSize,
-        activeIndicatorHeight,
-        activeIndicatorColor,
-        supportingTextColor,
         onAnimated: processAnimated,
+        supportingTextColor,
     };
 };
