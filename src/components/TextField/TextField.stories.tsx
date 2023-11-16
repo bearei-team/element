@@ -1,4 +1,4 @@
-import {StoryObj, Meta} from '@storybook/react';
+import {Meta, StoryObj} from '@storybook/react';
 import {TextField, TextFieldProps} from './TextField';
 
 export default {
@@ -13,18 +13,18 @@ export const Filled: StoryObj<TextFieldProps> = {
     },
 };
 
+export const FilledPlaceholder: StoryObj<TextFieldProps> = {
+    args: {
+        label: 'Label',
+        supportingText: 'supportingText',
+        placeholder: 'Placeholder',
+    },
+};
+
 export const FilledError: StoryObj<TextFieldProps> = {
     args: {
         label: 'Label',
         supportingText: 'supportingText',
         error: true,
-    },
-};
-
-export const FilledDisabled: StoryObj<TextFieldProps> = {
-    args: {
-        label: 'Label',
-        supportingText: 'supportingText',
-        disabled: true,
     },
 };

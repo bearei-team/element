@@ -1,6 +1,6 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {View, ViewProps} from 'react-native';
-import {Size} from '../common/interface';
+import {Size} from '../Common/interface';
 import {Container, Label} from './Badge.styles';
 import {BaseBadge, RenderProps} from './BaseBadge';
 

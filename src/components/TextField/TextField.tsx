@@ -1,17 +1,15 @@
-import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, Pressable, TextInput, TextInputProps} from 'react-native';
+import React, {FC, RefAttributes, forwardRef, memo} from 'react';
+import {Animated, TextInput, TextInputProps} from 'react-native';
+import {BaseTextField, RenderProps} from './BaseTextField';
 import {
     ActiveIndicator,
     Container,
     Content,
+    Input,
     Label,
     Main,
     SupportingText,
-    TrailingIcon,
-    Input,
 } from './TextField.styles';
-import {BaseTextField, RenderProps} from './BaseTextField';
-import {Hovered} from '../Hovered/Hovered';
 
 export type Type = 'filled' | 'outlined';
 export interface TextFieldProps extends Partial<TextInputProps & RefAttributes<TextInput>> {
@@ -24,94 +22,93 @@ export interface TextFieldProps extends Partial<TextInputProps & RefAttributes<T
 }
 
 const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
-    const AnimatedLabel = Animated.createAnimatedComponent(Label);
     const AnimatedTextInput = Animated.createAnimatedComponent(Input);
+    const AnimatedLabel = Animated.createAnimatedComponent(Label);
     const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
-    const AnimatedTrailingIcon = Animated.createAnimatedComponent(TrailingIcon);
     const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 
     const render = ({
         id,
-        type,
-        trailingIcon,
-        labelStyle,
-        trailingIconStyle,
-        supportingTextStyle,
-        activeIndicatorStyle,
         inputRef,
-        inputStyle,
-        trailingIconShow,
         label,
-        error,
-        supportingText,
-        onPress,
+        onBlur,
+        onChangeText,
+        onFocus,
         onHoverIn,
         onHoverOut,
-        onTailingIconPress,
-        onMainLayout,
-        hoveredProps,
-        ...textInputProps
-    }: RenderProps) => (
-        <Container
-            testID={`textfield__container--${id}`}
-            onPress={onPress}
-            onHoverIn={onHoverIn}
-            onHoverOut={onHoverOut}>
-            <Main
-                testID={`textField__main--${id}`}
-                shape="extraSmallTop"
-                type={type}
-                trailingIconShow={trailingIconShow}
-                onLayout={onMainLayout}>
-                <Content testID={`textField__content--${id}`}>
-                    <AnimatedLabel testID={`textfield__label--${id}`} style={labelStyle}>
-                        {label}
-                    </AnimatedLabel>
+        onPress,
+        renderStyle,
+        supportingText,
+        trailingIconShow,
 
-                    <AnimatedTextInput
-                        testID={`textfield__textInput--${id}`}
-                        {...textInputProps}
-                        ref={inputRef}
-                        style={inputStyle}
-                    />
-                </Content>
+        type,
+        ...inputProps
+    }: RenderProps) => {
+        const {
+            activeIndicatorColor,
+            activeIndicatorHeight,
+            inputHeight,
+            labelColor,
+            labelLineHeight,
+            labelLineLetterSpacing,
+            labelSize,
+            supportingTextColor,
+        } = renderStyle;
 
-                {trailingIconShow && (
-                    <Pressable onPress={onTailingIconPress}>
-                        <AnimatedTrailingIcon
-                            testID={`textfield__trailingIcon--${id}`}
-                            style={trailingIconStyle}>
-                            {trailingIcon}
-                        </AnimatedTrailingIcon>
-                    </Pressable>
+        return (
+            <Container
+                testID={`textfield--${id}`}
+                onPress={onPress}
+                onHoverIn={onHoverIn}
+                onHoverOut={onHoverOut}>
+                <Main
+                    testID={`textField__main--${id}`}
+                    trailingIconShow={trailingIconShow}
+                    shape="extraSmallTop">
+                    <Content>
+                        <AnimatedLabel
+                            testID={`textField__label--${id}`}
+                            style={{
+                                color: labelColor,
+                                lineHeight: labelLineHeight,
+                                letterSpacing: labelLineLetterSpacing,
+                                fontSize: labelSize,
+                            }}>
+                            {label}
+                        </AnimatedLabel>
+
+                        <AnimatedTextInput
+                            {...inputProps}
+                            testID={`textfield__input--${id}`}
+                            style={{height: inputHeight}}
+                            ref={inputRef}
+                            onFocus={onFocus}
+                            onBlur={onBlur}
+                            onChangeText={onChangeText}
+                        />
+                    </Content>
+
+                    {type === 'filled' && (
+                        <AnimatedActiveIndicator
+                            testID={`textfield__activeIndicator--${id}`}
+                            style={{
+                                height: activeIndicatorHeight,
+                                backgroundColor: activeIndicatorColor,
+                            }}
+                        />
+                    )}
+                </Main>
+
+                {supportingText && (
+                    <AnimatedSupportingText
+                        testID={`textfield__supportingText--${id}`}
+                        style={{color: supportingTextColor}}>
+                        {supportingText}
+                    </AnimatedSupportingText>
                 )}
-
-                {type === 'filled' && (
-                    <AnimatedActiveIndicator
-                        testID={`textfield__activeIndicator--${id}`}
-                        style={activeIndicatorStyle}
-                    />
-                )}
-
-                {hoveredProps && <Hovered {...hoveredProps} />}
-
-                {/* {disabled && (
-                    <Disabled
-                        testID={`textField__disabled--${id}`}
-                        style={{width: mainLayout.width, height: mainLayout.height}}
-                        shape="extraSmallTop"
-                    />
-                )} */}
-            </Main>
-
-            <AnimatedSupportingText
-                testID={`textfield__supportingText--${id}`}
-                style={supportingTextStyle}
-                error={error}>
-                {supportingText}
-            </AnimatedSupportingText>
-        </Container>
-    );
+            </Container>
+        );
+    };
 
     return <BaseTextField {...props} ref={ref} render={render} />;
 });

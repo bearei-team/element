@@ -1,7 +1,7 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, View, ViewProps} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
-import {State} from '../common/interface';
+import {State} from '../Common/interface';
 import {BaseHovered, RenderProps} from './BaseHovered';
 import {Container} from './Hovered.styles';
 

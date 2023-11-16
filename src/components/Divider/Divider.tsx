@@ -1,6 +1,6 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {View, ViewProps} from 'react-native';
-import {Layout, Size} from '../common/interface';
+import {Layout, Size} from '../Common/interface';
 import {BaseDivider, RenderProps} from './BaseDivider';
 import {Container, Main, Subheader} from './Divider.styles';
 

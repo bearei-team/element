@@ -12,9 +12,9 @@ import {
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
+import {State} from '../Common/interface';
 import {ElevationProps} from '../Elevation/Elevation';
 import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
-import {State} from '../common/interface';
 import {ButtonProps} from './Button';
 import {useAnimated} from './useAnimated';
 import {useUnderlayColor} from './useUnderlayColor';

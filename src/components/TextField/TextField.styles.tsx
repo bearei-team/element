@@ -4,10 +4,10 @@ import {Shape} from '../Common/Common.styles';
 import {TextFieldProps} from './TextField';
 
 export type MainProps = Pick<TextFieldProps, 'type'> & {trailingIconShow: boolean};
-export interface LabelProps extends Omit<MainProps, 'trailingIconShow'> {}
+export type LabelProps = Pick<TextFieldProps, 'type'>;
 export type SupportingTextProps = Pick<TextFieldProps, 'error'>;
 
-export const Container = styled.Pressable`
+const Container = styled.Pressable`
     display: flex;
     flex-direction: column;
 
@@ -16,11 +16,11 @@ export const Container = styled.Pressable`
     `}
 `;
 
-export const Main = styled(Shape)<MainProps>`
-    position: relative;
+const Main = styled(Shape)<MainProps>`
+    align-items: center;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    min-height: 48px;
 
     ${({theme}) =>
         css`
@@ -37,7 +37,7 @@ export const Main = styled(Shape)<MainProps>`
               `}
 
     ${({theme, type = 'filled'}) => {
-        const themeType = {
+        const mainType = {
             filled: css`
                 background-color: ${theme.palette.surface.surfaceContainerHighest};
             `,
@@ -47,33 +47,25 @@ export const Main = styled(Shape)<MainProps>`
             `,
         };
 
-        return themeType[type];
+        return mainType[type];
     }}
 `;
 
-export const Label = styled.Text<LabelProps>`
+export const Content = styled.View`
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+`;
+
+const Label = styled.Text<LabelProps>`
     ${({theme}) => css`
         font-style: ${theme.typography.label.small.style};
         font-weight: ${theme.typography.label.small.weight};
     `};
 `;
 
-export const Content = styled.View`
-    flex: 1;
-    height: 48px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-`;
-
-export const ActiveIndicator = styled.View`
-    position: absolute;
-    width: 100%;
-    left: 0;
-    bottom: 0;
-`;
-
-export const Input = styled(TextInput)`
+const Input = styled(TextInput)`
     ${({theme}) => css`
         font-size: ${theme.typography.body.large.size}px;
         font-style: ${theme.typography.body.large.style};
@@ -84,7 +76,14 @@ export const Input = styled(TextInput)`
     `}
 `;
 
-export const TrailingIcon = styled.View`
+const ActiveIndicator = styled.View`
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+`;
+
+const TrailingIcon = styled.View`
     width: 48px;
     height: 48px;
     display: flex;
@@ -97,20 +96,15 @@ export const TrailingIcon = styled.View`
     `}
 `;
 
-export const SupportingText = styled.Text<SupportingTextProps>`
+const SupportingText = styled.Text<SupportingTextProps>`
     ${({theme}) => css`
         font-size: ${theme.typography.body.small.size}px;
         font-style: ${theme.typography.body.small.style};
         font-weight: ${theme.typography.body.small.weight};
-        line-height: ${theme.typography.body.small.lineHeight}px;
         letter-spacing: ${theme.typography.body.small.letterSpacing}px;
+        line-height: ${theme.typography.body.small.lineHeight}px;
         padding-horizontal: ${theme.spacing.medium}px;
-        color: ${theme.palette.surface.onSurfaceVariant};
     `}
-
-    ${({theme, error}) =>
-        error &&
-        css`
-            color: ${theme.palette.error.error};
-        `}
 `;
+
+export {ActiveIndicator, Container, Input, Label, Main, SupportingText, TrailingIcon};

@@ -3,7 +3,7 @@ import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
-import {State} from '../common/interface';
+import {State} from '../Common/interface';
 import {Type} from './Button';
 
 export interface UseAnimatedOptions {
