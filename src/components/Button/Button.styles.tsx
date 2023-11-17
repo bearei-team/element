@@ -2,10 +2,10 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {ButtonProps} from './Button';
 
-export type MainProps = Pick<ButtonProps, 'type'> & {showIcon: boolean};
-export type LabelProps = Omit<MainProps, 'showIcon'>;
+export type ContainerProps = Pick<ButtonProps, 'type'> & {showIcon: boolean};
+export type LabelProps = Omit<ContainerProps, 'showIcon'>;
 
-const Main = styled(Shape)<MainProps>`
+const Container = styled(Shape)<ContainerProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -83,4 +83,4 @@ const Icon = styled.View`
     width: 18px;
 `;
 
-export {Icon, Label, Main};
+export {Container, Icon, Label};

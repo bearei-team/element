@@ -12,36 +12,35 @@ export interface UseAnimatedOptions {
     type: Type;
 }
 
-export const useAnimated = ({type, disabled, state}: UseAnimatedOptions) => {
-    const [colorAnimated] = useAnimatedValue(0);
+export const useAnimated = ({disabled, state, type}: UseAnimatedOptions) => {
     const [borderAnimated] = useAnimatedValue(0);
+    const [colorAnimated] = useAnimatedValue(0);
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
-    const {color: themeColor, palette} = theme;
-    const disabledColor = themeColor.rgba(palette.surface.onSurface, 0.12);
+    const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
     const backgroundColorConfig = {
         elevated: {
             inputRange: [0, 1],
-            outputRange: [palette.surface.surfaceContainerLow, disabledColor],
+            outputRange: [theme.palette.surface.surfaceContainerLow, disabledColor],
         },
         filled: {
             inputRange: [0, 1],
-            outputRange: [palette.primary.primary, disabledColor],
+            outputRange: [theme.palette.primary.primary, disabledColor],
         },
         outlined: {
             inputRange: [0, 1],
             outputRange: [
-                themeColor.rgba(palette.primary.primary, 0),
-                themeColor.rgba(palette.primary.primary, 0),
+                theme.color.rgba(theme.palette.primary.primary, 0),
+                theme.color.rgba(theme.palette.primary.primary, 0),
             ],
         },
         text: {
             inputRange: [0, 1],
-            outputRange: [themeColor.rgba(palette.primary.primary, 0), disabledColor],
+            outputRange: [theme.color.rgba(theme.palette.primary.primary, 0), disabledColor],
         },
         tonal: {
             inputRange: [0, 1],
-            outputRange: [palette.secondary.secondaryContainer, disabledColor],
+            outputRange: [theme.palette.secondary.secondaryContainer, disabledColor],
         },
     };
 

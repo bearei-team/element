@@ -21,13 +21,13 @@ import {useUnderlayColor} from './useUnderlayColor';
 
 export interface RenderProps extends ButtonProps {
     elevation: ElevationProps['level'];
+    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
+        height: number;
+        width: number;
+    };
     showIcon: boolean;
     state: State;
     underlayColor: TouchableRippleProps['underlayColor'];
-    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        width: number;
-        height: number;
-    };
 }
 
 export interface BaseButtonProps extends ButtonProps {
@@ -49,30 +49,23 @@ export const BaseButton: FC<BaseButtonProps> = ({
     type = 'filled',
     ...renderProps
 }) => {
-    const [layout, setLayout] = useImmer({} as Pick<LayoutRectangle, 'height' | 'width'>);
     const [elevation, setElevation] = useImmer<ElevationProps['level']>(0);
+    const [layout, setLayout] = useImmer({} as Pick<LayoutRectangle, 'height' | 'width'>);
     const [state, setState] = useImmer<State>('enabled');
-    const id = useId();
-    const theme = useTheme();
     const [underlayColor] = useUnderlayColor({type});
     const {backgroundColor, borderColor, color} = useAnimated({type, disabled, state});
-    const mobile = theme.OS === 'ios' || theme.OS === 'android';
+    const id = useId();
+    const theme = useTheme();
     const border = borderColor && {
         borderColor,
         borderStyle: 'solid' as ViewStyle['borderStyle'],
         borderWidth: 1,
     };
 
+    const mobile = theme.OS === 'ios' || theme.OS === 'android';
     const processElevation = useCallback(
         (nextState: State) => {
-            const level = {
-                disabled: 0,
-                enabled: 0,
-                error: 0,
-                focused: 0,
-                hovered: 1,
-                pressed: 0,
-            };
+            const level = {disabled: 0, enabled: 0, error: 0, focused: 0, hovered: 1, pressed: 0};
 
             setElevation(() => (type === 'elevated' ? level[nextState] + 1 : level[nextState]));
         },
@@ -94,9 +87,9 @@ export const BaseButton: FC<BaseButtonProps> = ({
     );
 
     const processLayout = (event: LayoutChangeEvent) => {
-        const {width, height} = event.nativeEvent.layout;
+        const {height, width} = event.nativeEvent.layout;
 
-        setLayout(() => ({width, height}));
+        setLayout(() => ({height, width}));
         onLayout?.(event);
     };
 
@@ -141,6 +134,7 @@ export const BaseButton: FC<BaseButtonProps> = ({
 
     return render({
         ...renderProps,
+        disabled,
         elevation,
         icon,
         id,
@@ -164,6 +158,5 @@ export const BaseButton: FC<BaseButtonProps> = ({
         state,
         type,
         underlayColor,
-        disabled,
     });
 };

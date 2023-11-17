@@ -5,7 +5,7 @@ import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {BaseButton, RenderProps} from './BaseButton';
-import {Icon, Label, Main} from './Button.styles';
+import {Container, Icon, Label} from './Button.styles';
 
 export type Type = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
 export interface ButtonProps
@@ -19,9 +19,11 @@ export interface ButtonProps
 }
 
 const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
-    const MainContainer = Animated.createAnimatedComponent(Main);
-    const LabelContainer = Animated.createAnimatedComponent(Label);
+    const AnimatedContainer = Animated.createAnimatedComponent(Container);
+    const AnimatedLabel = Animated.createAnimatedComponent(Label);
+
     const render = ({
+        disabled,
         elevation,
         icon,
         id,
@@ -40,12 +42,11 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
         style,
         type,
         underlayColor,
-        disabled,
         ...touchableRippleProps
     }: RenderProps) => {
-        const {color, width, height, ...mainStyle} = renderStyle;
-        const main = (
-            <MainContainer
+        const {color, height, width, ...mainStyle} = renderStyle;
+        const button = (
+            <AnimatedContainer
                 shape={shape}
                 showIcon={showIcon}
                 style={{...(typeof style === 'object' && style), ...mainStyle}}
@@ -53,10 +54,10 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                 type={type}>
                 {showIcon && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
 
-                <LabelContainer style={{color}} testID={`button__label--${id}`} type={type}>
+                <AnimatedLabel style={{color}} testID={`button__label--${id}`} type={type}>
                     {label}
-                </LabelContainer>
-            </MainContainer>
+                </AnimatedLabel>
+            </AnimatedContainer>
         );
 
         return (
@@ -73,7 +74,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                     ref={ref}
                     shape={shape}
                     underlayColor={underlayColor}>
-                    {main}
+                    {button}
 
                     <Hovered
                         height={height}
