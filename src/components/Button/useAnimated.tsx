@@ -112,5 +112,9 @@ export const useAnimated = ({disabled, state, type}: UseAnimatedOptions) => {
         type,
     ]);
 
-    return {backgroundColor, color, ...(type === 'outlined' && {borderColor})};
+    return {
+        ...(type !== 'text' && {backgroundColor}),
+        ...(type === 'outlined' && {borderColor}),
+        color,
+    };
 };

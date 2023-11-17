@@ -87,12 +87,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                 </TouchableRipple>
 
                 {disabled && (
-                    <Disabled
-                        height={height}
-                        shape={shape}
-                        testID={`button__disabled--${id}`}
-                        width={width}
-                    />
+                    <Disabled height={height} testID={`button__disabled--${id}`} width={width} />
                 )}
             </Elevation>
         );

@@ -68,6 +68,8 @@ const Container = styled(Shape)<ContainerProps>`
 `;
 
 const Label = styled.Text<LabelProps>`
+    user-select: none;
+
     ${({theme}) => css`
         font-size: ${theme.typography.label.large.size}px;
         font-style: ${theme.typography.label.large.style};
