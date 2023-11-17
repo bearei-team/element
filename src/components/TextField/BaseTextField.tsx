@@ -62,9 +62,9 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
     placeholder,
     ref,
     render,
+    supportingText,
     trailingIcon,
     type = 'filled',
-    supportingText,
     ...renderProps
 }) => {
     const [inputState, setInputState] = useImmer<State>('enabled');
@@ -168,7 +168,6 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         state,
         supportingText,
         trailingIcon,
-
         type,
         underlayColor,
         value,

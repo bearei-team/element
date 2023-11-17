@@ -1,5 +1,5 @@
 import React, {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, Pressable, TextInput, TextInputProps, View} from 'react-native';
+import {Animated, TextInput, TextInputProps} from 'react-native';
 import {Disabled, ShapeProps} from '../Common/Common.styles';
 import {Hovered} from '../Hovered/Hovered';
 import {BaseTextField, RenderProps} from './BaseTextField';
@@ -7,6 +7,8 @@ import {
     ActiveIndicator,
     Container,
     Content,
+    Core,
+    CoreInner,
     Input,
     Label,
     LeadingIcon,
@@ -57,6 +59,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         trailingIcon,
         type,
         underlayColor,
+        style,
         ...inputProps
     }: RenderProps) => {
         const {
@@ -76,8 +79,12 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
 
         return (
             <Container testID={`textfield--${id}`}>
-                <View>
-                    <Pressable onHoverIn={onHoverIn} onHoverOut={onHoverOut} onPress={onPress}>
+                <Core style={style} testID={`textfield__core--${id}`}>
+                    <CoreInner
+                        testID={`textfield__coreInner--${id}`}
+                        onHoverIn={onHoverIn}
+                        onHoverOut={onHoverOut}
+                        onPress={onPress}>
                         <AnimatedMain
                             onLayout={onLayout}
                             style={{backgroundColor}}
@@ -91,7 +98,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                 </AnimatedLeadingIcon>
                             )}
 
-                            <Content>
+                            <Content testID={`textfield__content--${id}`}>
                                 <AnimatedLabel
                                     style={{
                                         color: labelColor,
@@ -105,12 +112,12 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
 
                                 <AnimatedTextInput
                                     {...inputProps}
-                                    testID={`textfield__input--${id}`}
-                                    style={{height: inputHeight}}
-                                    ref={inputRef}
-                                    onFocus={onFocus}
                                     onBlur={onBlur}
                                     onChangeText={onChangeText}
+                                    onFocus={onFocus}
+                                    ref={inputRef}
+                                    style={{height: inputHeight}}
+                                    testID={`textfield__input--${id}`}
                                 />
                             </Content>
 
@@ -134,12 +141,11 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                 height={height}
                                 shape={shape}
                                 state={inputState === 'focused' ? 'enabled' : state}
-                                testID={`textField__hovered--${id}`}
                                 underlayColor={underlayColor}
                                 width={width}
                             />
                         </AnimatedMain>
-                    </Pressable>
+                    </CoreInner>
 
                     {disabled && (
                         <Disabled
@@ -149,7 +155,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                             width={width}
                         />
                     )}
-                </View>
+                </Core>
 
                 <AnimatedSupportingText
                     style={{color: supportingTextColor, opacity: supportingTextOpacity}}

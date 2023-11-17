@@ -38,7 +38,7 @@ export const useAnimated = ({state}: UseAnimatedOptions) => {
 
     useEffect(() => {
         if (state) {
-            processAnimatedTiming(state === 'hovered' || state === 'focused' ? 1 : 0, {
+            processAnimatedTiming(['hovered', 'focused'].includes(state) ? 1 : 0, {
                 animatedValue: opacityAnimated,
             });
         }

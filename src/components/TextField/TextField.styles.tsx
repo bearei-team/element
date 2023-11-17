@@ -19,6 +19,9 @@ const Container = styled.View`
     `}
 `;
 
+const Core = styled.View``;
+const CoreInner = styled.Pressable``;
+
 const Main = styled(Shape)<MainProps>`
     align-items: center;
     display: flex;
@@ -45,10 +48,10 @@ const Main = styled(Shape)<MainProps>`
         `}
 `;
 
-export const Content = styled.View`
-    flex: 1;
+const Content = styled.View`
     display: flex;
     flex-direction: column;
+    flex: 1;
     justify-content: center;
 `;
 
@@ -61,40 +64,38 @@ const Label = styled.Text<LabelProps>`
 
 const Input = styled(TextInput)`
     ${({theme}) => css`
+        color: ${theme.palette.surface.onSurface};
         font-size: ${theme.typography.body.large.size}px;
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
-        line-height: ${theme.typography.body.large.lineHeight}px;
         letter-spacing: ${theme.typography.body.large.letterSpacing}px;
-        color: ${theme.palette.surface.onSurface};
-        border-width: 0;
+        line-height: ${theme.typography.body.large.lineHeight}px;
         outline-style: none;
     `}
 `;
 
 const ActiveIndicator = styled.View`
+    bottom: 0;
+    left: 0;
     position: absolute;
     width: 100%;
-    left: 0;
-    bottom: 0;
 `;
 
 const Icon = styled.View`
-    width: 48px;
-    height: 48px;
-    display: flex;
-    justify-content: center;
     align-items: center;
+    display: flex;
+    height: 48px;
+    justify-content: center;
+    width: 48px;
 
     ${({theme}) => css`
-        padding-vertical: ${theme.spacing.small}px;
         padding-horizontal: ${theme.spacing.small}px;
+        padding-vertical: ${theme.spacing.small}px;
     `}
 `;
 
 const TrailingIcon = styled(Icon)``;
 const LeadingIcon = styled(Icon)``;
-
 const SupportingText = styled.Text<SupportingTextProps>`
     ${({theme}) => css`
         font-size: ${theme.typography.body.small.size}px;
@@ -106,4 +107,16 @@ const SupportingText = styled.Text<SupportingTextProps>`
     `}
 `;
 
-export {ActiveIndicator, Container, Input, Label, LeadingIcon, Main, SupportingText, TrailingIcon};
+export {
+    ActiveIndicator,
+    Container,
+    Content,
+    Core,
+    CoreInner,
+    Input,
+    Label,
+    LeadingIcon,
+    Main,
+    SupportingText,
+    TrailingIcon,
+};

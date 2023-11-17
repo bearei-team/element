@@ -80,7 +80,6 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                         height={height}
                         shape={shape}
                         state={state}
-                        testID={`button__hovered--${id}`}
                         underlayColor={underlayColor}
                         width={width}
                     />

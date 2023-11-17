@@ -62,7 +62,7 @@ export const BaseButton: FC<BaseButtonProps> = ({
         borderWidth: 1,
     };
 
-    const mobile = theme.OS === 'ios' || theme.OS === 'android';
+    const mobile = ['ios', 'android'].includes(theme.OS);
     const processElevation = useCallback(
         (nextState: State) => {
             const level = {disabled: 0, enabled: 0, error: 0, focused: 0, hovered: 1, pressed: 0};
@@ -74,7 +74,7 @@ export const BaseButton: FC<BaseButtonProps> = ({
 
     const processState = useCallback(
         (nextState: State, callback?: () => void) => {
-            const isProcessElevation = type === 'elevated' || type === 'filled' || type === 'tonal';
+            const isProcessElevation = ['elevated', 'filled', 'tonal'].includes(type);
 
             if (isProcessElevation) {
                 processElevation(nextState);
