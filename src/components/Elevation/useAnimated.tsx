@@ -11,8 +11,8 @@ export interface ProcessAnimatedTimingOptions {
 }
 
 export const useAnimated = ({level}: UseAnimatedOptions) => {
-    const theme = useTheme();
     const [shadowAnimated] = useAnimatedValue(0);
+    const theme = useTheme();
     const shadow0Opacity = shadowAnimated.interpolate({
         inputRange: [0, 1, 2, 3, 4, 5],
         outputRange: [

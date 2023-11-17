@@ -24,8 +24,9 @@ export const BaseElevation: FC<BaseElevationProps> = ({
     ...renderProps
 }) => {
     const [layout, setLayout] = useImmer({} as Pick<LayoutRectangle, 'height' | 'width'>);
-    const id = useId();
     const {shadow0Opacity, shadow1Opacity} = useAnimated({level});
+    const id = useId();
+
     const processLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
 

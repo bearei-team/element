@@ -38,7 +38,7 @@ const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
                     level={level}
                     shadow={0}
                     shape={shape}
-                    style={{width, height, opacity: opacity0}}
+                    style={{height, opacity: opacity0, width}}
                     testID={`elevation__shadow0--${id}`}
                 />
 
@@ -46,7 +46,7 @@ const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
                     level={level}
                     shadow={1}
                     shape={shape}
-                    style={{width, height, opacity: opacity1}}
+                    style={{height, opacity: opacity1, width}}
                     testID={`elevation__shadow1--${id}`}
                 />
             </Container>
