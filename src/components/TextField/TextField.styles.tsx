@@ -35,9 +35,7 @@ const Main = styled(Shape)<MainProps>`
               `
             : css`
                   padding-horizontal: ${theme.spacing.medium}px;
-              `}
-
-    ${({theme, type = 'filled'}) => {
+              `} /* ${({theme, type = 'filled'}) => {
         const mainType = {
             filled: css`
                 background-color: ${theme.palette.surface.surfaceContainerHighest};
@@ -49,7 +47,7 @@ const Main = styled(Shape)<MainProps>`
         };
 
         return mainType[type];
-    }}
+    }} */
 `;
 
 export const Content = styled.View`

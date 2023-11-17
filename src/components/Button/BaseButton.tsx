@@ -127,8 +127,8 @@ export const BaseButton: FC<BaseButtonProps> = ({
     );
 
     useEffect(() => {
-        if (type === 'elevated' && !disabled) {
-            setElevation(() => 1);
+        if (type === 'elevated') {
+            setElevation(() => (disabled ? 0 : 1));
         }
     }, [disabled, setElevation, type]);
 

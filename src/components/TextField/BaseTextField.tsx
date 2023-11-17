@@ -53,36 +53,36 @@ export interface BaseTextFieldProps extends TextFieldProps {
 }
 
 export const BaseTextField: FC<BaseTextFieldProps> = ({
-    render,
-    trailingIcon = <Text>{'X'}</Text>,
+    disabled,
+    error,
     leadingIcon,
-    ref,
-    onFocus,
     onBlur,
     onChangeText,
-    type = 'filled',
-    shape = 'extraSmallTop',
-    error,
-    placeholder,
-    disabled,
+    onFocus,
     onLayout,
+    placeholder,
+    ref,
+    render,
+    trailingIcon = <Text>{'X'}</Text>,
+    type = 'filled',
     ...renderProps
 }) => {
     const [inputState, setInputState] = useImmer<State>('enabled');
+    const [layout, setLayout] = useImmer({} as Pick<LayoutRectangle, 'height' | 'width'>);
     const [state, setState] = useImmer<State>('enabled');
     const [trailingIconShow, setTrailingIconShow] = useImmer(false);
-    const [layout, setLayout] = useImmer({} as Pick<LayoutRectangle, 'height' | 'width'>);
     const [underlayColor] = useUnderlayColor({type});
     const [value, setValue] = useImmer('');
     const {onAnimated, ...animatedStyle} = useAnimated({filled: !!value || !!placeholder});
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
+
     const processState = useCallback(
         (nextState: State, {element = 'container', finished}: ProcessStateOptions = {}) => {
             element === 'input' ? setInputState(() => nextState) : setState(() => nextState);
 
-            onAnimated(nextState, {input: element === 'input', finished});
+            onAnimated(nextState, {finished, input: element === 'input'});
         },
         [onAnimated, setInputState, setState],
     );
@@ -100,9 +100,9 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
     );
 
     const processLayout = (event: LayoutChangeEvent) => {
-        const {width, height} = event.nativeEvent.layout;
+        const {height, width} = event.nativeEvent.layout;
 
-        setLayout(() => ({width, height}));
+        setLayout(() => ({height, width}));
         onLayout?.(event);
     };
 
@@ -148,6 +148,7 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
 
     return render({
         ...renderProps,
+        disabled,
         id,
         inputRef,
         inputState,
@@ -161,12 +162,12 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         onPress: handlePress,
         placeholder,
         renderStyle: {...animatedStyle, height: layout.height, width: layout.width},
+        shape: 'extraSmallTop',
         state,
         trailingIcon,
         trailingIconShow,
         type,
         underlayColor,
         value,
-        disabled,
     });
 };

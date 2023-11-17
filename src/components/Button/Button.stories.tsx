@@ -1,6 +1,6 @@
-import {StoryObj, Meta} from '@storybook/react';
-import {ButtonProps, Button} from './Button';
+import {Meta, StoryObj} from '@storybook/react';
 import {Text as TextRN} from 'react-native';
+import {Button, ButtonProps} from './Button';
 
 export default {
     title: 'components/Button',
@@ -11,13 +11,6 @@ export default {
 export const Filled: StoryObj<ButtonProps> = {
     args: {
         label: 'Label',
-    },
-};
-
-export const FilledDisabled: StoryObj<ButtonProps> = {
-    args: {
-        label: 'Label',
-        disabled: true,
     },
 };
 
@@ -35,26 +28,10 @@ export const Outlined: StoryObj<ButtonProps> = {
     },
 };
 
-export const OutlinedDisabled: StoryObj<ButtonProps> = {
-    args: {
-        label: 'Label',
-        type: 'outlined',
-        disabled: true,
-    },
-};
-
 export const Text: StoryObj<ButtonProps> = {
     args: {
         label: 'Label',
         type: 'text',
-    },
-};
-
-export const TextDisabled: StoryObj<ButtonProps> = {
-    args: {
-        label: 'Label',
-        type: 'text',
-        disabled: true,
     },
 };
 
@@ -65,25 +42,9 @@ export const Elevated: StoryObj<ButtonProps> = {
     },
 };
 
-export const ElevatedDisabled: StoryObj<ButtonProps> = {
-    args: {
-        label: 'Label',
-        type: 'elevated',
-        disabled: true,
-    },
-};
-
 export const Tonal: StoryObj<ButtonProps> = {
     args: {
         label: 'Label',
         type: 'tonal',
-    },
-};
-
-export const TonalDisabled: StoryObj<ButtonProps> = {
-    args: {
-        label: 'Label',
-        type: 'tonal',
-        disabled: true,
     },
 };

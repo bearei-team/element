@@ -19,14 +19,17 @@ export interface UseAnimatedOptions {
 }
 
 export const useAnimated = ({filled}: UseAnimatedOptions) => {
-    const theme = useTheme();
-    const filledValue = filled ? 1 : 0;
     const [activeIndicatorAnimated] = useAnimatedValue(0);
+    const [backgroundColorAnimated] = useAnimatedValue(0);
     const [colorAnimated] = useAnimatedValue(1);
+    const filledValue = filled ? 1 : 0;
     const [inputAnimated] = useAnimatedValue(filledValue);
     const [labeAnimated] = useAnimatedValue(filledValue);
     const [supportingTextAnimated] = useAnimatedValue(1);
+
+    const theme = useTheme();
     const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
+
     const inputHeight = inputAnimated.interpolate({inputRange: [0, 1], outputRange: [0, 24]});
     const labelSize = labeAnimated.interpolate({
         inputRange: [0, 1],
@@ -83,6 +86,11 @@ export const useAnimated = ({filled}: UseAnimatedOptions) => {
         ],
     });
 
+    const backgroundColor = backgroundColorAnimated.interpolate({
+        inputRange: [0, 1],
+        outputRange: [disabledColor, theme.palette.surface.surfaceContainerHighest],
+    });
+
     const processAnimatedTiming = useCallback(
         (toValue: number, {animatedValue, finished}: ProcessAnimatedTimingOptions) => {
             const animatedTiming = UTIL.animatedTiming(theme);
@@ -107,6 +115,7 @@ export const useAnimated = ({filled}: UseAnimatedOptions) => {
                     processAnimatedTiming(0, {animatedValue: activeIndicatorAnimated});
                     processAnimatedTiming(0, {animatedValue: colorAnimated});
                     processAnimatedTiming(0, {animatedValue: supportingTextAnimated});
+                    processAnimatedTiming(0, {animatedValue: backgroundColor});
                 },
                 enabled: () => {
                     if (input) {
