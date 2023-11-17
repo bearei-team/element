@@ -28,3 +28,11 @@ export const FilledError: StoryObj<TextFieldProps> = {
         error: true,
     },
 };
+
+export const FilledDisabled: StoryObj<TextFieldProps> = {
+    args: {
+        label: 'Label',
+        supportingText: 'supportingText',
+        disabled: true,
+    },
+};

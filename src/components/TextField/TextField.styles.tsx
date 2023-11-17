@@ -7,7 +7,7 @@ export type MainProps = Pick<TextFieldProps, 'type'> & {trailingIconShow: boolea
 export type LabelProps = Pick<TextFieldProps, 'type'>;
 export type SupportingTextProps = Pick<TextFieldProps, 'error'>;
 
-const Container = styled.Pressable`
+const Container = styled.View`
     display: flex;
     flex-direction: column;
 

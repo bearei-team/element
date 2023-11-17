@@ -141,31 +141,32 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
     }, [disabled, processAbnormalState]);
 
     useEffect(() => {
-        if (typeof error === 'boolean') {
+        if (typeof error === 'boolean' && !disabled) {
             processAbnormalState('error', error);
         }
-    }, [error, processAbnormalState]);
+    }, [disabled, error, processAbnormalState]);
 
     return render({
         ...renderProps,
         id,
         inputRef,
+        inputState,
         leadingIcon,
         onBlur: handleBlur,
         onChangeText: handleChangeText,
         onFocus: handleFocus,
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
-        onPress: handlePress,
         onLayout: processLayout,
+        onPress: handlePress,
         placeholder,
         renderStyle: {...animatedStyle, height: layout.height, width: layout.width},
         state,
-        inputState,
         trailingIcon,
         trailingIconShow,
         type,
         underlayColor,
         value,
+        disabled,
     });
 };

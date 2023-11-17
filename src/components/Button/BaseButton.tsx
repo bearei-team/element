@@ -134,12 +134,6 @@ export const BaseButton: FC<BaseButtonProps> = ({
     );
 
     useEffect(() => {
-        if (disabled) {
-            setState(() => 'disabled');
-        }
-    }, [disabled, setState]);
-
-    useEffect(() => {
         if (type === 'elevated' && !disabled) {
             setElevation(() => 1);
         }
@@ -170,5 +164,6 @@ export const BaseButton: FC<BaseButtonProps> = ({
         state,
         type,
         underlayColor,
+        disabled,
     });
 };

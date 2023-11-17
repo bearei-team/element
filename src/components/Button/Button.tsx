@@ -40,6 +40,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
         style,
         type,
         underlayColor,
+        disabled,
         ...touchableRippleProps
     }: RenderProps) => {
         const {color, width, height, ...mainStyle} = renderStyle;
@@ -84,7 +85,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                     />
                 </TouchableRipple>
 
-                {state === 'disabled' && (
+                {disabled && (
                     <Disabled
                         height={height}
                         shape={shape}

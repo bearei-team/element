@@ -117,6 +117,8 @@ export const useAnimated = ({filled}: UseAnimatedOptions) => {
                         processAnimatedTiming(toValue, {animatedValue: inputAnimated});
                         processAnimatedTiming(toValue, {animatedValue: labeAnimated});
                     }
+
+                    processAnimatedTiming(1, {animatedValue: supportingTextAnimated});
                 },
                 error: () => {
                     processAnimatedTiming(1, {animatedValue: activeIndicatorAnimated});

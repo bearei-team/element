@@ -1,6 +1,6 @@
 import React, {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, TextInput, TextInputProps} from 'react-native';
-import {ShapeProps} from '../Common/Common.styles';
+import {Animated, Pressable, TextInput, TextInputProps, View} from 'react-native';
+import {Disabled, ShapeProps} from '../Common/Common.styles';
 import {Hovered} from '../Hovered/Hovered';
 import {BaseTextField, RenderProps} from './BaseTextField';
 import {
@@ -34,7 +34,9 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
     const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
     const AnimatedTextInput = Animated.createAnimatedComponent(Input);
     const AnimatedTrailingIcon = Animated.createAnimatedComponent(TrailingIcon);
+
     const render = ({
+        disabled,
         id,
         inputRef,
         inputState,
@@ -71,70 +73,79 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         } = renderStyle;
 
         return (
-            <Container
-                onHoverIn={onHoverIn}
-                onHoverOut={onHoverOut}
-                onPress={onPress}
-                testID={`textfield--${id}`}>
-                <Main
-                    onLayout={onLayout}
-                    shape={shape}
-                    testID={`textField__main--${id}`}
-                    trailingIconShow={trailingIconShow}>
-                    {leadingIcon && (
-                        <AnimatedLeadingIcon testID={`textfield__leadingIcon--${id}`}>
-                            {leadingIcon}
-                        </AnimatedLeadingIcon>
-                    )}
+            <Container testID={`textfield--${id}`}>
+                <View>
+                    <Pressable onHoverIn={onHoverIn} onHoverOut={onHoverOut} onPress={onPress}>
+                        <Main
+                            onLayout={onLayout}
+                            shape={shape}
+                            testID={`textField__main--${id}`}
+                            trailingIconShow={trailingIconShow}>
+                            {leadingIcon && (
+                                <AnimatedLeadingIcon testID={`textfield__leadingIcon--${id}`}>
+                                    {leadingIcon}
+                                </AnimatedLeadingIcon>
+                            )}
 
-                    <Content>
-                        <AnimatedLabel
-                            style={{
-                                color: labelColor,
-                                fontSize: labelSize,
-                                letterSpacing: labelLineLetterSpacing,
-                                lineHeight: labelLineHeight,
-                            }}
-                            testID={`textField__label--${id}`}>
-                            {label}
-                        </AnimatedLabel>
+                            <Content>
+                                <AnimatedLabel
+                                    style={{
+                                        color: labelColor,
+                                        fontSize: labelSize,
+                                        letterSpacing: labelLineLetterSpacing,
+                                        lineHeight: labelLineHeight,
+                                    }}
+                                    testID={`textField__label--${id}`}>
+                                    {label}
+                                </AnimatedLabel>
 
-                        <AnimatedTextInput
-                            {...inputProps}
-                            testID={`textfield__input--${id}`}
-                            style={{height: inputHeight}}
-                            ref={inputRef}
-                            onFocus={onFocus}
-                            onBlur={onBlur}
-                            onChangeText={onChangeText}
+                                <AnimatedTextInput
+                                    {...inputProps}
+                                    testID={`textfield__input--${id}`}
+                                    style={{height: inputHeight}}
+                                    ref={inputRef}
+                                    onFocus={onFocus}
+                                    onBlur={onBlur}
+                                    onChangeText={onChangeText}
+                                />
+                            </Content>
+
+                            {trailingIconShow && (
+                                <AnimatedTrailingIcon testID={`textfield__trailingIcon--${id}`}>
+                                    {trailingIcon}
+                                </AnimatedTrailingIcon>
+                            )}
+
+                            {type === 'filled' && (
+                                <AnimatedActiveIndicator
+                                    style={{
+                                        backgroundColor: activeIndicatorColor,
+                                        height: activeIndicatorHeight,
+                                    }}
+                                    testID={`textfield__activeIndicator--${id}`}
+                                />
+                            )}
+
+                            <Hovered
+                                height={height}
+                                shape={shape}
+                                state={inputState === 'focused' ? 'enabled' : state}
+                                testID={`textField__hovered--${id}`}
+                                underlayColor={underlayColor}
+                                width={width}
+                            />
+                        </Main>
+                    </Pressable>
+
+                    {disabled && (
+                        <Disabled
+                            height={height}
+                            shape={shape}
+                            testID={`textField__disabled--${id}`}
+                            width={width}
                         />
-                    </Content>
-
-                    {trailingIconShow && (
-                        <AnimatedTrailingIcon testID={`textfield__trailingIcon--${id}`}>
-                            {trailingIcon}
-                        </AnimatedTrailingIcon>
                     )}
-
-                    {type === 'filled' && (
-                        <AnimatedActiveIndicator
-                            style={{
-                                backgroundColor: activeIndicatorColor,
-                                height: activeIndicatorHeight,
-                            }}
-                            testID={`textfield__activeIndicator--${id}`}
-                        />
-                    )}
-
-                    <Hovered
-                        height={height}
-                        shape={shape}
-                        state={inputState === 'focused' ? 'enabled' : state}
-                        testID={`textField__hovered--${id}`}
-                        underlayColor={underlayColor}
-                        width={width}
-                    />
-                </Main>
+                </View>
 
                 {supportingText && (
                     <AnimatedSupportingText
