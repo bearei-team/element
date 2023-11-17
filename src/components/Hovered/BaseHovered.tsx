@@ -17,8 +17,8 @@ export const BaseHovered: FC<BaseHoveredProps> = ({
     width,
     ...renderProps
 }) => {
-    const id = useId();
     const {opacity} = useAnimated({state});
+    const id = useId();
 
     return render({
         ...renderProps,

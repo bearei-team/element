@@ -12,8 +12,8 @@ export interface ProcessAnimatedTimingOptions {
 }
 
 export const useAnimated = ({state}: UseAnimatedOptions) => {
-    const theme = useTheme();
     const [opacityAnimated] = useAnimatedValue(0);
+    const theme = useTheme();
     const opacity = opacityAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [0, state === 'focused' ? 0.12 : 0.08],
@@ -25,9 +25,9 @@ export const useAnimated = ({state}: UseAnimatedOptions) => {
             const animated = () =>
                 requestAnimationFrame(() =>
                     animatedTiming(animatedValue, {
-                        toValue,
-                        easing: 'standard',
                         duration: 'short3',
+                        easing: 'standard',
+                        toValue,
                     }).start(),
                 );
 
