@@ -3,7 +3,10 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {TextFieldProps} from './TextField';
 
-export type MainProps = Pick<TextFieldProps, 'type'> & {trailingIconShow: boolean};
+export type MainProps = Pick<TextFieldProps, 'type'> & {
+    trailingIconShow: boolean;
+    leadingIconShow: boolean;
+};
 export type LabelProps = Pick<TextFieldProps, 'type'>;
 export type SupportingTextProps = Pick<TextFieldProps, 'error'>;
 
@@ -28,26 +31,18 @@ const Main = styled(Shape)<MainProps>`
             padding-vertical: ${theme.spacing.extraSmall}px;
         `}
 
+    ${({theme, leadingIconShow}) =>
+        !leadingIconShow &&
+        css`
+            padding-start: ${theme.spacing.medium}px;
+        `}
+
+
     ${({theme, trailingIconShow}) =>
-        trailingIconShow
-            ? css`
-                  padding-start: ${theme.spacing.medium}px;
-              `
-            : css`
-                  padding-horizontal: ${theme.spacing.medium}px;
-              `} /* ${({theme, type = 'filled'}) => {
-        const mainType = {
-            filled: css`
-                background-color: ${theme.palette.surface.surfaceContainerHighest};
-            `,
-
-            outlined: css`
-                background-color: ${theme.palette.surface.onSurfaceVariant};
-            `,
-        };
-
-        return mainType[type];
-    }} */
+        !trailingIconShow &&
+        css`
+            padding-end: ${theme.spacing.medium}px;
+        `}
 `;
 
 export const Content = styled.View`
@@ -72,6 +67,8 @@ const Input = styled(TextInput)`
         line-height: ${theme.typography.body.large.lineHeight}px;
         letter-spacing: ${theme.typography.body.large.letterSpacing}px;
         color: ${theme.palette.surface.onSurface};
+        border-width: 0;
+        outline-style: none;
     `}
 `;
 

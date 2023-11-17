@@ -1,5 +1,4 @@
 import {Meta, StoryObj} from '@storybook/react';
-import {Text as TextRN} from 'react-native';
 import {Button, ButtonProps} from './Button';
 
 export default {
@@ -11,13 +10,6 @@ export default {
 export const Filled: StoryObj<ButtonProps> = {
     args: {
         label: 'Label',
-    },
-};
-
-export const ShowIconFilled: StoryObj<ButtonProps> = {
-    args: {
-        label: 'Label',
-        icon: <TextRN>{'icon'}</TextRN>,
     },
 };
 

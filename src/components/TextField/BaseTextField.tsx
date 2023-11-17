@@ -6,7 +6,6 @@ import {
     LayoutRectangle,
     MouseEvent,
     NativeSyntheticEvent,
-    Text,
     TextInput,
     TextInputFocusEventData,
     ViewStyle,
@@ -24,7 +23,6 @@ export interface RenderProps extends TextFieldProps {
     onHoverOut: (event: MouseEvent) => void;
     onPress: (event: GestureResponderEvent) => void;
     state: State;
-    trailingIconShow: boolean;
     underlayColor: string;
     renderStyle: Animated.WithAnimatedObject<
         ViewStyle & {
@@ -36,6 +34,7 @@ export interface RenderProps extends TextFieldProps {
             labelLineLetterSpacing: AnimatedInterpolation;
             labelSize: AnimatedInterpolation;
             supportingTextColor: AnimatedInterpolation;
+            supportingTextOpacity: AnimatedInterpolation;
         }
     > & {
         height: number;
@@ -63,21 +62,24 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
     placeholder,
     ref,
     render,
-    trailingIcon = <Text>{'X'}</Text>,
+    trailingIcon,
     type = 'filled',
+    supportingText,
     ...renderProps
 }) => {
     const [inputState, setInputState] = useImmer<State>('enabled');
     const [layout, setLayout] = useImmer({} as Pick<LayoutRectangle, 'height' | 'width'>);
     const [state, setState] = useImmer<State>('enabled');
-    const [trailingIconShow, setTrailingIconShow] = useImmer(false);
     const [underlayColor] = useUnderlayColor({type});
     const [value, setValue] = useImmer('');
-    const {onAnimated, ...animatedStyle} = useAnimated({filled: !!value || !!placeholder});
+    const {onAnimated, ...animatedStyle} = useAnimated({
+        filled: !!value || !!placeholder,
+        supportingText,
+    });
+
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
-
     const processState = useCallback(
         (nextState: State, {element = 'container', finished}: ProcessStateOptions = {}) => {
             element === 'input' ? setInputState(() => nextState) : setState(() => nextState);
@@ -164,8 +166,9 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         renderStyle: {...animatedStyle, height: layout.height, width: layout.width},
         shape: 'extraSmallTop',
         state,
+        supportingText,
         trailingIcon,
-        trailingIconShow,
+
         type,
         underlayColor,
         value,

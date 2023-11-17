@@ -12,27 +12,3 @@ export const Filled: StoryObj<TextFieldProps> = {
         supportingText: 'supportingText',
     },
 };
-
-export const FilledPlaceholder: StoryObj<TextFieldProps> = {
-    args: {
-        label: 'Label',
-        supportingText: 'supportingText',
-        placeholder: 'Placeholder',
-    },
-};
-
-export const FilledError: StoryObj<TextFieldProps> = {
-    args: {
-        label: 'Label',
-        supportingText: 'supportingText',
-        error: true,
-    },
-};
-
-export const FilledDisabled: StoryObj<TextFieldProps> = {
-    args: {
-        label: 'Label',
-        supportingText: 'supportingText',
-        disabled: true,
-    },
-};

@@ -17,15 +17,16 @@ export const useAnimated = ({disabled, state, type}: UseAnimatedOptions) => {
     const [colorAnimated] = useAnimatedValue(1);
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
-    const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
+    const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
+    const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
     const backgroundColorConfig = {
         elevated: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.surface.surfaceContainerLow],
+            outputRange: [disabledBackgroundColor, theme.palette.surface.surfaceContainerLow],
         },
         filled: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.primary.primary],
+            outputRange: [disabledBackgroundColor, theme.palette.primary.primary],
         },
         outlined: {
             inputRange: [0, 1],
@@ -36,11 +37,14 @@ export const useAnimated = ({disabled, state, type}: UseAnimatedOptions) => {
         },
         text: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.primary, 0)],
+            outputRange: [
+                theme.color.rgba(theme.palette.primary.primary, 0),
+                theme.color.rgba(theme.palette.primary.primary, 0),
+            ],
         },
         tonal: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.secondary.secondaryContainer],
+            outputRange: [disabledBackgroundColor, theme.palette.secondary.secondaryContainer],
         },
     };
 
@@ -72,7 +76,7 @@ export const useAnimated = ({disabled, state, type}: UseAnimatedOptions) => {
     const borderColor = borderAnimated.interpolate({
         inputRange: borderInputRange,
         outputRange: [
-            theme.color.rgba(theme.palette.surface.onSurface, 0.12),
+            disabledBackgroundColor,
             theme.palette.outline.outline,
             theme.palette.primary.primary,
         ],

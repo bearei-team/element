@@ -31,6 +31,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
     const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
     const AnimatedLabel = Animated.createAnimatedComponent(Label);
     const AnimatedLeadingIcon = Animated.createAnimatedComponent(LeadingIcon);
+    const AnimatedMain = Animated.createAnimatedComponent(Main);
     const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
     const AnimatedTextInput = Animated.createAnimatedComponent(Input);
     const AnimatedTrailingIcon = Animated.createAnimatedComponent(TrailingIcon);
@@ -54,7 +55,6 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         state,
         supportingText,
         trailingIcon,
-        trailingIconShow,
         type,
         underlayColor,
         ...inputProps
@@ -62,6 +62,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         const {
             activeIndicatorColor,
             activeIndicatorHeight,
+            backgroundColor,
             height,
             inputHeight,
             labelColor,
@@ -70,17 +71,20 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             labelSize,
             supportingTextColor,
             width,
+            supportingTextOpacity,
         } = renderStyle;
 
         return (
             <Container testID={`textfield--${id}`}>
                 <View>
                     <Pressable onHoverIn={onHoverIn} onHoverOut={onHoverOut} onPress={onPress}>
-                        <Main
+                        <AnimatedMain
                             onLayout={onLayout}
+                            style={{backgroundColor}}
                             shape={shape}
                             testID={`textField__main--${id}`}
-                            trailingIconShow={trailingIconShow}>
+                            trailingIconShow={!!trailingIcon}
+                            leadingIconShow={!!leadingIcon}>
                             {leadingIcon && (
                                 <AnimatedLeadingIcon testID={`textfield__leadingIcon--${id}`}>
                                     {leadingIcon}
@@ -110,7 +114,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                 />
                             </Content>
 
-                            {trailingIconShow && (
+                            {trailingIcon && (
                                 <AnimatedTrailingIcon testID={`textfield__trailingIcon--${id}`}>
                                     {trailingIcon}
                                 </AnimatedTrailingIcon>
@@ -134,7 +138,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                 underlayColor={underlayColor}
                                 width={width}
                             />
-                        </Main>
+                        </AnimatedMain>
                     </Pressable>
 
                     {disabled && (
@@ -147,13 +151,11 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                     )}
                 </View>
 
-                {supportingText && (
-                    <AnimatedSupportingText
-                        style={{color: supportingTextColor}}
-                        testID={`textfield__supportingText--${id}`}>
-                        {supportingText}
-                    </AnimatedSupportingText>
-                )}
+                <AnimatedSupportingText
+                    style={{color: supportingTextColor, opacity: supportingTextOpacity}}
+                    testID={`textfield__supportingText--${id}`}>
+                    {supportingText}
+                </AnimatedSupportingText>
             </Container>
         );
     };
