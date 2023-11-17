@@ -7,10 +7,10 @@ export interface BaseDividerProps extends DividerProps {
 }
 
 export const BaseDivider: FC<BaseDividerProps> = ({
+    layout,
     render,
     size,
     subheader,
-    layout,
     ...renderProps
 }) => {
     const id = useId();

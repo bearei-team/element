@@ -30,7 +30,6 @@ const Container = styled(View)<ContainerProps>`
         ${({layout = 'horizontal', size = 'medium', theme}) => {
         const containerSize = {
             large: css``,
-
             medium:
                 layout === 'horizontal'
                     ? css`
@@ -39,7 +38,6 @@ const Container = styled(View)<ContainerProps>`
                     : css`
                           padding-top: ${theme.spacing.medium}px;
                       `,
-
             small:
                 layout === 'horizontal'
                     ? css`
