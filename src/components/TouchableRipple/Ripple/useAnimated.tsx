@@ -9,11 +9,12 @@ export interface UseAnimatedOptions extends Pick<RippleProps, 'onAnimatedEnd' | 
 }
 
 export const useAnimated = ({minDuration, onAnimatedEnd, sequence}: UseAnimatedOptions) => {
-    const theme = useTheme();
-    const [scaleAnimated] = useAnimatedValue(0);
     const [opacityAnimated] = useAnimatedValue(0);
+    const [scaleAnimated] = useAnimatedValue(0);
     const opacity = opacityAnimated.interpolate({inputRange: [0, 1], outputRange: [1, 0]});
     const scale = scaleAnimated.interpolate({inputRange: [0, 1], outputRange: [0.1, 1]});
+    const theme = useTheme();
+
     const processAnimatedTiming = useCallback(() => {
         const animatedTiming = UTIL.animatedTiming(theme);
         const animatedIn = (finished?: () => void) =>

@@ -24,16 +24,16 @@ export const BaseRipple: FC<BaseRippleProps> = ({
     underlayColor,
     ...renderProps
 }) => {
-    const id = useId();
     const {width, height} = touchableLayout;
     const centerX = width / 2;
     const centerY = height / 2;
+    const id = useId();
     const {locationX, locationY} = centered ? {locationX: centerX, locationY: centerY} : location;
     const offsetX = Math.abs(centerX - locationX);
     const offsetY = Math.abs(centerY - locationY);
     const radius = Math.sqrt(Math.pow(centerX + offsetX, 2) + Math.pow(centerY + offsetY, 2));
     const diameter = radius * 2;
-    const {opacity, scale} = useAnimated({onAnimatedEnd, sequence, minDuration: diameter});
+    const {opacity, scale} = useAnimated({minDuration: diameter, onAnimatedEnd, sequence});
 
     return render({
         ...renderProps,
