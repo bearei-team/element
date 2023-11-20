@@ -21,25 +21,31 @@ export interface RenderProps extends TextFieldProps {
     inputState: State;
     onHoverIn: (event: MouseEvent) => void;
     onHoverOut: (event: MouseEvent) => void;
+    onLabelPlaceholderTextLayout: (event: LayoutChangeEvent) => void;
     onPress: (event: GestureResponderEvent) => void;
-    state: State;
-    underlayColor: string;
     renderStyle: Animated.WithAnimatedObject<
         ViewStyle & {
             activeIndicatorColor: AnimatedInterpolation;
             activeIndicatorHeight: AnimatedInterpolation;
             inputHeight: AnimatedInterpolation;
             labelColor: AnimatedInterpolation;
+            labelLeft?: AnimatedInterpolation;
             labelLineHeight: AnimatedInterpolation;
             labelLineLetterSpacing: AnimatedInterpolation;
+            LabelPlaceholderFixWidth?: AnimatedInterpolation;
             labelSize: AnimatedInterpolation;
+            labelTop?: AnimatedInterpolation;
             supportingTextColor: AnimatedInterpolation;
             supportingTextOpacity: AnimatedInterpolation;
         }
     > & {
         height: number;
+        labelPlaceholderHeight: number;
+        labelPlaceholderWidth: number;
         width: number;
     };
+    state: State;
+    underlayColor: string;
 }
 
 export interface ProcessStateOptions extends Pick<ProcessAnimatedTimingOptions, 'finished'> {
@@ -68,13 +74,19 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
     ...renderProps
 }) => {
     const [inputState, setInputState] = useImmer<State>('enabled');
+    const [labelPlaceholderTextLayout, setLabelPlaceholderTextLayout] = useImmer(
+        {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    );
+
     const [layout, setLayout] = useImmer({} as Pick<LayoutRectangle, 'height' | 'width'>);
     const [state, setState] = useImmer<State>('enabled');
     const [underlayColor] = useUnderlayColor({type});
     const [value, setValue] = useImmer('');
     const {onAnimated, ...animatedStyle} = useAnimated({
         filled: !!value || !!placeholder,
+        labelPlaceholderWidth: labelPlaceholderTextLayout.width,
         supportingText,
+        type,
     });
 
     const id = useId();
@@ -106,6 +118,12 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
 
         setLayout(() => ({height, width}));
         onLayout?.(event);
+    };
+
+    const processLabelPlaceholderTextLayout = (event: LayoutChangeEvent) => {
+        const {height, width} = event.nativeEvent.layout;
+
+        setLabelPlaceholderTextLayout(() => ({height, width}));
     };
 
     const handlePress = () =>
@@ -160,11 +178,18 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         onFocus: handleFocus,
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
+        onLabelPlaceholderTextLayout: processLabelPlaceholderTextLayout,
         onLayout: processLayout,
         onPress: handlePress,
         placeholder,
-        renderStyle: {...animatedStyle, height: layout.height, width: layout.width},
-        shape: 'extraSmallTop',
+        renderStyle: {
+            ...animatedStyle,
+            height: layout.height,
+            labelPlaceholderHeight: labelPlaceholderTextLayout.height,
+            labelPlaceholderWidth: labelPlaceholderTextLayout.width,
+            width: layout.width,
+        },
+        shape: type === 'filled' ? 'extraSmallTop' : 'extraSmall',
         state,
         supportingText,
         trailingIcon,

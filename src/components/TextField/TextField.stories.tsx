@@ -12,3 +12,11 @@ export const Filled: StoryObj<TextFieldProps> = {
         supportingText: 'supportingText',
     },
 };
+
+export const Outlined: StoryObj<TextFieldProps> = {
+    args: {
+        label: 'Label',
+        supportingText: 'supportingText',
+        type: 'outlined',
+    },
+};

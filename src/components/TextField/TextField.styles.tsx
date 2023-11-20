@@ -4,11 +4,21 @@ import {Shape} from '../Common/Common.styles';
 import {TextFieldProps} from './TextField';
 
 export type MainProps = Pick<TextFieldProps, 'type'> & {
-    trailingIconShow: boolean;
     leadingIconShow: boolean;
+    trailingIconShow: boolean;
 };
+
 export type LabelProps = Pick<TextFieldProps, 'type'>;
 export type SupportingTextProps = Pick<TextFieldProps, 'error'>;
+export interface LabelPlaceholderProps {
+    height: number;
+    width: number;
+}
+
+export interface LabelPlaceholderFixProps {
+    height: number;
+    labelPlaceholderWidth: number;
+}
 
 const Container = styled.View`
     display: flex;
@@ -21,12 +31,11 @@ const Container = styled.View`
 
 const Core = styled.View``;
 const CoreInner = styled.Pressable``;
-
 const Main = styled(Shape)<MainProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
-    min-height: 48px;
+    height: 56px;
     position: relative;
 
     ${({theme}) =>
@@ -46,6 +55,12 @@ const Main = styled(Shape)<MainProps>`
         css`
             padding-end: ${theme.spacing.medium}px;
         `}
+
+        ${({type}) =>
+        type === 'outlined' &&
+        css`
+            border-style: 'solid';
+        `}
 `;
 
 const Content = styled.View`
@@ -55,11 +70,71 @@ const Content = styled.View`
     justify-content: center;
 `;
 
+const LabelPlaceholder = styled.View<LabelPlaceholderProps>`
+    position: absolute;
+    top: -8px;
+    z-index: 2;
+
+    ${({height, theme, width}) => css`
+        height: ${height}px;
+        left: ${16 - theme.spacing.small}px;
+        width: ${width}px;
+    `};
+`;
+
+const LabelPlaceholderFix = styled.View<LabelPlaceholderFixProps>`
+    position: absolute;
+    top: 0px;
+
+    ${({height, theme}) => css`
+        background-color: ${theme.palette.surface.surface};
+        height: ${height}px;
+    `};
+`;
+
+const LabelPlaceholderBefore = styled(LabelPlaceholderFix)`
+    ${({labelPlaceholderWidth}) => css`
+        right: ${labelPlaceholderWidth / 2}px;
+    `};
+`;
+
+const LabelPlaceholderAfter = styled(LabelPlaceholderFix)`
+    ${({labelPlaceholderWidth}) => css`
+        left: ${labelPlaceholderWidth / 2}px;
+    `};
+`;
+
+const LabelPlaceholderText = styled.Text`
+    opacity: 0;
+    position: absolute;
+    top: -8px;
+    white-space: nowrap;
+    z-index: 2;
+
+    ${({theme}) => css`
+        color: ${theme.color.rgba(theme.palette.surface.onSurfaceVariant, 0)};
+        font-size: ${theme.typography.body.small.size}px;
+        font-style: ${theme.typography.body.small.style};
+        font-weight: ${theme.typography.body.small.weight};
+        left: ${16 - theme.spacing.small}px;
+        letter-spacing: ${theme.typography.body.small.letterSpacing}px;
+        line-height: ${theme.typography.body.small.lineHeight}px;
+        padding-horizontal: ${theme.spacing.small}px;
+    `};
+`;
+
 const Label = styled.Text<LabelProps>`
     ${({theme}) => css`
-        font-style: ${theme.typography.label.small.style};
-        font-weight: ${theme.typography.label.small.weight};
+        font-style: ${theme.typography.body.small.style};
+        font-weight: ${theme.typography.body.small.weight};
     `};
+
+    ${({type}) =>
+        type === 'outlined' &&
+        css`
+            position: absolute;
+            z-index: 3;
+        `};
 `;
 
 const Input = styled(TextInput)`
@@ -115,6 +190,10 @@ export {
     CoreInner,
     Input,
     Label,
+    LabelPlaceholder,
+    LabelPlaceholderAfter,
+    LabelPlaceholderBefore,
+    LabelPlaceholderText,
     LeadingIcon,
     Main,
     SupportingText,

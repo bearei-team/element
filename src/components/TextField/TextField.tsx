@@ -11,6 +11,10 @@ import {
     CoreInner,
     Input,
     Label,
+    LabelPlaceholder,
+    LabelPlaceholderAfter,
+    LabelPlaceholderBefore,
+    LabelPlaceholderText,
     LeadingIcon,
     Main,
     SupportingText,
@@ -20,23 +24,23 @@ import {
 export type Type = 'filled' | 'outlined';
 export interface TextFieldProps
     extends Partial<TextInputProps & RefAttributes<TextInput> & Pick<ShapeProps, 'shape'>> {
-    label?: string;
-    type?: Type;
-    trailingIcon?: React.JSX.Element;
-    leadingIcon?: React.JSX.Element;
-    supportingText?: string;
     disabled?: boolean;
     error?: boolean;
+    label?: string;
+    leadingIcon?: React.JSX.Element;
+    supportingText?: string;
+    trailingIcon?: React.JSX.Element;
+    type?: Type;
 }
 
 const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
     const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
     const AnimatedLabel = Animated.createAnimatedComponent(Label);
-    const AnimatedLeadingIcon = Animated.createAnimatedComponent(LeadingIcon);
+    const AnimatedLabelPlaceholderAfter = Animated.createAnimatedComponent(LabelPlaceholderAfter);
+    const AnimatedLabelPlaceholderBefore = Animated.createAnimatedComponent(LabelPlaceholderBefore);
     const AnimatedMain = Animated.createAnimatedComponent(Main);
     const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
     const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-    const AnimatedTrailingIcon = Animated.createAnimatedComponent(TrailingIcon);
 
     const render = ({
         disabled,
@@ -50,65 +54,79 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         onFocus,
         onHoverIn,
         onHoverOut,
+        onLabelPlaceholderTextLayout,
         onLayout,
         onPress,
         renderStyle,
         shape,
         state,
+        style,
         supportingText,
         trailingIcon,
         type,
         underlayColor,
-        style,
         ...inputProps
     }: RenderProps) => {
         const {
             activeIndicatorColor,
             activeIndicatorHeight,
             backgroundColor,
+            borderColor,
+            borderWidth,
             height,
             inputHeight,
             labelColor,
+            labelLeft,
             labelLineHeight,
             labelLineLetterSpacing,
+            LabelPlaceholderFixWidth,
+            labelPlaceholderHeight,
+            labelPlaceholderWidth,
             labelSize,
+            labelTop,
             supportingTextColor,
-            width,
             supportingTextOpacity,
+            width,
         } = renderStyle;
+
+        const renderLabel = () => (
+            <AnimatedLabel
+                style={{
+                    color: labelColor,
+                    fontSize: labelSize,
+                    left: labelLeft,
+                    letterSpacing: labelLineLetterSpacing,
+                    lineHeight: labelLineHeight,
+                    top: labelTop,
+                }}
+                testID={`textField__label--${id}`}
+                type={type}>
+                {label}
+            </AnimatedLabel>
+        );
 
         return (
             <Container testID={`textfield--${id}`}>
-                <Core style={style} testID={`textfield__core--${id}`}>
+                <Core style={style} testID={`textfield__core--${id}`} onLayout={onLayout}>
                     <CoreInner
-                        testID={`textfield__coreInner--${id}`}
                         onHoverIn={onHoverIn}
                         onHoverOut={onHoverOut}
-                        onPress={onPress}>
+                        onPress={onPress}
+                        testID={`textfield__coreInner--${id}`}>
                         <AnimatedMain
-                            onLayout={onLayout}
-                            style={{backgroundColor}}
+                            leadingIconShow={!!leadingIcon}
                             shape={shape}
+                            style={{backgroundColor, borderColor, borderWidth}}
                             testID={`textField__main--${id}`}
-                            trailingIconShow={!!trailingIcon}
-                            leadingIconShow={!!leadingIcon}>
+                            trailingIconShow={!!trailingIcon}>
                             {leadingIcon && (
-                                <AnimatedLeadingIcon testID={`textfield__leadingIcon--${id}`}>
+                                <LeadingIcon testID={`textfield__leadingIcon--${id}`}>
                                     {leadingIcon}
-                                </AnimatedLeadingIcon>
+                                </LeadingIcon>
                             )}
 
                             <Content testID={`textfield__content--${id}`}>
-                                <AnimatedLabel
-                                    style={{
-                                        color: labelColor,
-                                        fontSize: labelSize,
-                                        letterSpacing: labelLineLetterSpacing,
-                                        lineHeight: labelLineHeight,
-                                    }}
-                                    testID={`textField__label--${id}`}>
-                                    {label}
-                                </AnimatedLabel>
+                                {type === 'filled' && renderLabel()}
 
                                 <AnimatedTextInput
                                     {...inputProps}
@@ -122,28 +140,60 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                             </Content>
 
                             {trailingIcon && (
-                                <AnimatedTrailingIcon testID={`textfield__trailingIcon--${id}`}>
+                                <TrailingIcon testID={`textfield__trailingIcon--${id}`}>
                                     {trailingIcon}
-                                </AnimatedTrailingIcon>
+                                </TrailingIcon>
                             )}
 
                             {type === 'filled' && (
-                                <AnimatedActiveIndicator
-                                    style={{
-                                        backgroundColor: activeIndicatorColor,
-                                        height: activeIndicatorHeight,
-                                    }}
-                                    testID={`textfield__activeIndicator--${id}`}
-                                />
+                                <>
+                                    <AnimatedActiveIndicator
+                                        style={{
+                                            backgroundColor: activeIndicatorColor,
+                                            height: activeIndicatorHeight,
+                                        }}
+                                        testID={`textfield__activeIndicator--${id}`}
+                                    />
+
+                                    <Hovered
+                                        height={height}
+                                        shape={shape}
+                                        state={inputState === 'focused' ? 'enabled' : state}
+                                        underlayColor={underlayColor}
+                                        width={width}
+                                    />
+                                </>
                             )}
 
-                            <Hovered
-                                height={height}
-                                shape={shape}
-                                state={inputState === 'focused' ? 'enabled' : state}
-                                underlayColor={underlayColor}
-                                width={width}
-                            />
+                            {type === 'outlined' && (
+                                <>
+                                    {renderLabel()}
+                                    <LabelPlaceholder
+                                        height={labelPlaceholderHeight}
+                                        testID={`textField__labelPlaceholder--${id}`}
+                                        width={labelPlaceholderWidth}>
+                                        <AnimatedLabelPlaceholderBefore
+                                            height={labelPlaceholderHeight}
+                                            labelPlaceholderWidth={labelPlaceholderWidth}
+                                            style={{width: LabelPlaceholderFixWidth}}
+                                            testID={`textField__labelPlaceholderBefore--${id}`}
+                                        />
+
+                                        <AnimatedLabelPlaceholderAfter
+                                            height={labelPlaceholderHeight}
+                                            labelPlaceholderWidth={labelPlaceholderWidth}
+                                            style={{width: LabelPlaceholderFixWidth}}
+                                            testID={`textField__labelPlaceholderAfter--${id}`}
+                                        />
+                                    </LabelPlaceholder>
+
+                                    <LabelPlaceholderText
+                                        onLayout={onLabelPlaceholderTextLayout}
+                                        testID={`textField__labelPlaceholderText--${id}`}>
+                                        {label}
+                                    </LabelPlaceholderText>
+                                </>
+                            )}
                         </AnimatedMain>
                     </CoreInner>
 
