@@ -131,7 +131,7 @@ export const useAnimated = ({
     const borderColor = colorAnimated.interpolate({
         inputRange: [0, 1, 2, 3],
         outputRange: [
-            disabledColor,
+            disabledBackgroundColor,
             theme.palette.outline.outline,
             theme.palette.primary.primary,
             theme.palette.error.error,
