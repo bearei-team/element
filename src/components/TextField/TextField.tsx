@@ -89,7 +89,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             width,
         } = renderStyle;
 
-        const renderLabel = () => (
+        const LabelComponent = (
             <AnimatedLabel
                 style={{
                     color: labelColor,
@@ -126,7 +126,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                             )}
 
                             <Content testID={`textfield__content--${id}`}>
-                                {type === 'filled' && renderLabel()}
+                                {type === 'filled' && LabelComponent}
 
                                 <AnimatedTextInput
                                     {...inputProps}
@@ -167,7 +167,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
 
                             {type === 'outlined' && (
                                 <>
-                                    {renderLabel()}
+                                    {LabelComponent}
                                     <LabelPlaceholder
                                         height={labelPlaceholderHeight}
                                         testID={`textField__labelPlaceholder--${id}`}

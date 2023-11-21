@@ -45,20 +45,6 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
         ...touchableRippleProps
     }: RenderProps) => {
         const {color, height, width, ...mainStyle} = renderStyle;
-        const button = (
-            <AnimatedContainer
-                shape={shape}
-                showIcon={showIcon}
-                style={{...(typeof style === 'object' && style), ...mainStyle}}
-                testID={`button--${id}`}
-                type={type}>
-                {showIcon && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
-
-                <AnimatedLabel style={{color}} testID={`button__label--${id}`} type={type}>
-                    {label}
-                </AnimatedLabel>
-            </AnimatedContainer>
-        );
 
         return (
             <Elevation level={elevation} shape={shape}>
@@ -74,7 +60,18 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                     ref={ref}
                     shape={shape}
                     underlayColor={underlayColor}>
-                    {button}
+                    <AnimatedContainer
+                        shape={shape}
+                        showIcon={showIcon}
+                        style={{...(typeof style === 'object' && style), ...mainStyle}}
+                        testID={`button--${id}`}
+                        type={type}>
+                        {showIcon && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
+
+                        <AnimatedLabel style={{color}} testID={`button__label--${id}`} type={type}>
+                            {label}
+                        </AnimatedLabel>
+                    </AnimatedContainer>
 
                     <Hovered
                         height={height}
