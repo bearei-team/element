@@ -2,6 +2,7 @@ import {ValidateError} from 'async-validator';
 import {NamePath} from '../../utils/namePath.utils';
 import {UTIL} from '../../utils/util';
 import {ValidateOptions} from '../../utils/validate.utils';
+import {ItemProps} from './Item/Item';
 
 export type Store = Record<string, unknown>;
 export interface FieldError extends Pick<ValidateOptions, 'rules'> {
@@ -15,14 +16,50 @@ export interface Callback<T> {
     onValueChange?: (changedValue: T, value: T) => void;
 }
 
-export interface FieldEntity<T> {
+export interface FieldEntity<T extends Store> {
     onStoreChange: (name?: keyof T) => void;
-    props: any;
+    props: ItemProps<T>;
     touched: boolean;
     validate: () => Promise<FieldError | undefined>;
 }
 
-export const formStore = <T extends Store = Store>() => {
+export interface SetFieldValueOptions {
+    response?: boolean;
+    skipValidate?: boolean;
+}
+
+export interface FormStore<T extends Store> {
+    getFieldEntities: (signOut?: boolean) => FieldEntity<T>[];
+    getFieldEntitiesName: (names?: (keyof T)[], signOut?: boolean) => (keyof T | undefined)[];
+    getFieldError: {
+        (): Error<T>;
+        (name?: (keyof T)[]): Error<T>;
+        (name?: keyof T): Error<T>[keyof T];
+    };
+    getFieldValue: {
+        (): T;
+        (name?: (keyof T)[]): T;
+        (name?: keyof T): T[keyof T];
+    };
+    getInitialValue: () => T;
+    isFieldTouched: (name?: NamePath<T>) => boolean;
+    resetField: (name?: NamePath<T>) => void;
+    setCallback: (callback: Callback<T>) => void;
+    setFieldError: (error: Error<T>) => void;
+    setFieldTouched: (name?: keyof T, touched?: boolean) => void;
+    setFieldValue: (value?: T, options?: SetFieldValueOptions) => void;
+    setInitialValue: (value?: T, init?: boolean) => void;
+    signInField: (entity: FieldEntity<T>) => {signOut: () => void};
+    signOutField: (name?: NamePath<T>) => void;
+    submit: (skipValidate?: boolean) => void;
+    validateField: {
+        (): Promise<Error<T>>;
+        (name?: (keyof T)[]): Promise<Error<T>>;
+        (name?: keyof T): Promise<Error<T>[keyof T]>;
+    };
+}
+
+export const formStore = <T extends Store = Store>(): FormStore<T> => {
     const callback = {} as Callback<T>;
     const error = {} as Error<T>;
     const initialValue = {} as T;
@@ -50,7 +87,7 @@ export const formStore = <T extends Store = Store>() => {
             if (!exist) {
                 fieldEntities = [...entities, entity];
 
-                setFieldValue({[name]: undefined} as T, {validate: false, fieldValidate: false});
+                setFieldValue({[name]: undefined} as T, {response: false});
                 setFieldError({[name]: undefined} as Error<T>);
             }
         }
@@ -63,57 +100,57 @@ export const formStore = <T extends Store = Store>() => {
     const signOutField = (name?: NamePath<T>) => {
         const names = UTIL.namePath(name);
 
-        const handleSignOut = (signOutName?: string) => {
+        const processSignOut = (signOutName?: keyof T) => {
             if (signOutName) {
                 const entities = getFieldEntities(true);
                 const fieldEntity = entities.find(({props}) => props.name === signOutName);
 
                 if (fieldEntity) {
-                    const nextStore = {...store};
                     const nextError = {...error};
+                    const nextStore = {...store};
 
-                    delete nextStore[signOutName];
                     delete nextError[signOutName];
+                    delete nextStore[signOutName];
 
                     fieldEntities = entities.filter(({props}) => props.name !== signOutName);
 
-                    setFieldValue(nextStore, {validate: false, fieldValidate: false});
+                    setFieldValue(nextStore, {response: false});
                     setFieldError(nextError);
                 }
             }
         };
 
-        getFieldEntitiesName(names).forEach(handleSignOut);
+        getFieldEntitiesName(names).forEach(processSignOut);
     };
 
-    const setFieldValue = (value = {} as T, {fieldValidate = true, validate = true} = {}) => {
+    const setFieldValue = (value = {} as T, {response = true, skipValidate = false} = {}) => {
         const {onValueChange} = callback;
         const entities = getFieldEntities();
 
-        const processFieldValidate = async (key: string) => {
-            const entity = entities.find(({props}) => props.name === key);
+        const processResponse = async (name: keyof T) => {
+            const entity = entities.find(({props}) => props.name === name);
 
             if (entity) {
                 const processValidateResult = (err?: FieldError) => {
-                    setFieldError({[key]: err} as Error<T>);
-                    setFieldTouched(key, true);
+                    setFieldError({[name]: err} as Error<T>);
+                    setFieldTouched(name, true);
 
-                    entity.onStoreChange(key);
+                    entity.onStoreChange(name);
                 };
 
-                validate
-                    ? await entity.validate().then(processValidateResult)
-                    : processValidateResult();
+                skipValidate
+                    ? processValidateResult()
+                    : await entity.validate().then(processValidateResult);
             }
         };
 
-        Object.assign(store, value);
-
-        if (fieldValidate) {
-            Promise.all(Object.keys(value).map(processFieldValidate)).then(() =>
+        if (response) {
+            Promise.all(Object.keys(value).map(processResponse)).then(() =>
                 onValueChange?.(value, store),
             );
         }
+
+        Object.assign(store, value);
     };
 
     function getFieldValue(): T;
@@ -123,7 +160,7 @@ export const formStore = <T extends Store = Store>() => {
         const names = UTIL.namePath(name);
         const value = {} as T;
 
-        const processValue = (entityName?: string) =>
+        const processValue = (entityName?: keyof T) =>
             entityName && Object.assign(value, {[entityName]: store[entityName]});
 
         names ? getFieldEntitiesName(names).forEach(processValue) : Object.assign(value, store);
@@ -139,7 +176,7 @@ export const formStore = <T extends Store = Store>() => {
         const names = UTIL.namePath(name);
         const err = {} as Error<T>;
 
-        const processError = (entityName?: string) =>
+        const processError = (entityName?: keyof T) =>
             entityName && Object.assign(err, {[entityName]: error[entityName]});
 
         names ? getFieldEntitiesName(names).forEach(processError) : Object.assign(err, error);
@@ -177,7 +214,7 @@ export const formStore = <T extends Store = Store>() => {
     const isFieldTouched = (name?: NamePath<T>) => {
         const names = UTIL.namePath(name);
         const entities = getFieldEntities();
-        const processFieldTouched = (entityName?: string) =>
+        const processFieldTouched = (entityName?: keyof T) =>
             entityName && entities.find(({props}) => props.name === entityName)?.touched;
 
         return getFieldEntitiesName(names)
@@ -191,7 +228,7 @@ export const formStore = <T extends Store = Store>() => {
     async function validateField(name?: NamePath<T>) {
         const names = UTIL.namePath(name);
         const entities = getFieldEntities();
-        const processValidate = (entityName?: string) =>
+        const processValidate = (entityName?: keyof T) =>
             entityName
                 ? entities
                       .find(({props}) => props.name === entityName)
@@ -215,20 +252,16 @@ export const formStore = <T extends Store = Store>() => {
             return !Array.isArray(name) && name ? err[name] : err;
         };
 
-        const fieldError = await Promise.all(
-            getFieldEntitiesName(names).map(entityName =>
-                entityName ? processValidate(entityName) : undefined,
-            ),
-        );
+        const fieldError = await Promise.all(getFieldEntitiesName(names).map(processValidate));
 
         return processFieldError(fieldError);
     }
 
     const resetField = (name?: NamePath<T>) => {
         const names = UTIL.namePath(name);
-        const processReset = (entityName?: string) => {
+        const processReset = (entityName?: keyof T) => {
             if (entityName) {
-                setFieldValue({[entityName]: undefined} as T, {validate: false});
+                setFieldValue({[entityName]: undefined} as T, {response: false});
                 setFieldError({[entityName]: undefined} as Error<T>);
             }
         };
@@ -238,10 +271,7 @@ export const formStore = <T extends Store = Store>() => {
 
     const submit = (skipValidate = false) => {
         const {onFinish, onFinishFailed} = callback;
-        const handleFailed = (err: Error<T>) => {
-            onFinishFailed?.(err);
-        };
-
+        const handleFailed = (err: Error<T>) => onFinishFailed?.(err);
         const handleFinish = () => onFinish?.(store);
 
         skipValidate
@@ -267,6 +297,7 @@ export const formStore = <T extends Store = Store>() => {
         setFieldValue,
         setInitialValue,
         signInField,
+        signOutField,
         submit,
         validateField,
     };

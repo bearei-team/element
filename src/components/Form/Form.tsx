@@ -8,11 +8,14 @@ export interface FormProps<T extends Store = Store>
     extends Partial<ViewProps & RefAttributes<View> & Callback<T>> {
     form?: any;
     layout?: 'horizontal' | 'vertical';
+    initialValue?: Store;
 }
 
 const ForwardRefForm = forwardRef<View, FormProps>((props, ref) => {
-    const render = ({id, ...containerProps}: RenderProps) => (
-        <Container {...containerProps} ref={ref} testID={`form--${id}`}></Container>
+    const render = ({id, children, ...containerProps}: RenderProps) => (
+        <Container {...containerProps} ref={ref} testID={`form--${id}`}>
+            {children}
+        </Container>
     );
 
     return <BaseForm {...props} render={render} />;

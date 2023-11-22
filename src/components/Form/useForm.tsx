@@ -1,13 +1,8 @@
 import {useLazyRef} from '../../hooks/useLazyRef';
+import {FormStore, Store, formStore} from './formStore';
 
-const useForm = (form: any) => {
-    const formRef = useLazyRef(() => ({}));
-
-    if (!formRef.current) {
-        formRef.current = form ? form : {};
-    }
+export const useForm = <T extends Store>(form?: FormStore<T>) => {
+    const formRef = useLazyRef(() => form ?? formStore<T>());
 
     return [formRef.current];
 };
-
-export {useForm};

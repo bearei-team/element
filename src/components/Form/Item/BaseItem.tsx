@@ -1,34 +1,40 @@
 import {RuleItem} from 'async-validator';
 import {FC, useCallback, useEffect, useId} from 'react';
+import {useImmer} from 'use-immer';
 import {UTIL} from '../../../utils/util';
 import {useFormContext} from '../useFormContext';
-import {ItemProps} from './Item';
+import {ControlProps, ItemProps} from './Item';
 
-export type RenderProps = ItemProps;
+export interface RenderProps extends ItemProps {
+    controlProps: ControlProps;
+}
 export interface BaseItemProps extends ItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
 export const BaseItem: FC<BaseItemProps> = ({
-    render,
     name,
+    render,
     rules,
     validateFirst,
     ...renderProps
 }) => {
+    const [, forceUpdate] = useImmer({});
+    const {getFieldError, getFieldValue, setFieldValue, signInField} = useFormContext();
+    const errors = getFieldError(name)?.errors;
+    const errorMessage = errors?.[0].message;
     const id = useId();
-    const {signInField, getFieldValue, setFieldsValue, getFieldError} = useFormContext();
 
     const processValidate = useCallback(
-        (rules?: RuleItem[]) => async () => {
-            const isValidate = name && rules?.length !== 0;
+        (validateRules?: RuleItem[]) => async () => {
+            const isValidate = name && validateRules?.length !== 0;
 
             if (isValidate) {
                 const value = getFieldValue(name);
 
                 return UTIL.validate({
                     name,
-                    rules,
+                    rules: validateRules,
                     validateFirst,
                     value,
                 });
@@ -44,11 +50,21 @@ export const BaseItem: FC<BaseItemProps> = ({
             props: {name, rules, validateFirst},
             touched: false,
             validate: processValidate(rules),
+            onStoreChange: () => forceUpdate(() => {}),
         });
-    }, [name, processValidate, rules, signInField, validateFirst]);
+    }, [forceUpdate, name, processValidate, rules, signInField, validateFirst]);
 
     return render({
         ...renderProps,
         id,
+        controlProps: {
+            value: name ? getFieldValue(name) : name,
+            onValueChange: (value?: unknown) => {
+                if (name) {
+                    setFieldValue({[name]: value});
+                }
+            },
+            errorMessage,
+        },
     });
 };

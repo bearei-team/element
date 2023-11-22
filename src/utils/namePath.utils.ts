@@ -1,4 +1,4 @@
-import {Store} from '../components/Form/form';
+import {Store} from '../components/Form/formStore';
 
 export type NamePath<T> = keyof T | (keyof T)[];
 

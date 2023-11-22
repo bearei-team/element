@@ -10,6 +10,7 @@ export interface ControlProps {
     value: unknown;
     onValueChange?: (value?: unknown) => void;
     errors?: ValidateError[];
+    errorMessage?: string;
 }
 
 export interface ItemProps<T extends Store = Store>
@@ -22,8 +23,10 @@ export interface ItemProps<T extends Store = Store>
 }
 
 const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
-    const render = ({id, ...containerProps}: RenderProps) => (
-        <Container {...containerProps} ref={ref} testID={`divider--${id}`}></Container>
+    const render = ({id, renderControl, controlProps, ...containerProps}: RenderProps) => (
+        <Container {...containerProps} ref={ref} testID={`formItem--${id}`}>
+            {renderControl?.(controlProps)}
+        </Container>
     );
 
     return <BaseItem {...props} render={render} />;
