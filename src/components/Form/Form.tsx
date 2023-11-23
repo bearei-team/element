@@ -1,24 +1,36 @@
-import React, {RefAttributes, forwardRef, memo} from 'react';
+import React, {ForwardedRef, RefAttributes, forwardRef, memo} from 'react';
 import {View, ViewProps} from 'react-native';
 import {BaseForm, RenderProps} from './BaseForm';
 import {Container} from './Form.styles';
-import {Callback, Store} from './formStore';
+import {Item} from './Item/Item';
+import {Callback, FormStore, Store} from './formStore';
+import {useForm} from './useForm';
+
+export type FormComponent = typeof MemoForm & {
+    Item: typeof Item;
+    useForm: typeof useForm;
+};
 
 export interface FormProps<T extends Store = Store>
     extends Partial<ViewProps & RefAttributes<View> & Callback<T>> {
-    form?: any;
+    form?: FormStore<T>;
     layout?: 'horizontal' | 'vertical';
-    initialValue?: Store;
+    initialValue?: T;
 }
 
-const ForwardRefForm = forwardRef<View, FormProps>((props, ref) => {
-    const render = ({id, children, ...containerProps}: RenderProps) => (
+const FormInner = <T extends Store>(props: FormProps<T>, ref: ForwardedRef<View>) => {
+    const render = ({id, children, ...containerProps}: RenderProps<T>) => (
         <Container {...containerProps} ref={ref} testID={`form--${id}`}>
             {children}
         </Container>
     );
 
     return <BaseForm {...props} render={render} />;
-});
+};
 
-export const Form = memo(ForwardRefForm);
+const MemoForm = memo(forwardRef(FormInner)) as typeof FormInner;
+
+Object.defineProperty(MemoForm, 'Item', {value: Item});
+Object.defineProperty(MemoForm, 'useForm', {value: useForm});
+
+export const Form = MemoForm as FormComponent;

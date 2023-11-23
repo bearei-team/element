@@ -1,4 +1,4 @@
-import {useCallback, useEffect} from 'react';
+import {useCallback, useEffect, useMemo} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
@@ -52,7 +52,11 @@ export const useAnimated = ({
         },
     };
 
-    const inputHeight = inputAnimated.interpolate({inputRange: [0, 1], outputRange: [0, 24]});
+    const inputHeight = useMemo(
+        () => inputAnimated.interpolate({inputRange: [0, 1], outputRange: [0, 24]}),
+        [inputAnimated],
+    );
+
     const labelSize = labeAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [theme.typography.body.large.size, theme.typography.body.small.size],
@@ -204,8 +208,8 @@ export const useAnimated = ({
                 hovered: undefined,
                 pressed: () => {
                     processAnimatedTiming(1, {animatedValue: colorAnimated});
-                    processAnimatedTiming(1, {animatedValue: inputAnimated, finished});
-                    processAnimatedTiming(1, {animatedValue: labeAnimated});
+                    processAnimatedTiming(1, {animatedValue: inputAnimated});
+                    processAnimatedTiming(1, {animatedValue: labeAnimated, finished});
                 },
             };
 

@@ -4,13 +4,13 @@ import {UTIL} from '../../utils/util';
 import {ValidateOptions} from '../../utils/validate.utils';
 import {ItemProps} from './Item/Item';
 
-export type Store = Record<string, unknown>;
+export type Store = Record<any, any>;
 export interface FieldError extends Pick<ValidateOptions, 'rules'> {
     errors: ValidateError[];
 }
 
 export type Error<T> = Record<keyof T, FieldError | undefined>;
-export interface Callback<T> {
+export interface Callback<T extends Store> {
     onFinish?: (value: T) => void;
     onFinishFailed?: (error: Error<T>) => void;
     onValueChange?: (changedValue: T, value: T) => void;
@@ -20,7 +20,7 @@ export interface FieldEntity<T extends Store> {
     onStoreChange: (name?: keyof T) => void;
     props: ItemProps<T>;
     touched: boolean;
-    validate: () => Promise<FieldError | undefined>;
+    validate: (value?: keyof T) => Promise<FieldError | undefined>;
 }
 
 export interface SetFieldValueOptions {
@@ -59,7 +59,7 @@ export interface FormStore<T extends Store> {
     };
 }
 
-export const formStore = <T extends Store = Store>(): FormStore<T> => {
+export const formStore = <T extends Store>(): FormStore<T> => {
     const callback = {} as Callback<T>;
     const error = {} as Error<T>;
     const initialValue = {} as T;
@@ -140,7 +140,7 @@ export const formStore = <T extends Store = Store>(): FormStore<T> => {
 
                 skipValidate
                     ? processValidateResult()
-                    : await entity.validate().then(processValidateResult);
+                    : await entity.validate(value[entity.props.name]).then(processValidateResult);
             }
         };
 

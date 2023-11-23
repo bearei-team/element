@@ -9,7 +9,6 @@ import {
     Content,
     Core,
     CoreInner,
-    Input,
     Label,
     LabelPlaceholder,
     LabelPlaceholderAfter,
@@ -33,25 +32,24 @@ export interface TextFieldProps
     type?: Type;
 }
 
-const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
-    const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
-    const AnimatedLabel = Animated.createAnimatedComponent(Label);
-    const AnimatedLabelPlaceholderAfter = Animated.createAnimatedComponent(LabelPlaceholderAfter);
-    const AnimatedLabelPlaceholderBefore = Animated.createAnimatedComponent(LabelPlaceholderBefore);
-    const AnimatedMain = Animated.createAnimatedComponent(Main);
-    const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
-    const AnimatedTextInput = Animated.createAnimatedComponent(Input);
+const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
+const AnimatedLabel = Animated.createAnimatedComponent(Label);
+const AnimatedLabelPlaceholderAfter = Animated.createAnimatedComponent(LabelPlaceholderAfter);
+const AnimatedLabelPlaceholderBefore = Animated.createAnimatedComponent(LabelPlaceholderBefore);
+const AnimatedMain = Animated.createAnimatedComponent(Main);
+const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 
+const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
     const render = ({
         disabled,
         id,
-        inputRef,
+        // inputRef,
         inputState,
         label,
         leadingIcon,
-        onBlur,
-        onChangeText,
-        onFocus,
+        // onBlur,
+        // onChangeText,
+        // onFocus,
         onHoverIn,
         onHoverOut,
         onLabelPlaceholderTextLayout,
@@ -65,8 +63,9 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         trailingIcon,
         type,
         underlayColor,
-        ...inputProps
-    }: RenderProps) => {
+        children,
+    }: // ...inputProps
+    RenderProps) => {
         const {
             activeIndicatorColor,
             activeIndicatorHeight,
@@ -74,7 +73,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             borderColor,
             borderWidth,
             height,
-            inputHeight,
+            // inputHeight,
             labelColor,
             labelLeft,
             labelLineHeight,
@@ -127,8 +126,9 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
 
                             <Content testID={`textfield__content--${id}`}>
                                 {type === 'filled' && LabelComponent}
+                                {children}
 
-                                <AnimatedTextInput
+                                {/* <AnimatedTextInput
                                     {...inputProps}
                                     onBlur={onBlur}
                                     onChangeText={onChangeText}
@@ -136,7 +136,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                     ref={inputRef}
                                     style={{height: inputHeight}}
                                     testID={`textfield__input--${id}`}
-                                />
+                                /> */}
                             </Content>
 
                             {trailingIcon && (

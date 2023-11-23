@@ -1,15 +1,16 @@
-import {FC, useEffect, useId} from 'react';
+import {useEffect, useId} from 'react';
 import {useImmer} from 'use-immer';
 import {FormProps} from './Form';
+import {FormStore, Store} from './formStore';
 import {useForm} from './useForm';
 import {FormContext} from './useFormContext';
 
-export type RenderProps = FormProps;
-export interface BaseFormProps extends FormProps {
-    render: (props: RenderProps) => React.JSX.Element;
+export type RenderProps<T extends Store> = FormProps<T>;
+export interface BaseFormProps<T extends Store> extends FormProps<T> {
+    render: (props: RenderProps<T>) => React.JSX.Element;
 }
 
-export const BaseForm: FC<BaseFormProps> = ({
+export const BaseForm = <T extends Store>({
     render,
     form,
     onFinish,
@@ -18,9 +19,9 @@ export const BaseForm: FC<BaseFormProps> = ({
     children,
     initialValue,
     ...renderProps
-}) => {
+}: BaseFormProps<T>) => {
     const id = useId();
-    const [formStore] = useForm(form);
+    const [formStore] = useForm<T>(form);
     const [status, setStatus] = useImmer('idle');
     const {setCallback, setInitialValue} = formStore;
 
@@ -37,7 +38,11 @@ export const BaseForm: FC<BaseFormProps> = ({
 
     return render({
         ...renderProps,
-        children: <FormContext.Provider value={formStore}>{children}</FormContext.Provider>,
+        children: (
+            <FormContext.Provider value={formStore as FormStore<Store>}>
+                {children}
+            </FormContext.Provider>
+        ),
         id,
     });
 };

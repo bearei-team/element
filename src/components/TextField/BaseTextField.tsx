@@ -1,4 +1,4 @@
-import {FC, RefObject, useCallback, useEffect, useId, useRef} from 'react';
+import {FC, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -13,6 +13,7 @@ import {
 import {useImmer} from 'use-immer';
 import {AnimatedInterpolation, State} from '../Common/interface';
 import {TextFieldProps} from './TextField';
+import {Input} from './TextField.styles';
 import {ProcessAnimatedTimingOptions, useAnimated} from './useAnimated';
 import {useUnderlayColor} from './useUnderlayColor';
 
@@ -27,7 +28,7 @@ export interface RenderProps extends TextFieldProps {
         ViewStyle & {
             activeIndicatorColor: AnimatedInterpolation;
             activeIndicatorHeight: AnimatedInterpolation;
-            inputHeight: AnimatedInterpolation;
+            // inputHeight: AnimatedInterpolation;
             labelColor: AnimatedInterpolation;
             labelLeft?: AnimatedInterpolation;
             labelLineHeight: AnimatedInterpolation;
@@ -57,6 +58,7 @@ export interface BaseTextFieldProps extends TextFieldProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+const AnimatedTextInput = Animated.createAnimatedComponent(Input);
 export const BaseTextField: FC<BaseTextFieldProps> = ({
     disabled,
     error,
@@ -82,7 +84,7 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
     const [state, setState] = useImmer<State>('enabled');
     const [underlayColor] = useUnderlayColor({type});
     const [value, setValue] = useImmer('');
-    const {onAnimated, ...animatedStyle} = useAnimated({
+    const {onAnimated, inputHeight, ...animatedStyle} = useAnimated({
         filled: !!value || !!placeholder,
         labelPlaceholderWidth: labelPlaceholderTextLayout.width,
         supportingText,
@@ -98,19 +100,20 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
 
             onAnimated(nextState, {finished, input: element === 'input'});
         },
+
         [onAnimated, setInputState, setState],
     );
 
     const processAbnormalState = useCallback(
         (nextState: State, abnormalValue: boolean) => {
             if (abnormalValue) {
-                return onAnimated(nextState);
+                return processState(nextState);
             }
 
             processState(state);
             processState(inputState, {element: 'input'});
         },
-        [inputState, onAnimated, processState, state],
+        [inputState, processState, state],
     );
 
     const processLayout = (event: LayoutChangeEvent) => {
@@ -134,25 +137,50 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
             },
         });
 
-    const handleFocus = (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
-        processState('focused', {element: 'input'});
-        onFocus?.(event);
-    };
+    const handleFocus = useCallback(
+        (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
+            processState('focused', {element: 'input'});
+            onFocus?.(event);
+        },
+        [onFocus, processState],
+    );
 
-    const handleBlur = (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
-        if (state === 'enabled') {
+    const handleBlur = useCallback(
+        (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
+            if (state === 'enabled') {
+                processState('enabled', {element: 'input'});
+            }
+
             processState('enabled', {element: 'input'});
-        }
 
-        onBlur?.(event);
-    };
+            onBlur?.(event);
+        },
+        [onBlur, processState, state],
+    );
 
     const handleHoverIn = () => processState('hovered');
     const handleHoverOut = () => processState('enabled');
-    const handleChangeText = (text: string) => {
-        setValue(() => text);
-        onChangeText?.(text);
-    };
+    const handleChangeText = useCallback(
+        (text: string) => {
+            setValue(() => text);
+            onChangeText?.(text);
+        },
+        [onChangeText, setValue],
+    );
+
+    const children = useMemo(() => {
+        return (
+            <AnimatedTextInput
+                // {...inputProps}
+                onBlur={handleBlur}
+                onChangeText={handleChangeText}
+                onFocus={handleFocus}
+                ref={inputRef}
+                style={{height: inputHeight}}
+                testID={`textfield__input--${id}`}
+            />
+        );
+    }, [handleBlur, handleChangeText, handleFocus, id, inputHeight, inputRef]);
 
     useEffect(() => {
         if (typeof disabled === 'boolean') {
@@ -173,15 +201,16 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         inputRef,
         inputState,
         leadingIcon,
-        onBlur: handleBlur,
-        onChangeText: handleChangeText,
-        onFocus: handleFocus,
+        // onBlur: handleBlur,
+        // onChangeText: handleChangeText,
+        // onFocus: handleFocus,
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
         onLabelPlaceholderTextLayout: processLabelPlaceholderTextLayout,
         onLayout: processLayout,
         onPress: handlePress,
         placeholder,
+        children,
         renderStyle: {
             ...animatedStyle,
             height: layout.height,

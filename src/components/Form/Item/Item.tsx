@@ -11,6 +11,7 @@ export interface ControlProps {
     onValueChange?: (value?: unknown) => void;
     errors?: ValidateError[];
     errorMessage?: string;
+    id?: string;
 }
 
 export interface ItemProps<T extends Store = Store>
@@ -18,14 +19,14 @@ export interface ItemProps<T extends Store = Store>
         ViewProps & RefAttributes<View> & Pick<ValidateOptions, 'rules' | 'validateFirst'>
     > {
     name?: keyof T;
-    initialValue?: unknown;
+    initialValue?: Store;
     renderControl?: (props: ControlProps) => JSX.Element;
 }
 
 const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
-    const render = ({id, renderControl, controlProps, ...containerProps}: RenderProps) => (
+    const render = ({id, children, ...containerProps}: RenderProps) => (
         <Container {...containerProps} ref={ref} testID={`formItem--${id}`}>
-            {renderControl?.(controlProps)}
+            {children}
         </Container>
     );
 
