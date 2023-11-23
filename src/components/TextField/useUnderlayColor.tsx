@@ -1,8 +1,8 @@
 import {useTheme} from 'styled-components/native';
-import {Type} from './TextField';
+import {TextFieldType} from './TextField';
 
 export interface UseUnderlayColorOptions {
-    type: Type;
+    type: TextFieldType;
 }
 
 export const useUnderlayColor = ({type}: UseUnderlayColorOptions) => {
