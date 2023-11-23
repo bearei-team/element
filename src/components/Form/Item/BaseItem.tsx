@@ -16,6 +16,7 @@ export const BaseItem: FC<BaseItemProps> = ({
     rules,
     renderControl,
     validateFirst,
+    label,
     ...renderProps
 }) => {
     const [, forceUpdate] = useImmer({});
@@ -45,8 +46,6 @@ export const BaseItem: FC<BaseItemProps> = ({
                     value,
                 });
             }
-
-            return undefined;
         },
         [name, validateFirst],
     );
@@ -56,11 +55,12 @@ export const BaseItem: FC<BaseItemProps> = ({
             renderControl?.({
                 errorMessage,
                 errors,
+                id,
+                label,
                 onValueChange: onValueChange,
                 value: name ? getFieldValue(name) : name,
-                id,
             }),
-        [errorMessage, errors, getFieldValue, id, name, onValueChange, renderControl],
+        [errorMessage, errors, getFieldValue, id, label, name, onValueChange, renderControl],
     );
 
     useEffect(() => {

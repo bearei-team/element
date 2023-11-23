@@ -20,7 +20,7 @@ import {
     TrailingIcon,
 } from './TextField.styles';
 
-export type Type = 'filled' | 'outlined';
+export type TextFieldType = 'filled' | 'outlined';
 export interface TextFieldProps
     extends Partial<TextInputProps & RefAttributes<TextInput> & Pick<ShapeProps, 'shape'>> {
     disabled?: boolean;
@@ -29,7 +29,7 @@ export interface TextFieldProps
     leadingIcon?: React.JSX.Element;
     supportingText?: string;
     trailingIcon?: React.JSX.Element;
-    type?: Type;
+    type?: TextFieldType;
 }
 
 const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
@@ -38,18 +38,13 @@ const AnimatedLabelPlaceholderAfter = Animated.createAnimatedComponent(LabelPlac
 const AnimatedLabelPlaceholderBefore = Animated.createAnimatedComponent(LabelPlaceholderBefore);
 const AnimatedMain = Animated.createAnimatedComponent(Main);
 const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
-
 const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
     const render = ({
         disabled,
         id,
-        // inputRef,
         inputState,
         label,
         leadingIcon,
-        // onBlur,
-        // onChangeText,
-        // onFocus,
         onHoverIn,
         onHoverOut,
         onLabelPlaceholderTextLayout,
@@ -64,8 +59,8 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         type,
         underlayColor,
         children,
-    }: // ...inputProps
-    RenderProps) => {
+        ...containerProps
+    }: RenderProps) => {
         const {
             activeIndicatorColor,
             activeIndicatorHeight,
@@ -73,7 +68,6 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             borderColor,
             borderWidth,
             height,
-            // inputHeight,
             labelColor,
             labelLeft,
             labelLineHeight,
@@ -105,7 +99,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         );
 
         return (
-            <Container testID={`textfield--${id}`}>
+            <Container {...containerProps} testID={`textfield--${id}`}>
                 <Core style={style} testID={`textfield__core--${id}`} onLayout={onLayout}>
                     <CoreInner
                         onHoverIn={onHoverIn}

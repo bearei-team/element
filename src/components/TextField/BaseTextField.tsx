@@ -18,7 +18,6 @@ import {ProcessAnimatedTimingOptions, useAnimated} from './useAnimated';
 import {useUnderlayColor} from './useUnderlayColor';
 
 export interface RenderProps extends TextFieldProps {
-    inputRef: React.RefObject<TextInput>;
     inputState: State;
     onHoverIn: (event: MouseEvent) => void;
     onHoverOut: (event: MouseEvent) => void;
@@ -28,7 +27,6 @@ export interface RenderProps extends TextFieldProps {
         ViewStyle & {
             activeIndicatorColor: AnimatedInterpolation;
             activeIndicatorHeight: AnimatedInterpolation;
-            // inputHeight: AnimatedInterpolation;
             labelColor: AnimatedInterpolation;
             labelLeft?: AnimatedInterpolation;
             labelLineHeight: AnimatedInterpolation;
@@ -168,10 +166,9 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         [onChangeText, setValue],
     );
 
-    const children = useMemo(() => {
-        return (
+    const children = useMemo(
+        () => (
             <AnimatedTextInput
-                // {...inputProps}
                 onBlur={handleBlur}
                 onChangeText={handleChangeText}
                 onFocus={handleFocus}
@@ -179,8 +176,9 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
                 style={{height: inputHeight}}
                 testID={`textfield__input--${id}`}
             />
-        );
-    }, [handleBlur, handleChangeText, handleFocus, id, inputHeight, inputRef]);
+        ),
+        [handleBlur, handleChangeText, handleFocus, id, inputHeight, inputRef],
+    );
 
     useEffect(() => {
         if (typeof disabled === 'boolean') {
@@ -198,12 +196,9 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         ...renderProps,
         disabled,
         id,
-        inputRef,
+
         inputState,
         leadingIcon,
-        // onBlur: handleBlur,
-        // onChangeText: handleChangeText,
-        // onFocus: handleFocus,
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
         onLabelPlaceholderTextLayout: processLabelPlaceholderTextLayout,
@@ -224,6 +219,5 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         trailingIcon,
         type,
         underlayColor,
-        value,
     });
 };

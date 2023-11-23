@@ -12,11 +12,15 @@ export interface ControlProps {
     errors?: ValidateError[];
     errorMessage?: string;
     id?: string;
+    label?: string;
 }
 
 export interface ItemProps<T extends Store = Store>
     extends Partial<
-        ViewProps & RefAttributes<View> & Pick<ValidateOptions, 'rules' | 'validateFirst'>
+        ViewProps &
+            RefAttributes<View> &
+            Pick<ValidateOptions, 'rules' | 'validateFirst'> &
+            Pick<ControlProps, 'label'>
     > {
     name?: keyof T;
     initialValue?: Store;

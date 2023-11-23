@@ -228,17 +228,20 @@ export const formStore = <T extends Store>(): FormStore<T> => {
     async function validateField(name?: NamePath<T>) {
         const names = UTIL.namePath(name);
         const entities = getFieldEntities();
-        const processValidate = (entityName?: keyof T) =>
-            entityName
-                ? entities
-                      .find(({props}) => props.name === entityName)
-                      ?.validate()
-                      .then(err => {
-                          setFieldError({[entityName]: err} as Error<T>);
+        const processValidate = (entityName?: keyof T) => {
+            if (entityName) {
+                const value = getFieldValue(entityName);
 
-                          return err;
-                      })
-                : undefined;
+                return entities
+                    .find(({props}) => props.name === entityName)
+                    ?.validate(value)
+                    .then(err => {
+                        setFieldError({[entityName]: err} as Error<T>);
+
+                        return err;
+                    });
+            }
+        };
 
         const processFieldError = (fieldErrors: (FieldError | undefined)[]) => {
             const err = {} as Error<T>;
@@ -276,11 +279,11 @@ export const formStore = <T extends Store>(): FormStore<T> => {
 
         skipValidate
             ? handleFinish()
-            : validateField().then(err =>
-                  Object.entries(err).find(([, value]) => value)
+            : validateField().then(err => {
+                  Object.entries(err).some(([, value]) => value)
                       ? handleFailed(err)
-                      : handleFinish(),
-              );
+                      : handleFinish();
+              });
     };
 
     return {

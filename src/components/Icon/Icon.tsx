@@ -4,10 +4,10 @@ import {SvgProps} from 'react-native-svg';
 import {BaseIcon, RenderProps} from './BaseIcon';
 import {Container} from './Icon.styles';
 
-export type Type = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
+export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
 export interface IconProps
     extends Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View>> {
-    type?: Type;
+    type?: IconType;
     icon?: string;
     width?: number;
     height?: number;

@@ -12,13 +12,14 @@ export default {
 
 export const FormA: FC<FormProps> = () => {
     const [form] = Form.useForm<{a: string; b: string}>();
-    const renderControl = ({value, onValueChange, errorMessage, id}: ControlProps) => (
+    const renderControl = ({value, onValueChange, errorMessage, id, label}: ControlProps) => (
         <TextField
             key={id}
             value={value as string}
             onChangeText={onValueChange}
             supportingText={errorMessage}
             error={!!errorMessage}
+            label={label}
         />
     );
 
@@ -30,12 +31,16 @@ export const FormA: FC<FormProps> = () => {
         form.submit();
     };
 
-    console.info(777777);
-
     return (
         <Form form={form} onFinish={processFinish}>
-            <Form.Item name="name" renderControl={renderControl} rules={[{type: 'number'}]} />
-            <Form.Item name="age" renderControl={renderControl} />
+            <Form.Item
+                name="name"
+                renderControl={renderControl}
+                rules={[{type: 'number'}]}
+                label="name"
+            />
+
+            <Form.Item name="age" renderControl={renderControl} label="age" />
 
             <Button label="submit" onPress={handleSubmit} />
         </Form>
