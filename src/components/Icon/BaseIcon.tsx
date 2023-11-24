@@ -6,8 +6,8 @@ import {useSVGImport} from './useSVGImport';
 export interface RenderProps extends IconProps {
     SvgIcon?: FC<SvgProps>;
     renderStyle: {
-        height: number;
-        width: number;
+        height?: number;
+        width?: number;
     };
 }
 
@@ -19,8 +19,8 @@ export const BaseIcon: FC<BaseDividerProps> = ({
     render,
     type = 'filled',
     icon = 'face',
-    width = 48,
-    height = 48,
+    width,
+    height,
     ...renderProps
 }) => {
     const id = useId();

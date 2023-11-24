@@ -53,39 +53,46 @@ export const useAnimated = ({
     };
 
     const inputHeight = useMemo(
-        () => inputAnimated.interpolate({inputRange: [0, 1], outputRange: [0, 24]}),
-        [inputAnimated],
+        () =>
+            inputAnimated.interpolate({inputRange: [0, 1], outputRange: [0, theme.adaptSize(24)]}),
+        [inputAnimated, theme],
     );
 
     const labelSize = labeAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [theme.typography.body.large.size, theme.typography.body.small.size],
+        outputRange: [
+            theme.adaptFontSize(theme.typography.body.large.size),
+            theme.adaptFontSize(theme.typography.body.small.size),
+        ],
     });
 
     const labelLineHeight = labeAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
-            theme.typography.body.large.lineHeight,
-            theme.typography.body.small.lineHeight,
+            theme.adaptSize(theme.typography.body.large.lineHeight),
+            theme.adaptSize(theme.typography.body.small.lineHeight),
         ],
     });
 
     const labelLineLetterSpacing = labeAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
-            theme.typography.body.large.letterSpacing,
-            theme.typography.body.small.letterSpacing,
+            theme.adaptSize(theme.typography.body.large.letterSpacing),
+            theme.adaptSize(theme.typography.body.small.letterSpacing),
         ],
     });
 
     const labelTop = labeAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [16, -8],
+        outputRange: [theme.adaptSize(16), theme.adaptSize(-8)],
     });
 
     const labelLeft = labeAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [leadingIcon ? 16 + 48 : 16, 16],
+        outputRange: [
+            leadingIcon ? theme.adaptSize(16) + labelPlaceholderWidth : theme.adaptSize(16),
+            theme.adaptSize(16),
+        ],
     });
 
     const LabelPlaceholderFixWidth = labeAnimated.interpolate({
@@ -115,7 +122,7 @@ export const useAnimated = ({
 
     const activeIndicatorHeight = activeIndicatorAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [1, 2],
+        outputRange: [theme.adaptSize(1), theme.adaptSize(2)],
     });
 
     const supportingTextColor = supportingTextColorAnimated.interpolate({
@@ -144,7 +151,7 @@ export const useAnimated = ({
 
     const borderWidth = borderAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [1, 2],
+        outputRange: [theme.adaptSize(1), theme.adaptSize(2)],
     });
 
     const backgroundColor = backgroundColorAnimated.interpolate(backgroundColorConfig[type]);

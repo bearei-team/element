@@ -17,20 +17,20 @@ const Container = styled(Shape)<ContainerProps>`
     ${({theme, size = 'medium'}) => {
         const containerSize = {
             large: css`
-                max-width: 34px;
-                min-width: 16px;
-                padding-horizontal: ${theme.spacing.extraSmall}px;
+                max-width: ${theme.adaptSize(34)}px;
+                min-width: ${theme.adaptSize(16)}px;
+                padding-horizontal: ${theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
 
             medium: css`
-                max-width: 34px;
-                min-width: 16px;
-                padding-horizontal: ${theme.spacing.extraSmall}px;
+                max-width: ${theme.adaptSize(34)}px;
+                min-width: ${theme.adaptSize(16)}px;
+                padding-horizontal: ${theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
 
             small: css`
-                padding-horizontal: ${theme.spacing.extraSmall - 2}px;
-                padding-vertical: ${theme.spacing.extraSmall - 2}px;
+                padding-horizontal: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
+                padding-vertical: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
             `,
         };
 
@@ -39,16 +39,15 @@ const Container = styled(Shape)<ContainerProps>`
 `;
 
 const Label = styled.Text`
-    min-height: 2px;
-    min-width: 2px;
-
     ${({theme}) => css`
         color: ${theme.palette.error.onError};
-        font-size: ${theme.typography.label.small.size}px;
+        font-size: ${theme.adaptFontSize(theme.typography.label.small.size)}px;
         font-style: ${theme.typography.label.small.style};
         font-weight: ${theme.typography.label.small.weight};
-        letter-spacing: ${theme.typography.label.small.letterSpacing}px;
-        line-height: ${theme.typography.label.small.lineHeight}px;
+        letter-spacing: ${theme.adaptSize(theme.typography.label.small.letterSpacing)}px;
+        line-height: ${theme.adaptSize(theme.typography.label.small.lineHeight)}px;
+        min-height: ${theme.adaptSize(2)}px;
+        min-width: ${theme.adaptSize(2)}px;
     `}
 `;
 

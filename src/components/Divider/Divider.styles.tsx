@@ -11,17 +11,17 @@ const Container = styled(View)<ContainerProps>`
     justify-content: center;
 
     ${({theme}) => css`
-        gap: ${theme.spacing.extraSmall}px;
+        gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
     `}
 
-    ${({layout = 'horizontal'}) => {
+    ${({layout = 'horizontal', theme}) => {
         const containerLayout = {
             horizontal: css`
-                min-width: 320px;
+                min-width: ${theme.adaptSize(320)}px;
             `,
             vertical: css`
-                min-height: 120px;
-                width: 1px;
+                min-height: ${theme.adaptSize(120)}px;
+                width: ${theme.adaptSize(1)}px;
             `,
         };
 
@@ -33,18 +33,18 @@ const Container = styled(View)<ContainerProps>`
             medium:
                 layout === 'horizontal'
                     ? css`
-                          padding-start: ${theme.spacing.medium}px;
+                          padding-start: ${theme.adaptSize(theme.spacing.medium)}px;
                       `
                     : css`
-                          padding-top: ${theme.spacing.medium}px;
+                          padding-top: ${theme.adaptSize(theme.spacing.medium)}px;
                       `,
             small:
                 layout === 'horizontal'
                     ? css`
-                          padding-horizontal: ${theme.spacing.medium}px;
+                          padding-horizontal: ${theme.adaptSize(theme.spacing.medium)}px;
                       `
                     : css`
-                          padding-vertical: ${theme.spacing.medium}px;
+                          padding-vertical: ${theme.adaptSize(theme.spacing.medium)}px;
                       `,
         };
 
@@ -55,9 +55,9 @@ const Container = styled(View)<ContainerProps>`
 const Main = styled.View`
     align-self: stretch;
     flex: 1;
-    min-height: 1px;
 
     ${({theme}) => css`
+        min-height: ${theme.adaptSize(1)}px;
         background-color: ${theme.palette.outline.outlineVariant};
     `}
 `;
@@ -67,11 +67,11 @@ const Subheader = styled.Text`
 
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurfaceVariant};
-        font-size: ${theme.typography.title.small.size}px;
+        font-size: ${theme.adaptFontSize(theme.typography.title.small.size)}px;
         font-style: ${theme.typography.title.small.style};
         font-weight: ${theme.typography.title.small.weight};
-        letter-spacing: ${theme.typography.title.small.letterSpacing}px;
-        line-height: ${theme.typography.title.small.lineHeight}px;
+        letter-spacing: ${theme.adaptSize(theme.typography.title.small.letterSpacing)}px;
+        line-height: ${theme.adaptSize(theme.typography.title.small.lineHeight)}px;
     `}
 `;
 

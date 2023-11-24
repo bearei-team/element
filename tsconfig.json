@@ -1,6 +1,14 @@
 {
     "extends": "@tsconfig/react-native/tsconfig.json",
     "compilerOptions": {
-        "noEmit": false
-    }
+        "noEmit": false,
+        "sourceMap": false,
+        "declarationMap": false,
+        "rootDir": ".",
+        "paths": {
+            "@bearei/element": ["./src/index"]
+        }
+    },
+    "include": ["src"],
+    "exclude": [".ondevice"]
 }

@@ -2789,7 +2789,7 @@ __metadata:
     "@babel/core": ^7.20.0
     "@babel/preset-env": ^7.20.0
     "@babel/runtime": ^7.20.0
-    "@bearei/theme": ^1.3.6
+    "@bearei/theme": ^1.3.9
     "@material-design-icons/svg": latest
     "@react-native-async-storage/async-storage": ^1.19.3
     "@react-native-community/datetimepicker": ^7.6.0
@@ -2839,10 +2839,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bearei/theme@npm:^1.3.6":
-  version: 1.3.6
-  resolution: "@bearei/theme@npm:1.3.6"
-  checksum: f60c00c817fb6b7be18dda35fa4926c11a97c2e80ff028dc3a30229d249ba7971c434168b9df2012ace2a3a7727f24f5ba970dc77e03799868710175fdea475d
+"@bearei/theme@npm:^1.3.9":
+  version: 1.3.9
+  resolution: "@bearei/theme@npm:1.3.9"
+  checksum: 9e3da35b4efb73b4b8b93271adf04abd14bcca25268c95984a956e84ca06b534e743fcc832b43a782bcbc46f187644d23f1d57220fb38dcb0ab167c0f23097b3
   languageName: node
   linkType: hard
 

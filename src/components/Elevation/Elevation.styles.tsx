@@ -31,11 +31,11 @@ const Shadow0 = styled(Shape)<ShadowProps>`
         return css`
             elevation: ${theme.elevation[levelString][shadowString].elevation};
             shadow-color: ${theme.palette.shadow.shadow};
-            shadow-offset: ${theme.elevation[levelString][shadowString].x}px
-                ${theme.elevation[levelString][shadowString].y}px;
+            shadow-offset: ${theme.adaptSize(theme.elevation[levelString][shadowString].x)}px
+                ${theme.adaptSize(theme.elevation[levelString][shadowString].y)}px;
 
             shadow-opacity: 1;
-            shadow-radius: ${theme.elevation[levelString][shadowString].blur}px;
+            shadow-radius: ${theme.adaptSize(theme.elevation[levelString][shadowString].blur)}px;
         `;
     }};
 `;

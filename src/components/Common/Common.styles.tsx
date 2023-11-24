@@ -19,10 +19,10 @@ export interface DisabledProps {
 
 const Shape = styled(View)<ShapeProps>`
     ${({shape = 'none', theme}) => css`
-        border-bottom-left-radius: ${theme.shape[shape].bottomLeft}px;
-        border-bottom-right-radius: ${theme.shape[shape].bottomLeft}px;
-        border-top-left-radius: ${theme.shape[shape].topLeft}px;
-        border-top-right-radius: ${theme.shape[shape].topRight}px;
+        border-bottom-left-radius: ${theme.adaptSize(theme.shape[shape].bottomLeft)}px;
+        border-bottom-right-radius: ${theme.adaptSize(theme.shape[shape].bottomLeft)}px;
+        border-top-left-radius: ${theme.adaptSize(theme.shape[shape].topLeft)}px;
+        border-top-right-radius: ${theme.adaptSize(theme.shape[shape].topRight)}px;
     `}
 
     ${({border, theme}) => {

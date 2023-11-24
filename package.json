@@ -6,6 +6,23 @@
     "react-native": "src/index.tsx",
     "module": "lib/module/index.js",
     "types": "lib/typescript/src/index.d.ts",
+    "author": "bearei <bear_ei@outlook.com>",
+    "description": "bear-ei project element",
+    "license": "MIT",
+    "readmeFilename": "README.md",
+    "keywords": [
+        "react",
+        "react native",
+        "typescript",
+        "material design"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/bearei-team/element"
+    },
+    "bugs": {
+        "url": "https://github.com/bearei-team/element/issues"
+    },
     "scripts": {
         "android": "react-native run-android",
         "ios": "react-native run-ios",
@@ -18,11 +35,11 @@
         "storybook": "start-storybook -p 6006",
         "build-storybook": "build-storybook",
         "build": "bob build",
-        "prepare": "yarn clean && yarn build",
-        "clean": "shx rm -rf lib"
+        "clean": "shx rm -rf lib",
+        "publish": "yarn clean && yarn build && yarn npm publish --access public"
     },
     "dependencies": {
-        "@bearei/theme": "^1.3.6",
+        "@bearei/theme": "^1.3.9",
         "@material-design-icons/svg": "latest",
         "async-validator": "^4.2.5",
         "immer": "^10.0.3",
@@ -86,16 +103,32 @@
         "!**/__tests__",
         "!**/__fixtures__",
         "!**/__mocks__",
-        "!**/*.stories.{js,ts,tsx}"
+        "!**/.ondevice",
+        "!**/*.map"
     ],
     "react-native-builder-bob": {
         "source": "src",
         "output": "lib",
         "exclude": "**/*.stories.{js,ts,tsx}",
         "targets": [
-            "commonjs",
-            "module",
-            "typescript"
+            [
+                "commonjs",
+                {
+                    "sourceMaps": false
+                }
+            ],
+            [
+                "module",
+                {
+                    "sourceMaps": false
+                }
+            ],
+            [
+                "typescript",
+                {
+                    "sourceMaps": false
+                }
+            ]
         ]
     },
     "eslintIgnore": [

@@ -4,7 +4,10 @@ import {HoveredProps} from './Hovered';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends HoveredProps {
-    renderStyle: Animated.WithAnimatedObject<ViewStyle>;
+    renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
+        height?: number;
+        width?: number;
+    };
 }
 export interface BaseHoveredProps extends HoveredProps {
     render: (props: RenderProps) => React.JSX.Element;

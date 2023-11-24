@@ -14,17 +14,23 @@ export interface HoveredProps
     width?: number;
 }
 
+const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const ForwardRefHovered = forwardRef<View | Animated.LegacyRef<View>, HoveredProps>(
     (props, ref) => {
-        const AnimatedContainer = Animated.createAnimatedComponent(Container);
-        const render = ({id, renderStyle, style, ...containerProps}: RenderProps) => (
-            <AnimatedContainer
-                {...containerProps}
-                ref={ref}
-                style={{...(typeof style === 'object' && style), ...renderStyle}}
-                testID={`hovered--${id}`}
-            />
-        );
+        const render = ({id, renderStyle, style, ...containerProps}: RenderProps) => {
+            const {width, height, ...animatedStyle} = renderStyle;
+
+            return (
+                <AnimatedContainer
+                    {...containerProps}
+                    ref={ref}
+                    style={{...(typeof style === 'object' && style), ...animatedStyle}}
+                    width={width}
+                    height={height}
+                    testID={`hovered--${id}`}
+                />
+            );
+        };
 
         return <BaseHovered {...props} render={render} />;
     },

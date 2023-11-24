@@ -7,9 +7,9 @@ export type ContainerProps = Pick<IconProps, 'width' | 'height'>;
 const Container = styled(View)<ContainerProps>`
     display: flex;
 
-    ${({width, height}) => css`
-        height: ${height}px;
-        width: ${width}px;
+    ${({width = 48, height = 48, theme}) => css`
+        height: ${theme.adaptSize(height)}px;
+        width: ${theme.adaptSize(width)}px;
     `}
 `;
 

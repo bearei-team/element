@@ -25,7 +25,7 @@ const Container = styled.View`
     flex-direction: column;
 
     ${({theme}) => css`
-        gap: ${theme.spacing.extraSmall}px;
+        gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
     `}
 `;
 
@@ -35,25 +35,25 @@ const Main = styled(Shape)<MainProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
-    height: 56px;
     position: relative;
 
     ${({theme}) =>
         css`
-            padding-vertical: ${theme.spacing.extraSmall}px;
+            height: ${theme.adaptSize(56)}px;
+            padding-vertical: ${theme.adaptSize(theme.spacing.extraSmall)}px;
         `}
 
     ${({theme, leadingIconShow}) =>
         !leadingIconShow &&
         css`
-            padding-start: ${theme.spacing.medium}px;
+            padding-start: ${theme.adaptSize(theme.spacing.medium)}px;
         `}
 
 
     ${({theme, trailingIconShow}) =>
         !trailingIconShow &&
         css`
-            padding-end: ${theme.spacing.medium}px;
+            padding-end: ${theme.adaptSize(theme.spacing.medium)}px;
         `}
 
         ${({type}) =>
@@ -72,54 +72,55 @@ const Content = styled.View`
 
 const LabelPlaceholder = styled.View<LabelPlaceholderProps>`
     position: absolute;
-    top: -8px;
+
     z-index: 2;
 
     ${({height, theme, width}) => css`
-        height: ${height}px;
-        left: ${16 - theme.spacing.small}px;
-        width: ${width}px;
+        top: ${theme.adaptSize(-8)} px;
+        height: ${theme.adaptSize(height)}px;
+        left: ${theme.adaptSize(16 - theme.spacing.small)}px;
+        width: ${theme.adaptSize(width)}px;
     `};
 `;
 
 const LabelPlaceholderFix = styled.View<LabelPlaceholderFixProps>`
     position: absolute;
-    top: 0px;
+    top: 0;
 
     ${({height, theme}) => css`
         background-color: ${theme.palette.surface.surface};
-        height: ${height}px;
+        height: ${theme.adaptSize(height)}px;
     `};
 `;
 
 const LabelPlaceholderBefore = styled(LabelPlaceholderFix)`
-    ${({labelPlaceholderWidth}) => css`
-        right: ${labelPlaceholderWidth / 2}px;
+    ${({labelPlaceholderWidth, theme}) => css`
+        right: ${theme.adaptSize(labelPlaceholderWidth / 2)}px;
     `};
 `;
 
 const LabelPlaceholderAfter = styled(LabelPlaceholderFix)`
-    ${({labelPlaceholderWidth}) => css`
-        left: ${labelPlaceholderWidth / 2}px;
+    ${({labelPlaceholderWidth, theme}) => css`
+        left: ${theme.adaptSize(labelPlaceholderWidth / 2)}px;
     `};
 `;
 
 const LabelPlaceholderText = styled.Text`
     opacity: 0;
     position: absolute;
-    top: -8px;
     white-space: nowrap;
     z-index: 2;
 
     ${({theme}) => css`
         color: ${theme.color.rgba(theme.palette.surface.onSurfaceVariant, 0)};
-        font-size: ${theme.typography.body.small.size}px;
+        font-size: ${theme.adaptFontSize(theme.typography.body.small.size)}px;
         font-style: ${theme.typography.body.small.style};
         font-weight: ${theme.typography.body.small.weight};
-        left: ${16 - theme.spacing.small}px;
-        letter-spacing: ${theme.typography.body.small.letterSpacing}px;
-        line-height: ${theme.typography.body.small.lineHeight}px;
-        padding-horizontal: ${theme.spacing.small}px;
+        left: ${theme.adaptSize(16 - theme.spacing.small)}px;
+        letter-spacing: ${theme.adaptSize(theme.typography.body.small.letterSpacing)}px;
+        line-height: ${theme.adaptSize(theme.typography.body.small.lineHeight)}px;
+        padding-horizontal: ${theme.adaptSize(theme.spacing.small)}px;
+        top: ${theme.adaptSize(-8)} px;
     `};
 `;
 
@@ -138,14 +139,15 @@ const Label = styled.Text<LabelProps>`
 `;
 
 const Input = styled(TextInput)`
+    outline-style: none;
+
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurface};
-        font-size: ${theme.typography.body.large.size}px;
+        font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
-        letter-spacing: ${theme.typography.body.large.letterSpacing}px;
-        line-height: ${theme.typography.body.large.lineHeight}px;
-        outline-style: none;
+        letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
+        line-height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
     `}
 `;
 
@@ -159,13 +161,14 @@ const ActiveIndicator = styled.View`
 const Icon = styled.View`
     align-items: center;
     display: flex;
-    height: 48px;
+
     justify-content: center;
-    width: 48px;
 
     ${({theme}) => css`
-        padding-horizontal: ${theme.spacing.small}px;
-        padding-vertical: ${theme.spacing.small}px;
+        height: ${theme.adaptSize(48)}px;
+        padding-horizontal: ${theme.adaptSize(theme.spacing.small)}px;
+        padding-vertical: ${theme.adaptSize(theme.spacing.small)}px;
+        width: ${theme.adaptSize(48)}px;
     `}
 `;
 
@@ -173,12 +176,12 @@ const TrailingIcon = styled(Icon)``;
 const LeadingIcon = styled(Icon)``;
 const SupportingText = styled.Text<SupportingTextProps>`
     ${({theme}) => css`
-        font-size: ${theme.typography.body.small.size}px;
+        font-size: ${theme.adaptSize(theme.typography.body.small.size)}px;
         font-style: ${theme.typography.body.small.style};
         font-weight: ${theme.typography.body.small.weight};
-        letter-spacing: ${theme.typography.body.small.letterSpacing}px;
-        line-height: ${theme.typography.body.small.lineHeight}px;
-        padding-horizontal: ${theme.spacing.medium}px;
+        letter-spacing: ${theme.adaptSize(theme.typography.body.small.letterSpacing)}px;
+        line-height: ${theme.adaptSize(theme.typography.body.small.lineHeight)}px;
+        padding-horizontal: ${theme.adaptSize(theme.spacing.medium)}px;
     `}
 `;
 

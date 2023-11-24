@@ -6,5 +6,7 @@ declare module 'styled-components/native' {
     export interface DefaultTheme extends Theme {
         colorScheme: ColorSchemeName;
         OS: Platform.OS;
+        adaptSize: (size: number) => number;
+        adaptFontSize: (size: number) => number;
     }
 }

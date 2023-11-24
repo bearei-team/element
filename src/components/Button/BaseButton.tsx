@@ -59,7 +59,7 @@ export const BaseButton: FC<BaseButtonProps> = ({
     const border = borderColor && {
         borderColor,
         borderStyle: 'solid' as ViewStyle['borderStyle'],
-        borderWidth: 1,
+        borderWidth: theme.adaptSize(1),
     };
 
     const mobile = ['ios', 'android'].includes(theme.OS);
