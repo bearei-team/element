@@ -2,7 +2,6 @@ import React, {FC, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, TextInput, TextInputProps} from 'react-native';
 import {Disabled, ShapeProps} from '../Common/Common.styles';
 import {Hovered} from '../Hovered/Hovered';
-import {BaseTextField, RenderProps} from './BaseTextField';
 import {
     ActiveIndicator,
     Container,
@@ -19,6 +18,7 @@ import {
     SupportingText,
     TrailingIcon,
 } from './TextField.styles';
+import {RenderProps, TextFieldBase} from './TextFieldBase';
 
 export type TextFieldType = 'filled' | 'outlined';
 export interface TextFieldProps
@@ -53,13 +53,12 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         renderStyle,
         shape,
         state,
-        style,
         supportingText,
         trailingIcon,
         type,
         underlayColor,
         children,
-        ...containerProps
+        style,
     }: RenderProps) => {
         const {
             activeIndicatorColor,
@@ -99,8 +98,8 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         );
 
         return (
-            <Container {...containerProps} testID={`textfield--${id}`}>
-                <Core style={style} testID={`textfield__core--${id}`} onLayout={onLayout}>
+            <Container style={style} testID={`textfield--${id}`}>
+                <Core testID={`textfield__core--${id}`} onLayout={onLayout}>
                     <CoreInner
                         onHoverIn={onHoverIn}
                         onHoverOut={onHoverOut}
@@ -121,16 +120,6 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                             <Content testID={`textfield__content--${id}`}>
                                 {type === 'filled' && LabelComponent}
                                 {children}
-
-                                {/* <AnimatedTextInput
-                                    {...inputProps}
-                                    onBlur={onBlur}
-                                    onChangeText={onChangeText}
-                                    onFocus={onFocus}
-                                    ref={inputRef}
-                                    style={{height: inputHeight}}
-                                    testID={`textfield__input--${id}`}
-                                /> */}
                             </Content>
 
                             {trailingIcon && (
@@ -210,7 +199,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         );
     };
 
-    return <BaseTextField {...props} ref={ref} render={render} />;
+    return <TextFieldBase {...props} ref={ref} render={render} />;
 });
 
 export const TextField: FC<TextFieldProps> = memo(ForwardRefTextField);

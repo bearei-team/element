@@ -72,7 +72,6 @@ const Content = styled.View`
 
 const LabelPlaceholder = styled.View<LabelPlaceholderProps>`
     position: absolute;
-
     z-index: 2;
 
     ${({height, theme, width}) => css`
@@ -94,14 +93,14 @@ const LabelPlaceholderFix = styled.View<LabelPlaceholderFixProps>`
 `;
 
 const LabelPlaceholderBefore = styled(LabelPlaceholderFix)`
-    ${({labelPlaceholderWidth, theme}) => css`
-        right: ${theme.adaptSize(labelPlaceholderWidth / 2)}px;
+    ${({labelPlaceholderWidth}) => css`
+        right: ${labelPlaceholderWidth / 2}px;
     `};
 `;
 
 const LabelPlaceholderAfter = styled(LabelPlaceholderFix)`
-    ${({labelPlaceholderWidth, theme}) => css`
-        left: ${theme.adaptSize(labelPlaceholderWidth / 2)}px;
+    ${({labelPlaceholderWidth}) => css`
+        left: ${labelPlaceholderWidth / 2}px;
     `};
 `;
 
@@ -120,7 +119,7 @@ const LabelPlaceholderText = styled.Text`
         letter-spacing: ${theme.adaptSize(theme.typography.body.small.letterSpacing)}px;
         line-height: ${theme.adaptSize(theme.typography.body.small.lineHeight)}px;
         padding-horizontal: ${theme.adaptSize(theme.spacing.small)}px;
-        top: ${theme.adaptSize(-8)} px;
+        top: ${theme.adaptSize(-8)}px;
     `};
 `;
 
@@ -161,7 +160,6 @@ const ActiveIndicator = styled.View`
 const Icon = styled.View`
     align-items: center;
     display: flex;
-
     justify-content: center;
 
     ${({theme}) => css`

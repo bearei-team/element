@@ -52,12 +52,12 @@ export interface ProcessStateOptions extends Pick<ProcessAnimatedTimingOptions, 
     filled?: boolean;
 }
 
-export interface BaseTextFieldProps extends TextFieldProps {
+export interface TextFieldBaseProps extends TextFieldProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-export const BaseTextField: FC<BaseTextFieldProps> = ({
+export const TextFieldBase: FC<TextFieldBaseProps> = ({
     disabled,
     error,
     leadingIcon,
@@ -68,9 +68,11 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
     placeholder,
     ref,
     render,
+    style,
     supportingText,
     trailingIcon,
     type = 'filled',
+    label,
     ...renderProps
 }) => {
     const [inputState, setInputState] = useImmer<State>('enabled');
@@ -169,6 +171,7 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
     const children = useMemo(
         () => (
             <AnimatedTextInput
+                {...renderProps}
                 onBlur={handleBlur}
                 onChangeText={handleChangeText}
                 onFocus={handleFocus}
@@ -177,7 +180,7 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
                 testID={`textfield__input--${id}`}
             />
         ),
-        [handleBlur, handleChangeText, handleFocus, id, inputHeight, inputRef],
+        [handleBlur, handleChangeText, handleFocus, id, inputHeight, inputRef, renderProps],
     );
 
     useEffect(() => {
@@ -196,7 +199,6 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         ...renderProps,
         disabled,
         id,
-
         inputState,
         leadingIcon,
         onHoverIn: handleHoverIn,
@@ -219,5 +221,7 @@ export const BaseTextField: FC<BaseTextFieldProps> = ({
         trailingIcon,
         type,
         underlayColor,
+        style,
+        label,
     });
 };

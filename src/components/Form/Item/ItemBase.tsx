@@ -6,11 +6,11 @@ import {useFormContext} from '../useFormContext';
 import {ItemProps} from './Item';
 
 export type RenderProps = ItemProps;
-export interface BaseItemProps extends ItemProps {
+export interface ItemBaseProps extends ItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const BaseItem: FC<BaseItemProps> = ({
+export const ItemBase: FC<ItemBaseProps> = ({
     name,
     render,
     rules,

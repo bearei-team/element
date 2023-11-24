@@ -10,11 +10,11 @@ export interface RenderProps extends Partial<RippleProps> {
     y: number;
 }
 
-export interface BaseRippleProps extends RippleProps {
+export interface RippleBaseProps extends RippleProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const BaseRipple: FC<BaseRippleProps> = ({
+export const RippleBase: FC<RippleBaseProps> = ({
     centered = false,
     location,
     onAnimatedEnd,

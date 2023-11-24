@@ -1,9 +1,9 @@
 import {FC, ReactNode, RefAttributes, forwardRef, memo} from 'react';
 import {PressableProps, View} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
-import {BaseTouchableRipple, RenderProps} from './BaseTouchableRipple';
 import {RippleProps} from './Ripple/Ripple';
 import {Container, Main} from './TouchableRipple.styles';
+import {RenderProps, TouchableRippleBase} from './TouchableRippleBase';
 
 export type TouchableProps = PressableProps &
     Pick<RippleProps, 'underlayColor' | 'centered'> &
@@ -23,7 +23,7 @@ const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>((props,
         </Container>
     );
 
-    return <BaseTouchableRipple {...props} render={render} />;
+    return <TouchableRippleBase {...props} render={render} />;
 });
 
 export const TouchableRipple: FC<TouchableRippleProps> = memo(ForwardRefTouchableRipple);

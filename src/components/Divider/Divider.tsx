@@ -1,8 +1,8 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {View, ViewProps} from 'react-native';
 import {Layout, Size} from '../Common/interface';
-import {BaseDivider, RenderProps} from './BaseDivider';
 import {Container, Main, Subheader} from './Divider.styles';
+import {DividerBase, RenderProps} from './DividerBase';
 
 export interface DividerProps extends Partial<ViewProps & RefAttributes<View>> {
     layout?: Layout;
@@ -19,7 +19,7 @@ const ForwardRefDivider = forwardRef<View, DividerProps>((props, ref) => {
         </Container>
     );
 
-    return <BaseDivider {...props} render={render} />;
+    return <DividerBase {...props} render={render} />;
 });
 
 export const Divider: FC<DividerProps> = memo(ForwardRefDivider);

@@ -56,7 +56,7 @@ export const useAnimated = ({level}: UseAnimatedOptions) => {
 
     useEffect(() => {
         processAnimatedTiming(level, {animatedValue: shadowAnimated});
-    }, [shadowAnimated, level, processAnimatedTiming]);
+    }, [level, processAnimatedTiming, shadowAnimated]);
 
     return {shadow0Opacity, shadow1Opacity};
 };

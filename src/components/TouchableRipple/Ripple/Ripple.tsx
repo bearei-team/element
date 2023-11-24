@@ -1,7 +1,7 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, LayoutRectangle, NativeTouchEvent, View, ViewProps} from 'react-native';
-import {BaseRipple, RenderProps} from './BaseRipple';
 import {Container} from './Ripple.styles';
+import {RenderProps, RippleBase} from './RippleBase';
 
 export type RippleAnimatedOut = (finished?: () => void) => number;
 export interface RippleProps extends Partial<ViewProps & React.RefAttributes<View>> {
@@ -13,9 +13,8 @@ export interface RippleProps extends Partial<ViewProps & React.RefAttributes<Vie
     underlayColor?: string;
 }
 
+const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => {
-    const AnimatedContainer = Animated.createAnimatedComponent(Container);
-
     const render = ({id, renderStyle, style, x, y, ...containerProps}: RenderProps) => {
         const {height, width, ...containerStyle} = renderStyle;
 
@@ -34,7 +33,7 @@ const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => {
         );
     };
 
-    return <BaseRipple {...props} render={render} />;
+    return <RippleBase {...props} render={render} />;
 });
 
 export const Ripple: FC<RippleProps> = memo(ForwardRefRipple);

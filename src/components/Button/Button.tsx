@@ -4,8 +4,8 @@ import {Disabled, ShapeProps} from '../Common/Common.styles';
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
-import {BaseButton, RenderProps} from './BaseButton';
 import {Container, Icon, Label} from './Button.styles';
+import {ButtonBase, RenderProps} from './ButtonBase';
 
 export type Type = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
 export interface ButtonProps
@@ -18,10 +18,9 @@ export interface ButtonProps
     type?: Type;
 }
 
+const AnimatedContainer = Animated.createAnimatedComponent(Container);
+const AnimatedLabel = Animated.createAnimatedComponent(Label);
 const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
-    const AnimatedContainer = Animated.createAnimatedComponent(Container);
-    const AnimatedLabel = Animated.createAnimatedComponent(Label);
-
     const render = ({
         disabled,
         elevation,
@@ -89,7 +88,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
         );
     };
 
-    return <BaseButton {...props} render={render} />;
+    return <ButtonBase {...props} render={render} />;
 });
 
 export const Button: FC<ButtonProps> = memo(ForwardRefButton);

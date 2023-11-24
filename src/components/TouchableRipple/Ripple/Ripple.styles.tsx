@@ -1,6 +1,6 @@
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../../Common/Common.styles';
-import {RenderProps} from './BaseRipple';
+import {RenderProps} from './RippleBase';
 
 export type ContainerProps = Omit<RenderProps, 'renderStyle'> & {
     height: number;

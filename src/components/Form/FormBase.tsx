@@ -6,11 +6,11 @@ import {useForm} from './useForm';
 import {FormContext} from './useFormContext';
 
 export type RenderProps<T extends Store> = FormProps<T>;
-export interface BaseFormProps<T extends Store> extends FormProps<T> {
+export interface FormBaseProps<T extends Store> extends FormProps<T> {
     render: (props: RenderProps<T>) => React.JSX.Element;
 }
 
-export const BaseForm = <T extends Store>({
+export const FormBase = <T extends Store>({
     render,
     form,
     onFinish,
@@ -19,7 +19,7 @@ export const BaseForm = <T extends Store>({
     children,
     initialValue,
     ...renderProps
-}: BaseFormProps<T>) => {
+}: FormBaseProps<T>) => {
     const id = useId();
     const [formStore] = useForm<T>(form);
     const [status, setStatus] = useImmer('idle');

@@ -4,8 +4,8 @@ import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 import {State} from '../Common/interface';
-import {ProcessStateOptions} from './BaseTextField';
 import {TextFieldProps} from './TextField';
+import {ProcessStateOptions} from './TextFieldBase';
 
 export interface ProcessAnimatedTimingOptions {
     animatedValue: Animated.Value;

@@ -11,11 +11,11 @@ export interface RenderProps extends IconProps {
     };
 }
 
-export interface BaseDividerProps extends IconProps {
+export interface IconBaseProps extends IconProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const BaseIcon: FC<BaseDividerProps> = ({
+export const IconBase: FC<IconBaseProps> = ({
     render,
     type = 'filled',
     icon = 'face',

@@ -1,8 +1,8 @@
 import React, {FC, RefAttributes, forwardRef, memo} from 'react';
 import {View} from 'react-native';
 import {SvgProps} from 'react-native-svg';
-import {BaseIcon, RenderProps} from './BaseIcon';
 import {Container} from './Icon.styles';
+import {IconBase, RenderProps} from './IconBase';
 
 export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
 export interface IconProps
@@ -32,7 +32,7 @@ const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => {
         );
     };
 
-    return <BaseIcon {...props} render={render} />;
+    return <IconBase {...props} render={render} />;
 });
 
 export const Icon: FC<IconProps> = memo(ForwardRefIcon);

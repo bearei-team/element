@@ -2,7 +2,7 @@ import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {View, ViewProps} from 'react-native';
 import {Size} from '../Common/interface';
 import {Container, Label} from './Badge.styles';
-import {BaseBadge, RenderProps} from './BaseBadge';
+import {BadgeBase, RenderProps} from './BadgeBase';
 
 export interface BadgeProps extends Partial<ViewProps & RefAttributes<View>> {
     label?: number | string;
@@ -16,7 +16,7 @@ const ForwardRefBadge = forwardRef<View, BadgeProps>((props, ref) => {
         </Container>
     );
 
-    return <BaseBadge {...props} render={render} />;
+    return <BadgeBase {...props} render={render} />;
 });
 
 export const Badge: FC<BadgeProps> = memo(ForwardRefBadge);

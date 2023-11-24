@@ -1,7 +1,7 @@
 import React, {ForwardedRef, RefAttributes, forwardRef, memo} from 'react';
 import {View, ViewProps} from 'react-native';
-import {BaseForm, RenderProps} from './BaseForm';
 import {Container} from './Form.styles';
+import {FormBase, RenderProps} from './FormBase';
 import {Item} from './Item/Item';
 import {Callback, FormStore, Store} from './formStore';
 import {useForm} from './useForm';
@@ -25,7 +25,7 @@ const FormInner = <T extends Store>(props: FormProps<T>, ref: ForwardedRef<View>
         </Container>
     );
 
-    return <BaseForm {...props} render={render} />;
+    return <FormBase {...props} render={render} />;
 };
 
 const MemoForm = memo(forwardRef(FormInner)) as typeof FormInner;

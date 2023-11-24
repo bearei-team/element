@@ -13,11 +13,11 @@ export interface RenderProps extends ElevationProps {
     >;
 }
 
-export interface BaseElevationProps extends ElevationProps {
+export interface ElevationBaseProps extends ElevationProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const BaseElevation: FC<BaseElevationProps> = ({
+export const ElevationBase: FC<ElevationBaseProps> = ({
     level = 0,
     onLayout,
     render,

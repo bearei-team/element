@@ -30,11 +30,11 @@ export interface RenderProps extends ButtonProps {
     underlayColor: TouchableRippleProps['underlayColor'];
 }
 
-export interface BaseButtonProps extends ButtonProps {
+export interface ButtonBaseProps extends ButtonProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const BaseButton: FC<BaseButtonProps> = ({
+export const ButtonBase: FC<ButtonBaseProps> = ({
     disabled = false,
     icon,
     label,

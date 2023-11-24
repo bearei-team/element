@@ -13,7 +13,7 @@ import {Ripple, RippleAnimatedOut, RippleProps} from './Ripple/Ripple';
 import {TouchableRippleProps} from './TouchableRipple';
 
 export type RenderProps = Omit<TouchableRippleProps, 'centered'>;
-export interface BaseTouchableRippleProps extends TouchableRippleProps {
+export interface TouchableRippleBaseProps extends TouchableRippleProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 export interface Ripple extends Pick<RippleProps, 'location'> {
@@ -35,7 +35,7 @@ const renderRipples = (rippleSequence: RippleSequence, options: RenderRipplesOpt
         <Ripple {...options} key={`ripple_${sequence}`} location={location} sequence={sequence} />
     ));
 
-export const BaseTouchableRipple: FC<BaseTouchableRippleProps> = ({
+export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
     children,
     onBlur,
     onFocus,

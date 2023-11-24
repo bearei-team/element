@@ -2,11 +2,11 @@ import {FC, useId} from 'react';
 import {DividerProps} from './Divider';
 
 export type RenderProps = DividerProps;
-export interface BaseDividerProps extends DividerProps {
+export interface DividerBaseProps extends DividerProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const BaseDivider: FC<BaseDividerProps> = ({
+export const DividerBase: FC<DividerBaseProps> = ({
     layout,
     render,
     size,
