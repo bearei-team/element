@@ -1,7 +1,7 @@
 {
     "name": "@bearei/element",
     "version": "0.0.1",
-    "private": true,
+    "private": false,
     "main": "lib/commonjs/index.js",
     "react-native": "src/index.tsx",
     "module": "lib/module/index.js",
@@ -39,7 +39,7 @@
         "publish": "yarn clean && yarn build && yarn npm publish --access public"
     },
     "dependencies": {
-        "@bearei/theme": "^1.3.9",
+        "@bearei/theme": "^1.3.10",
         "@material-design-icons/svg": "latest",
         "async-validator": "^4.2.5",
         "immer": "^10.0.3",

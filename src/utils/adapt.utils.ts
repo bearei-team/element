@@ -10,7 +10,7 @@ export const adapt = ({
     designWidth = 750,
     designHeight = 1334,
     designDensity = 2,
-}: AdaptOptions) => {
+}: AdaptOptions = {}) => {
     const {width: screenWidth, height: screenHeight} = Dimensions.get('window');
     const widthScale = screenWidth / (designWidth / designDensity);
     const heightScale = screenHeight / (designHeight / designDensity);

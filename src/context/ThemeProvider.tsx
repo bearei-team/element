@@ -8,7 +8,7 @@ import {UTIL} from '../utils/util';
 export interface ThemeProps {
     children?: ReactNode;
     theme?: Theme;
-    adaptOptions: AdaptOptions;
+    adaptOptions?: AdaptOptions;
 }
 
 export const ThemeProvider: FC<ThemeProps> = ({children, theme: themeProvider, adaptOptions}) => {
@@ -20,10 +20,10 @@ export const ThemeProvider: FC<ThemeProps> = ({children, theme: themeProvider, a
         <StyledComponentThemeProvider
             theme={{
                 ...(themeProvider ?? theme({scheme: colorScheme})),
+                adaptFontSize,
+                adaptSize,
                 colorScheme,
                 OS,
-                adaptSize,
-                adaptFontSize,
             }}>
             {children}
         </StyledComponentThemeProvider>
