@@ -58,7 +58,8 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                     onPressOut={onPressOut}
                     ref={ref}
                     shape={shape}
-                    underlayColor={underlayColor}>
+                    underlayColor={underlayColor}
+                    role="button">
                     <AnimatedContainer
                         shape={shape}
                         showIcon={showIcon}

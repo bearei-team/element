@@ -5,7 +5,7 @@ import {ButtonProps} from './Button';
 export type ContainerProps = Pick<ButtonProps, 'type'> & {showIcon: boolean};
 export type LabelProps = Omit<ContainerProps, 'showIcon'>;
 
-const Container = styled(Shape)<ContainerProps>`
+export const Container = styled(Shape)<ContainerProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -17,57 +17,57 @@ const Container = styled(Shape)<ContainerProps>`
     `}
 
     ${({theme, type = 'filled'}) => {
-        const mainType = {
+        const containerType = {
             elevated: css`
-                padding-horizontal: ${theme.adaptSize(theme.spacing.large)}px;
-                padding-vertical: ${theme.adaptSize(theme.spacing.small + 2)}px;
+                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
+                padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
             `,
             filled: css`
-                padding-horizontal: ${theme.adaptSize(theme.spacing.large)}px;
-                padding-vertical: ${theme.adaptSize(theme.spacing.small + 2)}px;
+                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
+                padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
             `,
             outlined: css`
-                padding-horizontal: ${theme.adaptSize(theme.spacing.large)}px;
-                padding-vertical: ${theme.adaptSize(theme.spacing.small + 2)}px;
+                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
+                padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
             `,
             text: css`
-                padding-horizontal: ${theme.adaptSize(theme.spacing.medium - 4)}px;
-                padding-vertical: ${theme.adaptSize(theme.spacing.small + 2)}px;
+                padding-inline: ${theme.adaptSize(theme.spacing.medium - 4)}px;
+                padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
             `,
             tonal: css`
-                padding-horizontal: ${theme.adaptSize(theme.spacing.large)}px;
-                padding-vertical: ${theme.adaptSize(theme.spacing.small + 2)}px;
+                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
+                padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
             `,
         };
 
-        return mainType[type];
+        return containerType[type];
     }}
 
     ${({showIcon, theme, type = 'filled'}) => {
-        const mainType = {
+        const containerType = {
             elevated: css`
-                padding-horizontal-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding-inline-start: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             filled: css`
-                padding-horizontal-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding-inline-start: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             outlined: css`
-                padding-horizontal-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding-inline-start: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             text: css`
-                padding-horizontal-end: ${theme.adaptSize(theme.spacing.medium)}px;
-                padding-horizontal-start: ${theme.adaptSize(theme.spacing.medium - 4)}px;
+                padding-inline-end: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding-inline-start: ${theme.adaptSize(theme.spacing.medium - 4)}px;
             `,
             tonal: css`
-                padding-horizontal-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding-inline-start: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
         };
 
-        return showIcon && mainType[type];
+        return showIcon && containerType[type];
     }}
 `;
 
-const Label = styled.Text<LabelProps>`
+export const Label = styled.Text<LabelProps>`
     user-select: none;
 
     ${({theme}) => css`
@@ -79,7 +79,7 @@ const Label = styled.Text<LabelProps>`
     `}
 `;
 
-const Icon = styled.View`
+export const Icon = styled.View`
     overflow: hidden;
 
     ${({theme}) => css`
@@ -87,5 +87,3 @@ const Icon = styled.View`
         width: ${theme.adaptSize(18)}px;
     `}
 `;
-
-export {Container, Icon, Label};
