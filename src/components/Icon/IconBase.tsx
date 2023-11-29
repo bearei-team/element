@@ -16,8 +16,7 @@ export interface IconBaseProps extends IconProps {
 
 export const IconBase: FC<IconBaseProps> = ({
     render,
-    // type = 'filled',
-    // icon = 'face',
+
     width,
     height,
     ...renderProps

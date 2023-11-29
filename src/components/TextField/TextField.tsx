@@ -9,10 +9,9 @@ import {
     Core,
     CoreInner,
     Label,
-    LabelPlaceholder,
-    LabelPlaceholderAfter,
-    LabelPlaceholderBefore,
-    LabelPlaceholderText,
+    LabelText,
+    LabelTextBackground,
+    LabelTextBackgroundContainer,
     LeadingIcon,
     Main,
     SupportingText,
@@ -34,8 +33,8 @@ export interface TextFieldProps
 
 const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
 const AnimatedLabel = Animated.createAnimatedComponent(Label);
-const AnimatedLabelPlaceholderAfter = Animated.createAnimatedComponent(LabelPlaceholderAfter);
-const AnimatedLabelPlaceholderBefore = Animated.createAnimatedComponent(LabelPlaceholderBefore);
+const AnimatedLabelTextBackground = Animated.createAnimatedComponent(LabelTextBackground);
+
 const AnimatedMain = Animated.createAnimatedComponent(Main);
 const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
@@ -47,7 +46,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         leadingIcon,
         onHoverIn,
         onHoverOut,
-        onLabelPlaceholderTextLayout,
+        onLabelTextLayout,
         onLayout,
         onPress,
         renderStyle,
@@ -71,9 +70,9 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             labelLeft,
             labelLineHeight,
             labelLineLetterSpacing,
-            LabelPlaceholderFixWidth,
-            labelPlaceholderHeight,
-            labelPlaceholderWidth,
+            labelTextBackgroundWidth,
+            labelTextHeight,
+            labelTextWidth,
             labelSize,
             labelTop,
             supportingTextColor,
@@ -151,30 +150,20 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                             {type === 'outlined' && (
                                 <>
                                     {LabelComponent}
-                                    <LabelPlaceholder
-                                        height={labelPlaceholderHeight}
-                                        testID={`textField__labelPlaceholder--${id}`}
-                                        width={labelPlaceholderWidth}>
-                                        <AnimatedLabelPlaceholderBefore
-                                            height={labelPlaceholderHeight}
-                                            labelPlaceholderWidth={labelPlaceholderWidth}
-                                            style={{width: LabelPlaceholderFixWidth}}
-                                            testID={`textField__labelPlaceholderBefore--${id}`}
-                                        />
 
-                                        <AnimatedLabelPlaceholderAfter
-                                            height={labelPlaceholderHeight}
-                                            labelPlaceholderWidth={labelPlaceholderWidth}
-                                            style={{width: LabelPlaceholderFixWidth}}
-                                            testID={`textField__labelPlaceholderAfter--${id}`}
-                                        />
-                                    </LabelPlaceholder>
-
-                                    <LabelPlaceholderText
-                                        onLayout={onLabelPlaceholderTextLayout}
+                                    <LabelText
+                                        onLayout={onLabelTextLayout}
                                         testID={`textField__labelPlaceholderText--${id}`}>
                                         {label}
-                                    </LabelPlaceholderText>
+                                    </LabelText>
+
+                                    <LabelTextBackgroundContainer
+                                        width={labelTextWidth}
+                                        height={labelTextHeight}>
+                                        <AnimatedLabelTextBackground
+                                            style={{width: labelTextBackgroundWidth}}
+                                        />
+                                    </LabelTextBackgroundContainer>
                                 </>
                             )}
                         </AnimatedMain>

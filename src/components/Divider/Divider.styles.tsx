@@ -33,10 +33,10 @@ const Container = styled(View)<ContainerProps>`
             medium:
                 layout === 'horizontal'
                     ? css`
-                          padding-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                          padding-horizontal-start: ${theme.adaptSize(theme.spacing.medium)}px;
                       `
                     : css`
-                          padding-top: ${theme.adaptSize(theme.spacing.medium)}px;
+                          padding-vertical-start: ${theme.adaptSize(theme.spacing.medium)}px;
                       `,
             small:
                 layout === 'horizontal'

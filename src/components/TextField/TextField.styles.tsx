@@ -10,14 +10,9 @@ export type MainProps = Pick<TextFieldProps, 'type'> & {
 
 export type LabelProps = Pick<TextFieldProps, 'type'>;
 export type SupportingTextProps = Pick<TextFieldProps, 'error'>;
-export interface LabelPlaceholderProps {
+export interface LabelTextBackgroundContainerProps {
     height: number;
     width: number;
-}
-
-export interface LabelPlaceholderFixProps {
-    height: number;
-    labelPlaceholderWidth: number;
 }
 
 const Container = styled.View`
@@ -46,14 +41,14 @@ const Main = styled(Shape)<MainProps>`
     ${({theme, leadingIconShow}) =>
         !leadingIconShow &&
         css`
-            padding-start: ${theme.adaptSize(theme.spacing.medium)}px;
+            padding-horizontal-start: ${theme.adaptSize(theme.spacing.medium)}px;
         `}
 
 
     ${({theme, trailingIconShow}) =>
         !trailingIconShow &&
         css`
-            padding-end: ${theme.adaptSize(theme.spacing.medium)}px;
+            padding-horizontal-end: ${theme.adaptSize(theme.spacing.medium)}px;
         `}
 
         ${({type}) =>
@@ -70,45 +65,25 @@ const Content = styled.View`
     justify-content: center;
 `;
 
-const LabelPlaceholder = styled.View<LabelPlaceholderProps>`
-    position: absolute;
-    z-index: 2;
-
-    ${({height, theme, width}) => css`
-        top: ${theme.adaptSize(-8)} px;
-        height: ${theme.adaptSize(height)}px;
-        left: ${theme.adaptSize(16 - theme.spacing.small)}px;
-        width: ${theme.adaptSize(width)}px;
+const Label = styled.Text<LabelProps>`
+    ${({theme}) => css`
+        font-style: ${theme.typography.body.small.style};
+        font-weight: ${theme.typography.body.small.weight};
     `};
+
+    ${({type}) =>
+        type === 'outlined' &&
+        css`
+            position: absolute;
+            z-index: 3;
+        `};
 `;
 
-const LabelPlaceholderFix = styled.View<LabelPlaceholderFixProps>`
-    position: absolute;
-    top: 0;
-
-    ${({height, theme}) => css`
-        background-color: ${theme.palette.surface.surface};
-        height: ${theme.adaptSize(height)}px;
-    `};
-`;
-
-const LabelPlaceholderBefore = styled(LabelPlaceholderFix)`
-    ${({labelPlaceholderWidth}) => css`
-        right: ${labelPlaceholderWidth / 2}px;
-    `};
-`;
-
-const LabelPlaceholderAfter = styled(LabelPlaceholderFix)`
-    ${({labelPlaceholderWidth}) => css`
-        left: ${labelPlaceholderWidth / 2}px;
-    `};
-`;
-
-const LabelPlaceholderText = styled.Text`
+const LabelText = styled.Text`
     opacity: 0;
     position: absolute;
     white-space: nowrap;
-    z-index: 2;
+    z-index: -1024;
 
     ${({theme}) => css`
         color: ${theme.color.rgba(theme.palette.surface.onSurfaceVariant, 0)};
@@ -123,18 +98,22 @@ const LabelPlaceholderText = styled.Text`
     `};
 `;
 
-const Label = styled.Text<LabelProps>`
-    ${({theme}) => css`
-        font-style: ${theme.typography.body.small.style};
-        font-weight: ${theme.typography.body.small.weight};
-    `};
+const LabelTextBackgroundContainer = styled.View<LabelTextBackgroundContainerProps>`
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 
-    ${({type}) =>
-        type === 'outlined' &&
-        css`
-            position: absolute;
-            z-index: 3;
-        `};
+    ${({theme, width, height}) => css`
+        top: ${theme.adaptSize(-8)}px;
+        left: ${theme.adaptSize(16 - theme.spacing.small)}px;
+        width: ${width}px;
+        height: ${height};
+    `};
+`;
+
+const LabelTextBackground = styled.View`
+    background-color: #fff;
 `;
 
 const Input = styled(TextInput)`
@@ -191,10 +170,9 @@ export {
     CoreInner,
     Input,
     Label,
-    LabelPlaceholder,
-    LabelPlaceholderAfter,
-    LabelPlaceholderBefore,
-    LabelPlaceholderText,
+    LabelText,
+    LabelTextBackground,
+    LabelTextBackgroundContainer,
     LeadingIcon,
     Main,
     SupportingText,

@@ -16,7 +16,7 @@ export interface HoveredBaseProps extends HoveredProps {
 export const HoveredBase: FC<HoveredBaseProps> = ({
     height,
     render,
-    state,
+    state = 'enabled',
     width,
     ...renderProps
 }) => {

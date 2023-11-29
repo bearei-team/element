@@ -13,7 +13,7 @@ export const BadgeBase: FC<BadgeBaseProps> = ({
     ...renderProps
 }) => {
     const id = useId();
-    const labelText = Number(label) > 99 ? '99+' : label;
+    const labelText = Number(label) > 999 ? '999+' : label;
 
     return render({
         ...renderProps,

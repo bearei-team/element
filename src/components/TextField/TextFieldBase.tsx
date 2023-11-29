@@ -21,7 +21,7 @@ export interface RenderProps extends TextFieldProps {
     inputState: State;
     onHoverIn: (event: MouseEvent) => void;
     onHoverOut: (event: MouseEvent) => void;
-    onLabelPlaceholderTextLayout: (event: LayoutChangeEvent) => void;
+    onLabelTextLayout: (event: LayoutChangeEvent) => void;
     onPress: (event: GestureResponderEvent) => void;
     renderStyle: Animated.WithAnimatedObject<
         ViewStyle & {
@@ -31,16 +31,16 @@ export interface RenderProps extends TextFieldProps {
             labelLeft?: AnimatedInterpolation;
             labelLineHeight: AnimatedInterpolation;
             labelLineLetterSpacing: AnimatedInterpolation;
-            LabelPlaceholderFixWidth?: AnimatedInterpolation;
             labelSize: AnimatedInterpolation;
             labelTop?: AnimatedInterpolation;
+            labelTextBackgroundWidth?: AnimatedInterpolation;
             supportingTextColor: AnimatedInterpolation;
             supportingTextOpacity: AnimatedInterpolation;
         }
     > & {
         height: number;
-        labelPlaceholderHeight: number;
-        labelPlaceholderWidth: number;
+        labelTextHeight: number;
+        labelTextWidth: number;
         width: number;
     };
     state: State;
@@ -76,7 +76,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     ...renderProps
 }) => {
     const [inputState, setInputState] = useImmer<State>('enabled');
-    const [labelPlaceholderTextLayout, setLabelPlaceholderTextLayout] = useImmer(
+    const [labelTextLayout, setLabelTextLayout] = useImmer(
         {} as Pick<LayoutRectangle, 'height' | 'width'>,
     );
 
@@ -86,7 +86,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     const [value, setValue] = useImmer('');
     const {onAnimated, inputHeight, ...animatedStyle} = useAnimated({
         filled: !!value || !!placeholder,
-        labelPlaceholderWidth: labelPlaceholderTextLayout.width,
+        labelTextWidth: labelTextLayout.width,
         supportingText,
         type,
     });
@@ -123,10 +123,10 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         onLayout?.(event);
     };
 
-    const processLabelPlaceholderTextLayout = (event: LayoutChangeEvent) => {
+    const processLabelTextLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
 
-        setLabelPlaceholderTextLayout(() => ({height, width}));
+        setLabelTextLayout(() => ({height, width}));
     };
 
     const handlePress = () =>
@@ -203,7 +203,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         leadingIcon,
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
-        onLabelPlaceholderTextLayout: processLabelPlaceholderTextLayout,
+        onLabelTextLayout: processLabelTextLayout,
         onLayout: processLayout,
         onPress: handlePress,
         placeholder,
@@ -211,8 +211,8 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         renderStyle: {
             ...animatedStyle,
             height: layout.height,
-            labelPlaceholderHeight: labelPlaceholderTextLayout.height,
-            labelPlaceholderWidth: labelPlaceholderTextLayout.width,
+            labelTextHeight: labelTextLayout.height,
+            labelTextWidth: labelTextLayout.width,
             width: layout.width,
         },
         shape: type === 'filled' ? 'extraSmallTop' : 'extraSmall',

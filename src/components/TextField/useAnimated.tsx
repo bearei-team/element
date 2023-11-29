@@ -18,12 +18,12 @@ export type ProcessStateAnimatedOptions = ProcessStateOptions &
 export interface UseAnimatedOptions
     extends Pick<TextFieldProps, 'supportingText' | 'type' | 'leadingIcon'> {
     filled: boolean;
-    labelPlaceholderWidth: number;
+    labelTextWidth: number;
 }
 
 export const useAnimated = ({
     filled,
-    labelPlaceholderWidth,
+    labelTextWidth,
     leadingIcon,
     supportingText,
     type = 'filled',
@@ -90,14 +90,14 @@ export const useAnimated = ({
     const labelLeft = labeAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
-            leadingIcon ? theme.adaptSize(16) + labelPlaceholderWidth : theme.adaptSize(16),
+            leadingIcon ? theme.adaptSize(16) + labelTextWidth : theme.adaptSize(16),
             theme.adaptSize(16),
         ],
     });
 
-    const LabelPlaceholderFixWidth = labeAnimated.interpolate({
+    const labelTextBackgroundWidth = labeAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, labelPlaceholderWidth / 2],
+        outputRange: [0, labelTextWidth],
     });
 
     const labelColor = colorAnimated.interpolate({
@@ -261,7 +261,7 @@ export const useAnimated = ({
             borderColor,
             borderWidth,
             labelLeft,
-            LabelPlaceholderFixWidth,
+            labelTextBackgroundWidth,
             labelTop,
         }),
     };

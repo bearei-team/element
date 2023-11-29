@@ -46,20 +46,20 @@ const Container = styled(Shape)<ContainerProps>`
     ${({showIcon, theme, type = 'filled'}) => {
         const mainType = {
             elevated: css`
-                padding-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding-horizontal-start: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             filled: css`
-                padding-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding-horizontal-start: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             outlined: css`
-                padding-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding-horizontal-start: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             text: css`
                 padding-horizontal-end: ${theme.adaptSize(theme.spacing.medium)}px;
-                padding-start: ${theme.adaptSize(theme.spacing.medium - 4)}px;
+                padding-horizontal-start: ${theme.adaptSize(theme.spacing.medium - 4)}px;
             `,
             tonal: css`
-                padding-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding-horizontal-start: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
         };
 
