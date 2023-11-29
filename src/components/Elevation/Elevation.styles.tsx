@@ -7,16 +7,16 @@ export interface ShadowProps extends Pick<ElevationProps, 'level'> {
     shadow: 0 | 1;
 }
 
-const Container = styled(Shape)`
+export const Container = styled(Shape)`
     position: relative;
 `;
 
-const Main = styled(Shape)`
+export const Main = styled(Shape)`
     position: absolute;
     z-index: 2;
 `;
 
-const Shadow0 = styled(Shape)<ShadowProps>`
+export const Shadow0 = styled(Shape)<ShadowProps>`
     position: absolute;
     z-index: 0;
 
@@ -40,8 +40,6 @@ const Shadow0 = styled(Shape)<ShadowProps>`
     }};
 `;
 
-const Shadow1 = styled(Shadow0)`
+export const Shadow1 = styled(Shadow0)`
     z-index: 1;
 `;
-
-export {Container, Main, Shadow0, Shadow1};
