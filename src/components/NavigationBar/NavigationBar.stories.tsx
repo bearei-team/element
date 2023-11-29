@@ -20,6 +20,11 @@ export const HorizontalNavigationBar: StoryObj<NavigationBarProps> = {
                 icon: <></>,
                 key: 'age',
             },
+            {
+                label: 'Label3',
+                icon: <></>,
+                key: 'sex',
+            },
         ],
     },
 };

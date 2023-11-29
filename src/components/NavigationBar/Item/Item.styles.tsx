@@ -17,11 +17,16 @@ const Container = styled.Pressable`
     `}
 `;
 
-const IconContainer = styled(Shape)`
+const IconContainer = styled.View`
+    width: 64px;
     position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+`;
 
+const IconInner = styled(Shape)`
     ${({theme}) => css`
-        padding-horizontal: ${theme.adaptSize(theme.spacing.large - theme.spacing.extraSmall)}px;
         padding-vertical: ${theme.adaptSize(theme.spacing.extraSmall)}px;
     `}
 `;
@@ -35,8 +40,6 @@ const Icon = styled(View)`
 
 const Label = styled.Text`
     ${({theme}) => css`
-        /* color: ${theme.palette.error.onError}; */
-        /* font-weight: ${theme.typography.label.medium.weight}; */
         font-size: ${theme.adaptFontSize(theme.typography.label.medium.size)}px;
         font-style: ${theme.typography.label.medium.style};
         letter-spacing: ${theme.adaptSize(theme.typography.label.medium.letterSpacing)}px;
@@ -44,4 +47,4 @@ const Label = styled.Text`
     `}
 `;
 
-export {Container, Icon, IconContainer, Label};
+export {Container, Icon, IconContainer, IconInner, Label};

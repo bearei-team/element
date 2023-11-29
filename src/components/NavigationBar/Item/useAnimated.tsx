@@ -23,6 +23,11 @@ export const useAnimated = ({active}: UseAnimatedOptions) => {
         ],
     });
 
+    const paddingHorizontal = stateAnimated.interpolate({
+        inputRange: [0, 1],
+        outputRange: [24, 64],
+    });
+
     const labelWeight = stateAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [500, 600],
@@ -54,5 +59,5 @@ export const useAnimated = ({active}: UseAnimatedOptions) => {
         processAnimatedTiming(active ? 1 : 0, {animatedValue: stateAnimated});
     }, [active, processAnimatedTiming, stateAnimated]);
 
-    return {backgroundColor, labelWeight, labelColor};
+    return {backgroundColor, labelWeight, labelColor, paddingHorizontal};
 };

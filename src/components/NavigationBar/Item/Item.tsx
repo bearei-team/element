@@ -2,7 +2,7 @@ import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, PressableProps, View} from 'react-native';
 import {State} from '../../Common/interface';
 import {Hovered} from '../../Hovered/Hovered';
-import {Container, Icon, IconContainer, Label} from './Item.styles';
+import {Container, Icon, IconContainer, IconInner, Label} from './Item.styles';
 import {ItemBase, RenderProps} from './ItemBase';
 
 export interface ItemProps extends Partial<PressableProps & RefAttributes<View>> {
@@ -12,7 +12,7 @@ export interface ItemProps extends Partial<PressableProps & RefAttributes<View>>
     active?: boolean;
 }
 
-const AnimatedIconContainer = Animated.createAnimatedComponent(IconContainer);
+const AnimatedIconInner = Animated.createAnimatedComponent(IconInner);
 const AnimatedLabel = Animated.createAnimatedComponent(Label);
 const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
     const render = ({
@@ -26,21 +26,30 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
         underlayColor,
         ...containerProps
     }: RenderProps) => {
-        const {iconContainerHeight, iconContainerWidth, backgroundColor, labelWeight, labelColor} =
-            renderStyle;
+        const {
+            iconContainerHeight,
+            iconContainerWidth,
+            backgroundColor,
+            labelWeight,
+            labelColor,
+            paddingHorizontal,
+        } = renderStyle;
 
         return (
             <Container {...containerProps} ref={ref} testID={`navigationBarItem--${id}`}>
-                <AnimatedIconContainer
-                    style={{backgroundColor}}
-                    onLayout={onIconContainerLayout}
-                    shape="full"
-                    testID={`navigationBarItem__iconContainer--${id}`}>
-                    {active ? (
-                        <Icon testID={`navigationBarItem__icon--${id}`}>{icon}</Icon>
-                    ) : (
-                        <Icon testID={`navigationBarItem__icon--${id}`}>{icon}</Icon>
-                    )}
+                <IconContainer
+                    testID={`navigationBarItem__iconContainer--${id}`}
+                    onLayout={onIconContainerLayout}>
+                    <AnimatedIconInner
+                        style={{backgroundColor, width: paddingHorizontal}}
+                        shape="full"
+                        testID={`navigationBarItem__iconInner--${id}`}>
+                        {active ? (
+                            <Icon testID={`navigationBarItem__icon--${id}`}>{icon}</Icon>
+                        ) : (
+                            <Icon testID={`navigationBarItem__icon--${id}`}>{icon}</Icon>
+                        )}
+                    </AnimatedIconInner>
 
                     <Hovered
                         height={iconContainerHeight}
@@ -49,7 +58,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                         underlayColor={underlayColor}
                         width={iconContainerWidth}
                     />
-                </AnimatedIconContainer>
+                </IconContainer>
 
                 <AnimatedLabel
                     style={{fontWeight: labelWeight, color: labelColor}}

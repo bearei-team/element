@@ -49,7 +49,7 @@ export const ItemBase: FC<ItemBaseProps> = ({
     const [state, setState] = useImmer<State>('enabled');
     const id = useId();
     const theme = useTheme();
-    const {backgroundColor, labelWeight, labelColor} = useAnimated({active});
+    const {backgroundColor, labelWeight, labelColor, paddingHorizontal} = useAnimated({active});
     const underlayColor = active
         ? theme.palette.surface.onSurface
         : theme.palette.secondary.onSecondaryContainer;
@@ -113,11 +113,12 @@ export const ItemBase: FC<ItemBaseProps> = ({
         onPressIn: handlePressIn,
         onPressOut: handlePressOut,
         renderStyle: {
+            backgroundColor,
             iconContainerHeight: iconContainerLayout.height,
             iconContainerWidth: iconContainerLayout.width,
-            backgroundColor,
-            labelWeight,
             labelColor,
+            labelWeight,
+            paddingHorizontal,
         },
         state,
         underlayColor,
