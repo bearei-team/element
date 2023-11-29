@@ -7,18 +7,18 @@ export interface BadgeBaseProps extends BadgeProps {
 }
 
 export const BadgeBase: FC<BadgeBaseProps> = ({
-    label = 0,
+    contentText = 0,
     render,
     size = 'medium',
     ...renderProps
 }) => {
     const id = useId();
-    const labelText = Number(label) > 999 ? '999+' : label;
+    const labelText = Number(contentText) > 999 ? '999+' : contentText;
 
     return render({
         ...renderProps,
         id,
-        label: size !== 'small' ? labelText : '',
+        contentText: size !== 'small' ? labelText : '',
         size,
     });
 };

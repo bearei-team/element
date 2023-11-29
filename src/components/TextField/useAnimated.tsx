@@ -201,7 +201,6 @@ export const useAnimated = ({
                     processAnimatedTiming(1, {animatedValue: supportingTextColorAnimated});
                 },
                 error: () => {
-                    processBorderAnimated(1);
                     processAnimatedTiming(2, {animatedValue: supportingTextColorAnimated});
                     processAnimatedTiming(3, {animatedValue: colorAnimated});
                 },

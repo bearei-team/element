@@ -6,14 +6,14 @@ export default {
     component: Badge,
 } as Meta<typeof Badge>;
 
-export const NoneLabel: StoryObj<BadgeProps> = {
+export const NoneContentText: StoryObj<BadgeProps> = {
     args: {size: 'small'},
 };
 
-export const Label: StoryObj<BadgeProps> = {
-    args: {size: 'large', label: 3},
+export const ContentText: StoryObj<BadgeProps> = {
+    args: {size: 'large', contentText: 3},
 };
 
-export const MaxLabel: StoryObj<BadgeProps> = {
-    args: {size: 'large', label: 9999},
+export const MaxContentText: StoryObj<BadgeProps> = {
+    args: {size: 'large', contentText: 9999},
 };

@@ -36,7 +36,7 @@ export const Container = styled(Shape)<ContainerProps>`
     }}
 `;
 
-export const Label = styled.Text`
+export const ContentText = styled.Text`
     ${({theme}) => css`
         color: ${theme.palette.error.onError};
         font-size: ${theme.adaptFontSize(theme.typography.label.small.size)}px;
