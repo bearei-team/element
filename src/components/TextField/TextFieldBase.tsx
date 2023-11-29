@@ -72,7 +72,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     supportingText,
     trailingIcon,
     type = 'filled',
-    label,
+
     ...renderProps
 }) => {
     const [inputState, setInputState] = useImmer<State>('enabled');
@@ -222,6 +222,5 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         type,
         underlayColor,
         style,
-        label,
     });
 };

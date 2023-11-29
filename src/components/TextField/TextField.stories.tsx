@@ -8,14 +8,14 @@ export default {
 
 export const Filled: StoryObj<TextFieldProps> = {
     args: {
-        label: 'Label',
+        labelText: 'Label',
         supportingText: 'supportingText',
     },
 };
 
 export const Outlined: StoryObj<TextFieldProps> = {
     args: {
-        label: 'Label',
+        labelText: 'Label',
         supportingText: 'supportingText',
         type: 'outlined',
     },

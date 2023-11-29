@@ -4,7 +4,7 @@ import {Disabled, ShapeProps} from '../Common/Common.styles';
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
-import {Container, Icon, Label} from './Button.styles';
+import {Container, Icon, LabelText} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
 export type Type = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
@@ -13,20 +13,20 @@ export interface ButtonProps
     children?: ReactNode;
     disabled?: boolean;
     icon?: React.JSX.Element;
-    label?: ReactNode;
+    labelText?: string;
     loading?: boolean;
     type?: Type;
 }
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
-const AnimatedLabel = Animated.createAnimatedComponent(Label);
+const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
     const render = ({
         disabled,
         elevation,
         icon,
         id,
-        label,
+        labelText,
         onBlur,
         onFocus,
         onHoverIn,
@@ -58,8 +58,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                     onPressOut={onPressOut}
                     ref={ref}
                     shape={shape}
-                    underlayColor={underlayColor}
-                    role="button">
+                    underlayColor={underlayColor}>
                     <AnimatedContainer
                         shape={shape}
                         showIcon={showIcon}
@@ -68,9 +67,12 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                         type={type}>
                         {showIcon && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
 
-                        <AnimatedLabel style={{color}} testID={`button__label--${id}`} type={type}>
-                            {label}
-                        </AnimatedLabel>
+                        <AnimatedLabelText
+                            style={{color}}
+                            testID={`button__contentText--${id}`}
+                            type={type}>
+                            {labelText}
+                        </AnimatedLabelText>
                     </AnimatedContainer>
 
                     <Hovered

@@ -67,7 +67,7 @@ export const Container = styled(Shape)<ContainerProps>`
     }}
 `;
 
-export const Label = styled.Text<LabelProps>`
+export const LabelText = styled.Text<LabelProps>`
     user-select: none;
 
     ${({theme}) => css`

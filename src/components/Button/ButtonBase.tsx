@@ -37,7 +37,6 @@ export interface ButtonBaseProps extends ButtonProps {
 export const ButtonBase: FC<ButtonBaseProps> = ({
     disabled = false,
     icon,
-    label,
     onBlur,
     onFocus,
     onHoverIn,
@@ -138,7 +137,6 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
         elevation,
         icon,
         id,
-        label,
         onBlur: handleBlur,
         onFocus: handleFocus,
         onHoverIn: handleHoverIn,

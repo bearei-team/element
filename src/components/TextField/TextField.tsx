@@ -24,7 +24,7 @@ export interface TextFieldProps
     extends Partial<TextInputProps & RefAttributes<TextInput> & Pick<ShapeProps, 'shape'>> {
     disabled?: boolean;
     error?: boolean;
-    label?: string;
+    labelText?: string;
     leadingIcon?: React.JSX.Element;
     supportingText?: string;
     trailingIcon?: React.JSX.Element;
@@ -42,7 +42,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         disabled,
         id,
         inputState,
-        label,
+        labelText,
         leadingIcon,
         onHoverIn,
         onHoverOut,
@@ -91,7 +91,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                 }}
                 testID={`textField__label--${id}`}
                 type={type}>
-                {label}
+                {labelText}
             </AnimatedLabel>
         );
 
@@ -152,7 +152,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                     <LabelText
                                         onLayout={onLabelTextLayout}
                                         testID={`textField__labelText--${id}`}>
-                                        {label}
+                                        {labelText}
                                     </LabelText>
 
                                     <LabelTextBackgroundContainer

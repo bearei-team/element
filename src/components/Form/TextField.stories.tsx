@@ -12,14 +12,14 @@ export default {
 
 export const FormA: FC<FormProps> = () => {
     const [form] = Form.useForm<{a: string; b: string}>();
-    const renderControl = ({value, onValueChange, errorMessage, id, label}: ControlProps) => (
+    const renderControl = ({value, onValueChange, errorMessage, id, labelText}: ControlProps) => (
         <TextField
             key={id}
             value={value as string}
             onChangeText={onValueChange}
             supportingText={errorMessage}
             error={!!errorMessage}
-            label={label}
+            labelText={labelText}
         />
     );
 
@@ -37,12 +37,12 @@ export const FormA: FC<FormProps> = () => {
                 name="name"
                 renderControl={renderControl}
                 rules={[{type: 'number'}]}
-                label="name"
+                labelText="name"
             />
 
-            <Form.Item name="age" renderControl={renderControl} label="age" />
+            <Form.Item name="age" renderControl={renderControl} labelText="age" />
 
-            <Button label="submit" onPress={handleSubmit} />
+            <Button labelText="submit" onPress={handleSubmit} />
         </Form>
     );
 };

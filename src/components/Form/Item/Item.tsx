@@ -12,7 +12,7 @@ export interface ControlProps {
     errors?: ValidateError[];
     errorMessage?: string;
     id?: string;
-    label?: string;
+    labelText?: string;
 }
 
 export interface ItemProps<T extends Store = Store>
@@ -20,7 +20,7 @@ export interface ItemProps<T extends Store = Store>
         ViewProps &
             RefAttributes<View> &
             Pick<ValidateOptions, 'rules' | 'validateFirst'> &
-            Pick<ControlProps, 'label'>
+            Pick<ControlProps, 'labelText'>
     > {
     name?: keyof T;
     initialValue?: Store;

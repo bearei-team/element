@@ -11,9 +11,9 @@ export const NoneContentText: StoryObj<BadgeProps> = {
 };
 
 export const ContentText: StoryObj<BadgeProps> = {
-    args: {size: 'large', contentText: 3},
+    args: {size: 'large', labelText: 3},
 };
 
 export const MaxContentText: StoryObj<BadgeProps> = {
-    args: {size: 'large', contentText: 9999},
+    args: {size: 'large', labelText: 9999},
 };

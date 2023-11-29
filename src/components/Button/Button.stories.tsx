@@ -9,34 +9,34 @@ export default {
 
 export const Filled: StoryObj<ButtonProps> = {
     args: {
-        label: 'Label',
+        labelText: 'Label',
     },
 };
 
 export const Outlined: StoryObj<ButtonProps> = {
     args: {
-        label: 'Label',
+        labelText: 'Label',
         type: 'outlined',
     },
 };
 
 export const Text: StoryObj<ButtonProps> = {
     args: {
-        label: 'Label',
+        labelText: 'Label',
         type: 'text',
     },
 };
 
 export const Elevated: StoryObj<ButtonProps> = {
     args: {
-        label: 'Label',
+        labelText: 'Label',
         type: 'elevated',
     },
 };
 
 export const Tonal: StoryObj<ButtonProps> = {
     args: {
-        label: 'Label',
+        labelText: 'Label',
         type: 'tonal',
     },
 };
