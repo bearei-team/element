@@ -34,11 +34,11 @@ export interface TextFieldProps
 const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
 const AnimatedLabel = Animated.createAnimatedComponent(Label);
 const AnimatedLabelTextBackground = Animated.createAnimatedComponent(LabelTextBackground);
-
 const AnimatedMain = Animated.createAnimatedComponent(Main);
 const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
     const render = ({
+        children,
         disabled,
         id,
         inputState,
@@ -52,12 +52,11 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         renderStyle,
         shape,
         state,
+        style,
         supportingText,
         trailingIcon,
         type,
         underlayColor,
-        children,
-        style,
     }: RenderProps) => {
         const {
             activeIndicatorColor,
@@ -70,10 +69,10 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             labelLeft,
             labelLineHeight,
             labelLineLetterSpacing,
+            labelSize,
             labelTextBackgroundWidth,
             labelTextHeight,
             labelTextWidth,
-            labelSize,
             labelTop,
             supportingTextColor,
             supportingTextOpacity,
@@ -150,17 +149,18 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                             {type === 'outlined' && (
                                 <>
                                     {LabelComponent}
-
                                     <LabelText
                                         onLayout={onLabelTextLayout}
-                                        testID={`textField__labelPlaceholderText--${id}`}>
+                                        testID={`textField__labelText--${id}`}>
                                         {label}
                                     </LabelText>
 
                                     <LabelTextBackgroundContainer
                                         width={labelTextWidth}
-                                        height={labelTextHeight}>
+                                        height={labelTextHeight}
+                                        testID={`textField__labelTextBackgroundContainer--${id}`}>
                                         <AnimatedLabelTextBackground
+                                            testID={`textField__labelTextBackground--${id}`}
                                             style={{width: labelTextBackgroundWidth}}
                                         />
                                     </LabelTextBackgroundContainer>

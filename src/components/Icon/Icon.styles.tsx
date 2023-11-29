@@ -4,7 +4,7 @@ import {IconProps} from './Icon';
 
 export type ContainerProps = Pick<IconProps, 'width' | 'height'>;
 
-const Container = styled(View)<ContainerProps>`
+export const Container = styled(View)<ContainerProps>`
     display: flex;
 
     ${({width, height, theme}) => css`
@@ -12,5 +12,3 @@ const Container = styled(View)<ContainerProps>`
         width: ${width ?? theme.adaptSize(48)}px;
     `}
 `;
-
-export {Container};

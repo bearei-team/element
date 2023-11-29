@@ -9,7 +9,7 @@ export type ContainerProps = Omit<RenderProps, 'renderStyle'> & {
     y: number;
 };
 
-const Container = styled(Shape)<ContainerProps>`
+export const Container = styled(Shape)<ContainerProps>`
     pointer-events: none;
     position: absolute;
     z-index: 128;
@@ -35,5 +35,3 @@ const Container = styled(Shape)<ContainerProps>`
             background-color: ${theme.color.rgba(underlayColor, 0.12)};
         `};
 `;
-
-export {Container};

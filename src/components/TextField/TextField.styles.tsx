@@ -15,7 +15,7 @@ export interface LabelTextBackgroundContainerProps {
     width: number;
 }
 
-const Container = styled.View`
+export const Container = styled.View`
     display: flex;
     flex-direction: column;
 
@@ -24,9 +24,9 @@ const Container = styled.View`
     `}
 `;
 
-const Core = styled.View``;
-const CoreInner = styled.Pressable``;
-const Main = styled(Shape)<MainProps>`
+export const Core = styled.View``;
+export const CoreInner = styled.Pressable``;
+export const Main = styled(Shape)<MainProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -35,20 +35,20 @@ const Main = styled(Shape)<MainProps>`
     ${({theme}) =>
         css`
             height: ${theme.adaptSize(56)}px;
-            padding-vertical: ${theme.adaptSize(theme.spacing.extraSmall)}px;
+            padding-block: ${theme.adaptSize(theme.spacing.extraSmall)}px;
         `}
 
     ${({theme, leadingIconShow}) =>
         !leadingIconShow &&
         css`
-            padding-horizontal-start: ${theme.adaptSize(theme.spacing.medium)}px;
+            padding-inline-start: ${theme.adaptSize(theme.spacing.medium)}px;
         `}
 
 
     ${({theme, trailingIconShow}) =>
         !trailingIconShow &&
         css`
-            padding-horizontal-end: ${theme.adaptSize(theme.spacing.medium)}px;
+            padding-inline-end: ${theme.adaptSize(theme.spacing.medium)}px;
         `}
 
         ${({type}) =>
@@ -58,14 +58,14 @@ const Main = styled(Shape)<MainProps>`
         `}
 `;
 
-const Content = styled.View`
+export const Content = styled.View`
     display: flex;
     flex-direction: column;
     flex: 1;
     justify-content: center;
 `;
 
-const Label = styled.Text<LabelProps>`
+export const Label = styled.Text<LabelProps>`
     ${({theme}) => css`
         font-style: ${theme.typography.body.small.style};
         font-weight: ${theme.typography.body.small.weight};
@@ -75,11 +75,11 @@ const Label = styled.Text<LabelProps>`
         type === 'outlined' &&
         css`
             position: absolute;
-            z-index: 3;
+            z-index: 1;
         `};
 `;
 
-const LabelText = styled.Text`
+export const LabelText = styled.Text`
     opacity: 0;
     position: absolute;
     white-space: nowrap;
@@ -90,33 +90,35 @@ const LabelText = styled.Text`
         font-size: ${theme.adaptFontSize(theme.typography.body.small.size)}px;
         font-style: ${theme.typography.body.small.style};
         font-weight: ${theme.typography.body.small.weight};
-        left: ${theme.adaptSize(16 - theme.spacing.small)}px;
+        left: ${theme.adaptSize(theme.spacing.medium - theme.spacing.small)}px;
         letter-spacing: ${theme.adaptSize(theme.typography.body.small.letterSpacing)}px;
         line-height: ${theme.adaptSize(theme.typography.body.small.lineHeight)}px;
-        padding-horizontal: ${theme.adaptSize(theme.spacing.small)}px;
-        top: ${theme.adaptSize(-8)}px;
+        padding-inline: ${theme.adaptSize(theme.spacing.small)}px;
+        top: ${theme.adaptSize(-theme.spacing.small)}px;
     `};
 `;
 
-const LabelTextBackgroundContainer = styled.View<LabelTextBackgroundContainerProps>`
+export const LabelTextBackgroundContainer = styled.View<LabelTextBackgroundContainerProps>`
     position: absolute;
     display: flex;
     flex-direction: row;
     justify-content: center;
 
     ${({theme, width, height}) => css`
-        top: ${theme.adaptSize(-8)}px;
-        left: ${theme.adaptSize(16 - theme.spacing.small)}px;
+        top: ${theme.adaptSize(-theme.spacing.small)}px;
+        left: ${theme.adaptSize(theme.spacing.medium - theme.spacing.small)}px;
         width: ${width}px;
         height: ${height};
     `};
 `;
 
-const LabelTextBackground = styled.View`
-    background-color: #fff;
+export const LabelTextBackground = styled.View`
+    ${({theme}) => css`
+        background-color: ${theme.palette.surface.surface};
+    `};
 `;
 
-const Input = styled(TextInput)`
+export const Input = styled(TextInput)`
     outline-style: none;
 
     ${({theme}) => css`
@@ -129,52 +131,35 @@ const Input = styled(TextInput)`
     `}
 `;
 
-const ActiveIndicator = styled.View`
+export const ActiveIndicator = styled.View`
     bottom: 0;
     left: 0;
     position: absolute;
     width: 100%;
 `;
 
-const Icon = styled.View`
+export const Icon = styled.View`
     align-items: center;
     display: flex;
     justify-content: center;
 
     ${({theme}) => css`
         height: ${theme.adaptSize(48)}px;
-        padding-horizontal: ${theme.adaptSize(theme.spacing.small)}px;
-        padding-vertical: ${theme.adaptSize(theme.spacing.small)}px;
+        padding-inline: ${theme.adaptSize(theme.spacing.small)}px;
+        padding-block: ${theme.adaptSize(theme.spacing.small)}px;
         width: ${theme.adaptSize(48)}px;
     `}
 `;
 
-const TrailingIcon = styled(Icon)``;
-const LeadingIcon = styled(Icon)``;
-const SupportingText = styled.Text<SupportingTextProps>`
+export const TrailingIcon = styled(Icon)``;
+export const LeadingIcon = styled(Icon)``;
+export const SupportingText = styled.Text<SupportingTextProps>`
     ${({theme}) => css`
         font-size: ${theme.adaptSize(theme.typography.body.small.size)}px;
         font-style: ${theme.typography.body.small.style};
         font-weight: ${theme.typography.body.small.weight};
         letter-spacing: ${theme.adaptSize(theme.typography.body.small.letterSpacing)}px;
         line-height: ${theme.adaptSize(theme.typography.body.small.lineHeight)}px;
-        padding-horizontal: ${theme.adaptSize(theme.spacing.medium)}px;
+        padding-inline: ${theme.adaptSize(theme.spacing.medium)}px;
     `}
 `;
-
-export {
-    ActiveIndicator,
-    Container,
-    Content,
-    Core,
-    CoreInner,
-    Input,
-    Label,
-    LabelText,
-    LabelTextBackground,
-    LabelTextBackgroundContainer,
-    LeadingIcon,
-    Main,
-    SupportingText,
-    TrailingIcon,
-};

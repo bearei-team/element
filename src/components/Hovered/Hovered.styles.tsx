@@ -4,7 +4,7 @@ import {HoveredProps} from './Hovered';
 
 export type ContainerProps = Pick<HoveredProps, 'underlayColor' | 'width' | 'height'>;
 
-const Container = styled(Shape)<ContainerProps>`
+export const Container = styled(Shape)<ContainerProps>`
     left: 0;
     pointer-events: none;
     position: absolute;
@@ -18,5 +18,3 @@ const Container = styled(Shape)<ContainerProps>`
             height: ${height}px;
         `}
 `;
-
-export {Container};

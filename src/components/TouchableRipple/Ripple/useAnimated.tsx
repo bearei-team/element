@@ -21,7 +21,7 @@ export const useAnimated = ({minDuration, onAnimatedEnd, sequence}: UseAnimatedO
             requestAnimationFrame(() =>
                 animatedTiming(scaleAnimated, {
                     duration: Math.min(minDuration, 200),
-                    easing: 'emphasized',
+                    easing: 'standard',
                     toValue: 1,
                 }).start(finished),
             );
@@ -30,7 +30,7 @@ export const useAnimated = ({minDuration, onAnimatedEnd, sequence}: UseAnimatedO
             requestAnimationFrame(() =>
                 animatedTiming(opacityAnimated, {
                     duration: 'short3',
-                    easing: 'emphasized',
+                    easing: 'standard',
                     toValue: 1,
                 }).start(finished),
             );

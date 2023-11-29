@@ -1,14 +1,15 @@
 import {FC, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, ViewStyle} from 'react-native';
 import {useImmer} from 'use-immer';
+import {AnimatedInterpolation} from '../Common/interface';
 import {ElevationProps} from './Elevation';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends ElevationProps {
     renderStyle: Animated.WithAnimatedObject<
         ViewStyle & {
-            opacity0?: Animated.AnimatedInterpolation<string | number>;
-            opacity1?: Animated.AnimatedInterpolation<string | number>;
+            opacity0?: AnimatedInterpolation;
+            opacity1?: AnimatedInterpolation;
         }
     >;
 }
