@@ -8,26 +8,18 @@ export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
 export interface IconProps
     extends Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View>> {
     type?: IconType;
-    icon?: string;
+    icon?: React.JSX.Element;
     width?: number;
     height?: number;
 }
 
 const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => {
-    const render = ({id, SvgIcon, renderStyle, style, ...iconProps}: RenderProps) => {
+    const render = ({id, renderStyle, style, children}: RenderProps) => {
         const {height, width} = renderStyle;
 
         return (
             <Container height={height} ref={ref} testID={`icon--${id}`} width={width} style={style}>
-                {SvgIcon && (
-                    <SvgIcon
-                        {...iconProps}
-                        height="100%"
-                        testID={`icon__svg--${id}`}
-                        viewBox="0 0 24 24"
-                        width="100%"
-                    />
-                )}
+                {children}
             </Container>
         );
     };

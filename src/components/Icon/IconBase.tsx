@@ -1,7 +1,6 @@
 import {FC, useId} from 'react';
 import {SvgProps} from 'react-native-svg';
 import {IconProps} from './Icon';
-import {useSVGImport} from './useSVGImport';
 
 export interface RenderProps extends IconProps {
     SvgIcon?: FC<SvgProps>;
@@ -17,19 +16,19 @@ export interface IconBaseProps extends IconProps {
 
 export const IconBase: FC<IconBaseProps> = ({
     render,
-    type = 'filled',
-    icon = 'face',
+    // type = 'filled',
+    // icon = 'face',
     width,
     height,
     ...renderProps
 }) => {
     const id = useId();
-    const [SvgIcon] = useSVGImport({type, icon});
+    // const [SvgIcon] = useSVGImport({type, icon});
 
     return render({
         ...renderProps,
         id,
         renderStyle: {height, width},
-        SvgIcon,
+        // SvgIcon,
     });
 };

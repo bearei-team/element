@@ -3,9 +3,11 @@ import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
-import {HoveredProps} from './Hovered';
+import {State} from '../Common/interface';
 
-export type UseAnimatedOptions = Pick<HoveredProps, 'state'>;
+export interface UseAnimatedOptions {
+    state: State;
+}
 
 export interface ProcessAnimatedTimingOptions {
     animatedValue: Animated.Value;
@@ -16,7 +18,7 @@ export const useAnimated = ({state}: UseAnimatedOptions) => {
     const theme = useTheme();
     const opacity = opacityAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, state === 'focused' ? 0.12 : 0.08],
+        outputRange: [0, ['pressed', 'focused'].includes(state) ? 0.12 : 0.08],
     });
 
     const processAnimatedTiming = useCallback(
@@ -38,7 +40,7 @@ export const useAnimated = ({state}: UseAnimatedOptions) => {
 
     useEffect(() => {
         if (state) {
-            processAnimatedTiming(['hovered', 'focused'].includes(state) ? 1 : 0, {
+            processAnimatedTiming(['hovered', 'focused', 'pressed'].includes(state) ? 1 : 0, {
                 animatedValue: opacityAnimated,
             });
         }
