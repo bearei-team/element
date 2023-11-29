@@ -4,7 +4,7 @@ import {BadgeProps} from './Badge';
 
 export type ContainerProps = Pick<BadgeProps, 'size'>;
 
-const Container = styled(Shape)<ContainerProps>`
+export const Container = styled(Shape)<ContainerProps>`
     align-items: center;
     display: inline-flex;
     justify-content: center;
@@ -17,13 +17,11 @@ const Container = styled(Shape)<ContainerProps>`
     ${({theme, size = 'medium'}) => {
         const containerSize = {
             large: css`
-                max-width: ${theme.adaptSize(34)}px;
                 min-width: ${theme.adaptSize(16)}px;
                 padding-horizontal: ${theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
 
             medium: css`
-                max-width: ${theme.adaptSize(34)}px;
                 min-width: ${theme.adaptSize(16)}px;
                 padding-horizontal: ${theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
@@ -38,7 +36,7 @@ const Container = styled(Shape)<ContainerProps>`
     }}
 `;
 
-const Label = styled.Text`
+export const Label = styled.Text`
     ${({theme}) => css`
         color: ${theme.palette.error.onError};
         font-size: ${theme.adaptFontSize(theme.typography.label.small.size)}px;
@@ -50,5 +48,3 @@ const Label = styled.Text`
         min-width: ${theme.adaptSize(2)}px;
     `}
 `;
-
-export {Container, Label};

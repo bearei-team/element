@@ -15,5 +15,5 @@ export const Label: StoryObj<BadgeProps> = {
 };
 
 export const MaxLabel: StoryObj<BadgeProps> = {
-    args: {size: 'large', label: 999},
+    args: {size: 'large', label: 9999},
 };
