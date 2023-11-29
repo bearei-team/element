@@ -14,12 +14,12 @@ export interface IconBaseProps extends IconProps {
 }
 
 export const IconBase: FC<IconBaseProps> = ({
+    category = 'image',
+    height,
+    name = 'lens',
     render,
     type = 'outlined',
-    name = 'lens',
-    category = 'image',
     width,
-    height,
     ...renderProps
 }) => {
     const id = useId();
@@ -29,6 +29,8 @@ export const IconBase: FC<IconBaseProps> = ({
         ...renderProps,
         id,
         renderStyle: {height, width},
-        children: SvgIcon && <SvgIcon width="100%" height="100%" viewBox="0 0 24 24" />,
+        children: SvgIcon && (
+            <SvgIcon width="100%" height="100%" viewBox="0 0 24 24" testID={`icon__svg--${id}`} />
+        ),
     });
 };

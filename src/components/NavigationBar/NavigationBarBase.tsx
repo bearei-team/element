@@ -20,7 +20,7 @@ const renderMenus = ({menus, onActive}: RenderRipplesOptions) =>
     menus?.map((menu, index) => (
         <Item
             {...menu}
-            key={menu.label ?? index}
+            key={menu.labelText ?? index}
             onPress={() => onActive(menu.key ?? `${index}`)}
         />
     ));

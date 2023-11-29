@@ -11,18 +11,18 @@ export const HorizontalNavigationBar: StoryObj<NavigationBarProps> = {
         layout: 'horizontal',
         menus: [
             {
-                label: 'Label1',
-                icon: <></>,
+                labelText: 'Label1',
+
                 key: 'name',
             },
             {
-                label: 'Label2',
-                icon: <></>,
+                labelText: 'Label2',
+
                 key: 'age',
             },
             {
-                label: 'Label3',
-                icon: <></>,
+                labelText: 'Label3',
+
                 key: 'sex',
             },
         ],

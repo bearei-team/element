@@ -31,6 +31,10 @@ export const IconContainer = styled.View`
 `;
 
 export const IconInner = styled(Shape)`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     ${({theme}) => css`
         padding-inline: ${theme.adaptSize(theme.spacing.large - theme.spacing.extraSmall)}px;
         padding-block: ${theme.adaptSize(theme.spacing.extraSmall)}px;

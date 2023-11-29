@@ -6,7 +6,7 @@ import {IconBase, RenderProps} from './IconBase';
 
 export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
 export type IconCategory = 'image';
-export type IconName = 'lens';
+export type IconName = 'lens' | 'circle';
 
 export interface IconProps
     extends Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View>> {
