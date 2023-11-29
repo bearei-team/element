@@ -17,7 +17,7 @@ export interface DisabledProps {
     width: number;
 }
 
-const Shape = styled(View)<ShapeProps>`
+export const Shape = styled(View)<ShapeProps>`
     ${({shape = 'none', theme}) => css`
         border-bottom-left-radius: ${theme.adaptSize(theme.shape[shape].bottomLeft)}px;
         border-bottom-right-radius: ${theme.adaptSize(theme.shape[shape].bottomLeft)}px;
@@ -41,7 +41,7 @@ const Shape = styled(View)<ShapeProps>`
     }}
 `;
 
-const Disabled = styled(Shape)<DisabledProps>`
+export const Disabled = styled(Shape)<DisabledProps>`
     left: 0;
     opacity: 0;
     position: absolute;
@@ -54,5 +54,3 @@ const Disabled = styled(Shape)<DisabledProps>`
             width: ${width}px;
         `}
 `;
-
-export {Disabled, Shape};
