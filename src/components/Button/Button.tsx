@@ -69,7 +69,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
 
                         <AnimatedLabelText
                             style={{color}}
-                            testID={`button__contentText--${id}`}
+                            testID={`button__labelText--${id}`}
                             type={type}>
                             {labelText}
                         </AnimatedLabelText>

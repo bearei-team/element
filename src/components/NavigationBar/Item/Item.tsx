@@ -2,22 +2,22 @@ import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, PressableProps, View} from 'react-native';
 import {State} from '../../Common/interface';
 import {Hovered} from '../../Hovered/Hovered';
-import {Container, Icon, IconContainer, IconInner, Label} from './Item.styles';
+import {Container, Icon, IconContainer, IconInner, LabelText} from './Item.styles';
 import {ItemBase, RenderProps} from './ItemBase';
 
 export interface ItemProps extends Partial<PressableProps & RefAttributes<View>> {
-    label?: string;
+    labelText?: string;
     state?: State;
     icon?: React.JSX.Element;
     active?: boolean;
 }
 
 const AnimatedIconInner = Animated.createAnimatedComponent(IconInner);
-const AnimatedLabel = Animated.createAnimatedComponent(Label);
+const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
     const render = ({
         id,
-        label,
+        labelText,
         icon,
         active,
         onIconContainerLayout,
@@ -32,7 +32,8 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
             backgroundColor,
             labelWeight,
             labelColor,
-            paddingHorizontal,
+            iconInnerWidth,
+            labelHeight,
         } = renderStyle;
 
         return (
@@ -41,7 +42,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                     testID={`navigationBarItem__iconContainer--${id}`}
                     onLayout={onIconContainerLayout}>
                     <AnimatedIconInner
-                        style={{backgroundColor, width: paddingHorizontal}}
+                        style={{backgroundColor, width: iconInnerWidth}}
                         shape="full"
                         testID={`navigationBarItem__iconInner--${id}`}>
                         {active ? (
@@ -60,11 +61,11 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                     />
                 </IconContainer>
 
-                <AnimatedLabel
-                    style={{fontWeight: labelWeight, color: labelColor}}
+                <AnimatedLabelText
+                    style={{fontWeight: labelWeight, color: labelColor, height: labelHeight}}
                     testID={`navigationBarItem__label--${id}`}>
-                    {label}
-                </AnimatedLabel>
+                    {labelText}
+                </AnimatedLabelText>
             </Container>
         );
     };

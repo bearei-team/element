@@ -29,7 +29,7 @@ export const useAnimated = ({minDuration, onAnimatedEnd, sequence}: UseAnimatedO
         const animatedOut = (finished?: () => void) =>
             requestAnimationFrame(() =>
                 animatedTiming(opacityAnimated, {
-                    duration: 'short3',
+                    duration: 'medium0',
                     easing: 'standard',
                     toValue: 1,
                 }).start(finished),

@@ -23,19 +23,27 @@ export const useAnimated = ({active}: UseAnimatedOptions) => {
         ],
     });
 
-    const paddingHorizontal = stateAnimated.interpolate({
+    const iconInnerWidth = stateAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [24, 64],
+        outputRange: [
+            theme.adaptSize(24),
+            theme.adaptSize(24 + (theme.spacing.large - theme.spacing.extraSmall) * 2),
+        ],
     });
 
     const labelWeight = stateAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [500, 600],
+        outputRange: [theme.font.weight.medium, theme.font.weight.bold],
     });
 
     const labelColor = stateAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [theme.palette.surface.onSurfaceVariant, theme.palette.surface.onSurface],
+    });
+
+    const labelHeight = stateAnimated.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, theme.adaptSize(theme.typography.label.medium.lineHeight)],
     });
 
     const processAnimatedTiming = useCallback(
@@ -59,5 +67,5 @@ export const useAnimated = ({active}: UseAnimatedOptions) => {
         processAnimatedTiming(active ? 1 : 0, {animatedValue: stateAnimated});
     }, [active, processAnimatedTiming, stateAnimated]);
 
-    return {backgroundColor, labelWeight, labelColor, paddingHorizontal};
+    return {backgroundColor, labelWeight, labelColor, iconInnerWidth, labelHeight};
 };

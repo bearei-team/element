@@ -4,7 +4,7 @@ import {NavigationBarProps} from './NavigationBar';
 
 export type ContainerProps = Pick<NavigationBarProps, 'layout'>;
 
-const Container = styled(View)<ContainerProps>`
+export const Container = styled(View)<ContainerProps>`
     display: flex;
 
     ${({theme}) =>
@@ -23,22 +23,19 @@ const Container = styled(View)<ContainerProps>`
               `};
 `;
 
-const Item = styled.View``;
-
-const Icon = styled.View`
-    width: 24px;
-    height: 24px;
+export const Item = styled.View``;
+export const Icon = styled.View`
+    ${({theme}) => css`
+        width: ${theme.adaptSize(24)}px;
+        height: ${theme.adaptSize(24)}px;
+    `}
 `;
 
-const Label = styled.Text`
+export const LabelText = styled.Text`
     ${({theme}) => css`
-        /* color: ${theme.palette.error.onError}; */
         font-size: ${theme.adaptFontSize(theme.typography.label.medium.size)}px;
         font-style: ${theme.typography.label.medium.style};
-        /* font-weight: ${theme.typography.label.medium.weight}; */
         letter-spacing: ${theme.adaptSize(theme.typography.label.medium.letterSpacing)}px;
         line-height: ${theme.adaptSize(theme.typography.label.medium.lineHeight)}px;
     `}
 `;
-
-export {Container, Icon, Item, Label};

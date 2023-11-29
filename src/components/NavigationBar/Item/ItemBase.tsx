@@ -21,8 +21,10 @@ export interface RenderProps extends ItemProps {
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         iconContainerHeight: number;
         iconContainerWidth: number;
-        labelWeight: AnimatedInterpolation;
+        iconInnerWidth: AnimatedInterpolation;
         labelColor: AnimatedInterpolation;
+        labelHeight: AnimatedInterpolation;
+        labelWeight: AnimatedInterpolation;
     };
     underlayColor: string;
 }
@@ -49,7 +51,10 @@ export const ItemBase: FC<ItemBaseProps> = ({
     const [state, setState] = useImmer<State>('enabled');
     const id = useId();
     const theme = useTheme();
-    const {backgroundColor, labelWeight, labelColor, paddingHorizontal} = useAnimated({active});
+    const {backgroundColor, labelWeight, labelColor, iconInnerWidth, labelHeight} = useAnimated({
+        active,
+    });
+
     const underlayColor = active
         ? theme.palette.surface.onSurface
         : theme.palette.secondary.onSecondaryContainer;
@@ -116,9 +121,10 @@ export const ItemBase: FC<ItemBaseProps> = ({
             backgroundColor,
             iconContainerHeight: iconContainerLayout.height,
             iconContainerWidth: iconContainerLayout.width,
+            iconInnerWidth,
             labelColor,
+            labelHeight,
             labelWeight,
-            paddingHorizontal,
         },
         state,
         underlayColor,
