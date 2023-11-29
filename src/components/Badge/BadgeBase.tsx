@@ -13,12 +13,12 @@ export const BadgeBase: FC<BadgeBaseProps> = ({
     ...renderProps
 }) => {
     const id = useId();
-    const labelContentText = Number(labelText) > 999 ? '999+' : labelText;
+    const text = Number(labelText) > 999 ? '999+' : labelText;
 
     return render({
         ...renderProps,
         id,
-        labelText: size !== 'small' ? labelContentText : '',
+        labelText: size !== 'small' ? text : '',
         size,
     });
 };

@@ -16,7 +16,7 @@ export interface IconBaseProps extends IconProps {
 export const IconBase: FC<IconBaseProps> = ({
     category = 'image',
     height,
-    name = 'lens',
+    name = 'circle',
     render,
     type = 'outlined',
     width,

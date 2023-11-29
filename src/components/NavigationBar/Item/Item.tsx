@@ -1,11 +1,13 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, PressableProps, View} from 'react-native';
+import {ShapeProps} from '../../Common/Common.styles';
 import {State} from '../../Common/interface';
 import {Hovered} from '../../Hovered/Hovered';
 import {Container, Icon, IconContainer, IconInner, LabelText} from './Item.styles';
 import {ItemBase, RenderProps} from './ItemBase';
 
-export interface ItemProps extends Partial<PressableProps & RefAttributes<View>> {
+export interface ItemProps
+    extends Partial<PressableProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>> {
     labelText?: string;
     state?: State;
     icon?: React.JSX.Element;
@@ -26,6 +28,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
         state,
         underlayColor,
         activeIcon,
+        shape,
         ...containerProps
     }: RenderProps) => {
         const {
@@ -45,7 +48,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                     onLayout={onIconContainerLayout}>
                     <AnimatedIconInner
                         style={{backgroundColor, width: iconInnerWidth}}
-                        shape="full"
+                        shape={shape}
                         testID={`navigationBarItem__iconInner--${id}`}>
                         <Icon testID={`navigationBarItem__icon--${id}`}>
                             {active ? activeIcon : icon}
@@ -54,7 +57,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
 
                     <Hovered
                         height={iconContainerHeight}
-                        shape="full"
+                        shape={shape}
                         state={state}
                         underlayColor={underlayColor}
                         width={iconContainerWidth}

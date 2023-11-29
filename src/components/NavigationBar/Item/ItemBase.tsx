@@ -132,6 +132,7 @@ export const ItemBase: FC<ItemBaseProps> = ({
             labelHeight,
             labelWeight,
         },
+        shape: 'full',
         state,
         underlayColor,
     });

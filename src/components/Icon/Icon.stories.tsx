@@ -11,8 +11,6 @@ export const Filled: StoryObj<IconProps> = {
         type: 'filled',
         category: 'image',
         name: 'lens',
-        width: 48,
-        height: 48,
     },
 };
 
@@ -21,7 +19,5 @@ export const Outlined: StoryObj<IconProps> = {
         type: 'outlined',
         category: 'image',
         name: 'lens',
-        width: 48,
-        height: 48,
     },
 };

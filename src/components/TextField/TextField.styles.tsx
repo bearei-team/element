@@ -94,7 +94,7 @@ export const LabelText = styled.Text`
         letter-spacing: ${theme.adaptSize(theme.typography.body.small.letterSpacing)}px;
         line-height: ${theme.adaptSize(theme.typography.body.small.lineHeight)}px;
         padding-inline: ${theme.adaptSize(theme.spacing.small)}px;
-        top: ${theme.adaptSize(-theme.spacing.small)}px;
+        top: ${theme.adaptSize(-theme.typography.body.small.lineHeight / 2)}px;
     `};
 `;
 
@@ -105,7 +105,7 @@ export const LabelTextBackgroundContainer = styled.View<LabelTextBackgroundConta
     justify-content: center;
 
     ${({theme, width, height}) => css`
-        top: ${theme.adaptSize(-theme.spacing.small)}px;
+        top: ${theme.adaptSize(-theme.typography.body.small.lineHeight / 2)}px;
         left: ${theme.adaptSize(theme.spacing.medium - theme.spacing.small)}px;
         width: ${width}px;
         height: ${height};
@@ -139,10 +139,6 @@ export const ActiveIndicator = styled.View`
 `;
 
 export const Icon = styled.View`
-    align-items: center;
-    display: flex;
-    justify-content: center;
-
     ${({theme}) => css`
         height: ${theme.adaptSize(48)}px;
         padding-inline: ${theme.adaptSize(theme.spacing.small)}px;

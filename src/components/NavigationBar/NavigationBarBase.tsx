@@ -17,13 +17,7 @@ export interface Menu extends SourceMenu {
 }
 
 const renderMenus = ({menus, onActive}: RenderRipplesOptions) =>
-    menus?.map((menu, index) => (
-        <Item
-            {...menu}
-            key={menu.labelText ?? index}
-            onPress={() => onActive(menu.key ?? `${index}`)}
-        />
-    ));
+    menus?.map(menu => <Item {...menu} key={menu.key} onPress={() => onActive(menu.key!)} />);
 
 export const NavigationBarBase: FC<NavigationBarBaseProps> = ({
     render,
@@ -43,11 +37,15 @@ export const NavigationBarBase: FC<NavigationBarBaseProps> = ({
 
     useEffect(() => {
         if (sourceMenus) {
-            setMenus(() => sourceMenus.map(menu => ({...menu, active: false})));
+            setMenus(() =>
+                sourceMenus.map((menu, index) => ({
+                    ...menu,
+                    active: false,
+                    key: menu.key ?? index,
+                })),
+            );
         }
     }, [setMenus, sourceMenus]);
-
-    console.info(menus);
 
     return render({
         ...renderProps,

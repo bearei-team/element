@@ -22,20 +22,3 @@ export const Container = styled(View)<ContainerProps>`
                   flex-direction: column;
               `};
 `;
-
-export const Item = styled.View``;
-export const Icon = styled.View`
-    ${({theme}) => css`
-        width: ${theme.adaptSize(24)}px;
-        height: ${theme.adaptSize(24)}px;
-    `}
-`;
-
-export const LabelText = styled.Text`
-    ${({theme}) => css`
-        font-size: ${theme.adaptFontSize(theme.typography.label.medium.size)}px;
-        font-style: ${theme.typography.label.medium.style};
-        letter-spacing: ${theme.adaptSize(theme.typography.label.medium.letterSpacing)}px;
-        line-height: ${theme.adaptSize(theme.typography.label.medium.lineHeight)}px;
-    `}
-`;

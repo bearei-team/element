@@ -72,7 +72,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     supportingText,
     trailingIcon,
     type = 'filled',
-
     ...renderProps
 }) => {
     const [inputState, setInputState] = useImmer<State>('enabled');

@@ -84,14 +84,19 @@ export const useAnimated = ({
 
     const labelTop = labeAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [theme.adaptSize(16), theme.adaptSize(-8)],
+        outputRange: [
+            theme.adaptSize(theme.spacing.medium),
+            theme.adaptSize(-theme.typography.body.small.lineHeight / 2),
+        ],
     });
 
     const labelLeft = labeAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
-            leadingIcon ? theme.adaptSize(16) + labelTextWidth : theme.adaptSize(16),
-            theme.adaptSize(16),
+            leadingIcon
+                ? theme.adaptSize(theme.spacing.medium) + labelTextWidth
+                : theme.adaptSize(theme.spacing.medium),
+            theme.adaptSize(theme.spacing.medium),
         ],
     });
 
