@@ -4,7 +4,7 @@ import {DividerProps} from './Divider';
 
 export type ContainerProps = Pick<DividerProps, 'layout' | 'size'>;
 
-const Container = styled(View)<ContainerProps>`
+export const Container = styled(View)<ContainerProps>`
     align-items: flex-start;
     display: flex;
     flex-direction: column;
@@ -33,18 +33,18 @@ const Container = styled(View)<ContainerProps>`
             medium:
                 layout === 'horizontal'
                     ? css`
-                          padding-horizontal-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                          padding-inline-start: ${theme.adaptSize(theme.spacing.medium)}px;
                       `
                     : css`
-                          padding-vertical-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                          padding-block-start: ${theme.adaptSize(theme.spacing.medium)}px;
                       `,
             small:
                 layout === 'horizontal'
                     ? css`
-                          padding-horizontal: ${theme.adaptSize(theme.spacing.medium)}px;
+                          padding-inline: ${theme.adaptSize(theme.spacing.medium)}px;
                       `
                     : css`
-                          padding-vertical: ${theme.adaptSize(theme.spacing.medium)}px;
+                          padding-block: ${theme.adaptSize(theme.spacing.medium)}px;
                       `,
         };
 
@@ -52,7 +52,7 @@ const Container = styled(View)<ContainerProps>`
     }};
 `;
 
-const Main = styled.View`
+export const Main = styled.View`
     align-self: stretch;
     flex: 1;
 
@@ -62,7 +62,7 @@ const Main = styled.View`
     `}
 `;
 
-const Subheader = styled.Text`
+export const Subheader = styled.Text`
     align-self: stretch;
 
     ${({theme}) => css`
@@ -74,5 +74,3 @@ const Subheader = styled.Text`
         line-height: ${theme.adaptSize(theme.typography.title.small.lineHeight)}px;
     `}
 `;
-
-export {Container, Main, Subheader};
