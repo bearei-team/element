@@ -6,8 +6,21 @@ export default {
     component: Icon,
 } as Meta<typeof Icon>;
 
-export const FaceIcon: StoryObj<IconProps> = {
+export const Filled: StoryObj<IconProps> = {
     args: {
+        type: 'filled',
+        category: 'image',
+        name: 'lens',
+        width: 48,
+        height: 48,
+    },
+};
+
+export const Outlined: StoryObj<IconProps> = {
+    args: {
+        type: 'outlined',
+        category: 'image',
+        name: 'lens',
         width: 48,
         height: 48,
     },

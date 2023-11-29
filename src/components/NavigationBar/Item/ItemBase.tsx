@@ -1,3 +1,4 @@
+import K from '@material-design-icons/svg/outlined/8k.svg';
 import {FC, useCallback, useId} from 'react';
 import {
     Animated,
@@ -42,6 +43,8 @@ export const ItemBase: FC<ItemBaseProps> = ({
     onPressIn,
     onPressOut,
     render,
+    icon = <K></K>,
+    activeIcon = <></>,
     ...renderProps
 }) => {
     const [iconContainerLayout, setIconContainerLayout] = useImmer(
@@ -117,6 +120,8 @@ export const ItemBase: FC<ItemBaseProps> = ({
         onFocus: handleFocus,
         onPressIn: handlePressIn,
         onPressOut: handlePressOut,
+        icon,
+        activeIcon,
         renderStyle: {
             backgroundColor,
             iconContainerHeight: iconContainerLayout.height,

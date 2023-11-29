@@ -9,6 +9,7 @@ export interface ItemProps extends Partial<PressableProps & RefAttributes<View>>
     labelText?: string;
     state?: State;
     icon?: React.JSX.Element;
+    activeIcon?: React.JSX.Element;
     active?: boolean;
 }
 
@@ -24,6 +25,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
         renderStyle,
         state,
         underlayColor,
+        activeIcon,
         ...containerProps
     }: RenderProps) => {
         const {
@@ -45,11 +47,9 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                         style={{backgroundColor, width: iconInnerWidth}}
                         shape="full"
                         testID={`navigationBarItem__iconInner--${id}`}>
-                        {active ? (
-                            <Icon testID={`navigationBarItem__icon--${id}`}>{icon}</Icon>
-                        ) : (
-                            <Icon testID={`navigationBarItem__icon--${id}`}>{icon}</Icon>
-                        )}
+                        <Icon testID={`navigationBarItem__icon--${id}`}>
+                            {active ? activeIcon : icon}
+                        </Icon>
                     </AnimatedIconInner>
 
                     <Hovered

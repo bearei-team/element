@@ -12,6 +12,7 @@ export interface SourceMenu {
 export interface NavigationBarProps extends Partial<ViewProps & RefAttributes<View>> {
     layout?: 'horizontal' | 'vertical';
     menus?: SourceMenu[];
+    onChange?: (key: string) => void;
 }
 
 const ForwardRefNavigationBar = forwardRef<View, NavigationBarProps>((props, ref) => {

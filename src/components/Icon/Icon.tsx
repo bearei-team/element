@@ -5,10 +5,14 @@ import {Container} from './Icon.styles';
 import {IconBase, RenderProps} from './IconBase';
 
 export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
+export type IconCategory = 'image';
+export type IconName = 'lens';
+
 export interface IconProps
     extends Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View>> {
     type?: IconType;
-    icon?: React.JSX.Element;
+    name?: IconName;
+    category?: IconCategory;
     width?: number;
     height?: number;
 }

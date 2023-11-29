@@ -27,15 +27,19 @@ const renderMenus = ({menus, onActive}: RenderRipplesOptions) =>
 
 export const NavigationBarBase: FC<NavigationBarBaseProps> = ({
     render,
+    onChange,
     menus: sourceMenus,
     ...renderProps
 }) => {
     const id = useId();
     const [menus, setMenus] = useImmer<Menu[]>([]);
-    const handleActive = (key: string) =>
+    const handleActive = (key: string) => {
         setMenus(draft => {
             draft.forEach(item => (item.active = item.key === key));
         });
+
+        onChange?.(key);
+    };
 
     useEffect(() => {
         if (sourceMenus) {
