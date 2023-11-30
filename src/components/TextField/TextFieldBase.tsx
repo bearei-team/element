@@ -149,7 +149,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
                 inputRef.current?.focus();
 
                 setState(draft => {
-                    draft.state = draft.state !== 'enabled' ? 'hovered' : 'enabled';
+                    draft.state !== 'enabled' && (draft.state = 'hovered');
                 });
             },
         });
@@ -164,9 +164,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
 
     const handleBlur = useCallback(
         (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
-            if (state === 'enabled') {
-                processState('enabled', {element: 'input'});
-            }
+            state === 'enabled' && processState('enabled', {element: 'input'});
 
             processState('enabled', {element: 'input'});
 
@@ -203,15 +201,11 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     );
 
     useEffect(() => {
-        if (typeof disabled === 'boolean') {
-            processAbnormalState('disabled', disabled);
-        }
+        processAbnormalState('disabled', !!disabled);
     }, [disabled, processAbnormalState]);
 
     useEffect(() => {
-        if (typeof error === 'boolean' && !disabled) {
-            processAbnormalState('error', error);
-        }
+        !disabled && processAbnormalState('error', !!error);
     }, [disabled, error, processAbnormalState]);
 
     return render({

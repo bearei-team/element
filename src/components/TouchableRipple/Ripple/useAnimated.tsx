@@ -8,7 +8,8 @@ export interface UseAnimatedOptions extends Pick<RippleProps, 'onAnimatedEnd' | 
     minDuration: number;
 }
 
-export const useAnimated = ({minDuration, onAnimatedEnd, sequence}: UseAnimatedOptions) => {
+export const useAnimated = (options: UseAnimatedOptions) => {
+    const {minDuration, onAnimatedEnd, sequence} = options;
     const [opacityAnimated] = useAnimatedValue(0);
     const [scaleAnimated] = useAnimatedValue(0);
     const opacity = opacityAnimated.interpolate({inputRange: [0, 1], outputRange: [1, 0]});
@@ -20,7 +21,7 @@ export const useAnimated = ({minDuration, onAnimatedEnd, sequence}: UseAnimatedO
         const animatedIn = (finished?: () => void) =>
             requestAnimationFrame(() =>
                 animatedTiming(scaleAnimated, {
-                    duration: Math.min(minDuration, 200),
+                    duration: Math.min(minDuration, 250),
                     easing: 'standard',
                     toValue: 1,
                 }).start(finished),

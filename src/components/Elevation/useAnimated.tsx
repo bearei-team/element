@@ -7,7 +7,8 @@ import {ElevationProps} from './Elevation';
 
 export type UseAnimatedOptions = Required<Pick<ElevationProps, 'level'>>;
 
-export const useAnimated = ({level}: UseAnimatedOptions) => {
+export const useAnimated = (options: UseAnimatedOptions) => {
+    const {level} = options;
     const [shadowAnimated] = useAnimatedValue(0);
     const theme = useTheme();
     const shadow0Opacity = shadowAnimated.interpolate({

@@ -9,7 +9,8 @@ export interface UseAnimatedOptions {
     state: State;
 }
 
-export const useAnimated = ({state}: UseAnimatedOptions) => {
+export const useAnimated = (options: UseAnimatedOptions) => {
+    const {state} = options;
     const [opacityAnimated] = useAnimatedValue(0);
     const theme = useTheme();
     const opacity = opacityAnimated.interpolate({

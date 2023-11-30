@@ -145,11 +145,10 @@ export const formStore = <T extends Store>(): FormStore<T> => {
             }
         };
 
-        if (response) {
+        response &&
             Promise.all(Object.keys(value).map(processResponse)).then(() =>
                 onValueChange?.(value, store),
             );
-        }
 
         Object.assign(store, value);
     };
@@ -203,13 +202,12 @@ export const formStore = <T extends Store>(): FormStore<T> => {
     const getInitialValue = () => initialValue;
     const setCallback = (callbackValue: Callback<T>) => Object.assign(callback, callbackValue);
     const setFieldTouched = (name?: keyof T, touched = false) => {
-        if (name) {
-            fieldEntities = [
+        name &&
+            (fieldEntities = [
                 ...getFieldEntities().map(fieldEntity =>
                     fieldEntity.props.name === name ? {...fieldEntity, touched} : fieldEntity,
                 ),
-            ];
-        }
+            ]);
     };
 
     const isFieldTouched = (name?: NamePath<T>) => {

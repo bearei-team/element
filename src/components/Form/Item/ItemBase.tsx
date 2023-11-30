@@ -20,9 +20,7 @@ export const ItemBase: FC<ItemBaseProps> = props => {
 
     const onValueChange = useCallback(
         (value?: unknown) => {
-            if (name) {
-                setFieldValue({[name]: value});
-            }
+            name && setFieldValue({[name]: value});
         },
         [name, setFieldValue],
     );

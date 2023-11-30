@@ -85,9 +85,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         (nextState: State, callback?: () => void) => {
             const isProcessElevation = ['elevated', 'filled', 'tonal'].includes(type);
 
-            if (isProcessElevation) {
-                processElevation(nextState);
-            }
+            isProcessElevation && processElevation(nextState);
 
             setState(draft => {
                 draft.state = nextState;
@@ -142,11 +140,10 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     );
 
     useEffect(() => {
-        if (type === 'elevated') {
+        type === 'elevated' &&
             setState(draft => {
                 draft.elevation = disabled ? 0 : 1;
             });
-        }
     }, [disabled, setState, type]);
 
     return render({

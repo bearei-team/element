@@ -140,11 +140,9 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = Props => {
     );
 
     useEffect(() => {
-        if (Object.keys(rippleSequence).length !== 0) {
-            mobile
-                ? state === 'enabled' && processRippleOut()
-                : state === 'hovered' && processRippleOut();
-        }
+        Object.keys(rippleSequence).length !== 0 && mobile
+            ? state === 'enabled' && processRippleOut()
+            : state === 'hovered' && processRippleOut();
     }, [mobile, processRippleOut, rippleSequence, state]);
 
     return render({

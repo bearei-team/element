@@ -21,7 +21,6 @@ const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
-            accessibilityLabel,
             disabled,
             elevation,
             icon,
@@ -41,7 +40,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
 
         return (
             <Container
-                accessibilityLabel={accessibilityLabel ?? labelText}
+                accessibilityLabel={labelText}
                 accessibilityRole="button"
                 testID={`button--${id}`}>
                 <Elevation level={elevation} shape={shape}>

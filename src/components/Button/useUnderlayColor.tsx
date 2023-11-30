@@ -5,7 +5,8 @@ export interface UseUnderlayColorOptions {
     type: ButtonType;
 }
 
-export const useUnderlayColor = ({type}: UseUnderlayColorOptions) => {
+export const useUnderlayColor = (options: UseUnderlayColorOptions) => {
+    const {type} = options;
     const theme = useTheme();
     const underlay = {
         elevated: theme.palette.primary.primary,

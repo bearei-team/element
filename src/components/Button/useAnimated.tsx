@@ -12,7 +12,8 @@ export interface UseAnimatedOptions {
     type: ButtonType;
 }
 
-export const useAnimated = ({disabled, state, type}: UseAnimatedOptions) => {
+export const useAnimated = (options: UseAnimatedOptions) => {
+    const {disabled, state, type} = options;
     const [borderAnimated] = useAnimatedValue(1);
     const [colorAnimated] = useAnimatedValue(1);
     const borderInputRange = useMemo(() => [0, 1, 2], []);

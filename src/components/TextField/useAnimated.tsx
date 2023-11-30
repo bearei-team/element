@@ -15,8 +15,6 @@ export interface ProcessAnimatedTimingOptions {
 export type ProcessAnimatedOptions = ProcessStateOptions &
     Pick<ProcessAnimatedTimingOptions, 'finished'> & {input?: boolean};
 
-export type ProcessStateAnimatedOptions = ProcessAnimatedOptions;
-
 export interface UseAnimatedOptions {
     filled: boolean;
     labelTextWidth: number;
@@ -184,7 +182,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     const processStateAnimated = useCallback(
-        (processStateAnimatedOptions: ProcessStateAnimatedOptions) => {
+        (processStateAnimatedOptions: ProcessAnimatedOptions) => {
             const {input, finished} = processStateAnimatedOptions;
 
             return {
@@ -197,7 +195,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     processAnimatedTiming(backgroundColorAnimated, {toValue});
                 },
                 enabled: () => {
-                    if (input) {
+                    const runInputAnimated = () => {
                         const toValue = filled ? 1 : 0;
 
                         processBorderAnimated(0);
@@ -205,7 +203,9 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                         processAnimatedTiming(inputAnimated, {toValue});
                         processAnimatedTiming(labeAnimated, {toValue});
                         processAnimatedTiming(labelPlaceholderAnimated, {toValue});
-                    }
+                    };
+
+                    input && runInputAnimated();
 
                     processAnimatedTiming(supportingTextColorAnimated, {toValue: 1});
                 },
@@ -214,11 +214,13 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     processAnimatedTiming(colorAnimated, {toValue: 3});
                 },
                 focused: () => {
-                    if (input) {
+                    const runInputAnimated = () => {
                         processBorderAnimated(1);
                         processAnimatedTiming(labelPlaceholderAnimated, {toValue: 1});
                         processAnimatedTiming(colorAnimated, {toValue: 2});
-                    }
+                    };
+
+                    input && runInputAnimated();
                 },
                 hovered: undefined,
                 pressed: () => {
@@ -247,9 +249,8 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         (nextState: State, processAnimatedOptions: ProcessAnimatedOptions = {}) => {
             processStateAnimated(processAnimatedOptions)[nextState]?.();
 
-            if (nextState !== 'disabled') {
+            nextState !== 'disabled' &&
                 processAnimatedTiming(backgroundColorAnimated, {toValue: 1});
-            }
         },
         [backgroundColorAnimated, processAnimatedTiming, processStateAnimated],
     );

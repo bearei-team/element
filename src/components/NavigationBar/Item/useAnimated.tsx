@@ -8,7 +8,8 @@ export interface UseAnimatedOptions {
     active: boolean;
 }
 
-export const useAnimated = ({active}: UseAnimatedOptions) => {
+export const useAnimated = (options: UseAnimatedOptions) => {
+    const {active} = options;
     const [stateAnimated] = useAnimatedValue(0);
     const theme = useTheme();
     const backgroundColor = stateAnimated.interpolate({
