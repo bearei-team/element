@@ -1,8 +1,8 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {DividerProps} from './Divider';
+import {RenderProps} from './DividerBase';
 
-export type ContainerProps = Pick<DividerProps, 'layout' | 'size'>;
+export type ContainerProps = Pick<RenderProps, 'layout' | 'size'>;
 
 export const Container = styled(View)<ContainerProps>`
     align-items: flex-start;
@@ -57,8 +57,8 @@ export const Main = styled.View`
     flex: 1;
 
     ${({theme}) => css`
-        min-height: ${theme.adaptSize(1)}px;
         background-color: ${theme.palette.outline.outlineVariant};
+        min-height: ${theme.adaptSize(1)}px;
     `}
 `;
 

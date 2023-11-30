@@ -6,9 +6,6 @@ import {UTIL} from '../../utils/util';
 import {ElevationProps} from './Elevation';
 
 export type UseAnimatedOptions = Pick<ElevationProps, 'level'>;
-export interface ProcessAnimatedTimingOptions {
-    animatedValue: Animated.Value;
-}
 
 export const useAnimated = ({level}: UseAnimatedOptions) => {
     const [shadowAnimated] = useAnimatedValue(0);
@@ -38,14 +35,14 @@ export const useAnimated = ({level}: UseAnimatedOptions) => {
     });
 
     const processAnimatedTiming = useCallback(
-        (toValue: UseAnimatedOptions['level'], {animatedValue}: ProcessAnimatedTimingOptions) => {
+        (animation: Animated.Value, toValue: UseAnimatedOptions['level'] = 0) => {
             const animatedTiming = UTIL.animatedTiming(theme);
             const animated = () =>
                 requestAnimationFrame(() =>
-                    animatedTiming(animatedValue, {
+                    animatedTiming(animation, {
                         duration: 'short3',
                         easing: 'standard',
-                        toValue: toValue ?? 0,
+                        toValue,
                     }).start(),
                 );
 
@@ -55,7 +52,7 @@ export const useAnimated = ({level}: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        processAnimatedTiming(level, {animatedValue: shadowAnimated});
+        processAnimatedTiming(shadowAnimated, level);
     }, [level, processAnimatedTiming, shadowAnimated]);
 
     return {shadow0Opacity, shadow1Opacity};

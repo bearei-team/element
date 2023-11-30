@@ -18,12 +18,8 @@ export interface ElevationBaseProps extends ElevationProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const ElevationBase: FC<ElevationBaseProps> = ({
-    level = 0,
-    onLayout,
-    render,
-    ...renderProps
-}) => {
+export const ElevationBase: FC<ElevationBaseProps> = props => {
+    const {level = 0, onLayout, render, ...renderProps} = props;
     const [layout, setLayout] = useImmer({} as Pick<LayoutRectangle, 'height' | 'width'>);
     const {shadow0Opacity, shadow1Opacity} = useAnimated({level});
     const id = useId();

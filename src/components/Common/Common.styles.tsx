@@ -25,8 +25,8 @@ export const Shape = styled(View)<ShapeProps>`
         border-top-right-radius: ${theme.adaptSize(theme.shape[shape].topRight)}px;
     `}
 
-    ${({border, theme}) => {
-        const {color = theme.palette.primary, style = 'solid', width = 1} = border ?? {};
+    ${({border = {}, theme}) => {
+        const {color = theme.palette.primary, style = 'solid', width = theme.adaptSize(1)} = border;
         const isAnimatedInterpolation = typeof color !== 'string' || typeof width !== 'number';
 
         return (

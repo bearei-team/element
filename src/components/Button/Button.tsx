@@ -1,16 +1,14 @@
-import {FC, ReactNode, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, PressableProps, View} from 'react-native';
-import {Disabled, ShapeProps} from '../Common/Common.styles';
+import {FC, forwardRef, memo} from 'react';
+import {Animated, View} from 'react-native';
+import {Disabled} from '../Common/Common.styles';
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
-import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
+import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {Container, Icon, LabelText, Main} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
 export type Type = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
-export interface ButtonProps
-    extends Partial<PressableProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>> {
-    children?: ReactNode;
+export interface ButtonProps extends TouchableRippleProps {
     disabled?: boolean;
     icon?: React.JSX.Element;
     labelText?: string;
