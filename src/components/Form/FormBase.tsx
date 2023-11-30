@@ -10,16 +10,18 @@ export interface FormBaseProps<T extends Store> extends FormProps<T> {
     render: (props: RenderProps<T>) => React.JSX.Element;
 }
 
-export const FormBase = <T extends Store>({
-    render,
-    form,
-    onFinish,
-    onFinishFailed,
-    onValueChange,
-    children,
-    initialValue,
-    ...renderProps
-}: FormBaseProps<T>) => {
+export const FormBase = <T extends Store>(props: FormBaseProps<T>) => {
+    const {
+        children,
+        form,
+        initialValue,
+        onFinish,
+        onFinishFailed,
+        onValueChange,
+        render,
+        ...renderProps
+    } = props;
+
     const id = useId();
     const [formStore] = useForm<T>(form);
     const [status, setStatus] = useImmer('idle');

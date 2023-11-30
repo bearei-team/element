@@ -14,8 +14,8 @@ export type FormComponent = typeof MemoForm & {
 export interface FormProps<T extends Store = Store>
     extends Partial<ViewProps & RefAttributes<View> & Callback<T>> {
     form?: FormStore<T>;
-    layout?: 'horizontal' | 'vertical';
     initialValue?: T;
+    layout?: 'horizontal' | 'vertical';
 }
 
 const FormInner = <T extends Store>(props: FormProps<T>, ref: ForwardedRef<View>) => {

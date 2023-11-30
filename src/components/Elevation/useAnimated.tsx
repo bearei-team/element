@@ -37,16 +37,14 @@ export const useAnimated = ({level}: UseAnimatedOptions) => {
     const processAnimatedTiming = useCallback(
         (animation: Animated.Value, toValue: UseAnimatedOptions['level'] = 0) => {
             const animatedTiming = UTIL.animatedTiming(theme);
-            const animated = () =>
-                requestAnimationFrame(() =>
-                    animatedTiming(animation, {
-                        duration: 'short3',
-                        easing: 'standard',
-                        toValue,
-                    }).start(),
-                );
 
-            animated();
+            requestAnimationFrame(() =>
+                animatedTiming(animation, {
+                    duration: 'short3',
+                    easing: 'standard',
+                    toValue,
+                }).start(),
+            );
         },
         [theme],
     );

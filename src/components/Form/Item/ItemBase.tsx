@@ -10,15 +10,8 @@ export interface ItemBaseProps extends ItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const ItemBase: FC<ItemBaseProps> = ({
-    name,
-    render,
-    rules,
-    renderControl,
-    validateFirst,
-    labelText,
-    ...renderProps
-}) => {
+export const ItemBase: FC<ItemBaseProps> = props => {
+    const {labelText, name, render, renderControl, rules, validateFirst, ...renderProps} = props;
     const [, forceUpdate] = useImmer({});
     const {getFieldError, getFieldValue, setFieldValue, signInField} = useFormContext();
     const errors = getFieldError(name)?.errors;
