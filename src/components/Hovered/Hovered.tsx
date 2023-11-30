@@ -18,7 +18,8 @@ export interface HoveredProps
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const ForwardRefHovered = forwardRef<Animated.LegacyRef<View>, HoveredProps>((props, ref) => {
-    const render = ({id, renderStyle, style, ...containerProps}: RenderProps) => {
+    const render = (renderProps: RenderProps) => {
+        const {id, renderStyle, style, ...containerProps} = renderProps;
         const {width, height, ...containerStyle} = renderStyle;
 
         return (

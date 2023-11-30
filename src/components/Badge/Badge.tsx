@@ -10,11 +10,15 @@ export interface BadgeProps extends Partial<ViewProps & RefAttributes<View>> {
 }
 
 const ForwardRefBadge = forwardRef<View, BadgeProps>((props, ref) => {
-    const render = ({id, labelText, ...containerProps}: RenderProps) => (
-        <Container {...containerProps} ref={ref} shape="full" testID={`badge--${id}`}>
-            <LabelText testID={`badge__labelText--${id}`}>{labelText}</LabelText>
-        </Container>
-    );
+    const render = (renderProps: RenderProps) => {
+        const {id, labelText, ...containerProps} = renderProps;
+
+        return (
+            <Container {...containerProps} ref={ref} shape="full" testID={`badge--${id}`}>
+                <LabelText testID={`badge__labelText--${id}`}>{labelText}</LabelText>
+            </Container>
+        );
+    };
 
     return <BadgeBase {...props} render={render} />;
 });

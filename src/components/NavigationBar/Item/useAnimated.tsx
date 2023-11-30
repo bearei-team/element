@@ -4,10 +4,6 @@ import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {UTIL} from '../../../utils/util';
 
-export interface ProcessAnimatedTimingOptions {
-    animatedValue: Animated.Value;
-}
-
 export interface UseAnimatedOptions {
     active: boolean;
 }
@@ -47,24 +43,22 @@ export const useAnimated = ({active}: UseAnimatedOptions) => {
     });
 
     const processAnimatedTiming = useCallback(
-        (toValue: number, {animatedValue}: ProcessAnimatedTimingOptions) => {
+        (animation: Animated.Value, toValue: number) => {
             const animatedTiming = UTIL.animatedTiming(theme);
-            const animated = () =>
-                requestAnimationFrame(() =>
-                    animatedTiming(animatedValue, {
-                        duration: 'short3',
-                        easing: 'standard',
-                        toValue,
-                    }).start(),
-                );
 
-            animated();
+            requestAnimationFrame(() =>
+                animatedTiming(animation, {
+                    duration: 'short3',
+                    easing: 'standard',
+                    toValue,
+                }).start(),
+            );
         },
         [theme],
     );
 
     useEffect(() => {
-        processAnimatedTiming(active ? 1 : 0, {animatedValue: stateAnimated});
+        processAnimatedTiming(stateAnimated, active ? 1 : 0);
     }, [active, processAnimatedTiming, stateAnimated]);
 
     return {backgroundColor, labelWeight, labelColor, iconInnerWidth, labelHeight};

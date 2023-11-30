@@ -1,8 +1,8 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {IconProps} from './Icon';
+import {RenderProps} from './IconBase';
 
-export type ContainerProps = Pick<IconProps, 'width' | 'height'>;
+export type ContainerProps = Pick<RenderProps, 'width' | 'height'>;
 
 export const Container = styled(View)<ContainerProps>`
     display: flex;

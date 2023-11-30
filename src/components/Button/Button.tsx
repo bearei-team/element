@@ -19,22 +19,24 @@ export interface ButtonProps extends TouchableRippleProps {
 const AnimatedMain = Animated.createAnimatedComponent(Main);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
-    const render = ({
-        accessibilityLabel,
-        disabled,
-        elevation,
-        icon,
-        id,
-        labelText,
-        renderStyle,
-        shape,
-        showIcon,
-        state,
-        style,
-        type,
-        underlayColor,
-        ...touchableRippleProps
-    }: RenderProps) => {
+    const render = (renderProps: RenderProps) => {
+        const {
+            accessibilityLabel,
+            disabled,
+            elevation,
+            icon,
+            id,
+            labelText,
+            renderStyle,
+            shape,
+            showIcon,
+            state,
+            style,
+            type,
+            underlayColor,
+            ...touchableRippleProps
+        } = renderProps;
+
         const {color, height, width, ...mainStyle} = renderStyle;
 
         return (

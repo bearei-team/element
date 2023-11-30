@@ -28,11 +28,15 @@ export interface ItemProps<T extends Store = Store>
 }
 
 const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
-    const render = ({id, children, ...containerProps}: RenderProps) => (
-        <Container {...containerProps} ref={ref} testID={`formItem--${id}`}>
-            {children}
-        </Container>
-    );
+    const render = (renderProps: RenderProps) => {
+        const {id, children, ...containerProps} = renderProps;
+
+        return (
+            <Container {...containerProps} ref={ref} testID={`formItem--${id}`}>
+                {children}
+            </Container>
+        );
+    };
 
     return <ItemBase {...props} render={render} />;
 });

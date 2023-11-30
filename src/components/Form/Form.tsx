@@ -19,11 +19,15 @@ export interface FormProps<T extends Store = Store>
 }
 
 const FormInner = <T extends Store>(props: FormProps<T>, ref: ForwardedRef<View>) => {
-    const render = ({id, children, ...containerProps}: RenderProps<T>) => (
-        <Container {...containerProps} ref={ref} testID={`form--${id}`}>
-            {children}
-        </Container>
-    );
+    const render = (renderProps: RenderProps<T>) => {
+        const {id, children, ...containerProps} = renderProps;
+
+        return (
+            <Container {...containerProps} ref={ref} testID={`form--${id}`}>
+                {children}
+            </Container>
+        );
+    };
 
     return <FormBase {...props} render={render} />;
 };

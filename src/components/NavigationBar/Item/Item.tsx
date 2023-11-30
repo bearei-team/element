@@ -8,29 +8,31 @@ import {ItemBase, RenderProps} from './ItemBase';
 
 export interface ItemProps
     extends Partial<PressableProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>> {
+    active?: boolean;
+    activeIcon?: React.JSX.Element;
+    icon?: React.JSX.Element;
     labelText?: string;
     state?: State;
-    icon?: React.JSX.Element;
-    activeIcon?: React.JSX.Element;
-    active?: boolean;
 }
 
 const AnimatedIconInner = Animated.createAnimatedComponent(IconInner);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
-    const render = ({
-        id,
-        labelText,
-        icon,
-        active,
-        onIconContainerLayout,
-        renderStyle,
-        state,
-        underlayColor,
-        activeIcon,
-        shape,
-        ...containerProps
-    }: RenderProps) => {
+    const render = (renderProps: RenderProps) => {
+        const {
+            active,
+            activeIcon,
+            icon,
+            id,
+            labelText,
+            onIconContainerLayout,
+            renderStyle,
+            shape,
+            state,
+            underlayColor,
+            ...containerProps
+        } = renderProps;
+
         const {
             iconContainerHeight,
             iconContainerWidth,
@@ -42,13 +44,18 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
         } = renderStyle;
 
         return (
-            <Container {...containerProps} ref={ref} testID={`navigationBarItem--${id}`}>
+            <Container
+                {...containerProps}
+                accessibilityLabel={labelText}
+                accessibilityRole="tab"
+                ref={ref}
+                testID={`navigationBarItem--${id}`}>
                 <IconContainer
-                    testID={`navigationBarItem__iconContainer--${id}`}
-                    onLayout={onIconContainerLayout}>
+                    onLayout={onIconContainerLayout}
+                    testID={`navigationBarItem__iconContainer--${id}`}>
                     <AnimatedIconInner
-                        style={{backgroundColor, width: iconInnerWidth}}
                         shape={shape}
+                        style={{backgroundColor, width: iconInnerWidth}}
                         testID={`navigationBarItem__iconInner--${id}`}>
                         <Icon testID={`navigationBarItem__icon--${id}`}>
                             {active ? activeIcon : icon}

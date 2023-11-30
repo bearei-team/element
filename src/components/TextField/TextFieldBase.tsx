@@ -22,6 +22,7 @@ export interface RenderProps extends TextFieldProps {
     onHoverIn: (event: MouseEvent) => void;
     onHoverOut: (event: MouseEvent) => void;
     onLabelTextLayout: (event: LayoutChangeEvent) => void;
+    onCoreLayout: (event: LayoutChangeEvent) => void;
     onPress: (event: GestureResponderEvent) => void;
     renderStyle: Animated.WithAnimatedObject<
         ViewStyle & {
@@ -37,12 +38,7 @@ export interface RenderProps extends TextFieldProps {
             supportingTextColor: AnimatedInterpolation;
             supportingTextOpacity: AnimatedInterpolation;
         }
-    > & {
-        height: number;
-        labelTextHeight: number;
-        labelTextWidth: number;
-        width: number;
-    };
+    > & {coreHeight: number; labelTextHeight: number; labelTextWidth: number; coreWidth: number};
     state: State;
     underlayColor: string;
 }
@@ -58,39 +54,45 @@ export interface TextFieldBaseProps extends TextFieldProps {
 
 export type RenderTextInputProps = TextFieldProps;
 
+const initialState = {
+    inputState: 'enabled' as State,
+    labelTextLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    coreLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    state: 'enabled' as State,
+    underlayColor: '',
+    value: '',
+};
+
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
 const renderTextInput = (props: RenderTextInputProps) => <AnimatedTextInput {...props} />;
+export const TextFieldBase: FC<TextFieldBaseProps> = props => {
+    const {
+        disabled,
+        error,
+        leadingIcon,
+        onBlur,
+        onChangeText,
+        onFocus,
+        defaultValue,
+        placeholder,
+        ref,
+        render,
+        style,
+        supportingText,
+        trailingIcon,
+        type = 'filled',
+        ...renderProps
+    } = props;
 
-export const TextFieldBase: FC<TextFieldBaseProps> = ({
-    disabled,
-    error,
-    leadingIcon,
-    onBlur,
-    onChangeText,
-    onFocus,
-    onLayout,
-    placeholder,
-    ref,
-    render,
-    style,
-    supportingText,
-    trailingIcon,
-    type = 'filled',
-    ...renderProps
-}) => {
-    const [inputState, setInputState] = useImmer<State>('enabled');
-    const [labelTextLayout, setLabelTextLayout] = useImmer(
-        {} as Pick<LayoutRectangle, 'height' | 'width'>,
-    );
+    const [{inputState, state, coreLayout, labelTextLayout, value}, setState] =
+        useImmer(initialState);
 
-    const [layout, setLayout] = useImmer({} as Pick<LayoutRectangle, 'height' | 'width'>);
-    const [state, setState] = useImmer<State>('enabled');
     const [underlayColor] = useUnderlayColor({type});
-    const [value, setValue] = useImmer('');
     const {onAnimated, inputHeight, ...animatedStyle} = useAnimated({
         filled: !!value || !!placeholder,
         labelTextWidth: labelTextLayout.width,
-        supportingText,
+        showSupportingText: !!supportingText,
+        showLeadingIcon: !!leadingIcon,
         type,
     });
 
@@ -99,12 +101,18 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const processState = useCallback(
         (nextState: State, {element = 'container', finished}: ProcessStateOptions = {}) => {
-            element === 'input' ? setInputState(() => nextState) : setState(() => nextState);
+            setState(draft => {
+                if (element === 'input') {
+                    draft.inputState = nextState;
+                } else {
+                    draft.state = nextState;
+                }
+            });
 
             onAnimated(nextState, {finished, input: element === 'input'});
         },
 
-        [onAnimated, setInputState, setState],
+        [onAnimated, setState],
     );
 
     const processAbnormalState = useCallback(
@@ -119,24 +127,30 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         [inputState, processState, state],
     );
 
-    const processLayout = (event: LayoutChangeEvent) => {
+    const processCoreLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
 
-        setLayout(() => ({height, width}));
-        onLayout?.(event);
+        setState(draft => {
+            draft.coreLayout = {height, width};
+        });
     };
 
     const processLabelTextLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
 
-        setLabelTextLayout(() => ({height, width}));
+        setState(draft => {
+            draft.labelTextLayout = {height, width};
+        });
     };
 
     const handlePress = () =>
         processState('pressed', {
             finished: () => {
                 inputRef.current?.focus();
-                setState(draft => (draft !== 'enabled' ? 'hovered' : undefined));
+
+                setState(draft => {
+                    draft.state = draft.state !== 'enabled' ? 'hovered' : 'enabled';
+                });
             },
         });
 
@@ -165,24 +179,27 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     const handleHoverOut = () => processState('enabled');
     const handleChangeText = useCallback(
         (text: string) => {
-            setValue(() => text);
+            setState(draft => {
+                draft.value = text;
+            });
+
             onChangeText?.(text);
         },
-        [onChangeText, setValue],
+        [onChangeText, setState],
     );
 
     const children = useMemo(
         () =>
             renderTextInput({
-                ...renderProps,
+                defaultValue,
                 onBlur: handleBlur,
                 onChangeText: handleChangeText,
                 onFocus: handleFocus,
-                style: {height: inputHeight},
                 ref: inputRef,
+                style: {height: inputHeight},
                 testID: `textfield__input--${id}`,
             }),
-        [handleBlur, handleChangeText, handleFocus, id, inputHeight, inputRef, renderProps],
+        [defaultValue, handleBlur, handleChangeText, handleFocus, id, inputHeight, inputRef],
     );
 
     useEffect(() => {
@@ -206,16 +223,16 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
         onLabelTextLayout: processLabelTextLayout,
-        onLayout: processLayout,
+        onCoreLayout: processCoreLayout,
         onPress: handlePress,
         placeholder,
         children,
         renderStyle: {
             ...animatedStyle,
-            height: layout.height,
+            coreHeight: coreLayout.height,
             labelTextHeight: labelTextLayout.height,
             labelTextWidth: labelTextLayout.width,
-            width: layout.width,
+            coreWidth: coreLayout.width,
         },
         shape: type === 'filled' ? 'extraSmallTop' : 'extraSmall',
         state,

@@ -1,16 +1,16 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {NavigationBarProps} from './NavigationBar';
+import {RenderProps} from './NavigationBarBase';
 
-export type ContainerProps = Pick<NavigationBarProps, 'layout'>;
+export type ContainerProps = Pick<RenderProps, 'layout'>;
 
 export const Container = styled(View)<ContainerProps>`
     display: flex;
 
     ${({theme}) =>
         css`
-            gap: ${theme.adaptSize(theme.spacing.small)}px;
             background-color: ${theme.palette.surface.surfaceContainer};
+            gap: ${theme.adaptSize(theme.spacing.small)}px;
         `};
 
     ${({layout = 'horizontal'}) =>

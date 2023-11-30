@@ -37,34 +37,38 @@ const AnimatedLabelTextBackground = Animated.createAnimatedComponent(LabelTextBa
 const AnimatedMain = Animated.createAnimatedComponent(Main);
 const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
-    const render = ({
-        children,
-        disabled,
-        id,
-        inputState,
-        labelText,
-        leadingIcon,
-        onHoverIn,
-        onHoverOut,
-        onLabelTextLayout,
-        onLayout,
-        onPress,
-        renderStyle,
-        shape,
-        state,
-        style,
-        supportingText,
-        trailingIcon,
-        type,
-        underlayColor,
-    }: RenderProps) => {
+    const render = (renderProps: RenderProps) => {
+        const {
+            children,
+            disabled,
+            id,
+            inputState,
+            labelText,
+            leadingIcon,
+            onCoreLayout,
+            onHoverIn,
+            onHoverOut,
+            onLabelTextLayout,
+            onPress,
+            renderStyle,
+            shape,
+            state,
+            style,
+            supportingText,
+            trailingIcon,
+            type,
+            underlayColor,
+            ...containerProps
+        } = renderProps;
+
         const {
             activeIndicatorColor,
             activeIndicatorHeight,
             backgroundColor,
             borderColor,
             borderWidth,
-            height,
+            coreHeight,
+            coreWidth,
             labelColor,
             labelLeft,
             labelLineHeight,
@@ -76,7 +80,6 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             labelTop,
             supportingTextColor,
             supportingTextOpacity,
-            width,
         } = renderStyle;
 
         const LabelComponent = (
@@ -96,8 +99,13 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         );
 
         return (
-            <Container style={style} testID={`textfield--${id}`}>
-                <Core testID={`textfield__core--${id}`} onLayout={onLayout}>
+            <Container
+                {...containerProps}
+                accessibilityLabel={state === 'error' ? supportingText : labelText}
+                accessibilityRole={state === 'error' ? 'alert' : 'keyboardkey'}
+                style={style}
+                testID={`textfield--${id}`}>
+                <Core onLayout={onCoreLayout} testID={`textfield__core--${id}`}>
                     <CoreInner
                         onHoverIn={onHoverIn}
                         onHoverOut={onHoverOut}
@@ -137,11 +145,11 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                     />
 
                                     <Hovered
-                                        height={height}
+                                        height={coreHeight}
                                         shape={shape}
                                         state={inputState === 'focused' ? 'enabled' : state}
                                         underlayColor={underlayColor}
-                                        width={width}
+                                        width={coreWidth}
                                     />
                                 </>
                             )}
@@ -171,10 +179,10 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
 
                     {disabled && (
                         <Disabled
-                            height={height}
+                            height={coreHeight}
                             shape={shape}
                             testID={`textField__disabled--${id}`}
-                            width={width}
+                            width={coreWidth}
                         />
                     )}
                 </Core>

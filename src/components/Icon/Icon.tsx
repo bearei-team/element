@@ -4,25 +4,32 @@ import {SvgProps} from 'react-native-svg';
 import {Container} from './Icon.styles';
 import {IconBase, RenderProps} from './IconBase';
 
-export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
-export type IconCategory = 'image';
-export type IconName = 'lens' | 'circle';
+export type Category = 'image';
+export type Name = 'lens' | 'circle';
+export type Type = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
 
 export interface IconProps
     extends Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View>> {
-    type?: IconType;
-    name?: IconName;
-    category?: IconCategory;
-    width?: number;
+    category?: Category;
     height?: number;
+    name?: Name;
+    type?: Type;
+    width?: number;
 }
 
 const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => {
-    const render = ({id, renderStyle, style, children}: RenderProps) => {
+    const render = (renderProps: RenderProps) => {
+        const {id, renderStyle, style, children} = renderProps;
         const {height, width} = renderStyle;
 
         return (
-            <Container height={height} ref={ref} testID={`icon--${id}`} width={width} style={style}>
+            <Container
+                accessibilityRole="image"
+                height={height}
+                ref={ref}
+                style={style}
+                testID={`icon--${id}`}
+                width={width}>
                 {children}
             </Container>
         );

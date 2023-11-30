@@ -34,24 +34,27 @@ export interface ItemBaseProps extends ItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const ItemBase: FC<ItemBaseProps> = ({
-    active = false,
-    onBlur,
-    onFocus,
-    onHoverIn,
-    onHoverOut,
-    onPressIn,
-    onPressOut,
-    render,
-    icon,
-    activeIcon,
-    ...renderProps
-}) => {
-    const [iconContainerLayout, setIconContainerLayout] = useImmer(
-        {} as Pick<LayoutRectangle, 'height' | 'width'>,
-    );
+const initialState = {
+    iconContainerLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    state: 'enabled' as State,
+};
 
-    const [state, setState] = useImmer<State>('enabled');
+export const ItemBase: FC<ItemBaseProps> = props => {
+    const {
+        active = false,
+        onBlur,
+        onFocus,
+        onHoverIn,
+        onHoverOut,
+        onPressIn,
+        onPressOut,
+        render,
+        icon = <Icon type="outlined" category="image" name="circle" />,
+        activeIcon = <Icon type="filled" category="image" name="circle" />,
+        ...renderProps
+    } = props;
+
+    const [{iconContainerLayout, state}, setState] = useImmer(initialState);
     const id = useId();
     const theme = useTheme();
     const {backgroundColor, labelWeight, labelColor, iconInnerWidth, labelHeight} = useAnimated({
@@ -65,7 +68,10 @@ export const ItemBase: FC<ItemBaseProps> = ({
     const mobile = ['ios', 'android'].includes(theme.OS);
     const processState = useCallback(
         (nextState: State, callback?: () => void) => {
-            setState(() => nextState);
+            setState(draft => {
+                draft.state = nextState;
+            });
+
             callback?.();
         },
         [setState],
@@ -74,7 +80,9 @@ export const ItemBase: FC<ItemBaseProps> = ({
     const processIconContainerLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
 
-        setIconContainerLayout(() => ({height, width}));
+        setState(draft => {
+            draft.iconContainerLayout = {height, width};
+        });
     };
 
     const handleHoverIn = useCallback(
@@ -113,8 +121,8 @@ export const ItemBase: FC<ItemBaseProps> = ({
     return render({
         ...renderProps,
         active,
-        activeIcon: activeIcon ?? <Icon type="filled" category="image" name="circle" />,
-        icon: icon ?? <Icon type="outlined" category="image" name="circle" />,
+        activeIcon,
+        icon,
         id,
         onBlur: handleBlur,
         onFocus: handleFocus,

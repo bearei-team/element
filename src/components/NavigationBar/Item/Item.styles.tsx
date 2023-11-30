@@ -4,26 +4,26 @@ import {Shape} from '../../Common/Common.styles';
 
 export const Container = styled.Pressable`
     align-items: center;
+    align-items: center;
     display: flex;
     flex-direction: column;
     flex: 1;
     justify-content: center;
-    align-items: center;
 
     ${({theme}) => css`
+        gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
+        min-height: ${theme.adaptSize(80)}px;
+        min-width: ${theme.adaptSize(72)}px;
         padding-block-end: ${theme.adaptSize(theme.spacing.medium)}px;
         padding-block-start: ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px;
-        gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-        min-width: ${theme.adaptSize(72)}px;
-        min-height: ${theme.adaptSize(80)}px;
     `}
 `;
 
 export const IconContainer = styled.View`
-    position: relative;
     display: flex;
     flex-direction: row;
     justify-content: center;
+    position: relative;
 
     ${({theme}) => css`
         width: ${theme.adaptSize(24 + (theme.spacing.large - theme.spacing.extraSmall) * 2)}px;
@@ -31,13 +31,13 @@ export const IconContainer = styled.View`
 `;
 
 export const IconInner = styled(Shape)`
+    align-items: center;
     display: flex;
     justify-content: center;
-    align-items: center;
 
     ${({theme}) => css`
-        padding-inline: ${theme.adaptSize(theme.spacing.large - theme.spacing.extraSmall)}px;
         padding-block: ${theme.adaptSize(theme.spacing.extraSmall)}px;
+        padding-inline: ${theme.adaptSize(theme.spacing.large - theme.spacing.extraSmall)}px;
     `}
 `;
 

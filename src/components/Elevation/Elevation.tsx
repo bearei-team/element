@@ -11,16 +11,10 @@ export interface ElevationProps
 const AnimatedShadow0 = Animated.createAnimatedComponent(Shadow0);
 const AnimatedShadow1 = Animated.createAnimatedComponent(Shadow1);
 const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
-    const render = ({
-        children,
-        id,
-        level,
-        onLayout,
-        renderStyle,
-        shape,
-        style,
-        ...containerProps
-    }: RenderProps) => {
+    const render = (renderProps: RenderProps) => {
+        const {children, id, level, onLayout, renderStyle, shape, style, ...containerProps} =
+            renderProps;
+
         const {height, opacity0, opacity1, width} = renderStyle;
 
         return (

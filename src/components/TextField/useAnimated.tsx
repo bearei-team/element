@@ -4,30 +4,29 @@ import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 import {State} from '../Common/interface';
-import {TextFieldProps} from './TextField';
+import {TextFieldType} from './TextField';
 import {ProcessStateOptions} from './TextFieldBase';
 
 export interface ProcessAnimatedTimingOptions {
-    animatedValue: Animated.Value;
+    toValue: number;
     finished?: () => void;
 }
 
-export type ProcessStateAnimatedOptions = ProcessStateOptions &
+export type ProcessAnimatedOptions = ProcessStateOptions &
     Pick<ProcessAnimatedTimingOptions, 'finished'> & {input?: boolean};
 
-export interface UseAnimatedOptions
-    extends Pick<TextFieldProps, 'supportingText' | 'type' | 'leadingIcon'> {
+export type ProcessStateAnimatedOptions = ProcessAnimatedOptions;
+
+export interface UseAnimatedOptions {
     filled: boolean;
     labelTextWidth: number;
+    showLeadingIcon: boolean;
+    showSupportingText: boolean;
+    type: TextFieldType;
 }
 
-export const useAnimated = ({
-    filled,
-    labelTextWidth,
-    leadingIcon,
-    supportingText,
-    type = 'filled',
-}: UseAnimatedOptions) => {
+export const useAnimated = (options: UseAnimatedOptions) => {
+    const {filled, labelTextWidth, showLeadingIcon, showSupportingText, type} = options;
     const [activeIndicatorAnimated] = useAnimatedValue(0);
     const [borderAnimated] = useAnimatedValue(0);
     const [backgroundColorAnimated] = useAnimatedValue(1);
@@ -93,7 +92,7 @@ export const useAnimated = ({
     const labelLeft = labeAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
-            leadingIcon
+            showLeadingIcon
                 ? theme.adaptSize(theme.spacing.medium) + labelTextWidth
                 : theme.adaptSize(theme.spacing.medium),
             theme.adaptSize(theme.spacing.medium),
@@ -162,92 +161,102 @@ export const useAnimated = ({
     const backgroundColor = backgroundColorAnimated.interpolate(backgroundColorConfig[type]);
 
     const processAnimatedTiming = useCallback(
-        (toValue: number, {animatedValue, finished}: ProcessAnimatedTimingOptions) => {
+        (animation: Animated.Value, {toValue, finished}: ProcessAnimatedTimingOptions) => {
             const animatedTiming = UTIL.animatedTiming(theme);
-            const animated = () =>
-                requestAnimationFrame(() =>
-                    animatedTiming(animatedValue, {
-                        duration: 'short3',
-                        easing: 'standard',
-                        toValue,
-                    }).start(finished),
-                );
 
-            animated();
+            requestAnimationFrame(() =>
+                animatedTiming(animation, {
+                    duration: 'short3',
+                    easing: 'standard',
+                    toValue,
+                }).start(finished),
+            );
         },
         [theme],
     );
 
-    const processAnimated = useCallback(
-        (nextState: State, {input, finished}: ProcessStateAnimatedOptions = {}) => {
-            const processBorderAnimated = (toValue: number) =>
-                type === 'filled'
-                    ? processAnimatedTiming(toValue, {animatedValue: activeIndicatorAnimated})
-                    : processAnimatedTiming(toValue, {animatedValue: borderAnimated});
+    const processBorderAnimated = useCallback(
+        (toValue: number) =>
+            type === 'filled'
+                ? processAnimatedTiming(activeIndicatorAnimated, {toValue})
+                : processAnimatedTiming(borderAnimated, {toValue}),
+        [activeIndicatorAnimated, borderAnimated, processAnimatedTiming, type],
+    );
 
-            const stateAnimated = {
+    const processStateAnimated = useCallback(
+        (processStateAnimatedOptions: ProcessStateAnimatedOptions) => {
+            const {input, finished} = processStateAnimatedOptions;
+
+            return {
                 disabled: () => {
-                    processBorderAnimated(0);
-                    processAnimatedTiming(0, {animatedValue: colorAnimated});
-                    processAnimatedTiming(0, {animatedValue: supportingTextColorAnimated});
-                    processAnimatedTiming(0, {animatedValue: backgroundColorAnimated});
+                    const toValue = 0;
+
+                    processBorderAnimated(toValue);
+                    processAnimatedTiming(colorAnimated, {toValue});
+                    processAnimatedTiming(supportingTextColorAnimated, {toValue});
+                    processAnimatedTiming(backgroundColorAnimated, {toValue});
                 },
                 enabled: () => {
                     if (input) {
                         const toValue = filled ? 1 : 0;
 
                         processBorderAnimated(0);
-                        processAnimatedTiming(1, {animatedValue: colorAnimated});
-                        processAnimatedTiming(toValue, {animatedValue: inputAnimated});
-                        processAnimatedTiming(toValue, {animatedValue: labeAnimated});
-                        processAnimatedTiming(toValue, {animatedValue: labelPlaceholderAnimated});
+                        processAnimatedTiming(colorAnimated, {toValue: 1});
+                        processAnimatedTiming(inputAnimated, {toValue});
+                        processAnimatedTiming(labeAnimated, {toValue});
+                        processAnimatedTiming(labelPlaceholderAnimated, {toValue});
                     }
 
-                    processAnimatedTiming(1, {animatedValue: supportingTextColorAnimated});
+                    processAnimatedTiming(supportingTextColorAnimated, {toValue: 1});
                 },
                 error: () => {
-                    processAnimatedTiming(2, {animatedValue: supportingTextColorAnimated});
-                    processAnimatedTiming(3, {animatedValue: colorAnimated});
+                    processAnimatedTiming(supportingTextColorAnimated, {toValue: 2});
+                    processAnimatedTiming(colorAnimated, {toValue: 3});
                 },
                 focused: () => {
                     if (input) {
                         processBorderAnimated(1);
-                        processAnimatedTiming(1, {animatedValue: labelPlaceholderAnimated});
-                        processAnimatedTiming(2, {animatedValue: colorAnimated});
+                        processAnimatedTiming(labelPlaceholderAnimated, {toValue: 1});
+                        processAnimatedTiming(colorAnimated, {toValue: 2});
                     }
                 },
                 hovered: undefined,
                 pressed: () => {
-                    processAnimatedTiming(1, {animatedValue: colorAnimated});
-                    processAnimatedTiming(1, {animatedValue: inputAnimated});
-                    processAnimatedTiming(1, {animatedValue: labeAnimated, finished});
+                    const toValue = 1;
+
+                    processAnimatedTiming(colorAnimated, {toValue});
+                    processAnimatedTiming(inputAnimated, {toValue});
+                    processAnimatedTiming(labeAnimated, {toValue, finished});
                 },
             };
-
-            stateAnimated[nextState]?.();
-
-            if (nextState !== 'disabled') {
-                processAnimatedTiming(1, {animatedValue: backgroundColorAnimated});
-            }
         },
         [
-            activeIndicatorAnimated,
             backgroundColorAnimated,
-            borderAnimated,
             colorAnimated,
             filled,
             inputAnimated,
             labeAnimated,
             labelPlaceholderAnimated,
             processAnimatedTiming,
+            processBorderAnimated,
             supportingTextColorAnimated,
-            type,
         ],
     );
 
+    const processAnimated = useCallback(
+        (nextState: State, processAnimatedOptions: ProcessAnimatedOptions = {}) => {
+            processStateAnimated(processAnimatedOptions)[nextState]?.();
+
+            if (nextState !== 'disabled') {
+                processAnimatedTiming(backgroundColorAnimated, {toValue: 1});
+            }
+        },
+        [backgroundColorAnimated, processAnimatedTiming, processStateAnimated],
+    );
+
     useEffect(() => {
-        processAnimatedTiming(supportingText ? 1 : 0, {animatedValue: supportingTextColorOpacity});
-    }, [processAnimatedTiming, supportingText, supportingTextColorOpacity]);
+        processAnimatedTiming(supportingTextColorOpacity, {toValue: showSupportingText ? 1 : 0});
+    }, [processAnimatedTiming, showSupportingText, supportingTextColorOpacity]);
 
     return {
         activeIndicatorColor,

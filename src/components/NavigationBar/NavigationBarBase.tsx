@@ -19,14 +19,11 @@ export interface Menu extends SourceMenu {
 const renderMenus = ({menus, onActive}: RenderRipplesOptions) =>
     menus?.map(menu => <Item {...menu} key={menu.key} onPress={() => onActive(menu.key!)} />);
 
-export const NavigationBarBase: FC<NavigationBarBaseProps> = ({
-    render,
-    onChange,
-    menus: sourceMenus,
-    ...renderProps
-}) => {
-    const id = useId();
+export const NavigationBarBase: FC<NavigationBarBaseProps> = props => {
+    const {render, onChange, menus: sourceMenus, ...renderProps} = props;
     const [menus, setMenus] = useImmer<Menu[]>([]);
+    const id = useId();
+
     const handleActive = (key: string) => {
         setMenus(draft => {
             draft.forEach(item => (item.active = item.key === key));

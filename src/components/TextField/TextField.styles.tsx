@@ -1,15 +1,15 @@
 import {TextInput} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
-import {TextFieldProps} from './TextField';
+import {RenderProps} from './TextFieldBase';
 
-export type MainProps = Pick<TextFieldProps, 'type'> & {
+export type MainProps = Pick<RenderProps, 'type'> & {
     leadingIconShow: boolean;
     trailingIconShow: boolean;
 };
 
-export type LabelProps = Pick<TextFieldProps, 'type'>;
-export type SupportingTextProps = Pick<TextFieldProps, 'error'>;
+export type LabelProps = Pick<RenderProps, 'type'>;
+export type SupportingTextProps = Pick<RenderProps, 'error'>;
 export interface LabelTextBackgroundContainerProps {
     height: number;
     width: number;
@@ -24,7 +24,10 @@ export const Container = styled.View`
     `}
 `;
 
-export const Core = styled.View``;
+export const Core = styled.View`
+    position: relative;
+`;
+
 export const CoreInner = styled.Pressable``;
 export const Main = styled(Shape)<MainProps>`
     align-items: center;
@@ -99,16 +102,16 @@ export const LabelText = styled.Text`
 `;
 
 export const LabelTextBackgroundContainer = styled.View<LabelTextBackgroundContainerProps>`
-    position: absolute;
     display: flex;
     flex-direction: row;
     justify-content: center;
+    position: absolute;
 
     ${({theme, width, height}) => css`
-        top: ${theme.adaptSize(-theme.typography.body.small.lineHeight / 2)}px;
-        left: ${theme.adaptSize(theme.spacing.medium - theme.spacing.small)}px;
-        width: ${width}px;
         height: ${height};
+        left: ${theme.adaptSize(theme.spacing.medium - theme.spacing.small)}px;
+        top: ${theme.adaptSize(-theme.typography.body.small.lineHeight / 2)}px;
+        width: ${width}px;
     `};
 `;
 
@@ -141,8 +144,8 @@ export const ActiveIndicator = styled.View`
 export const Icon = styled.View`
     ${({theme}) => css`
         height: ${theme.adaptSize(48)}px;
-        padding-inline: ${theme.adaptSize(theme.spacing.small)}px;
         padding-block: ${theme.adaptSize(theme.spacing.small)}px;
+        padding-inline: ${theme.adaptSize(theme.spacing.small)}px;
         width: ${theme.adaptSize(48)}px;
     `}
 `;

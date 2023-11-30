@@ -13,13 +13,8 @@ export interface HoveredBaseProps extends HoveredProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const HoveredBase: FC<HoveredBaseProps> = ({
-    height,
-    render,
-    state = 'enabled',
-    width,
-    ...renderProps
-}) => {
+export const HoveredBase: FC<HoveredBaseProps> = props => {
+    const {height, render, state = 'enabled', width, ...renderProps} = props;
     const {opacity} = useAnimated({state});
     const id = useId();
 

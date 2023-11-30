@@ -16,11 +16,15 @@ export interface NavigationBarProps extends Partial<ViewProps & RefAttributes<Vi
 }
 
 const ForwardRefNavigationBar = forwardRef<View, NavigationBarProps>((props, ref) => {
-    const render = ({id, children, ...containerProps}: RenderProps) => (
-        <Container {...containerProps} ref={ref} testID={`navigationBar--${id}`}>
-            {children}
-        </Container>
-    );
+    const render = (renderProps: RenderProps) => {
+        const {id, children, ...containerProps} = renderProps;
+
+        return (
+            <Container {...containerProps} ref={ref} testID={`navigationBar--${id}`}>
+                {children}
+            </Container>
+        );
+    };
 
     return <NavigationBarBase {...props} render={render} />;
 });
