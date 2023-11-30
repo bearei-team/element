@@ -27,8 +27,8 @@ export const Container = styled(Shape)<ContainerProps>`
             `,
 
             small: css`
-                padding-inline: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
                 padding-block: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
+                padding-inline: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
             `,
         };
 

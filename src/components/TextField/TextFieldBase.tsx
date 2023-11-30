@@ -56,7 +56,11 @@ export interface TextFieldBaseProps extends TextFieldProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export type RenderTextInputProps = TextFieldProps;
+
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
+const renderTextInput = (props: RenderTextInputProps) => <AnimatedTextInput {...props} />;
+
 export const TextFieldBase: FC<TextFieldBaseProps> = ({
     disabled,
     error,
@@ -168,17 +172,16 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     );
 
     const children = useMemo(
-        () => (
-            <AnimatedTextInput
-                {...renderProps}
-                onBlur={handleBlur}
-                onChangeText={handleChangeText}
-                onFocus={handleFocus}
-                ref={inputRef}
-                style={{height: inputHeight}}
-                testID={`textfield__input--${id}`}
-            />
-        ),
+        () =>
+            renderTextInput({
+                ...renderProps,
+                onBlur: handleBlur,
+                onChangeText: handleChangeText,
+                onFocus: handleFocus,
+                style: {height: inputHeight},
+                ref: inputRef,
+                testID: `textfield__input--${id}`,
+            }),
         [handleBlur, handleChangeText, handleFocus, id, inputHeight, inputRef, renderProps],
     );
 
