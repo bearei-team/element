@@ -1,8 +1,11 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../../Common/Common.styles';
+import {RenderProps} from './ItemBase';
 
-export const Container = styled.Pressable`
+export type IconInnerProps = Pick<RenderProps, 'pressPosition'>;
+
+export const Container = styled(View)`
     align-items: center;
     align-items: center;
     display: flex;
@@ -19,18 +22,28 @@ export const Container = styled.Pressable`
     `}
 `;
 
-export const IconContainer = styled.View`
+export const IconContainer = styled.Pressable<IconInnerProps>`
     display: flex;
     flex-direction: row;
-    justify-content: center;
     position: relative;
 
     ${({theme}) => css`
         width: ${theme.adaptSize(24 + (theme.spacing.large - theme.spacing.extraSmall) * 2)}px;
+        height: ${theme.adaptSize(24 + theme.spacing.extraSmall * 2)}px;
     `}
+
+    ${({pressPosition}) => {
+        const isRight = pressPosition > 0.6;
+        const justify = isRight ? 'end' : 'start';
+        const isCenter = pressPosition > 0.4 && pressPosition < 0.6;
+
+        return css`
+            justify-content: ${isCenter ? 'center' : justify};
+        `;
+    }}
 `;
 
-export const IconInner = styled(Shape)`
+export const IconBackground = styled(Shape)`
     align-items: center;
     display: flex;
     justify-content: center;
@@ -42,7 +55,13 @@ export const IconInner = styled(Shape)`
 `;
 
 export const Icon = styled(View)`
+    position: absolute;
+
     ${({theme}) => css`
+        top: ${theme.adaptSize(theme.spacing.extraSmall)}px;
+        left: ${theme.adaptSize(
+            (24 + (theme.spacing.large - theme.spacing.extraSmall) * 2) / 2 - 24 / 2,
+        )}px;
         height: ${theme.adaptSize(24)}px;
         width: ${theme.adaptSize(24)}px;
     `}

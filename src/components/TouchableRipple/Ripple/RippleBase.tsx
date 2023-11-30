@@ -1,9 +1,8 @@
 import {FC, useId} from 'react';
-import {Animated, I18nManager, ViewStyle} from 'react-native';
+import {Animated, ViewStyle} from 'react-native';
 import {RippleProps} from './Ripple';
 import {useAnimated} from './useAnimated';
 export interface RenderProps extends Partial<RippleProps> {
-    isRTL: boolean;
     renderStyle: Animated.WithAnimatedObject<ViewStyle & {height: number; width: number}>;
     underlayColor: RippleProps['underlayColor'];
     x: number;
@@ -40,7 +39,6 @@ export const RippleBase: FC<RippleBaseProps> = props => {
     return render({
         ...renderProps,
         id,
-        isRTL: I18nManager.isRTL,
         renderStyle: {
             height: diameter,
             opacity,

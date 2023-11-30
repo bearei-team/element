@@ -15,7 +15,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const backgroundColor = stateAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
-            theme.color.rgba(theme.palette.secondary.onSecondaryContainer, 0),
+            theme.color.rgba(theme.palette.secondary.secondaryContainer, 0),
             theme.palette.secondary.secondaryContainer,
         ],
     });

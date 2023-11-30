@@ -7,7 +7,7 @@ import {Container} from './Item.styles';
 import {ItemBase, RenderProps} from './ItemBase';
 
 export interface ControlProps {
-    value: unknown;
+    value?: unknown;
     onValueChange?: (value?: unknown) => void;
     errors?: ValidateError[];
     errorMessage?: string;

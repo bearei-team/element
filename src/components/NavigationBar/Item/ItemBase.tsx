@@ -1,4 +1,4 @@
-import {FC, useCallback, useId} from 'react';
+import {FC, useCallback, useEffect, useId} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -18,6 +18,7 @@ import {ItemProps} from './Item';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends ItemProps {
+    pressPosition: number;
     onIconContainerLayout: (event: LayoutChangeEvent) => void;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         iconContainerHeight: number;
@@ -37,6 +38,7 @@ export interface ItemBaseProps extends ItemProps {
 const initialState = {
     iconContainerLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
     state: 'enabled' as State,
+    pressPosition: 0.5,
 };
 
 export const ItemBase: FC<ItemBaseProps> = props => {
@@ -54,7 +56,7 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{iconContainerLayout, state}, setState] = useImmer(initialState);
+    const [{iconContainerLayout, state, pressPosition}, setState] = useImmer(initialState);
     const id = useId();
     const theme = useTheme();
     const {backgroundColor, labelWeight, labelColor, iconInnerWidth, labelHeight} = useAnimated({
@@ -108,15 +110,33 @@ export const ItemBase: FC<ItemBaseProps> = props => {
     );
 
     const handlePressIn = useCallback(
-        (event: GestureResponderEvent) => processState('pressed', () => onPressIn?.(event)),
-        [onPressIn, processState],
+        (event: GestureResponderEvent) => {
+            const {locationX} = event.nativeEvent;
+            const position = locationX / iconContainerLayout.width;
+
+            !mobile &&
+                setState(draft => {
+                    draft.pressPosition = position;
+                });
+
+            processState('pressed', () => onPressIn?.(event));
+        },
+        [iconContainerLayout.width, mobile, onPressIn, processState, setState],
     );
 
     const handlePressOut = useCallback(
-        (event: GestureResponderEvent) =>
-            processState(mobile ? 'enabled' : 'hovered', () => onPressOut?.(event)),
+        (event: GestureResponderEvent) => {
+            processState(mobile ? 'enabled' : 'hovered', () => onPressOut?.(event));
+        },
         [mobile, onPressOut, processState],
     );
+
+    useEffect(() => {
+        !active &&
+            setState(draft => {
+                draft.pressPosition = 0.5;
+            });
+    }, [active, setState]);
 
     return render({
         ...renderProps,
@@ -124,6 +144,7 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         activeIcon,
         icon,
         id,
+        pressPosition,
         onBlur: handleBlur,
         onFocus: handleFocus,
         onHoverIn: handleHoverIn,

@@ -14,17 +14,9 @@ export const Container = styled(Shape)<ContainerProps>`
     position: absolute;
     z-index: 128;
 
-    ${({isRTL, x}) =>
-        isRTL
-            ? css`
-                  right: ${x}px;
-              `
-            : css`
-                  left: ${x}px;
-              `}
-
-    ${({height, width, y}) => css`
+    ${({height, width, y, x}) => css`
         height: ${height}px;
+        left: ${x}px;
         top: ${y}px;
         width: ${width}px;
     `}

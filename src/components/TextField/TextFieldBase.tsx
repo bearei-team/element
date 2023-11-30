@@ -52,7 +52,7 @@ export interface TextFieldBaseProps extends TextFieldProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export type RenderTextInputProps = TextFieldProps;
+export type RenderTextInputOptions = TextFieldProps;
 
 const initialState = {
     inputState: 'enabled' as State,
@@ -64,7 +64,7 @@ const initialState = {
 };
 
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-const renderTextInput = (props: RenderTextInputProps) => <AnimatedTextInput {...props} />;
+const renderTextInput = (options: RenderTextInputOptions) => <AnimatedTextInput {...options} />;
 export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     const {
         disabled,
@@ -100,7 +100,9 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const processState = useCallback(
-        (nextState: State, {element = 'container', finished}: ProcessStateOptions = {}) => {
+        (nextState: State, options: ProcessStateOptions = {}) => {
+            const {element = 'container', finished} = options;
+
             setState(draft => {
                 if (element === 'input') {
                     draft.inputState = nextState;

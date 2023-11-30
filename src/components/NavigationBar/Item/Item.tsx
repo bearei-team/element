@@ -1,13 +1,27 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, PressableProps, View} from 'react-native';
+import {Animated, PressableProps, View, ViewProps} from 'react-native';
 import {ShapeProps} from '../../Common/Common.styles';
 import {State} from '../../Common/interface';
 import {Hovered} from '../../Hovered/Hovered';
-import {Container, Icon, IconContainer, IconInner, LabelText} from './Item.styles';
+import {Container, Icon, IconBackground, IconContainer, LabelText} from './Item.styles';
 import {ItemBase, RenderProps} from './ItemBase';
 
-export interface ItemProps
-    extends Partial<PressableProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>> {
+export type PropsBase = Partial<
+    ViewProps &
+        RefAttributes<View> &
+        Pick<ShapeProps, 'shape'> &
+        Pick<
+            PressableProps,
+            | 'onBlur'
+            | 'onFocus'
+            | 'onHoverIn'
+            | 'onHoverOut'
+            | 'onPressIn'
+            | 'onPressOut'
+            | 'onPress'
+        >
+>;
+export interface ItemProps extends PropsBase {
     active?: boolean;
     activeIcon?: React.JSX.Element;
     icon?: React.JSX.Element;
@@ -15,7 +29,7 @@ export interface ItemProps
     state?: State;
 }
 
-const AnimatedIconInner = Animated.createAnimatedComponent(IconInner);
+const AnimatedIconBackground = Animated.createAnimatedComponent(IconBackground);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
@@ -25,11 +39,19 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
             icon,
             id,
             labelText,
+            onBlur,
+            onFocus,
+            onHoverIn,
+            onHoverOut,
             onIconContainerLayout,
+            onPress,
+            onPressIn,
+            onPressOut,
             renderStyle,
             shape,
             state,
             underlayColor,
+            pressPosition,
             ...containerProps
         } = renderProps;
 
@@ -51,16 +73,25 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                 ref={ref}
                 testID={`navigationBarItem--${id}`}>
                 <IconContainer
+                    pressPosition={pressPosition}
+                    onBlur={onBlur}
+                    onFocus={onFocus}
+                    onHoverIn={onHoverIn}
+                    onHoverOut={onHoverOut}
+                    onPressIn={onPressIn}
+                    onPressOut={onPressOut}
                     onLayout={onIconContainerLayout}
+                    onPress={onPress}
                     testID={`navigationBarItem__iconContainer--${id}`}>
-                    <AnimatedIconInner
+                    <AnimatedIconBackground
                         shape={shape}
                         style={{backgroundColor, width: iconInnerWidth}}
-                        testID={`navigationBarItem__iconInner--${id}`}>
-                        <Icon testID={`navigationBarItem__icon--${id}`}>
-                            {active ? activeIcon : icon}
-                        </Icon>
-                    </AnimatedIconInner>
+                        testID={`navigationBarItem__iconInner--${id}`}
+                    />
+
+                    <Icon testID={`navigationBarItem__icon--${id}`}>
+                        {active ? activeIcon : icon}
+                    </Icon>
 
                     <Hovered
                         height={iconContainerHeight}
