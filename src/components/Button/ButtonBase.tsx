@@ -22,8 +22,8 @@ import {useUnderlayColor} from './useUnderlayColor';
 export interface RenderProps extends ButtonProps {
     elevation: ElevationProps['level'];
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        height: number;
-        width: number;
+        touchableRippleHeight: number;
+        touchableRippleWidth: number;
     };
     showIcon: boolean;
     state: State;
@@ -36,7 +36,7 @@ export interface ButtonBaseProps extends ButtonProps {
 
 const initialState = {
     elevation: 0 as ElevationProps['level'],
-    layout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    touchableRippleLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
     state: 'enabled' as State,
 };
 
@@ -56,7 +56,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{elevation, layout, state}, setState] = useImmer(initialState);
+    const [{elevation, touchableRippleLayout, state}, setState] = useImmer(initialState);
     const [underlayColor] = useUnderlayColor({type});
     const {backgroundColor, borderColor, color} = useAnimated({type, disabled, state});
     const id = useId();
@@ -100,7 +100,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         const {height, width} = event.nativeEvent.layout;
 
         setState(draft => {
-            draft.layout = {height, width};
+            draft.touchableRippleLayout = {height, width};
         });
 
         onLayout?.(event);
@@ -163,8 +163,8 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
             ...border,
             backgroundColor,
             color,
-            height: layout.height,
-            width: layout.width,
+            touchableRippleHeight: touchableRippleLayout.height,
+            touchableRippleWidth: touchableRippleLayout.width,
         },
         shape: 'full',
         showIcon: !!icon,

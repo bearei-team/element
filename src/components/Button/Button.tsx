@@ -36,7 +36,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             ...touchableRippleProps
         } = renderProps;
 
-        const {color, height, width, ...mainStyle} = renderStyle;
+        const {color, touchableRippleHeight, touchableRippleWidth, ...mainStyle} = renderStyle;
 
         return (
             <Container
@@ -66,17 +66,21 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                         </AnimatedMain>
 
                         <Hovered
-                            height={height}
+                            height={touchableRippleHeight}
                             shape={shape}
                             state={state}
                             underlayColor={underlayColor}
-                            width={width}
+                            width={touchableRippleWidth}
                         />
                     </TouchableRipple>
                 </Elevation>
 
                 {disabled && (
-                    <Disabled height={height} testID={`button__disabled--${id}`} width={width} />
+                    <Disabled
+                        height={touchableRippleHeight}
+                        testID={`button__disabled--${id}`}
+                        width={touchableRippleWidth}
+                    />
                 )}
             </Container>
         );

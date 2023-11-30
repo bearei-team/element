@@ -3,12 +3,24 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './ElevationBase';
 
-export interface ShadowProps extends Pick<RenderProps, 'level'> {
+export type ContainerProps = {
+    height: number;
+    width: number;
+};
+
+export interface ShadowProps
+    extends Pick<RenderProps & ContainerProps, 'level' | 'width' | 'height'> {
     shadow: 0 | 1;
 }
 
-export const Container = styled(Shape)`
+export const Container = styled(Shape)<ContainerProps>`
     position: relative;
+
+    ${({width, height}) =>
+        css`
+            width: ${width}px;
+            height: ${height}px;
+        `}
 `;
 
 export const Main = styled(Shape)`
@@ -38,6 +50,12 @@ export const Shadow0 = styled(Shape)<ShadowProps>`
             shadow-radius: ${theme.adaptSize(theme.elevation[levelString][shadowString].blur)}px;
         `;
     }};
+
+    ${({width, height}) =>
+        css`
+            width: ${width}px;
+            height: ${height}px;
+        `}
 `;
 
 export const Shadow1 = styled(Shadow0)`

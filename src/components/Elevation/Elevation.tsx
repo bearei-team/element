@@ -12,35 +12,40 @@ const AnimatedShadow0 = Animated.createAnimatedComponent(Shadow0);
 const AnimatedShadow1 = Animated.createAnimatedComponent(Shadow1);
 const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {children, id, level, onLayout, renderStyle, shape, style, ...containerProps} =
+        const {children, id, level, onMainLayout, renderStyle, shape, ...containerProps} =
             renderProps;
 
-        const {height, opacity0, opacity1, width} = renderStyle;
+        const {mainHeight, opacity0, opacity1, mainWidth} = renderStyle;
 
         return (
             <Container
                 {...containerProps}
+                height={mainHeight}
                 ref={ref}
-                style={{...(typeof style === 'object' && style), height, width}}
-                testID={`elevation--${id}`}>
-                <Main onLayout={onLayout} shape={shape} testID={`elevation__main--${id}`}>
+                testID={`elevation--${id}`}
+                width={mainWidth}>
+                <Main onLayout={onMainLayout} shape={shape} testID={`elevation__main--${id}`}>
                     {children}
                 </Main>
 
                 <AnimatedShadow0
+                    height={mainHeight}
                     level={level}
                     shadow={0}
                     shape={shape}
-                    style={{height, opacity: opacity0, width}}
+                    style={{opacity: opacity0}}
                     testID={`elevation__shadow0--${id}`}
+                    width={mainWidth}
                 />
 
                 <AnimatedShadow1
+                    height={mainHeight}
                     level={level}
                     shadow={1}
                     shape={shape}
-                    style={{height, opacity: opacity1, width}}
+                    style={{opacity: opacity1}}
                     testID={`elevation__shadow1--${id}`}
+                    width={mainWidth}
                 />
             </Container>
         );
