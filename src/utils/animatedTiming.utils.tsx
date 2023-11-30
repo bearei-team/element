@@ -1,13 +1,13 @@
 import {Theme, TransitionOptions} from '@bearei/theme';
 import {Animated, Easing, Platform} from 'react-native';
 
-export interface AnimatedTimingProps extends TransitionOptions {
+export interface AnimatedTimingOptions extends TransitionOptions {
     toValue: number;
 }
 
 export const animatedTiming =
-    (theme: Theme) =>
-    (animation: Animated.Value, {duration, easing, toValue}: AnimatedTimingProps) => {
+    (theme: Theme) => (animation: Animated.Value, options: AnimatedTimingOptions) => {
+        const {duration, easing, toValue} = options;
         const {bezier, duration: transitionDuration} = theme.transition({duration, easing});
 
         return Animated.timing(animation, {

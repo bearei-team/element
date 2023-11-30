@@ -35,25 +35,27 @@ const renderRipples = (rippleSequence: RippleSequence, options: RenderRipplesOpt
         <Ripple {...options} key={`ripple_${sequence}`} location={location} sequence={sequence} />
     ));
 
-export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
-    children,
-    onBlur,
-    onFocus,
-    onHoverIn,
-    onHoverOut,
-    onLayout,
-    onPressIn,
-    onPressOut,
-    render,
-    underlayColor,
-    ...renderProps
-}) => {
+export const TouchableRippleBase: FC<TouchableRippleBaseProps> = Props => {
+    const {
+        children,
+        onBlur,
+        onFocus,
+        onHoverIn,
+        onHoverOut,
+        onLayout,
+        onPressIn,
+        onPressOut,
+        render,
+        underlayColor,
+        ...renderProps
+    } = Props;
+
     const [layout, setLayout] = useImmer({} as RippleProps['touchableLayout']);
     const [rippleSequence, setRippleSequence] = useImmer<RippleSequence>({});
     const [state, setState] = useImmer<State>('enabled');
     const id = useId();
     const theme = useTheme();
-    const mobile = theme.OS === 'ios' || theme.OS === 'android';
+    const mobile = ['ios', 'android'].includes(theme.OS);
 
     const processPressed = (event: GestureResponderEvent) => {
         const {locationX, locationY} = event.nativeEvent;
@@ -126,6 +128,17 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
     const handleBlur = (event: NativeSyntheticEvent<TargetedEvent>) =>
         processState('enabled', {callback: () => onBlur?.(event)});
 
+    const childrenElement = (
+        <>
+            {children}
+            {renderRipples(rippleSequence, {
+                onAnimatedEnd: processRippleAnimatedEnd,
+                touchableLayout: layout,
+                underlayColor,
+            })}
+        </>
+    );
+
     useEffect(() => {
         if (Object.keys(rippleSequence).length !== 0) {
             mobile
@@ -136,16 +149,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
 
     return render({
         ...renderProps,
-        children: (
-            <>
-                {children}
-                {renderRipples(rippleSequence, {
-                    onAnimatedEnd: processRippleAnimatedEnd,
-                    touchableLayout: layout,
-                    underlayColor,
-                })}
-            </>
-        ),
+        children: childrenElement,
         id,
         onBlur: handleBlur,
         onFocus: handleFocus,

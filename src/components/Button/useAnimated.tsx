@@ -4,12 +4,12 @@ import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 import {State} from '../Common/interface';
-import {Type} from './Button';
+import {ButtonType} from './Button';
 
 export interface UseAnimatedOptions {
     disabled: boolean;
     state: State;
-    type: Type;
+    type: ButtonType;
 }
 
 export const useAnimated = ({disabled, state, type}: UseAnimatedOptions) => {

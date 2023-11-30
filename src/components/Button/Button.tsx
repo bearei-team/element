@@ -7,13 +7,13 @@ import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/Touchabl
 import {Container, Icon, LabelText, Main} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
-export type Type = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
+export type ButtonType = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
 export interface ButtonProps extends TouchableRippleProps {
     disabled?: boolean;
     icon?: React.JSX.Element;
     labelText?: string;
     loading?: boolean;
-    type?: Type;
+    type?: ButtonType;
 }
 
 const AnimatedMain = Animated.createAnimatedComponent(Main);

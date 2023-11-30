@@ -7,14 +7,17 @@ export interface ValidateOptions {
     value: unknown;
 }
 
-const validateRule = ({name, rules = [], validateFirst, value}: ValidateOptions) =>
-    new Schema({[name]: rules}).validate(
+const validateRule = (options: ValidateOptions) => {
+    const {name, rules = [], validateFirst, value} = options;
+
+    return new Schema({[name]: rules}).validate(
         {[name]: value},
         {
             first: validateFirst,
             suppressWarning: true,
         },
     );
+};
 
 export const validate = async (options: ValidateOptions) => {
     const {name, rules, value} = options;

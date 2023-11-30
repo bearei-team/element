@@ -11,7 +11,8 @@ export interface ThemeProps {
     adaptOptions?: AdaptOptions;
 }
 
-export const ThemeProvider: FC<ThemeProps> = ({children, theme: themeProvider, adaptOptions}) => {
+export const ThemeProvider: FC<ThemeProps> = options => {
+    const {children, theme: themeProvider, adaptOptions} = options;
     const colorScheme = useColorScheme() ?? 'light';
     const OS = Platform.OS;
     const {adaptSize, adaptFontSize} = UTIL.adapt(adaptOptions);

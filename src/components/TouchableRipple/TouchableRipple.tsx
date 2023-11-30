@@ -15,13 +15,17 @@ export interface TouchableRippleProps extends Omit<TouchableProps, 'children'> {
 }
 
 const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>((props, ref) => {
-    const render = ({id, children, shape, ...containerProps}: RenderProps) => (
-        <Container {...containerProps} ref={ref} testID={`touchableRipple--${id}`}>
-            <Main shape={shape} testID={`touchableRipple__main--${id}`}>
-                {children}
-            </Main>
-        </Container>
-    );
+    const render = (renderProps: RenderProps) => {
+        const {id, children, shape, ...containerProps} = renderProps;
+
+        return (
+            <Container {...containerProps} ref={ref} testID={`touchableRipple--${id}`}>
+                <Main shape={shape} testID={`touchableRipple__main--${id}`}>
+                    {children}
+                </Main>
+            </Container>
+        );
+    };
 
     return <TouchableRippleBase {...props} render={render} />;
 });

@@ -1,8 +1,8 @@
 import {useTheme} from 'styled-components/native';
-import {Type} from './Button';
+import {ButtonType} from './Button';
 
 export interface UseUnderlayColorOptions {
-    type: Type;
+    type: ButtonType;
 }
 
 export const useUnderlayColor = ({type}: UseUnderlayColorOptions) => {
