@@ -4,7 +4,7 @@ import {Disabled, ShapeProps} from '../Common/Common.styles';
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
-import {Container, Icon, LabelText} from './Button.styles';
+import {Container, Icon, LabelText, Main} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
 export type Type = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
@@ -18,22 +18,16 @@ export interface ButtonProps
     type?: Type;
 }
 
-const AnimatedContainer = Animated.createAnimatedComponent(Container);
+const AnimatedMain = Animated.createAnimatedComponent(Main);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
     const render = ({
+        accessibilityLabel,
         disabled,
         elevation,
         icon,
         id,
         labelText,
-        onBlur,
-        onFocus,
-        onHoverIn,
-        onHoverOut,
-        onLayout,
-        onPressIn,
-        onPressOut,
         renderStyle,
         shape,
         showIcon,
@@ -46,48 +40,46 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
         const {color, height, width, ...mainStyle} = renderStyle;
 
         return (
-            <Elevation level={elevation} shape={shape}>
-                <TouchableRipple
-                    {...touchableRippleProps}
-                    onBlur={onBlur}
-                    onFocus={onFocus}
-                    onHoverIn={onHoverIn}
-                    onHoverOut={onHoverOut}
-                    onLayout={onLayout}
-                    onPressIn={onPressIn}
-                    onPressOut={onPressOut}
-                    ref={ref}
-                    shape={shape}
-                    underlayColor={underlayColor}>
-                    <AnimatedContainer
+            <Container
+                accessibilityLabel={accessibilityLabel ?? labelText}
+                accessibilityRole="button"
+                testID={`button--${id}`}>
+                <Elevation level={elevation} shape={shape}>
+                    <TouchableRipple
+                        {...touchableRippleProps}
+                        ref={ref}
                         shape={shape}
-                        showIcon={showIcon}
-                        style={{...(typeof style === 'object' && style), ...mainStyle}}
-                        testID={`button--${id}`}
-                        type={type}>
-                        {showIcon && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
-
-                        <AnimatedLabelText
-                            style={{color}}
-                            testID={`button__labelText--${id}`}
+                        underlayColor={underlayColor}>
+                        <AnimatedMain
+                            shape={shape}
+                            showIcon={showIcon}
+                            style={{...(typeof style === 'object' && style), ...mainStyle}}
+                            testID={`button__main--${id}`}
                             type={type}>
-                            {labelText}
-                        </AnimatedLabelText>
-                    </AnimatedContainer>
+                            {showIcon && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
 
-                    <Hovered
-                        height={height}
-                        shape={shape}
-                        state={state}
-                        underlayColor={underlayColor}
-                        width={width}
-                    />
-                </TouchableRipple>
+                            <AnimatedLabelText
+                                style={{color}}
+                                testID={`button__labelText--${id}`}
+                                type={type}>
+                                {labelText}
+                            </AnimatedLabelText>
+                        </AnimatedMain>
+
+                        <Hovered
+                            height={height}
+                            shape={shape}
+                            state={state}
+                            underlayColor={underlayColor}
+                            width={width}
+                        />
+                    </TouchableRipple>
+                </Elevation>
 
                 {disabled && (
                     <Disabled height={height} testID={`button__disabled--${id}`} width={width} />
                 )}
-            </Elevation>
+            </Container>
         );
     };
 

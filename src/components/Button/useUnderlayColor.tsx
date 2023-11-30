@@ -6,13 +6,13 @@ export interface UseUnderlayColorOptions {
 }
 
 export const useUnderlayColor = ({type}: UseUnderlayColorOptions) => {
-    const {palette} = useTheme();
+    const theme = useTheme();
     const underlay = {
-        elevated: palette.primary.primary,
-        filled: palette.primary.onPrimary,
-        outlined: palette.primary.primary,
-        text: palette.primary.primary,
-        tonal: palette.secondary.onSecondaryContainer,
+        elevated: theme.palette.primary.primary,
+        filled: theme.palette.primary.onPrimary,
+        outlined: theme.palette.primary.primary,
+        text: theme.palette.primary.primary,
+        tonal: theme.palette.secondary.onSecondaryContainer,
     };
 
     return [underlay[type]];

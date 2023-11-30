@@ -1,11 +1,15 @@
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
-import {ButtonProps} from './Button';
+import {RenderProps} from './ButtonBase';
 
-export type ContainerProps = Pick<ButtonProps, 'type'> & {showIcon: boolean};
-export type LabelProps = Omit<ContainerProps, 'showIcon'>;
+export type MainProps = Pick<RenderProps, 'type' | 'showIcon'>;
+export type LabelTextProps = Omit<MainProps, 'showIcon'>;
 
-export const Container = styled(Shape)<ContainerProps>`
+export const Container = styled.View`
+    position: relative;
+`;
+
+export const Main = styled(Shape)<MainProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -19,24 +23,24 @@ export const Container = styled(Shape)<ContainerProps>`
     ${({theme, type = 'filled'}) => {
         const containerType = {
             elevated: css`
-                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
                 padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
+                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
             `,
             filled: css`
-                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
                 padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
+                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
             `,
             outlined: css`
-                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
                 padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
+                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
             `,
             text: css`
-                padding-inline: ${theme.adaptSize(theme.spacing.medium - 4)}px;
                 padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
+                padding-inline: ${theme.adaptSize(theme.spacing.medium - 4)}px;
             `,
             tonal: css`
-                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
                 padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
+                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
             `,
         };
 
@@ -67,7 +71,7 @@ export const Container = styled(Shape)<ContainerProps>`
     }}
 `;
 
-export const LabelText = styled.Text<LabelProps>`
+export const LabelText = styled.Text<LabelTextProps>`
     user-select: none;
 
     ${({theme}) => css`

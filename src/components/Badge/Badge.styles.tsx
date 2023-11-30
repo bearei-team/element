@@ -1,8 +1,8 @@
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
-import {BadgeProps} from './Badge';
+import {RenderProps} from './BadgeBase';
 
-export type ContainerProps = Pick<BadgeProps, 'size'>;
+export type ContainerProps = Pick<RenderProps, 'size'>;
 
 export const Container = styled(Shape)<ContainerProps>`
     align-items: center;

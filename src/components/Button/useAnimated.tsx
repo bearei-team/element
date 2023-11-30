@@ -90,7 +90,7 @@ export const useAnimated = ({disabled, state, type}: UseAnimatedOptions) => {
                 animatedTiming(animation, {
                     duration: 'short3',
                     easing: 'standard',
-                    toValue: toValue,
+                    toValue,
                 }).start(),
             );
         },
