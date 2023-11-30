@@ -5,7 +5,7 @@ import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 import {ElevationProps} from './Elevation';
 
-export type UseAnimatedOptions = Pick<ElevationProps, 'level'>;
+export type UseAnimatedOptions = Required<Pick<ElevationProps, 'level'>>;
 
 export const useAnimated = ({level}: UseAnimatedOptions) => {
     const [shadowAnimated] = useAnimatedValue(0);
@@ -35,7 +35,7 @@ export const useAnimated = ({level}: UseAnimatedOptions) => {
     });
 
     const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, toValue: UseAnimatedOptions['level'] = 0) => {
+        (animation: Animated.Value, toValue: UseAnimatedOptions['level']) => {
             const animatedTiming = UTIL.animatedTiming(theme);
 
             requestAnimationFrame(() =>

@@ -9,10 +9,6 @@ export interface UseAnimatedOptions {
     state: State;
 }
 
-export interface ProcessAnimatedTimingOptions {
-    animatedValue: Animated.Value;
-}
-
 export const useAnimated = ({state}: UseAnimatedOptions) => {
     const [opacityAnimated] = useAnimatedValue(0);
     const theme = useTheme();
@@ -22,28 +18,25 @@ export const useAnimated = ({state}: UseAnimatedOptions) => {
     });
 
     const processAnimatedTiming = useCallback(
-        (toValue: number, {animatedValue}: ProcessAnimatedTimingOptions) => {
+        (animation: Animated.Value, toValue: number) => {
             const animatedTiming = UTIL.animatedTiming(theme);
-            const animated = () =>
-                requestAnimationFrame(() =>
-                    animatedTiming(animatedValue, {
-                        duration: 'short3',
-                        easing: 'standard',
-                        toValue,
-                    }).start(),
-                );
 
-            animated();
+            requestAnimationFrame(() =>
+                animatedTiming(animation, {
+                    duration: 'short3',
+                    easing: 'standard',
+                    toValue,
+                }).start(),
+            );
         },
         [theme],
     );
 
     useEffect(() => {
-        if (state) {
-            processAnimatedTiming(['hovered', 'focused', 'pressed'].includes(state) ? 1 : 0, {
-                animatedValue: opacityAnimated,
-            });
-        }
+        processAnimatedTiming(
+            opacityAnimated,
+            ['hovered', 'focused', 'pressed'].includes(state) ? 1 : 0,
+        );
     }, [opacityAnimated, processAnimatedTiming, state]);
 
     return {opacity};

@@ -1,8 +1,8 @@
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
-import {HoveredProps} from './Hovered';
+import {RenderProps} from './HoveredBase';
 
-export type ContainerProps = Pick<HoveredProps, 'underlayColor' | 'width' | 'height'>;
+export type ContainerProps = Pick<RenderProps, 'underlayColor' | 'width' | 'height'>;
 
 export const Container = styled(Shape)<ContainerProps>`
     left: 0;
