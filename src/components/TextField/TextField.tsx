@@ -134,7 +134,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                 </TrailingIcon>
                             )}
 
-                            {type === 'filled' && (
+                            {type === 'filled' && typeof coreWidth === 'number' && (
                                 <>
                                     <AnimatedActiveIndicator
                                         style={{
@@ -142,6 +142,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                             height: activeIndicatorHeight,
                                         }}
                                         testID={`textfield__activeIndicator--${id}`}
+                                        width={coreWidth}
                                     />
 
                                     <Hovered
@@ -177,7 +178,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                         </AnimatedMain>
                     </CoreInner>
 
-                    {disabled && (
+                    {disabled && typeof coreWidth === 'number' && (
                         <Disabled
                             height={coreHeight}
                             shape={shape}

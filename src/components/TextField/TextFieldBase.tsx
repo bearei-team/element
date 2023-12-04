@@ -67,13 +67,14 @@ const AnimatedTextInput = Animated.createAnimatedComponent(Input);
 const renderTextInput = (options: RenderTextInputOptions) => <AnimatedTextInput {...options} />;
 export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     const {
+        defaultValue,
         disabled,
         error,
+        labelText = 'Label',
         leadingIcon,
         onBlur,
         onChangeText,
         onFocus,
-        defaultValue,
         placeholder,
         ref,
         render,
@@ -212,17 +213,18 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
 
     return render({
         ...renderProps,
+        children,
         disabled,
         id,
         inputState,
+        labelText,
         leadingIcon,
+        onCoreLayout: processCoreLayout,
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
         onLabelTextLayout: processLabelTextLayout,
-        onCoreLayout: processCoreLayout,
         onPress: handlePress,
         placeholder,
-        children,
         renderStyle: {
             ...animatedStyle,
             coreHeight: coreLayout.height,
