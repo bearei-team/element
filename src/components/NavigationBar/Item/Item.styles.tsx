@@ -18,8 +18,8 @@ export const Container = styled(View)`
         gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
         max-height: ${theme.adaptSize(80)}px;
         min-width: ${theme.adaptSize(72)}px;
-        padding-block-end: ${theme.adaptSize(theme.spacing.medium)}px;
-        padding-block-start: ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px;
+        padding-bottom: ${theme.adaptSize(theme.spacing.medium)}px;
+        padding-top: ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px;
     `}
 `;
 
@@ -51,8 +51,8 @@ export const IconBackground = styled(Shape)`
     pointer-events: none;
 
     ${({theme}) => css`
-        padding-block: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-        padding-inline: ${theme.adaptSize(theme.spacing.large - theme.spacing.extraSmall)}px;
+        padding: ${theme.adaptSize(theme.spacing.extraSmall)}px
+            ${theme.adaptSize(theme.spacing.large - theme.spacing.extraSmall)}px;
     `}
 `;
 
