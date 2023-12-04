@@ -16,7 +16,7 @@ export const Container = styled(View)`
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-        min-height: ${theme.adaptSize(80)}px;
+        max-height: ${theme.adaptSize(80)}px;
         min-width: ${theme.adaptSize(72)}px;
         padding-block-end: ${theme.adaptSize(theme.spacing.medium)}px;
         padding-block-start: ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px;
@@ -48,6 +48,7 @@ export const IconBackground = styled(Shape)`
     align-items: center;
     display: flex;
     justify-content: center;
+    pointer-events: none;
 
     ${({theme}) => css`
         padding-block: ${theme.adaptSize(theme.spacing.extraSmall)}px;
@@ -56,6 +57,7 @@ export const IconBackground = styled(Shape)`
 `;
 
 export const Icon = styled(View)`
+    pointer-events: none;
     position: absolute;
 
     ${({theme}) => css`
