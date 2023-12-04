@@ -131,11 +131,12 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = Props => {
     const childrenElement = (
         <>
             {children}
-            {renderRipples(rippleSequence, {
-                onAnimatedEnd: processRippleAnimatedEnd,
-                touchableLayout: layout,
-                underlayColor,
-            })}
+            {typeof layout.width === 'number' &&
+                renderRipples(rippleSequence, {
+                    onAnimatedEnd: processRippleAnimatedEnd,
+                    touchableLayout: layout,
+                    underlayColor,
+                })}
         </>
     );
 

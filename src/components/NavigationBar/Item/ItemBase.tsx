@@ -23,10 +23,10 @@ export interface RenderProps extends ItemProps {
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         iconContainerHeight: number;
         iconContainerWidth: number;
-        iconInnerWidth: AnimatedInterpolation;
+        iconBackgroundWidth: AnimatedInterpolation;
+        iconBackgroundColor: AnimatedInterpolation;
         labelColor: AnimatedInterpolation;
         labelHeight: AnimatedInterpolation;
-        labelWeight: AnimatedInterpolation;
     };
     underlayColor: string;
 }
@@ -59,7 +59,7 @@ export const ItemBase: FC<ItemBaseProps> = props => {
     const [{iconContainerLayout, state, pressPosition}, setState] = useImmer(initialState);
     const id = useId();
     const theme = useTheme();
-    const {backgroundColor, labelWeight, labelColor, iconInnerWidth, labelHeight} = useAnimated({
+    const {iconBackgroundColor, labelColor, iconBackgroundWidth, labelHeight} = useAnimated({
         active,
     });
 
@@ -153,13 +153,12 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         onPressIn: handlePressIn,
         onPressOut: handlePressOut,
         renderStyle: {
-            backgroundColor,
+            iconBackgroundColor,
+            iconBackgroundWidth,
             iconContainerHeight: iconContainerLayout.height,
             iconContainerWidth: iconContainerLayout.width,
-            iconInnerWidth,
             labelColor,
             labelHeight,
-            labelWeight,
         },
         shape: 'full',
         state,

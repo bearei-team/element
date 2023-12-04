@@ -4,6 +4,7 @@ import {Shape} from '../../Common/Common.styles';
 import {RenderProps} from './ItemBase';
 
 export type IconInnerProps = Pick<RenderProps, 'pressPosition'>;
+export type LabelTextProps = Pick<RenderProps, 'active'>;
 
 export const Container = styled(View)`
     align-items: center;
@@ -34,7 +35,7 @@ export const IconContainer = styled.Pressable<IconInnerProps>`
 
     ${({pressPosition}) => {
         const isRight = pressPosition > 0.6;
-        const justify = isRight ? 'end' : 'start';
+        const justify = isRight ? 'flex-end' : 'flex-start';
         const isCenter = pressPosition > 0.4 && pressPosition < 0.6;
 
         return css`
@@ -67,13 +68,14 @@ export const Icon = styled(View)`
     `}
 `;
 
-export const LabelText = styled.Text`
+export const LabelText = styled.Text<LabelTextProps>`
     overflow: hidden;
 
-    ${({theme}) => css`
+    ${({theme, active}) => css`
         font-size: ${theme.adaptFontSize(theme.typography.label.medium.size)}px;
         font-style: ${theme.typography.label.medium.style};
         letter-spacing: ${theme.adaptSize(theme.typography.label.medium.letterSpacing)}px;
         line-height: ${theme.adaptSize(theme.typography.label.medium.lineHeight)}px;
+        font-weight: ${active ? theme.font.weight.bold : theme.font.weight.medium};
     `}
 `;

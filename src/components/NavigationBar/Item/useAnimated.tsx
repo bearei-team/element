@@ -12,7 +12,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const {active} = options;
     const [stateAnimated] = useAnimatedValue(0);
     const theme = useTheme();
-    const backgroundColor = stateAnimated.interpolate({
+    const iconBackgroundColor = stateAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
             theme.color.rgba(theme.palette.secondary.secondaryContainer, 0),
@@ -20,17 +20,12 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const iconInnerWidth = stateAnimated.interpolate({
+    const iconBackgroundWidth = stateAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
             theme.adaptSize(24),
             theme.adaptSize(24 + (theme.spacing.large - theme.spacing.extraSmall) * 2),
         ],
-    });
-
-    const labelWeight = stateAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [theme.font.weight.medium, theme.font.weight.bold],
     });
 
     const labelColor = stateAnimated.interpolate({
@@ -62,5 +57,5 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         processAnimatedTiming(stateAnimated, active ? 1 : 0);
     }, [active, processAnimatedTiming, stateAnimated]);
 
-    return {backgroundColor, labelWeight, labelColor, iconInnerWidth, labelHeight};
+    return {iconBackgroundColor, labelColor, iconBackgroundWidth, labelHeight};
 };

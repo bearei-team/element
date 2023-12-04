@@ -1,6 +1,6 @@
 {
     "name": "@bearei/element",
-    "version": "0.0.1",
+    "version": "0.0.5",
     "main": "lib/commonjs/index.js",
     "react-native": "src/index.tsx",
     "module": "lib/module/index.js",
@@ -104,12 +104,16 @@
         "!**/__fixtures__",
         "!**/__mocks__",
         "!**/.ondevice",
-        "!**/*.map"
+        "!**/*.map",
+        "!**/App.tsx"
     ],
     "react-native-builder-bob": {
         "source": "src",
         "output": "lib",
-        "exclude": "**/*.stories.{js,ts,tsx}",
+        "exclude": [
+            "**/*.stories.{js,ts,tsx}",
+            "**/App.tsx"
+        ],
         "targets": [
             [
                 "commonjs",

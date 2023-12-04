@@ -16,7 +16,7 @@ export interface ShadowProps
 export const Container = styled(Shape)<ContainerProps>`
     position: relative;
 
-    ${({width, height}) =>
+    ${({width = 0, height = 0}) =>
         css`
             width: ${width}px;
             height: ${height}px;
