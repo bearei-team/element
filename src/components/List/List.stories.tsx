@@ -6,14 +6,25 @@ export default {
     component: List,
 } as Meta<typeof List>;
 
-export const NoneContentText: StoryObj<ListProps> = {
-    args: {size: 'small'},
-};
-
-export const ContentText: StoryObj<ListProps> = {
-    args: {size: 'large', labelText: 3},
-};
-
-export const MaxContentText: StoryObj<ListProps> = {
-    args: {size: 'large', labelText: 9999},
+export const Headline: StoryObj<ListProps> = {
+    args: {
+        menus: [
+            {
+                headline: 'TitleA',
+                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+            },
+            {
+                headline: 'TitleB',
+                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+            },
+            {
+                headline: 'TitleC',
+                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+            },
+            {
+                headline: 'TitleD',
+                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+            },
+        ],
+    },
 };

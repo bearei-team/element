@@ -1,21 +1,25 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {View, ViewProps} from 'react-native';
-import {Size} from '../Common/interface';
-import {Container, LabelText} from './List.styles';
+import {ItemProps} from './Item/Item';
+import {Container} from './List.styles';
 import {ListBase, RenderProps} from './ListBase';
 
+export interface SourceMenu extends Pick<ItemProps, 'headline' | 'supportingText' | 'leading'> {
+    key?: string;
+}
+
 export interface ListProps extends Partial<ViewProps & RefAttributes<View>> {
-    labelText?: number | string;
-    size?: Size;
+    menus?: SourceMenu[];
+    onChange?: (key: string) => void;
 }
 
 const ForwardRefList = forwardRef<View, ListProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {id, labelText, ...containerProps} = renderProps;
+        const {id, children, ...containerProps} = renderProps;
 
         return (
-            <Container {...containerProps} ref={ref} shape="full" testID={`badge--${id}`}>
-                <LabelText testID={`badge__labelText--${id}`}>{labelText}</LabelText>
+            <Container {...containerProps} ref={ref} testID={`list--${id}`}>
+                {children}
             </Container>
         );
     };

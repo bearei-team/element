@@ -8,7 +8,7 @@ export interface NavigationBarBaseProps extends NavigationBarProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface RenderRipplesOptions extends Pick<NavigationBarProps, 'menus'> {
+export interface RenderMenusOptions extends Pick<NavigationBarProps, 'menus'> {
     onActive: (key: string) => void;
 }
 
@@ -16,7 +16,7 @@ export interface Menu extends SourceMenu {
     active: boolean;
 }
 
-const renderMenus = (options: RenderRipplesOptions) => {
+const renderMenus = (options: RenderMenusOptions) => {
     const {menus, onActive} = options;
 
     return menus?.map(menu => (
