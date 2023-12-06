@@ -8,7 +8,7 @@ export interface ListBaseProps extends ListProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface RenderMenusOptions extends Pick<ListProps, 'menus'> {
+export interface RenderMenusOptions extends Pick<ListProps, 'menus' | 'close'> {
     onActive: (key: string) => void;
 }
 
@@ -17,15 +17,15 @@ export interface Menu extends SourceMenu {
 }
 
 const renderMenus = (options: RenderMenusOptions) => {
-    const {menus, onActive} = options;
+    const {menus, onActive, close} = options;
 
     return menus?.map(menu => (
-        <Item {...menu} key={menu.key} onPress={() => onActive(menu.key!)} />
+        <Item {...menu} close={close} key={menu.key} onPress={() => onActive(menu.key!)} />
     ));
 };
 
 export const ListBase: FC<ListBaseProps> = props => {
-    const {render, menus: sourceMenus, onChange, ...renderProps} = props;
+    const {render, menus: sourceMenus, onChange, close, ...renderProps} = props;
     const id = useId();
     const [menus, setMenus] = useImmer<Menu[]>([]);
 
@@ -51,6 +51,6 @@ export const ListBase: FC<ListBaseProps> = props => {
     return render({
         ...renderProps,
         id,
-        children: renderMenus({menus, onActive: handleActive}),
+        children: renderMenus({menus, onActive: handleActive, close}),
     });
 };

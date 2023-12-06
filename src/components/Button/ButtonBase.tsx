@@ -150,7 +150,11 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
 
         return category === 'button' || !icon
             ? icon
-            : cloneElement(icon, {fill: fillType[type as keyof typeof fillType]});
+            : cloneElement(icon, {
+                  fill: disabled
+                      ? theme.color.rgba(theme.palette.surface.onSurface, 0.38)
+                      : fillType[type as keyof typeof fillType],
+              });
     };
 
     useEffect(() => {

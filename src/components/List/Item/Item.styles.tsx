@@ -1,18 +1,21 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
+import {RenderProps} from './ItemBase';
+
+export type MainProps = Pick<RenderProps, 'state'>;
 
 export const Container = styled(View)`
     width: 100%;
+    overflow: hidden;
 `;
 
-export const Main = styled(View)`
+export const Main = styled.View<MainProps>`
     align-items: center;
     display: inline-flex;
     flex-direction: row;
     justify-content: space-between;
 
     ${({theme}) => css`
-        height: ${theme.adaptSize(56)}px;
         gap: ${theme.adaptSize(theme.spacing.medium)}px;
         padding: ${theme.adaptSize(theme.spacing.small)}px
             ${theme.adaptSize(theme.spacing.medium)}px;

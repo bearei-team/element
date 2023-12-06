@@ -17,12 +17,12 @@ export interface IconBaseProps extends IconProps {
 export const IconBase: FC<IconBaseProps> = props => {
     const {
         category = 'image',
+        fill,
         height,
         name = 'circle',
         render,
         type = 'filled',
         width,
-        fill,
         ...renderProps
     } = props;
 

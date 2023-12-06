@@ -11,6 +11,7 @@ export interface SourceMenu extends Pick<ItemProps, 'headline' | 'supportingText
 export interface ListProps extends Partial<ViewProps & RefAttributes<View>> {
     menus?: SourceMenu[];
     onChange?: (key: string) => void;
+    close?: boolean;
 }
 
 const ForwardRefList = forwardRef<View, ListProps>((props, ref) => {

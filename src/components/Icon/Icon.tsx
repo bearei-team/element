@@ -3,9 +3,10 @@ import {View} from 'react-native';
 import {SvgProps} from 'react-native-svg';
 import {Container} from './Icon.styles';
 import {IconBase, RenderProps} from './IconBase';
+import {filled} from './icons/filled';
 
 export type IconCategory = 'image';
-export type IconName = 'lens' | 'circle';
+export type IconName = keyof (typeof filled)['image'];
 export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
 
 export interface IconProps

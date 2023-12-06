@@ -11,15 +11,18 @@ import {
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
-import {State} from '../../Common/interface';
-import {ItemProps} from './Item';
+import {Button} from '../../Button/Button';
+import {AnimatedInterpolation} from '../../Common/interface';
+import {Icon} from '../../Icon/Icon';
+import {ItemProps, ListItemState} from './Item';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends ItemProps {
-    state: State;
+    state: ListItemState;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         touchableRippleHeight: number;
         touchableRippleWidth: number;
+        trailingOpacity: AnimatedInterpolation;
     };
     underlayColor: string;
 }
@@ -29,7 +32,7 @@ export interface ItemBaseProps extends ItemProps {
 }
 
 const initialState = {
-    state: 'enabled' as State,
+    state: 'enabled' as ListItemState,
     touchableRippleLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
 };
 
@@ -44,13 +47,25 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         onPressIn,
         onPressOut,
         render,
+        close = false,
+        trailing,
         ...renderProps
     } = props;
 
     const [{state, touchableRippleLayout}, setState] = useImmer(initialState);
     const id = useId();
     const theme = useTheme();
-    const {backgroundColor} = useAnimated({active});
+    const {
+        backgroundColor,
+        trailingOpacity,
+        onCloseAnimated,
+        height: animatedHeight,
+    } = useAnimated({
+        active,
+        close,
+        state,
+    });
+
     const mobile = ['ios', 'android'].includes(theme.OS);
     const underlayColor = theme.palette.surface.onSurface;
 
@@ -65,7 +80,7 @@ export const ItemBase: FC<ItemBaseProps> = props => {
     };
 
     const processState = useCallback(
-        (nextState: State, callback?: () => void) => {
+        (nextState: ListItemState, callback?: () => void) => {
             setState(draft => {
                 draft.state = nextState;
             });
@@ -108,6 +123,16 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         [onBlur, processState],
     );
 
+    const handleTrailingHoverIn = useCallback(
+        () => processState('trailingHovered'),
+        [processState],
+    );
+
+    const handleTrailingHoverOut = useCallback(() => processState('hovered'), [processState]);
+    const handleTrailingPress = useCallback(() => {
+        close && onCloseAnimated();
+    }, [close, onCloseAnimated]);
+
     return render({
         ...renderProps,
         id,
@@ -119,11 +144,25 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         onPressIn: handlePressIn,
         onPressOut: handlePressOut,
         renderStyle: {
+            backgroundColor,
+            height: animatedHeight,
             touchableRippleHeight: touchableRippleLayout.height,
             touchableRippleWidth: touchableRippleLayout.width,
-            backgroundColor,
+            trailingOpacity,
         },
         state,
         underlayColor,
+        trailing: close ? (
+            <Button
+                category="iconButton"
+                type="text"
+                onHoverIn={handleTrailingHoverIn}
+                onHoverOut={handleTrailingHoverOut}
+                onPress={handleTrailingPress}
+                icon={<Icon type="filled" name="close" />}
+            />
+        ) : (
+            trailing
+        ),
     });
 };

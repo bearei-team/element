@@ -8,6 +8,7 @@ export default {
 
 export const Headline: StoryObj<ListProps> = {
     args: {
+        close: true,
         menus: [
             {
                 headline: 'TitleA',
