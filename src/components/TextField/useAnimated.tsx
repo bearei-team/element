@@ -226,7 +226,6 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 pressed: () => {
                     const toValue = 1;
 
-                    processAnimatedTiming(colorAnimated, {toValue});
                     processAnimatedTiming(inputAnimated, {toValue});
                     processAnimatedTiming(labeAnimated, {toValue, finished});
                 },

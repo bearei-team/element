@@ -147,13 +147,14 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     };
 
     const handlePress = () =>
+        inputState !== 'focused' &&
         processState('pressed', {
             finished: () => {
                 inputRef.current?.focus();
 
-                setState(draft => {
-                    draft.state !== 'enabled' && (draft.state = 'hovered');
-                });
+                // setState(draft => {
+                //     draft.state !== 'enabled' && (draft.state = 'hovered');
+                // });
             },
         });
 

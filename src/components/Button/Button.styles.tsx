@@ -23,24 +23,24 @@ export const Main = styled(Shape)<MainProps>`
     ${({theme, type = 'filled'}) => {
         const containerType = {
             elevated: css`
-                padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
-                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
+                padding: ${theme.adaptSize(theme.spacing.small + 2)}px
+                    ${theme.adaptSize(theme.spacing.large)}px;
             `,
             filled: css`
-                padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
-                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
+                padding: ${theme.adaptSize(theme.spacing.small + 2)}px
+                    ${theme.adaptSize(theme.spacing.large)}px;
             `,
             outlined: css`
-                padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
-                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
+                padding: ${theme.adaptSize(theme.spacing.small + 2)}px
+                    ${theme.adaptSize(theme.spacing.large)}px;
             `,
             text: css`
-                padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
-                padding-inline: ${theme.adaptSize(theme.spacing.medium - 4)}px;
+                padding: ${theme.adaptSize(theme.spacing.small + 2)}px
+                    ${theme.adaptSize(theme.spacing.medium - 4)}px;
             `,
             tonal: css`
-                padding-block: ${theme.adaptSize(theme.spacing.small + 2)}px;
-                padding-inline: ${theme.adaptSize(theme.spacing.large)}px;
+                padding: ${theme.adaptSize(theme.spacing.small + 2)}px
+                    ${theme.adaptSize(theme.spacing.large)}px;
             `,
         };
 
@@ -50,20 +50,20 @@ export const Main = styled(Shape)<MainProps>`
     ${({showIcon, theme, type = 'filled'}) => {
         const containerType = {
             elevated: css`
-                padding-inline-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             filled: css`
-                padding-inline-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             outlined: css`
-                padding-inline-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             text: css`
-                padding-inline-end: ${theme.adaptSize(theme.spacing.medium)}px;
-                padding-inline-start: ${theme.adaptSize(theme.spacing.medium - 4)}px;
+                padding-left: ${theme.adaptSize(theme.spacing.medium - 4)}px;
+                padding-right: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             tonal: css`
-                padding-inline-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
         };
 

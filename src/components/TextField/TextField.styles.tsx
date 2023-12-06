@@ -140,7 +140,6 @@ export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
     bottom: 0;
     left: 0;
     position: absolute;
-    width: 100%;
 
     ${({width}) => css`
         width: ${width}px;

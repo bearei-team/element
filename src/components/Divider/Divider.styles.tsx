@@ -33,18 +33,20 @@ export const Container = styled(View)<ContainerProps>`
             medium:
                 layout === 'horizontal'
                     ? css`
-                          padding-inline-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                          padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
                       `
                     : css`
-                          padding-block-start: ${theme.adaptSize(theme.spacing.medium)}px;
+                          padding-top: ${theme.adaptSize(theme.spacing.medium)}px;
                       `,
             small:
                 layout === 'horizontal'
                     ? css`
-                          padding-inline: ${theme.adaptSize(theme.spacing.medium)}px;
+                          padding: ${theme.adaptSize(0)}px
+                              ${theme.adaptSize(theme.spacing.medium)}px;
                       `
                     : css`
-                          padding-block: ${theme.adaptSize(theme.spacing.medium)}px;
+                          padding-block-end: ${theme.adaptSize(theme.spacing.medium)}px
+                              ${theme.adaptSize(0)}px;
                       `,
         };
 

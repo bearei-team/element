@@ -18,17 +18,17 @@ export const Container = styled(Shape)<ContainerProps>`
         const containerSize = {
             large: css`
                 min-width: ${theme.adaptSize(16)}px;
-                padding-inline: ${theme.adaptSize(theme.spacing.extraSmall)}px;
+                padding: ${theme.adaptSize(0)}px ${theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
 
             medium: css`
                 min-width: ${theme.adaptSize(16)}px;
-                padding-block: ${theme.adaptSize(theme.spacing.extraSmall)}px;
+                padding: ${theme.adaptSize(theme.spacing.extraSmall)}px ${theme.adaptSize(0)}px;
             `,
 
             small: css`
-                padding-block: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
-                padding-inline: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
+                padding: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px
+                    ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
             `,
         };
 
