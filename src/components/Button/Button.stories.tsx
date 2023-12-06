@@ -1,4 +1,5 @@
 import {Meta, StoryObj} from '@storybook/react';
+import {Icon} from '../Icon/Icon';
 import {Button, ButtonProps} from './Button';
 
 export default {
@@ -38,5 +39,12 @@ export const Tonal: StoryObj<ButtonProps> = {
     args: {
         labelText: 'Label',
         type: 'tonal',
+    },
+};
+
+export const IconFilled: StoryObj<ButtonProps> = {
+    args: {
+        category: 'iconButton',
+        icon: <Icon />,
     },
 };

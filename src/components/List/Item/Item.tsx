@@ -1,5 +1,5 @@
 import {FC, forwardRef, memo} from 'react';
-import {View} from 'react-native';
+import {Animated, View} from 'react-native';
 import {Hovered} from '../../Hovered/Hovered';
 import {TouchableRipple, TouchableRippleProps} from '../../TouchableRipple/TouchableRipple';
 import {Container, Content, Headline, Leading, Main, SupportingText, Trailing} from './Item.styles';
@@ -10,8 +10,10 @@ export interface ItemProps extends TouchableRippleProps {
     trailing?: React.JSX.Element;
     supportingText?: string;
     leading?: React.JSX.Element;
+    active?: boolean;
 }
 
+const AnimatedMain = Animated.createAnimatedComponent(Main);
 const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
@@ -26,7 +28,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
             ...touchableRippleProps
         } = renderProps;
 
-        const {touchableRippleHeight, touchableRippleWidth} = renderStyle;
+        const {touchableRippleHeight, touchableRippleWidth, backgroundColor} = renderStyle;
 
         return (
             <Container
@@ -34,7 +36,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                 accessibilityRole="list"
                 testID={`listItem--${id}`}>
                 <TouchableRipple {...touchableRippleProps} ref={ref} underlayColor={underlayColor}>
-                    <Main testID={`listItem__main--${id}`}>
+                    <AnimatedMain testID={`listItem__main--${id}`} style={{backgroundColor}}>
                         {leading && (
                             <Leading testID={`listItem__leading--${id}`}>{leading}</Leading>
                         )}
@@ -51,7 +53,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                         {trailing && (
                             <Trailing testID={`listItem__trailing--${id}`}>{trailing}</Trailing>
                         )}
-                    </Main>
+                    </AnimatedMain>
 
                     <Hovered
                         height={touchableRippleHeight}

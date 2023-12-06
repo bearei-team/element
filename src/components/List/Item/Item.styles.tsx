@@ -16,8 +16,6 @@ export const Main = styled(View)`
         gap: ${theme.adaptSize(theme.spacing.medium)}px;
         padding: ${theme.adaptSize(theme.spacing.small)}px
             ${theme.adaptSize(theme.spacing.medium)}px;
-
-        background-color: ${theme.palette.surface.surface};
     `};
 `;
 

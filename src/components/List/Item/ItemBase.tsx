@@ -13,6 +13,7 @@ import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {State} from '../../Common/interface';
 import {ItemProps} from './Item';
+import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends ItemProps {
     state: State;
@@ -34,6 +35,7 @@ const initialState = {
 
 export const ItemBase: FC<ItemBaseProps> = props => {
     const {
+        active = false,
         onBlur,
         onFocus,
         onHoverIn,
@@ -48,8 +50,10 @@ export const ItemBase: FC<ItemBaseProps> = props => {
     const [{state, touchableRippleLayout}, setState] = useImmer(initialState);
     const id = useId();
     const theme = useTheme();
-    const underlayColor = theme.palette.surface.onSurface;
+    const {backgroundColor} = useAnimated({active});
     const mobile = ['ios', 'android'].includes(theme.OS);
+    const underlayColor = theme.palette.surface.onSurface;
+
     const processLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
 
@@ -117,6 +121,7 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         renderStyle: {
             touchableRippleHeight: touchableRippleLayout.height,
             touchableRippleWidth: touchableRippleLayout.width,
+            backgroundColor,
         },
         state,
         underlayColor,

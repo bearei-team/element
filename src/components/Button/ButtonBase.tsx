@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect, useId} from 'react';
+import {FC, cloneElement, useCallback, useEffect, useId} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -52,12 +52,13 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         onPressIn,
         onPressOut,
         render,
+        category = 'button',
         type = 'filled',
         ...renderProps
     } = props;
 
     const [{elevation, touchableRippleLayout, state}, setState] = useImmer(initialState);
-    const [underlayColor] = useUnderlayColor({type});
+    const [underlayColor] = useUnderlayColor({type, category});
     const {backgroundColor, borderColor, color} = useAnimated({type, disabled, state});
     const id = useId();
     const theme = useTheme();
@@ -72,13 +73,14 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         (nextState: State) => {
             const level = {disabled: 0, enabled: 0, error: 0, focused: 0, hovered: 1, pressed: 0};
 
-            setState(draft => {
-                draft.elevation = (
-                    type === 'elevated' ? level[nextState] + 1 : level[nextState]
-                ) as ElevationProps['level'];
-            });
+            category !== 'iconButton' &&
+                setState(draft => {
+                    draft.elevation = (
+                        type === 'elevated' ? level[nextState] + 1 : level[nextState]
+                    ) as ElevationProps['level'];
+                });
         },
-        [setState, type],
+        [category, setState, type],
     );
 
     const processState = useCallback(
@@ -139,18 +141,32 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         [onBlur, processState],
     );
 
+    const processIcon = () => {
+        const fillType = {
+            filled: theme.palette.primary.onPrimary,
+            outlined: theme.palette.surface.onSurfaceVariant,
+            tonal: theme.palette.surface.onSurfaceVariant,
+        };
+
+        return category === 'button' || !icon
+            ? icon
+            : cloneElement(icon, {fill: fillType[type as keyof typeof fillType]});
+    };
+
     useEffect(() => {
         type === 'elevated' &&
+            category === 'button' &&
             setState(draft => {
                 draft.elevation = disabled ? 0 : 1;
             });
-    }, [disabled, setState, type]);
+    }, [category, disabled, setState, type]);
 
     return render({
         ...renderProps,
+        category,
         disabled,
         elevation,
-        icon,
+        icon: processIcon(),
         id,
         onBlur: handleBlur,
         onFocus: handleFocus,

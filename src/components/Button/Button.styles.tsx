@@ -2,8 +2,9 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './ButtonBase';
 
-export type MainProps = Pick<RenderProps, 'type' | 'showIcon'>;
+export type MainProps = Pick<RenderProps, 'type' | 'showIcon' | 'category'>;
 export type LabelTextProps = Omit<MainProps, 'showIcon'>;
+export type IconProps = Pick<MainProps, 'category'>;
 
 export const Container = styled.View`
     position: relative;
@@ -69,6 +70,19 @@ export const Main = styled(Shape)<MainProps>`
 
         return showIcon && containerType[type];
     }}
+
+    ${({theme, category = 'button'}) => {
+        const categoryType = {
+            button: css``,
+            iconButton: css`
+                width: ${theme.adaptSize(40)}px;
+                height: ${theme.adaptSize(40)}px;
+                padding: ${theme.adaptSize(theme.spacing.small)}px;
+            `,
+        };
+
+        return categoryType[category];
+    }}
 `;
 
 export const LabelText = styled.Text<LabelTextProps>`
@@ -83,11 +97,21 @@ export const LabelText = styled.Text<LabelTextProps>`
     `}
 `;
 
-export const Icon = styled.View`
+export const Icon = styled.View<IconProps>`
     overflow: hidden;
 
-    ${({theme}) => css`
-        height: ${theme.adaptSize(18)}px;
-        width: ${theme.adaptSize(18)}px;
-    `}
+    ${({theme, category = 'button'}) => {
+        const categoryType = {
+            button: css`
+                height: ${theme.adaptSize(18)}px;
+                width: ${theme.adaptSize(18)}px;
+            `,
+            iconButton: css`
+                height: ${theme.adaptSize(24)}px;
+                width: ${theme.adaptSize(24)}px;
+            `,
+        };
+
+        return categoryType[category];
+    }}
 `;

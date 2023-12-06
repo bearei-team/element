@@ -8,12 +8,15 @@ import {Container, Icon, LabelText, Main} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
 export type ButtonType = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
+export type Category = 'button' | 'iconButton';
+
 export interface ButtonProps extends TouchableRippleProps {
     disabled?: boolean;
     icon?: React.JSX.Element;
     labelText?: string;
     loading?: boolean;
     type?: ButtonType;
+    category?: Category;
 }
 
 const AnimatedMain = Animated.createAnimatedComponent(Main);
@@ -33,6 +36,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             style,
             type,
             underlayColor,
+            category,
             ...touchableRippleProps
         } = renderProps;
 
@@ -51,19 +55,21 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                         shape={shape}
                         underlayColor={underlayColor}>
                         <AnimatedMain
+                            category={category}
                             shape={shape}
                             showIcon={showIcon}
                             style={{...(typeof style === 'object' && style), ...mainStyle}}
                             testID={`button__main--${id}`}
                             type={type}>
                             {showIcon && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
-
-                            <AnimatedLabelText
-                                style={{color}}
-                                testID={`button__labelText--${id}`}
-                                type={type}>
-                                {labelText}
-                            </AnimatedLabelText>
+                            {category === 'button' && (
+                                <AnimatedLabelText
+                                    style={{color}}
+                                    testID={`button__labelText--${id}`}
+                                    type={type}>
+                                    {labelText}
+                                </AnimatedLabelText>
+                            )}
                         </AnimatedMain>
 
                         {isTouchableRippleLaidOut && (
