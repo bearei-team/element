@@ -17,7 +17,7 @@ export const Main = styled(View)`
         padding: ${theme.adaptSize(theme.spacing.small)}px
             ${theme.adaptSize(theme.spacing.medium)}px;
 
-        background-color: ${theme.palette.primary.primaryContainer};
+        background-color: ${theme.palette.surface.surface};
     `};
 `;
 

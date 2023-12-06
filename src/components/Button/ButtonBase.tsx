@@ -36,8 +36,8 @@ export interface ButtonBaseProps extends ButtonProps {
 
 const initialState = {
     elevation: 0 as ElevationProps['level'],
-    touchableRippleLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
     state: 'enabled' as State,
+    touchableRippleLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
 };
 
 export const ButtonBase: FC<ButtonBaseProps> = props => {
