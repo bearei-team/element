@@ -1,7 +1,7 @@
 import {FC, useEffect, useId} from 'react';
 import {useImmer} from 'use-immer';
 import {Item} from './Item/Item';
-import {NavigationBarProps, SourceMenu} from './NavigationBar';
+import {NavigationBarProps, NavigationSourceMenu} from './NavigationBar';
 
 export type RenderProps = NavigationBarProps;
 export interface NavigationBarBaseProps extends NavigationBarProps {
@@ -12,7 +12,7 @@ export interface RenderMenusOptions extends Pick<NavigationBarProps, 'menus'> {
     onActive: (key: string) => void;
 }
 
-export interface Menu extends SourceMenu {
+export interface Menu extends NavigationSourceMenu {
     active: boolean;
 }
 

@@ -4,12 +4,12 @@ import {ItemProps} from './Item/Item';
 import {Container} from './List.styles';
 import {ListBase, RenderProps} from './ListBase';
 
-export interface SourceMenu extends Pick<ItemProps, 'headline' | 'supportingText' | 'leading'> {
+export interface ListSourceMenu extends Pick<ItemProps, 'headline' | 'supportingText' | 'leading'> {
     key?: string;
 }
 
 export interface ListProps extends Partial<ViewProps & RefAttributes<View>> {
-    menus?: SourceMenu[];
+    menus?: ListSourceMenu[];
     onChange?: (key: string) => void;
     close?: boolean;
 }

@@ -1,7 +1,7 @@
 import {FC, useEffect, useId} from 'react';
 import {useImmer} from 'use-immer';
 import {Item} from './Item/Item';
-import {ListProps, SourceMenu} from './List';
+import {ListProps, ListSourceMenu} from './List';
 
 export type RenderProps = ListProps;
 export interface ListBaseProps extends ListProps {
@@ -12,7 +12,7 @@ export interface RenderMenusOptions extends Pick<ListProps, 'menus' | 'close'> {
     onActive: (key: string) => void;
 }
 
-export interface Menu extends SourceMenu {
+export interface Menu extends ListSourceMenu {
     active: boolean;
 }
 

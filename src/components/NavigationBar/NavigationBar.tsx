@@ -4,14 +4,14 @@ import {ItemProps} from './Item/Item';
 import {Container} from './NavigationBar.styles';
 import {NavigationBarBase, RenderProps} from './NavigationBarBase';
 
-export interface SourceMenu extends Pick<ItemProps, 'icon' | 'activeIcon'> {
+export interface NavigationSourceMenu extends Pick<ItemProps, 'icon' | 'activeIcon'> {
     key?: string;
     labelText?: string;
 }
 
 export interface NavigationBarProps extends Partial<ViewProps & RefAttributes<View>> {
     layout?: 'horizontal' | 'vertical';
-    menus?: SourceMenu[];
+    menus?: NavigationSourceMenu[];
     onChange?: (key: string) => void;
 }
 

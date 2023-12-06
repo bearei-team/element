@@ -39,6 +39,7 @@ const initialState = {
 export const ItemBase: FC<ItemBaseProps> = props => {
     const {
         active = false,
+        close = false,
         onBlur,
         onFocus,
         onHoverIn,
@@ -47,7 +48,6 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         onPressIn,
         onPressOut,
         render,
-        close = false,
         trailing,
         ...renderProps
     } = props;
@@ -57,14 +57,10 @@ export const ItemBase: FC<ItemBaseProps> = props => {
     const theme = useTheme();
     const {
         backgroundColor,
-        trailingOpacity,
-        onCloseAnimated,
         height: animatedHeight,
-    } = useAnimated({
-        active,
-        close,
-        state,
-    });
+        onCloseAnimated,
+        trailingOpacity,
+    } = useAnimated({active, close, state});
 
     const mobile = ['ios', 'android'].includes(theme.OS);
     const underlayColor = theme.palette.surface.onSurface;
@@ -133,6 +129,19 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         close && onCloseAnimated();
     }, [close, onCloseAnimated]);
 
+    const trailingElement = close ? (
+        <Button
+            category="iconButton"
+            icon={<Icon type="filled" name={active ? 'remove' : 'close'} />}
+            onHoverIn={handleTrailingHoverIn}
+            onHoverOut={handleTrailingHoverOut}
+            onPress={handleTrailingPress}
+            type="text"
+        />
+    ) : (
+        trailing
+    );
+
     return render({
         ...renderProps,
         id,
@@ -152,17 +161,6 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         },
         state,
         underlayColor,
-        trailing: close ? (
-            <Button
-                category="iconButton"
-                type="text"
-                onHoverIn={handleTrailingHoverIn}
-                onHoverOut={handleTrailingHoverOut}
-                onPress={handleTrailingPress}
-                icon={<Icon type="filled" name="close" />}
-            />
-        ) : (
-            trailing
-        ),
+        trailing: trailingElement,
     });
 };
