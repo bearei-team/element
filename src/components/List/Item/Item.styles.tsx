@@ -22,12 +22,18 @@ export const Main = styled.View<MainProps>`
     `};
 `;
 
-export const Leading = styled.View``;
+export const Leading = styled.View`
+    ${({theme}) => css`
+        max-width: ${theme.adaptSize(40)}px;
+        max-height: ${theme.adaptSize(40)}px;
+    `}
+`;
+
 export const Content = styled.View`
     flex: 1;
 `;
 
-export const Trailing = styled.View``;
+export const Trailing = styled(Leading)``;
 export const Headline = styled.Text`
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurface};
