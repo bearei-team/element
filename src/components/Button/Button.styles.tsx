@@ -2,15 +2,15 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './ButtonBase';
 
-export type MainProps = Pick<RenderProps, 'type' | 'showIcon' | 'category'>;
-export type LabelTextProps = Omit<MainProps, 'showIcon'>;
-export type IconProps = Pick<MainProps, 'category'>;
+export type ContentProps = Pick<RenderProps, 'type' | 'showIcon' | 'category'>;
+export type LabelTextProps = Omit<ContentProps, 'showIcon'>;
+export type IconProps = Pick<ContentProps, 'category'>;
 
 export const Container = styled.View`
     position: relative;
 `;
 
-export const Main = styled(Shape)<MainProps>`
+export const Content = styled(Shape)<ContentProps>`
     align-items: center;
     display: flex;
     flex-direction: row;

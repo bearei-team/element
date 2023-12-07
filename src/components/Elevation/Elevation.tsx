@@ -1,53 +1,56 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, View, ViewProps} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
-import {Container, Main, Shadow0, Shadow1} from './Elevation.styles';
+import {Container, Content, Shadow} from './Elevation.styles';
 import {ElevationBase, RenderProps} from './ElevationBase';
 export interface ElevationProps
     extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>> {
     level?: 0 | 1 | 2 | 3 | 4 | 5;
 }
 
-const AnimatedShadow0 = Animated.createAnimatedComponent(Shadow0);
-const AnimatedShadow1 = Animated.createAnimatedComponent(Shadow1);
+const AnimatedShadow = Animated.createAnimatedComponent(Shadow);
+
 const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {children, id, level, onMainLayout, renderStyle, shape, ...containerProps} =
+        const {children, id, level, onContentLayout, renderStyle, shape, ...containerProps} =
             renderProps;
 
-        const {mainHeight, opacity0, opacity1, mainWidth} = renderStyle;
+        const {contentHeight, opacity0, opacity1, contentWidth} = renderStyle;
 
         return (
             <Container
                 {...containerProps}
-                height={mainHeight}
+                height={contentHeight}
                 ref={ref}
                 testID={`elevation--${id}`}
-                width={mainWidth}>
-                <Main onLayout={onMainLayout} shape={shape} testID={`elevation__main--${id}`}>
+                width={contentWidth}>
+                <Content
+                    onLayout={onContentLayout}
+                    shape={shape}
+                    testID={`elevation__content--${id}`}>
                     {children}
-                </Main>
+                </Content>
 
-                {typeof mainWidth === 'number' && (
+                {typeof contentWidth === 'number' && (
                     <>
-                        <AnimatedShadow0
-                            height={mainHeight}
+                        <AnimatedShadow
+                            height={contentHeight}
                             level={level}
                             shadow={0}
                             shape={shape}
                             style={{opacity: opacity0}}
                             testID={`elevation__shadow0--${id}`}
-                            width={mainWidth}
+                            width={contentWidth}
                         />
 
-                        <AnimatedShadow1
-                            height={mainHeight}
+                        <AnimatedShadow
+                            height={contentHeight}
                             level={level}
                             shadow={1}
                             shape={shape}
                             style={{opacity: opacity1}}
                             testID={`elevation__shadow1--${id}`}
-                            width={mainWidth}
+                            width={contentWidth}
                         />
                     </>
                 )}

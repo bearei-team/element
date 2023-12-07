@@ -54,7 +54,7 @@ export const Container = styled(View)<ContainerProps>`
     }};
 `;
 
-export const Main = styled.View`
+export const Content = styled.View`
     align-self: stretch;
     flex: 1;
 

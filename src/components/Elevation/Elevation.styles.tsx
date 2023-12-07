@@ -23,14 +23,13 @@ export const Container = styled(Shape)<ContainerProps>`
         `}
 `;
 
-export const Main = styled(Shape)`
+export const Content = styled(Shape)`
     position: absolute;
     z-index: 2;
 `;
 
-export const Shadow0 = styled(Shape)<ShadowProps>`
+export const Shadow = styled(Shape)<ShadowProps>`
     position: absolute;
-    z-index: 0;
 
     ${({theme}) => css`
         background-color: ${theme.palette.primary.onPrimary};
@@ -48,6 +47,7 @@ export const Shadow0 = styled(Shape)<ShadowProps>`
 
             shadow-opacity: 1;
             shadow-radius: ${theme.adaptSize(theme.elevation[levelString][shadowString].blur)}px;
+            z-index: ${shadow};
         `;
     }};
 
@@ -56,8 +56,4 @@ export const Shadow0 = styled(Shape)<ShadowProps>`
             width: ${width}px;
             height: ${height}px;
         `}
-`;
-
-export const Shadow1 = styled(Shadow0)`
-    z-index: 1;
 `;

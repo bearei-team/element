@@ -5,7 +5,7 @@ export const Container = styled.Pressable`
     display: inline-block;
 `;
 
-export const Main = styled(Shape)`
+export const Content = styled(Shape)`
     overflow: hidden;
     position: relative;
 `;

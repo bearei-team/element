@@ -26,12 +26,12 @@ export const Container = styled.View`
     `}
 `;
 
-export const Core = styled.View`
+export const Header = styled.View`
     position: relative;
 `;
 
-export const CoreInner = styled.Pressable``;
-export const Main = styled(Shape)<MainProps>`
+export const HeaderPressable = styled.Pressable``;
+export const HeaderInner = styled(Shape)<MainProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -146,7 +146,7 @@ export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
     `}
 `;
 
-export const Icon = styled.View`
+export const TrailingIcon = styled.View`
     ${({theme}) => css`
         height: ${theme.adaptSize(48)}px;
         padding: ${theme.adaptSize(theme.spacing.small)}px ${theme.adaptSize(theme.spacing.small)}px;
@@ -154,8 +154,7 @@ export const Icon = styled.View`
     `}
 `;
 
-export const TrailingIcon = styled(Icon)``;
-export const LeadingIcon = styled(Icon)``;
+export const LeadingIcon = styled(TrailingIcon)``;
 export const SupportingText = styled.Text<SupportingTextProps>`
     ${({theme}) => css`
         font-size: ${theme.adaptSize(theme.typography.body.small.size)}px;

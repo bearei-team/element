@@ -6,15 +6,15 @@ import {ElevationProps} from './Elevation';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends ElevationProps {
-    onMainLayout?: (event: LayoutChangeEvent) => void;
+    onContentLayout?: (event: LayoutChangeEvent) => void;
     renderStyle: Animated.WithAnimatedObject<
         ViewStyle & {
             opacity0?: AnimatedInterpolation;
             opacity1?: AnimatedInterpolation;
         }
     > & {
-        mainHeight: number;
-        mainWidth: number;
+        contentHeight: number;
+        contentWidth: number;
     };
 }
 
@@ -24,26 +24,29 @@ export interface ElevationBaseProps extends ElevationProps {
 
 export const ElevationBase: FC<ElevationBaseProps> = props => {
     const {level = 0, render, ...renderProps} = props;
-    const [mainLayout, setMainLayout] = useImmer({} as Pick<LayoutRectangle, 'height' | 'width'>);
+    const [contentLayout, setContentLayout] = useImmer(
+        {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    );
+
     const {shadow0Opacity, shadow1Opacity} = useAnimated({level});
     const id = useId();
 
     const processLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
 
-        setMainLayout(() => ({height, width}));
+        setContentLayout(() => ({height, width}));
     };
 
     return render({
         ...renderProps,
         id,
         level,
-        onMainLayout: processLayout,
+        onContentLayout: processLayout,
         renderStyle: {
-            mainHeight: mainLayout.height,
+            contentHeight: contentLayout.height,
+            contentWidth: contentLayout.width,
             opacity0: shadow0Opacity,
             opacity1: shadow1Opacity,
-            mainWidth: mainLayout.width,
         },
     });
 };

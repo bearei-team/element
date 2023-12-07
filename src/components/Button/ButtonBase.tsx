@@ -98,15 +98,18 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         [processElevation, setState, type],
     );
 
-    const processLayout = (event: LayoutChangeEvent) => {
-        const {height, width} = event.nativeEvent.layout;
+    const processLayout = useCallback(
+        (event: LayoutChangeEvent) => {
+            const {height, width} = event.nativeEvent.layout;
 
-        setState(draft => {
-            draft.touchableRippleLayout = {height, width};
-        });
+            setState(draft => {
+                draft.touchableRippleLayout = {height, width};
+            });
 
-        onLayout?.(event);
-    };
+            onLayout?.(event);
+        },
+        [onLayout, setState],
+    );
 
     const handlePressIn = useCallback(
         (event: GestureResponderEvent) => processState('pressed', () => onPressIn?.(event)),

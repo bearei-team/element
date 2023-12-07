@@ -22,7 +22,7 @@ export interface RenderProps extends TextFieldProps {
     onHoverIn: (event: MouseEvent) => void;
     onHoverOut: (event: MouseEvent) => void;
     onLabelTextLayout: (event: LayoutChangeEvent) => void;
-    onCoreLayout: (event: LayoutChangeEvent) => void;
+    onHeaderLayout: (event: LayoutChangeEvent) => void;
     onPress: (event: GestureResponderEvent) => void;
     renderStyle: Animated.WithAnimatedObject<
         ViewStyle & {
@@ -38,7 +38,12 @@ export interface RenderProps extends TextFieldProps {
             supportingTextColor: AnimatedInterpolation;
             supportingTextOpacity: AnimatedInterpolation;
         }
-    > & {coreHeight: number; labelTextHeight: number; labelTextWidth: number; coreWidth: number};
+    > & {
+        headerHeight: number;
+        headerWidth: number;
+        labelTextHeight: number;
+        labelTextWidth: number;
+    };
     state: State;
     underlayColor: string;
 }
@@ -57,7 +62,7 @@ export type RenderTextInputOptions = TextFieldProps;
 const initialState = {
     inputState: 'enabled' as State,
     labelTextLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
-    coreLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    headerLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
     state: 'enabled' as State,
     underlayColor: '',
     value: '',
@@ -85,7 +90,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{inputState, state, coreLayout, labelTextLayout, value}, setState] =
+    const [{inputState, state, headerLayout, labelTextLayout, value}, setState] =
         useImmer(initialState);
 
     const [underlayColor] = useUnderlayColor({type});
@@ -130,11 +135,11 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         [inputState, processState, state],
     );
 
-    const processCoreLayout = (event: LayoutChangeEvent) => {
+    const processHeaderLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
 
         setState(draft => {
-            draft.coreLayout = {height, width};
+            draft.headerLayout = {height, width};
         });
     };
 
@@ -146,15 +151,13 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         });
     };
 
+    const handleHoverIn = () => processState('hovered');
+    const handleHoverOut = () => processState('enabled');
     const handlePress = () =>
         inputState !== 'focused' &&
         processState('pressed', {
             finished: () => {
                 inputRef.current?.focus();
-
-                // setState(draft => {
-                //     draft.state !== 'enabled' && (draft.state = 'hovered');
-                // });
             },
         });
 
@@ -177,8 +180,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         [onBlur, processState, state],
     );
 
-    const handleHoverIn = () => processState('hovered');
-    const handleHoverOut = () => processState('enabled');
     const handleChangeText = useCallback(
         (text: string) => {
             setState(draft => {
@@ -220,7 +221,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         inputState,
         labelText,
         leadingIcon,
-        onCoreLayout: processCoreLayout,
+        onHeaderLayout: processHeaderLayout,
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
         onLabelTextLayout: processLabelTextLayout,
@@ -228,10 +229,10 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         placeholder,
         renderStyle: {
             ...animatedStyle,
-            coreHeight: coreLayout.height,
+            headerHeight: headerLayout.height,
             labelTextHeight: labelTextLayout.height,
             labelTextWidth: labelTextLayout.width,
-            coreWidth: coreLayout.width,
+            headerWidth: headerLayout.width,
         },
         shape: type === 'filled' ? 'extraSmallTop' : 'extraSmall',
         state,

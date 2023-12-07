@@ -2,7 +2,7 @@ import {FC, ReactNode, RefAttributes, forwardRef, memo} from 'react';
 import {PressableProps, View} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
 import {RippleProps} from './Ripple/Ripple';
-import {Container, Main} from './TouchableRipple.styles';
+import {Container, Content} from './TouchableRipple.styles';
 import {RenderProps, TouchableRippleBase} from './TouchableRippleBase';
 
 export type TouchableProps = PressableProps &
@@ -20,9 +20,9 @@ const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>((props,
 
         return (
             <Container {...containerProps} ref={ref} testID={`touchableRipple--${id}`}>
-                <Main shape={shape} testID={`touchableRipple__main--${id}`}>
+                <Content shape={shape} testID={`touchableRipple__content--${id}`}>
                     {children}
-                </Main>
+                </Content>
             </Container>
         );
     };

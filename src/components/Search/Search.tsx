@@ -1,6 +1,7 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {View, ViewProps} from 'react-native';
-import {Container} from './Search.styles';
+import {Animated, View, ViewProps} from 'react-native';
+import {Divider} from '../Divider/Divider';
+import {Container, Content, Header, Leading, List, Trailing} from './Search.styles';
 import {RenderProps, SearchBase} from './SearchBase';
 
 export interface SourceMenu {
@@ -12,16 +13,31 @@ export interface SearchProps extends Partial<ViewProps & RefAttributes<View>> {
     layout?: 'horizontal' | 'vertical';
     menus?: SourceMenu[];
     onChange?: (key: string) => void;
+    leading?: React.JSX.Element;
+    trailing?: React.JSX.Element;
 }
 
+const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const ForwardRefSearch = forwardRef<View, SearchProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {id, children, ...containerProps} = renderProps;
+        const {id, children, renderStyle, leading, trailing, ...containerProps} = renderProps;
+        const {height} = renderStyle;
 
         return (
-            <Container {...containerProps} ref={ref} testID={`search--${id}`}>
-                {children}
-            </Container>
+            <AnimatedContainer
+                {...containerProps}
+                ref={ref}
+                style={{height}}
+                testID={`search--${id}`}
+                shape="full">
+                <Header>
+                    {leading && <Leading>{leading}</Leading>}
+                    <Content></Content>
+                    {trailing && <Trailing>{trailing}</Trailing>}
+                </Header>
+                <Divider />
+                <List>{children}</List>
+            </AnimatedContainer>
         );
     };
 

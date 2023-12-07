@@ -20,15 +20,15 @@ export interface IconProps
 
 const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {id, renderStyle, style, children} = renderProps;
+        const {id, renderStyle, children, ...containerProps} = renderProps;
         const {height, width} = renderStyle;
 
         return (
             <Container
+                {...containerProps}
                 accessibilityRole="image"
                 height={height}
                 ref={ref}
-                style={style}
                 testID={`icon--${id}`}
                 width={width}>
                 {children}

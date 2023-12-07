@@ -6,14 +6,14 @@ import {
     ActiveIndicator,
     Container,
     Content,
-    Core,
-    CoreInner,
+    Header,
+    HeaderInner,
+    HeaderPressable,
     Label,
     LabelText,
     LabelTextBackground,
     LabelTextBackgroundContainer,
     LeadingIcon,
-    Main,
     SupportingText,
     TrailingIcon,
 } from './TextField.styles';
@@ -34,7 +34,7 @@ export interface TextFieldProps
 const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
 const AnimatedLabel = Animated.createAnimatedComponent(Label);
 const AnimatedLabelTextBackground = Animated.createAnimatedComponent(LabelTextBackground);
-const AnimatedMain = Animated.createAnimatedComponent(Main);
+const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner);
 const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
@@ -45,7 +45,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             inputState,
             labelText,
             leadingIcon,
-            onCoreLayout,
+            onHeaderLayout,
             onHoverIn,
             onHoverOut,
             onLabelTextLayout,
@@ -67,8 +67,8 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             backgroundColor,
             borderColor,
             borderWidth,
-            coreHeight,
-            coreWidth,
+            headerHeight,
+            headerWidth,
             labelColor,
             labelLeft,
             labelLineHeight,
@@ -105,17 +105,17 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                 accessibilityRole={state === 'error' ? 'alert' : 'keyboardkey'}
                 style={style}
                 testID={`textfield--${id}`}>
-                <Core onLayout={onCoreLayout} testID={`textfield__core--${id}`}>
-                    <CoreInner
+                <Header onLayout={onHeaderLayout} testID={`textfield__header--${id}`}>
+                    <HeaderPressable
                         onHoverIn={onHoverIn}
                         onHoverOut={onHoverOut}
                         onPress={onPress}
-                        testID={`textfield__coreInner--${id}`}>
-                        <AnimatedMain
+                        testID={`textfield__headerPressable--${id}`}>
+                        <AnimatedHeaderInner
                             leadingIconShow={!!leadingIcon}
                             shape={shape}
                             style={{backgroundColor, borderColor, borderWidth}}
-                            testID={`textField__main--${id}`}
+                            testID={`textField__headerInner--${id}`}
                             trailingIconShow={!!trailingIcon}>
                             {leadingIcon && (
                                 <LeadingIcon testID={`textfield__leadingIcon--${id}`}>
@@ -134,7 +134,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                 </TrailingIcon>
                             )}
 
-                            {type === 'filled' && typeof coreWidth === 'number' && (
+                            {type === 'filled' && typeof headerWidth === 'number' && (
                                 <>
                                     <AnimatedActiveIndicator
                                         style={{
@@ -142,15 +142,15 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                             height: activeIndicatorHeight,
                                         }}
                                         testID={`textfield__activeIndicator--${id}`}
-                                        width={coreWidth}
+                                        width={headerWidth}
                                     />
 
                                     <Hovered
-                                        height={coreHeight}
+                                        height={headerHeight}
                                         shape={shape}
                                         state={inputState === 'focused' ? 'enabled' : state}
                                         underlayColor={underlayColor}
-                                        width={coreWidth}
+                                        width={headerWidth}
                                     />
                                 </>
                             )}
@@ -175,18 +175,18 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                     </LabelTextBackgroundContainer>
                                 </>
                             )}
-                        </AnimatedMain>
-                    </CoreInner>
+                        </AnimatedHeaderInner>
+                    </HeaderPressable>
 
-                    {disabled && typeof coreWidth === 'number' && (
+                    {disabled && typeof headerWidth === 'number' && (
                         <Disabled
-                            height={coreHeight}
+                            height={headerHeight}
                             shape={shape}
                             testID={`textField__disabled--${id}`}
-                            width={coreWidth}
+                            width={headerWidth}
                         />
                     )}
-                </Core>
+                </Header>
 
                 <AnimatedSupportingText
                     style={{color: supportingTextColor, opacity: supportingTextOpacity}}

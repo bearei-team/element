@@ -12,7 +12,7 @@ export type ContainerProps = Omit<RenderProps, 'renderStyle'> & {
 export const Container = styled(Shape)<ContainerProps>`
     pointer-events: none;
     position: absolute;
-    z-index: 128;
+    z-index: 1024;
 
     ${({height, width, y, x}) => css`
         height: ${height}px;

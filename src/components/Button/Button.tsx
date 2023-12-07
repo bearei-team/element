@@ -4,7 +4,7 @@ import {Disabled} from '../Common/Common.styles';
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
 import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
-import {Container, Icon, LabelText, Main} from './Button.styles';
+import {Container, Content, Icon, LabelText} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
 export type ButtonType = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
@@ -19,7 +19,7 @@ export interface ButtonProps extends TouchableRippleProps {
     category?: Category;
 }
 
-const AnimatedMain = Animated.createAnimatedComponent(Main);
+const AnimatedContent = Animated.createAnimatedComponent(Content);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
@@ -40,7 +40,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             ...touchableRippleProps
         } = renderProps;
 
-        const {color, touchableRippleHeight, touchableRippleWidth, ...mainStyle} = renderStyle;
+        const {color, touchableRippleHeight, touchableRippleWidth, ...contentStyle} = renderStyle;
         const isTouchableRippleLaidOut = typeof touchableRippleWidth === 'number';
 
         return (
@@ -54,12 +54,12 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                         ref={ref}
                         shape={shape}
                         underlayColor={underlayColor}>
-                        <AnimatedMain
+                        <AnimatedContent
                             category={category}
                             shape={shape}
                             showIcon={showIcon}
-                            style={{...(typeof style === 'object' && style), ...mainStyle}}
-                            testID={`button__main--${id}`}
+                            style={{...(typeof style === 'object' && style), ...contentStyle}}
+                            testID={`button__content--${id}`}
                             type={type}>
                             {showIcon && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
                             {category === 'button' && (
@@ -70,7 +70,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                                     {labelText}
                                 </AnimatedLabelText>
                             )}
-                        </AnimatedMain>
+                        </AnimatedContent>
 
                         {isTouchableRippleLaidOut && (
                             <Hovered
