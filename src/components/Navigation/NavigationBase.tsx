@@ -1,7 +1,7 @@
 import {FC, useEffect, useId} from 'react';
 import {useImmer} from 'use-immer';
 import {Item} from './Item/Item';
-import {NavigationBarProps, NavigationSourceMenu} from './NavigationBar';
+import {NavigationBarProps, NavigationSourceMenu} from './Navigation';
 
 export type RenderProps = NavigationBarProps;
 export interface NavigationBarBaseProps extends NavigationBarProps {

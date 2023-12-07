@@ -11,12 +11,9 @@ export interface UseAnimatedOptions {
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {state} = options;
-    const [opacityAnimated] = useAnimatedValue(0);
+    const [stateAnimated] = useAnimatedValue(1);
     const theme = useTheme();
-    const opacity = opacityAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, ['pressIn', 'focused', 'longPressIn'].includes(state) ? 0.12 : 0.08],
-    });
+    const scale = stateAnimated.interpolate({inputRange: [0, 1, 2], outputRange: [0.95, 1, 1.05]});
 
     const processAnimatedTiming = useCallback(
         (animation: Animated.Value, toValue: number) => {
@@ -34,11 +31,11 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        processAnimatedTiming(
-            opacityAnimated,
-            ['hovered', 'focused', 'pressIn', 'longPressIn'].includes(state) ? 1 : 0,
-        );
-    }, [opacityAnimated, processAnimatedTiming, state]);
+        const pressedValue = state === 'pressIn' ? 0 : 1;
+        processAnimatedTiming(stateAnimated, state === 'hovered' ? 2 : pressedValue);
+    }, [processAnimatedTiming, state, stateAnimated]);
 
-    return {opacity};
+    return {
+        scale,
+    };
 };

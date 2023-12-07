@@ -1,10 +1,10 @@
-import {View} from 'react-native';
+import {Pressable} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {RenderProps} from './IconBase';
 
 export type ContainerProps = Pick<RenderProps, 'width' | 'height'>;
 
-export const Container = styled(View)<ContainerProps>`
+export const Container = styled(Pressable)<ContainerProps>`
     display: flex;
     flex: 1;
 

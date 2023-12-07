@@ -1,5 +1,5 @@
 import React, {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, TextInput, TextInputProps} from 'react-native';
+import {Animated, PressableProps, TextInput, TextInputProps} from 'react-native';
 import {Disabled, ShapeProps} from '../Common/Common.styles';
 import {Hovered} from '../Hovered/Hovered';
 import {
@@ -21,7 +21,9 @@ import {RenderProps, TextFieldBase} from './TextFieldBase';
 
 export type TextFieldType = 'filled' | 'outlined';
 export interface TextFieldProps
-    extends Partial<TextInputProps & RefAttributes<TextInput> & Pick<ShapeProps, 'shape'>> {
+    extends Partial<
+        TextInputProps & PressableProps & RefAttributes<TextInput> & Pick<ShapeProps, 'shape'>
+    > {
     disabled?: boolean;
     error?: boolean;
     labelText?: string;
@@ -42,7 +44,6 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             children,
             disabled,
             id,
-            inputState,
             labelText,
             leadingIcon,
             onHeaderLayout,
@@ -148,7 +149,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                     <Hovered
                                         height={headerHeight}
                                         shape={shape}
-                                        state={inputState === 'focused' ? 'enabled' : state}
+                                        state={state}
                                         underlayColor={underlayColor}
                                         width={headerWidth}
                                     />

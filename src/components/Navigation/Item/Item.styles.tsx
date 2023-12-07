@@ -23,7 +23,7 @@ export const Container = styled(View)`
     `}
 `;
 
-export const IconContainer = styled.Pressable<IconInnerProps>`
+export const Header = styled.Pressable<IconInnerProps>`
     display: flex;
     flex-direction: row;
     position: relative;

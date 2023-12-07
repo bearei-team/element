@@ -1,13 +1,7 @@
 import {FC, useCallback, useEffect, useId} from 'react';
-import {
-    GestureResponderEvent,
-    LayoutChangeEvent,
-    MouseEvent,
-    NativeSyntheticEvent,
-    TargetedEvent,
-} from 'react-native';
-import {useTheme} from 'styled-components/native';
+import {GestureResponderEvent, LayoutChangeEvent} from 'react-native';
 import {useImmer} from 'use-immer';
+import {ProcessStateOptions, useHandleEvent} from '../../hooks/useHandleEvent';
 import {State} from '../Common/interface';
 import {Ripple, RippleAnimatedOut, RippleProps} from './Ripple/Ripple';
 import {TouchableRippleProps} from './TouchableRipple';
@@ -18,10 +12,6 @@ export interface TouchableRippleBaseProps extends TouchableRippleProps {
 }
 export interface Ripple extends Pick<RippleProps, 'location'> {
     animatedOut?: RippleAnimatedOut;
-}
-export interface ProcessStateOptions {
-    callback?: () => void;
-    event?: GestureResponderEvent;
 }
 
 export type RippleSequence = Record<string, Ripple>;
@@ -35,45 +25,39 @@ const renderRipples = (rippleSequence: RippleSequence, options: RenderRipplesOpt
         <Ripple {...options} key={`ripple_${sequence}`} location={location} sequence={sequence} />
     ));
 
-export const TouchableRippleBase: FC<TouchableRippleBaseProps> = Props => {
-    const {
-        children,
-        onBlur,
-        onFocus,
-        onHoverIn,
-        onHoverOut,
-        onLayout,
-        onPressIn,
-        onPressOut,
-        render,
-        underlayColor,
-        ...renderProps
-    } = Props;
-
+export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
+    const {children, onLayout, render, underlayColor, ...renderProps} = props;
     const [layout, setLayout] = useImmer({} as RippleProps['touchableLayout']);
     const [rippleSequence, setRippleSequence] = useImmer<RippleSequence>({});
-    const [state, setState] = useImmer<State>('enabled');
     const id = useId();
-    const theme = useTheme();
-    const mobile = ['ios', 'android'].includes(theme.OS);
 
-    const processPressed = (event: GestureResponderEvent) => {
-        const {locationX, locationY} = event.nativeEvent;
+    const processPressed = useCallback(
+        (event: GestureResponderEvent) => {
+            const {locationX, locationY} = event.nativeEvent;
 
-        setRippleSequence(draft => {
-            draft[`${Date.now()}`] = {
-                animatedOut: undefined,
-                location: {locationX, locationY},
-            };
-        });
-    };
+            setRippleSequence(draft => {
+                draft[`${Date.now()}`] = {
+                    animatedOut: undefined,
+                    location: {locationX, locationY},
+                };
+            });
+        },
+        [setRippleSequence],
+    );
 
-    const processState = (nextState: State, {event, callback}: ProcessStateOptions) => {
-        nextState === 'pressed' && event && processPressed(event);
+    const processState = useCallback(
+        (nextState: State, options = {} as ProcessStateOptions) => {
+            const {event} = options;
 
-        setState(() => nextState);
-        callback?.();
-    };
+            nextState === 'pressIn' && processPressed(event as GestureResponderEvent);
+        },
+        [processPressed],
+    );
+
+    const {state, mobile, ...handleEvent} = useHandleEvent({
+        ...props,
+        onProcessState: processState,
+    });
 
     const processLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
@@ -83,50 +67,28 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = Props => {
     };
 
     const processRippleOut = useCallback(() => {
-        const rippleOut = ([sequence, {animatedOut}]: [string, Ripple]) =>
+        const rippleOut = (options: [string, Ripple]) => {
+            const [sequence, {animatedOut}] = options;
+
             animatedOut?.(() =>
                 setRippleSequence(draft => {
                     delete draft[sequence];
                 }),
             );
-
+        };
         Object.entries(rippleSequence).forEach(rippleOut);
     }, [rippleSequence, setRippleSequence]);
 
     const processRippleAnimatedEnd = useCallback(
         (sequence: string, animatedOut: RippleAnimatedOut) => {
-            setState(curState => {
-                curState === 'enabled'
-                    ? animatedOut(() =>
-                          setRippleSequence(draft => {
-                              delete draft[sequence];
-                          }),
-                      )
-                    : setRippleSequence(draft => {
-                          draft[sequence] && (draft[sequence].animatedOut = animatedOut);
-                      });
-            });
+            animatedOut(() =>
+                setRippleSequence(draft => {
+                    delete draft[sequence];
+                }),
+            );
         },
-        [setRippleSequence, setState],
+        [setRippleSequence],
     );
-
-    const handlePressIn = (event: GestureResponderEvent) =>
-        processState('pressed', {event, callback: () => onPressIn?.(event)});
-
-    const handlePressOut = (event: GestureResponderEvent) =>
-        processState(mobile ? 'enabled' : 'hovered', {callback: () => onPressOut?.(event)});
-
-    const handleHoverIn = (event: MouseEvent) =>
-        processState('hovered', {callback: () => onHoverIn?.(event)});
-
-    const handleHoverOut = (event: MouseEvent) =>
-        processState('enabled', {callback: () => onHoverOut?.(event)});
-
-    const handleFocus = (event: NativeSyntheticEvent<TargetedEvent>) =>
-        processState('focused', {callback: () => onFocus?.(event)});
-
-    const handleBlur = (event: NativeSyntheticEvent<TargetedEvent>) =>
-        processState('enabled', {callback: () => onBlur?.(event)});
 
     const childrenElement = (
         <>
@@ -148,14 +110,9 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = Props => {
 
     return render({
         ...renderProps,
+        ...handleEvent,
         children: childrenElement,
         id,
-        onBlur: handleBlur,
-        onFocus: handleFocus,
-        onHoverIn: handleHoverIn,
-        onHoverOut: handleHoverOut,
         onLayout: processLayout,
-        onPressIn: handlePressIn,
-        onPressOut: handlePressOut,
     });
 };

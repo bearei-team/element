@@ -1,10 +1,13 @@
 import {FC, useId} from 'react';
+import {Animated, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
+import {useHandleEvent} from '../../hooks/useHandleEvent';
 import {IconProps} from './Icon';
 import {icon} from './icons/icon';
+import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends IconProps {
-    renderStyle: {
+    renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         height?: number;
         width?: number;
     };
@@ -21,6 +24,7 @@ export const IconBase: FC<IconBaseProps> = props => {
         height,
         name = 'circle',
         render,
+        state: eventState,
         type = 'filled',
         width,
         ...renderProps
@@ -28,12 +32,19 @@ export const IconBase: FC<IconBaseProps> = props => {
 
     const id = useId();
     const theme = useTheme();
+    const {state, ...handleEvent} = useHandleEvent({...props, eventState});
+    const {scale} = useAnimated({state});
     const SvgIcon = icon?.[type]?.[category]?.[name];
 
     return render({
+        ...handleEvent,
         ...renderProps,
         id,
-        renderStyle: {height, width},
+        renderStyle: {
+            height,
+            width,
+            transform: [{scale}],
+        },
         children: SvgIcon && (
             <SvgIcon
                 width="100%"

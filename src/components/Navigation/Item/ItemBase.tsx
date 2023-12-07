@@ -19,10 +19,10 @@ import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends ItemProps {
     pressPosition: number;
-    onIconContainerLayout: (event: LayoutChangeEvent) => void;
+    onHeaderLayout: (event: LayoutChangeEvent) => void;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        iconContainerHeight: number;
-        iconContainerWidth: number;
+        headerHeight: number;
+        headerWidth: number;
         iconBackgroundWidth: AnimatedInterpolation;
         iconBackgroundColor: AnimatedInterpolation;
         labelColor: AnimatedInterpolation;
@@ -36,7 +36,7 @@ export interface ItemBaseProps extends ItemProps {
 }
 
 const initialState = {
-    iconContainerLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    headerLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
     state: 'enabled' as State,
     pressPosition: 0.5,
 };
@@ -56,7 +56,7 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{iconContainerLayout, state, pressPosition}, setState] = useImmer(initialState);
+    const [{headerLayout, state, pressPosition}, setState] = useImmer(initialState);
     const id = useId();
     const theme = useTheme();
     const {iconBackgroundColor, labelColor, iconBackgroundWidth, labelHeight} = useAnimated({
@@ -79,11 +79,11 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         [setState],
     );
 
-    const processIconContainerLayout = (event: LayoutChangeEvent) => {
+    const processHeaderLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
 
         setState(draft => {
-            draft.iconContainerLayout = {height, width};
+            draft.headerLayout = {height, width};
         });
     };
 
@@ -112,7 +112,7 @@ export const ItemBase: FC<ItemBaseProps> = props => {
     const handlePressIn = useCallback(
         (event: GestureResponderEvent) => {
             const {locationX} = event.nativeEvent;
-            const position = locationX / iconContainerLayout.width;
+            const position = locationX / headerLayout.width;
 
             !mobile &&
                 setState(draft => {
@@ -121,7 +121,7 @@ export const ItemBase: FC<ItemBaseProps> = props => {
 
             processState('pressed', () => onPressIn?.(event));
         },
-        [iconContainerLayout.width, mobile, onPressIn, processState, setState],
+        [headerLayout.width, mobile, onPressIn, processState, setState],
     );
 
     const handlePressOut = useCallback(
@@ -149,14 +149,14 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         onFocus: handleFocus,
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
-        onIconContainerLayout: processIconContainerLayout,
+        onHeaderLayout: processHeaderLayout,
         onPressIn: handlePressIn,
         onPressOut: handlePressOut,
         renderStyle: {
             iconBackgroundColor,
             iconBackgroundWidth,
-            iconContainerHeight: iconContainerLayout.height,
-            iconContainerWidth: iconContainerLayout.width,
+            headerHeight: headerLayout.height,
+            headerWidth: headerLayout.width,
             labelColor,
             labelHeight,
         },

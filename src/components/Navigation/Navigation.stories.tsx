@@ -1,5 +1,5 @@
 import {Meta, StoryObj} from '@storybook/react';
-import {NavigationBar, NavigationBarProps} from './NavigationBar';
+import {NavigationBar, NavigationBarProps} from './Navigation';
 
 export default {
     title: 'components/NavigationBar',

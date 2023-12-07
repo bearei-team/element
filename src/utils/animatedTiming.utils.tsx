@@ -16,7 +16,6 @@ export const animatedTiming =
             toValue,
 
             /**
-             * TODO:
              * Currently, many animation features are only supported at runtime in JavaScript.
              * The decision to iterate towards native animation features will be evaluated based
              * on the performance requirements of the actual released products.

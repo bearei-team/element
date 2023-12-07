@@ -73,7 +73,9 @@ export const Content = styled(Shape)<ContentProps>`
 
     ${({theme, category = 'button'}) => {
         const categoryType = {
-            button: css``,
+            button: css`
+                height: ${theme.adaptSize(40)}px;
+            `,
             iconButton: css`
                 width: ${theme.adaptSize(40)}px;
                 height: ${theme.adaptSize(40)}px;

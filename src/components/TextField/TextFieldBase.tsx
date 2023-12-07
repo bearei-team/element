@@ -1,29 +1,16 @@
 import {FC, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
-import {
-    Animated,
-    GestureResponderEvent,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    MouseEvent,
-    NativeSyntheticEvent,
-    TextInput,
-    TextInputFocusEventData,
-    ViewStyle,
-} from 'react-native';
+import {Animated, LayoutChangeEvent, LayoutRectangle, TextInput, ViewStyle} from 'react-native';
 import {useImmer} from 'use-immer';
+import {useHandleEvent} from '../../hooks/useHandleEvent';
 import {AnimatedInterpolation, State} from '../Common/interface';
 import {TextFieldProps} from './TextField';
 import {Input} from './TextField.styles';
-import {ProcessAnimatedTimingOptions, useAnimated} from './useAnimated';
+import {useAnimated} from './useAnimated';
 import {useUnderlayColor} from './useUnderlayColor';
 
 export interface RenderProps extends TextFieldProps {
-    inputState: State;
-    onHoverIn: (event: MouseEvent) => void;
-    onHoverOut: (event: MouseEvent) => void;
     onLabelTextLayout: (event: LayoutChangeEvent) => void;
     onHeaderLayout: (event: LayoutChangeEvent) => void;
-    onPress: (event: GestureResponderEvent) => void;
     renderStyle: Animated.WithAnimatedObject<
         ViewStyle & {
             activeIndicatorColor: AnimatedInterpolation;
@@ -48,11 +35,6 @@ export interface RenderProps extends TextFieldProps {
     underlayColor: string;
 }
 
-export interface ProcessStateOptions extends Pick<ProcessAnimatedTimingOptions, 'finished'> {
-    element?: 'input' | 'container';
-    filled?: boolean;
-}
-
 export interface TextFieldBaseProps extends TextFieldProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
@@ -60,10 +42,8 @@ export interface TextFieldBaseProps extends TextFieldProps {
 export type RenderTextInputOptions = TextFieldProps;
 
 const initialState = {
-    inputState: 'enabled' as State,
     labelTextLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
     headerLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
-    state: 'enabled' as State,
     underlayColor: '',
     value: '',
 };
@@ -73,13 +53,11 @@ const renderTextInput = (options: RenderTextInputOptions) => <AnimatedTextInput 
 export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     const {
         defaultValue,
-        disabled,
-        error,
+        disabled = false,
+        error = false,
         labelText = 'Label',
         leadingIcon,
-        onBlur,
         onChangeText,
-        onFocus,
         placeholder,
         ref,
         render,
@@ -90,49 +68,47 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{inputState, state, headerLayout, labelTextLayout, value}, setState] =
-        useImmer(initialState);
-
+    const [{headerLayout, labelTextLayout, value}, setState] = useImmer(initialState);
     const [underlayColor] = useUnderlayColor({type});
-    const {onAnimated, inputHeight, ...animatedStyle} = useAnimated({
+    const {onAnimated, inputHeight, inputColor, ...animatedStyle} = useAnimated({
         filled: !!value || !!placeholder,
         labelTextWidth: labelTextLayout.width,
         showSupportingText: !!supportingText,
         showLeadingIcon: !!leadingIcon,
         type,
+        error,
     });
 
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
+
     const processState = useCallback(
-        (nextState: State, options: ProcessStateOptions = {}) => {
-            const {element = 'container', finished} = options;
-
-            setState(draft => {
-                if (element === 'input') {
-                    draft.inputState = nextState;
-                } else {
-                    draft.state = nextState;
-                }
+        (nextState: State) => {
+            onAnimated(nextState, {
+                finished: () => nextState === 'focused' && inputRef.current?.focus(),
             });
-
-            onAnimated(nextState, {finished, input: element === 'input'});
         },
 
-        [onAnimated, setState],
+        [inputRef, onAnimated],
     );
 
-    const processAbnormalState = useCallback(
-        (nextState: State, abnormalValue: boolean) => {
-            if (abnormalValue) {
-                return processState(nextState);
-            }
+    const {
+        state,
+        onPress: _onPress,
+        onPressIn,
+        onLongPress,
+        ...handleEvent
+    } = useHandleEvent({
+        ...props,
+        onProcessState: processState,
+    });
 
-            processState(state);
-            processState(inputState, {element: 'input'});
+    const processAbnormalState = useCallback(
+        (nextState: State) => {
+            processState(nextState);
         },
-        [inputState, processState, state],
+        [processState],
     );
 
     const processHeaderLayout = (event: LayoutChangeEvent) => {
@@ -151,35 +127,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         });
     };
 
-    const handleHoverIn = () => processState('hovered');
-    const handleHoverOut = () => processState('enabled');
-    const handlePress = () =>
-        inputState !== 'focused' &&
-        processState('pressed', {
-            finished: () => {
-                inputRef.current?.focus();
-            },
-        });
-
-    const handleFocus = useCallback(
-        (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
-            processState('focused', {element: 'input'});
-            onFocus?.(event);
-        },
-        [onFocus, processState],
-    );
-
-    const handleBlur = useCallback(
-        (event: NativeSyntheticEvent<TextInputFocusEventData>) => {
-            state === 'enabled' && processState('enabled', {element: 'input'});
-
-            processState('enabled', {element: 'input'});
-
-            onBlur?.(event);
-        },
-        [onBlur, processState, state],
-    );
-
     const handleChangeText = useCallback(
         (text: string) => {
             setState(draft => {
@@ -195,37 +142,32 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         () =>
             renderTextInput({
                 defaultValue,
-                onBlur: handleBlur,
                 onChangeText: handleChangeText,
-                onFocus: handleFocus,
                 ref: inputRef,
-                style: {height: inputHeight},
+                style: {height: inputHeight, color: inputColor},
                 testID: `textfield__input--${id}`,
             }),
-        [defaultValue, handleBlur, handleChangeText, handleFocus, id, inputHeight, inputRef],
+        [defaultValue, handleChangeText, id, inputHeight, inputRef],
     );
 
     useEffect(() => {
-        processAbnormalState('disabled', !!disabled);
-    }, [disabled, processAbnormalState]);
+        processAbnormalState(disabled ? 'disabled' : state);
+    }, [disabled, processAbnormalState, state]);
 
     useEffect(() => {
-        !disabled && processAbnormalState('error', !!error);
-    }, [disabled, error, processAbnormalState]);
+        !disabled && processState(error ? 'error' : state);
+    }, [disabled, error, processState, state]);
 
     return render({
+        ...handleEvent,
         ...renderProps,
         children,
         disabled,
         id,
-        inputState,
         labelText,
         leadingIcon,
         onHeaderLayout: processHeaderLayout,
-        onHoverIn: handleHoverIn,
-        onHoverOut: handleHoverOut,
         onLabelTextLayout: processLabelTextLayout,
-        onPress: handlePress,
         placeholder,
         renderStyle: {
             ...animatedStyle,

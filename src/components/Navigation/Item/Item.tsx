@@ -3,7 +3,7 @@ import {Animated, PressableProps, View, ViewProps} from 'react-native';
 import {ShapeProps} from '../../Common/Common.styles';
 import {State} from '../../Common/interface';
 import {Hovered} from '../../Hovered/Hovered';
-import {Container, Icon, IconBackground, IconContainer, LabelText} from './Item.styles';
+import {Container, Header, Icon, IconBackground, LabelText} from './Item.styles';
 import {ItemBase, RenderProps} from './ItemBase';
 
 export type PropsBase = Partial<
@@ -43,7 +43,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
             onFocus,
             onHoverIn,
             onHoverOut,
-            onIconContainerLayout,
+            onHeaderLayout,
             onPress,
             onPressIn,
             onPressOut,
@@ -58,8 +58,8 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
         const {
             iconBackgroundColor,
             iconBackgroundWidth,
-            iconContainerHeight,
-            iconContainerWidth,
+            headerHeight,
+            headerWidth,
             labelColor,
             labelHeight,
         } = renderStyle;
@@ -71,7 +71,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                 accessibilityRole="tab"
                 ref={ref}
                 testID={`navigationBarItem--${id}`}>
-                <IconContainer
+                <Header
                     pressPosition={pressPosition}
                     onBlur={onBlur}
                     onFocus={onFocus}
@@ -79,9 +79,9 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                     onHoverOut={onHoverOut}
                     onPressIn={onPressIn}
                     onPressOut={onPressOut}
-                    onLayout={onIconContainerLayout}
+                    onLayout={onHeaderLayout}
                     onPress={onPress}
-                    testID={`navigationBarItem__iconContainer--${id}`}>
+                    testID={`navigationBarItem__header--${id}`}>
                     <AnimatedIconBackground
                         shape={shape}
                         style={{backgroundColor: iconBackgroundColor, width: iconBackgroundWidth}}
@@ -92,16 +92,16 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                         {active ? activeIcon : icon}
                     </Icon>
 
-                    {typeof iconContainerWidth === 'number' && (
+                    {typeof headerWidth === 'number' && (
                         <Hovered
-                            height={iconContainerHeight}
+                            height={headerHeight}
                             shape={shape}
                             state={state}
                             underlayColor={underlayColor}
-                            width={iconContainerWidth}
+                            width={headerWidth}
                         />
                     )}
-                </IconContainer>
+                </Header>
 
                 <AnimatedLabelText
                     style={{color: labelColor, height: labelHeight}}

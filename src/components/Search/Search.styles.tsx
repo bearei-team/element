@@ -15,9 +15,7 @@ export const Container = styled(Shape)`
 `;
 
 export const Header = styled.View``;
-export const Leading = styled.View``;
+export const LeadingIcon = styled.View``;
 export const Content = styled.View``;
-
-export const Trailing = styled(Leading)``;
-
+export const TrailingIcon = styled(LeadingIcon)``;
 export const List = styled.View``;

@@ -14,6 +14,9 @@ export interface ListProps extends Partial<ViewProps & RefAttributes<View>> {
     close?: boolean;
 }
 
+/**
+ * TODO:
+ */
 const ForwardRefList = forwardRef<View, ListProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {id, children, ...containerProps} = renderProps;

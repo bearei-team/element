@@ -5,15 +5,15 @@ import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 import {State} from '../Common/interface';
 import {TextFieldType} from './TextField';
-import {ProcessStateOptions} from './TextFieldBase';
 
 export interface ProcessAnimatedTimingOptions {
     toValue: number;
     finished?: () => void;
 }
 
-export type ProcessAnimatedOptions = ProcessStateOptions &
-    Pick<ProcessAnimatedTimingOptions, 'finished'> & {input?: boolean};
+export type ProcessAnimatedOptions = Pick<ProcessAnimatedTimingOptions, 'finished'> & {
+    input?: boolean;
+};
 
 export interface UseAnimatedOptions {
     filled: boolean;
@@ -21,16 +21,18 @@ export interface UseAnimatedOptions {
     showLeadingIcon: boolean;
     showSupportingText: boolean;
     type: TextFieldType;
+    error: boolean;
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {filled, labelTextWidth, showLeadingIcon, showSupportingText, type} = options;
+    const {filled, labelTextWidth, showLeadingIcon, showSupportingText, type, error} = options;
     const [activeIndicatorAnimated] = useAnimatedValue(0);
     const [borderAnimated] = useAnimatedValue(0);
     const [backgroundColorAnimated] = useAnimatedValue(1);
     const [colorAnimated] = useAnimatedValue(1);
     const filledValue = filled ? 1 : 0;
-    const [inputAnimated] = useAnimatedValue(filledValue);
+    const [inputHeightAnimated] = useAnimatedValue(filledValue);
+    const [inputColorAnimated] = useAnimatedValue(1);
     const [labeAnimated] = useAnimatedValue(filledValue);
     const [labelPlaceholderAnimated] = useAnimatedValue(filledValue);
     const [supportingTextColorAnimated] = useAnimatedValue(1);
@@ -51,8 +53,20 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
     const inputHeight = useMemo(
         () =>
-            inputAnimated.interpolate({inputRange: [0, 1], outputRange: [0, theme.adaptSize(24)]}),
-        [inputAnimated, theme],
+            inputHeightAnimated.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, theme.adaptSize(24)],
+            }),
+        [inputHeightAnimated, theme],
+    );
+
+    const inputColor = useMemo(
+        () =>
+            inputColorAnimated.interpolate({
+                inputRange: [0, 1],
+                outputRange: [disabledColor, theme.palette.surface.onSurface],
+            }),
+        [disabledColor, inputColorAnimated, theme.palette.surface.onSurface],
     );
 
     const labelSize = labeAnimated.interpolate({
@@ -182,8 +196,13 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     const processStateAnimated = useCallback(
-        (processStateAnimatedOptions: ProcessAnimatedOptions) => {
-            const {input, finished} = processStateAnimatedOptions;
+        (processStateAnimatedOptions = {} as ProcessAnimatedOptions) => {
+            const {finished} = processStateAnimatedOptions;
+            const processErrorAnimated = () => {
+                processAnimatedTiming(colorAnimated, {toValue: 3});
+                processAnimatedTiming(supportingTextColorAnimated, {toValue: 2});
+                processBorderAnimated(1);
+            };
 
             return {
                 disabled: () => {
@@ -193,49 +212,52 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     processAnimatedTiming(colorAnimated, {toValue});
                     processAnimatedTiming(supportingTextColorAnimated, {toValue});
                     processAnimatedTiming(backgroundColorAnimated, {toValue});
+                    processAnimatedTiming(inputColorAnimated, {toValue});
                 },
                 enabled: () => {
-                    const runInputAnimated = () => {
-                        const toValue = filled ? 1 : 0;
+                    const toValue = filled ? 1 : 0;
 
-                        processBorderAnimated(0);
-                        processAnimatedTiming(colorAnimated, {toValue: 1});
-                        processAnimatedTiming(inputAnimated, {toValue});
-                        processAnimatedTiming(labeAnimated, {toValue});
-                        processAnimatedTiming(labelPlaceholderAnimated, {toValue});
-                    };
+                    processAnimatedTiming(inputHeightAnimated, {toValue});
+                    processAnimatedTiming(labeAnimated, {toValue});
+                    processAnimatedTiming(labelPlaceholderAnimated, {toValue});
+                    processAnimatedTiming(inputColorAnimated, {toValue: 1});
 
-                    input && runInputAnimated();
+                    if (error) {
+                        return processErrorAnimated();
+                    }
 
+                    processAnimatedTiming(colorAnimated, {toValue: 1});
                     processAnimatedTiming(supportingTextColorAnimated, {toValue: 1});
+                    processBorderAnimated(0);
                 },
                 error: () => {
-                    processAnimatedTiming(supportingTextColorAnimated, {toValue: 2});
-                    processAnimatedTiming(colorAnimated, {toValue: 3});
+                    processErrorAnimated();
                 },
                 focused: () => {
-                    const runInputAnimated = () => {
-                        processBorderAnimated(1);
-                        processAnimatedTiming(labelPlaceholderAnimated, {toValue: 1});
-                        processAnimatedTiming(colorAnimated, {toValue: 2});
-                    };
+                    processAnimatedTiming(inputHeightAnimated, {toValue: 1});
+                    processAnimatedTiming(labeAnimated, {toValue: 1, finished});
+                    processAnimatedTiming(labelPlaceholderAnimated, {toValue: 1});
 
-                    input && runInputAnimated();
+                    if (error) {
+                        return processErrorAnimated();
+                    }
+
+                    processAnimatedTiming(colorAnimated, {toValue: 2});
+                    processBorderAnimated(1);
                 },
                 hovered: undefined,
-                pressed: () => {
-                    const toValue = 1;
-
-                    processAnimatedTiming(inputAnimated, {toValue});
-                    processAnimatedTiming(labeAnimated, {toValue, finished});
-                },
+                pressIn: undefined,
+                longPressIn: undefined,
+                pressed: undefined,
             };
         },
         [
             backgroundColorAnimated,
             colorAnimated,
+            error,
             filled,
-            inputAnimated,
+            inputColorAnimated,
+            inputHeightAnimated,
             labeAnimated,
             labelPlaceholderAnimated,
             processAnimatedTiming,
@@ -262,6 +284,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         activeIndicatorColor,
         activeIndicatorHeight,
         backgroundColor,
+        inputColor,
         inputHeight,
         labelColor,
         labelLineHeight,

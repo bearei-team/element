@@ -1,17 +1,8 @@
 import {FC, cloneElement, useCallback, useEffect, useId} from 'react';
-import {
-    Animated,
-    GestureResponderEvent,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    MouseEvent,
-    NativeSyntheticEvent,
-    TargetedEvent,
-    TextStyle,
-    ViewStyle,
-} from 'react-native';
+import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
+import {useHandleEvent} from '../../hooks/useHandleEvent';
 import {State} from '../Common/interface';
 import {ElevationProps} from '../Elevation/Elevation';
 import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
@@ -44,34 +35,29 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     const {
         disabled = false,
         icon,
-        onBlur,
-        onFocus,
-        onHoverIn,
-        onHoverOut,
-        onLayout,
-        onPressIn,
-        onPressOut,
         render,
         category = 'button',
         type = 'filled',
+        onLayout,
         ...renderProps
     } = props;
 
-    const [{elevation, touchableRippleLayout, state}, setState] = useImmer(initialState);
+    const [{elevation, touchableRippleLayout}, setState] = useImmer(initialState);
     const [underlayColor] = useUnderlayColor({type, category});
-    const {backgroundColor, borderColor, color} = useAnimated({type, disabled, state});
     const id = useId();
     const theme = useTheme();
-    const mobile = ['ios', 'android'].includes(theme.OS);
-    const border = borderColor && {
-        borderColor,
-        borderStyle: 'solid' as ViewStyle['borderStyle'],
-        borderWidth: theme.adaptSize(1),
-    };
-
     const processElevation = useCallback(
         (nextState: State) => {
-            const level = {disabled: 0, enabled: 0, error: 0, focused: 0, hovered: 1, pressed: 0};
+            const level = {
+                disabled: 0,
+                enabled: 0,
+                error: 0,
+                focused: 0,
+                hovered: 1,
+                pressed: 0,
+                pressIn: 0,
+                longPressIn: 0,
+            };
 
             category !== 'iconButton' &&
                 setState(draft => {
@@ -84,19 +70,25 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     );
 
     const processState = useCallback(
-        (nextState: State, callback?: () => void) => {
+        (nextState: State) => {
             const isProcessElevation = ['elevated', 'filled', 'tonal'].includes(type);
 
             isProcessElevation && processElevation(nextState);
-
-            setState(draft => {
-                draft.state = nextState;
-            });
-
-            callback?.();
         },
-        [processElevation, setState, type],
+        [processElevation, type],
     );
+
+    const {state, ...handleEvent} = useHandleEvent({
+        ...props,
+        onProcessState: processState,
+    });
+
+    const {backgroundColor, borderColor, color} = useAnimated({type, disabled, state});
+    const border = borderColor && {
+        borderColor,
+        borderStyle: 'solid' as ViewStyle['borderStyle'],
+        borderWidth: theme.adaptSize(1),
+    };
 
     const processLayout = useCallback(
         (event: LayoutChangeEvent) => {
@@ -111,39 +103,6 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         [onLayout, setState],
     );
 
-    const handlePressIn = useCallback(
-        (event: GestureResponderEvent) => processState('pressed', () => onPressIn?.(event)),
-        [onPressIn, processState],
-    );
-
-    const handlePressOut = useCallback(
-        (event: GestureResponderEvent) =>
-            processState(mobile ? 'enabled' : 'hovered', () => onPressOut?.(event)),
-        [mobile, onPressOut, processState],
-    );
-
-    const handleHoverIn = useCallback(
-        (event: MouseEvent) => processState('hovered', () => onHoverIn?.(event)),
-        [onHoverIn, processState],
-    );
-
-    const handleHoverOut = useCallback(
-        (event: MouseEvent) => processState('enabled', () => onHoverOut?.(event)),
-        [onHoverOut, processState],
-    );
-
-    const handleFocus = useCallback(
-        (event: NativeSyntheticEvent<TargetedEvent>) =>
-            processState('focused', () => onFocus?.(event)),
-        [onFocus, processState],
-    );
-
-    const handleBlur = useCallback(
-        (event: NativeSyntheticEvent<TargetedEvent>) =>
-            processState('enabled', () => onBlur?.(event)),
-        [onBlur, processState],
-    );
-
     const processIcon = () => {
         const fillType = {
             filled: theme.palette.primary.onPrimary,
@@ -154,6 +113,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         return category === 'button' || !icon
             ? icon
             : cloneElement(icon, {
+                  state,
                   fill: disabled
                       ? theme.color.rgba(theme.palette.surface.onSurface, 0.38)
                       : fillType[type as keyof typeof fillType],
@@ -169,19 +129,14 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     }, [category, disabled, setState, type]);
 
     return render({
+        ...handleEvent,
         ...renderProps,
         category,
         disabled,
         elevation,
         icon: processIcon(),
         id,
-        onBlur: handleBlur,
-        onFocus: handleFocus,
-        onHoverIn: handleHoverIn,
-        onHoverOut: handleHoverOut,
         onLayout: processLayout,
-        onPressIn: handlePressIn,
-        onPressOut: handlePressOut,
         renderStyle: {
             ...border,
             backgroundColor,
