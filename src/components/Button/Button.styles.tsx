@@ -8,11 +8,7 @@ export type LabelTextProps = Omit<ContentProps, 'iconShow'>;
 export type IconProps = Pick<ContentProps, 'category'>;
 
 export const Container = styled(TouchableWithoutFeedback)``;
-
-export const Inner = styled.View`
-    position: relative;
-`;
-
+export const Inner = styled.View``;
 export const Content = styled(Shape)<ContentProps>`
     align-items: center;
     display: flex;

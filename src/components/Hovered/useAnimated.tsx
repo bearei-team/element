@@ -7,15 +7,19 @@ import {State} from '../Common/interface';
 
 export interface UseAnimatedOptions {
     state: State;
+    opacities: [number, number];
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {state} = options;
+    const {state, opacities} = options;
     const [opacityAnimated] = useAnimatedValue(0);
     const theme = useTheme();
     const opacity = opacityAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, ['pressIn', 'focused', 'longPressIn'].includes(state) ? 0.12 : 0.08],
+        outputRange: [
+            0,
+            ['pressIn', 'focused', 'longPressIn'].includes(state) ? opacities[1] : opacities[0],
+        ],
     });
 
     const processAnimatedTiming = useCallback(
@@ -34,11 +38,11 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        processAnimatedTiming(
-            opacityAnimated,
-            ['hovered', 'focused', 'pressIn', 'longPressIn'].includes(state) ? 1 : 0,
-        );
-    }, [opacityAnimated, processAnimatedTiming, state]);
+        const active = ['focused', 'pressIn', 'longPressIn'].includes(state);
+        const toValue = ['hovered', 'focused', 'pressIn', 'longPressIn'].includes(state) ? 1 : 0;
+
+        processAnimatedTiming(opacityAnimated, !opacities[1] && active ? 0 : toValue);
+    }, [opacities, opacityAnimated, processAnimatedTiming, state]);
 
     return {opacity};
 };

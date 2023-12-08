@@ -40,17 +40,3 @@ export const Shape = styled(View)<ShapeProps>`
         );
     }}
 `;
-
-export const Disabled = styled(Shape)<DisabledProps>`
-    left: 0;
-    opacity: 0;
-    position: absolute;
-    top: 0;
-    z-index: 1024;
-
-    ${({height, width}) =>
-        css`
-            height: ${height}px;
-            width: ${width}px;
-        `}
-`;

@@ -10,7 +10,7 @@ export interface HoveredProps
         ViewProps & RefAttributes<Animated.LegacyRef<View>> & Pick<ShapeProps, 'shape'>
     > {
     height?: number;
-    opacity?: number;
+    opacities?: [number, number];
     state?: State;
     underlayColor?: string;
     width?: number;

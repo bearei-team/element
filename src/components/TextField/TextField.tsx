@@ -6,7 +6,7 @@ import {
     TextInputProps,
     TouchableWithoutFeedbackProps,
 } from 'react-native';
-import {Disabled, ShapeProps} from '../Common/Common.styles';
+import {ShapeProps} from '../Common/Common.styles';
 import {Hovered} from '../Hovered/Hovered';
 import {
     ActiveIndicator,
@@ -53,7 +53,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
     const render = (renderProps: RenderProps) => {
         const {
             children,
-            disabled,
+            error,
             id,
             labelText,
             leadingIcon,
@@ -68,7 +68,6 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             trailingIcon,
             type,
             underlayColor,
-            error,
             ...containerProps
         } = renderProps;
 
@@ -161,6 +160,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                             state={state}
                                             underlayColor={underlayColor}
                                             width={headerWidth}
+                                            opacities={[0.08, 0]}
                                         />
                                     </>
                                 )}
@@ -187,15 +187,6 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                 )}
                             </AnimatedHeaderInner>
                         </HeaderPressable>
-
-                        {disabled && typeof headerWidth === 'number' && (
-                            <Disabled
-                                height={headerHeight}
-                                shape={shape}
-                                testID={`textField__disabled--${id}`}
-                                width={headerWidth}
-                            />
-                        )}
                     </Header>
 
                     <AnimatedSupportingText

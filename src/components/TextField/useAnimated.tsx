@@ -40,7 +40,6 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const theme = useTheme();
     const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
     const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
-
     const backgroundColorConfig = {
         filled: {
             inputRange: [0, 1],
@@ -48,7 +47,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         },
         outlined: {
             inputRange: [0, 1],
-            outputRange: [theme.palette.surface.surface, theme.palette.surface.surface],
+            outputRange: [
+                theme.color.rgba(theme.palette.surface.surface, 0),
+                theme.color.rgba(theme.palette.surface.surface, 0),
+            ],
         },
     };
 

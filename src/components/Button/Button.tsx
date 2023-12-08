@@ -5,7 +5,6 @@ import {
     TouchableWithoutFeedback,
     TouchableWithoutFeedbackProps,
 } from 'react-native';
-import {Disabled} from '../Common/Common.styles';
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
@@ -30,7 +29,6 @@ const ForwardRefButton = forwardRef<TouchableWithoutFeedback, ButtonProps>((prop
     const render = (renderProps: RenderProps) => {
         const {
             category,
-            disabled,
             elevation,
             icon,
             iconShow,
@@ -105,14 +103,6 @@ const ForwardRefButton = forwardRef<TouchableWithoutFeedback, ButtonProps>((prop
                             )}
                         </TouchableRipple>
                     </Elevation>
-
-                    {disabled && isTouchableRippleLaidOut && (
-                        <Disabled
-                            height={touchableRippleHeight}
-                            testID={`button__disabled--${id}`}
-                            width={touchableRippleWidth}
-                        />
-                    )}
                 </Inner>
             </Container>
         );

@@ -27,10 +27,7 @@ export const Inner = styled.View`
     `}
 `;
 
-export const Header = styled.View`
-    position: relative;
-`;
-
+export const Header = styled.View``;
 export const HeaderPressable = styled.Pressable``;
 export const HeaderInner = styled(Shape)<HeaderInnerProps>`
     align-items: center;
@@ -128,7 +125,6 @@ export const Input = styled(TextInput)`
     outline-style: none;
 
     ${({theme}) => css`
-        color: ${theme.palette.surface.onSurface};
         font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};

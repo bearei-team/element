@@ -109,6 +109,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
 
     const {state, ...handleEvent} = useHandleEvent({
         ...props,
+        disabled,
         omitEvents: ['onPress', 'onPressIn', 'onLongPress', 'onPressOut'],
         onStateChange: processStateChange,
     });

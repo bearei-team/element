@@ -26,7 +26,7 @@ const renderRipples = (rippleSequence: RippleSequence, options: RenderRipplesOpt
     ));
 
 export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
-    const {children, onLayout, render, underlayColor, ...renderProps} = props;
+    const {children, onLayout, render, underlayColor, disabled = false, ...renderProps} = props;
     const [layout, setLayout] = useImmer({} as RippleProps['touchableLayout']);
     const [rippleSequence, setRippleSequence] = useImmer<RippleSequence>({});
     const id = useId();
@@ -56,6 +56,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
 
     const {state, mobile, ...handleEvent} = useHandleEvent({
         ...props,
+        disabled,
         onStateChange: processStateChange,
     });
 

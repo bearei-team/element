@@ -12,6 +12,7 @@ export type TouchableProps = PressableProps &
 
 export interface TouchableRippleProps extends Omit<TouchableProps, 'children'> {
     children?: ReactNode;
+    disabled?: boolean;
 }
 
 const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>((props, ref) => {

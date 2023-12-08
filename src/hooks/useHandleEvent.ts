@@ -28,6 +28,7 @@ export interface ProcessStateOptions {
 
 export type OnStateChangeOptions = Omit<ProcessStateOptions, 'callback'>;
 export type UseHandleEventOptions = PressableProps & {
+    disabled?: boolean;
     eventState?: State;
     omitEvents?: (keyof UseHandleEventOptions)[];
     onStateChange?: (state: State, options?: OnStateChangeOptions) => void;
@@ -46,6 +47,7 @@ export const useHandleEvent = (options: UseHandleEventOptions) => {
         onPressIn,
         onPressOut,
         onStateChange,
+        disabled = false,
     } = options;
 
     const [state, setState] = useImmer<State>('enabled');
@@ -54,6 +56,10 @@ export const useHandleEvent = (options: UseHandleEventOptions) => {
 
     const processState = useCallback(
         (nextState: State, processStateOptions = {} as ProcessStateOptions) => {
+            if (disabled) {
+                return;
+            }
+
             const {callback, event, eventName} = processStateOptions;
 
             setState(draft => {
@@ -68,7 +74,7 @@ export const useHandleEvent = (options: UseHandleEventOptions) => {
 
             callback?.();
         },
-        [onStateChange, setState],
+        [disabled, onStateChange, setState],
     );
 
     const handlePressIn = useCallback(

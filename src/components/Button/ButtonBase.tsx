@@ -82,6 +82,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
 
     const {state, ...handleEvent} = useHandleEvent({
         ...props,
+        disabled,
         onStateChange: processStateChange,
     });
 
