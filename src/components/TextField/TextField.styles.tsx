@@ -27,7 +27,6 @@ export const Container = styled.View`
 `;
 
 export const Header = styled.View``;
-export const HeaderPressable = styled.Pressable``;
 export const HeaderInner = styled(Shape)<HeaderInnerProps>`
     align-items: center;
     display: flex;

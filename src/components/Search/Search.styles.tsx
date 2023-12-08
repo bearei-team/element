@@ -28,36 +28,36 @@ export const Inner = styled(Shape)<InnerProps>`
 
     ${({theme, width}) =>
         css`
-            width: ${width}px;
             background-color: ${theme.palette.surface.surfaceContainerHigh};
+            width: ${width}px;
         `};
 `;
 
 export const Header = styled.View<HeaderProps>`
+    align-items: center;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
 
     ${({theme, width}) =>
         css`
-            width: ${width}px;
-            padding: ${theme.adaptSize(theme.spacing.extraSmall)}px;
             gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
+            padding: ${theme.adaptSize(theme.spacing.extraSmall)}px;
+            width: ${width}px;
         `};
 `;
 
 export const LeadingIcon = styled.View`
+    align-items: center;
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center;
 
     ${({theme}) =>
         css`
-            width: ${theme.adaptSize(48)}px;
             height: ${theme.adaptSize(48)}px;
             padding: ${theme.adaptSize(theme.spacing.small)}px;
+            width: ${theme.adaptSize(48)}px;
         `};
 `;
 
@@ -71,8 +71,8 @@ export const Content = styled.View`
 `;
 
 export const Input = styled(TextInput)`
-    outline-style: none;
     flex: 1;
+    outline-style: none;
 
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurface};

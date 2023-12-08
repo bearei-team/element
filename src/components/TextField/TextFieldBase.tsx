@@ -184,7 +184,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         leadingIcon,
         onHeaderLayout: processHeaderLayout,
         onLabelTextLayout: processLabelTextLayout,
-
         renderStyle: {
             ...animatedStyle,
             headerHeight: headerLayout.height,

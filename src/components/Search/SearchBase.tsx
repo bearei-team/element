@@ -1,8 +1,9 @@
-import {FC, useCallback, useId, useMemo, useRef} from 'react';
+import {FC, RefObject, useCallback, useId, useMemo, useRef} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextInput, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
-import {AnimatedInterpolation} from '../Common/interface';
+import {useHandleEvent} from '../../hooks/useHandleEvent';
+import {AnimatedInterpolation, State} from '../Common/interface';
 import {Icon} from '../Icon/Icon';
 import {SearchProps, SourceMenu} from './Search';
 import {Input} from './Search.styles';
@@ -13,7 +14,10 @@ export interface RenderProps extends SearchProps {
         innerHeight: AnimatedInterpolation;
     } & {
         width: number;
+        height: number;
     };
+    state: State;
+    underlayColor: string;
 }
 export interface SearchBaseProps extends SearchProps {
     render: (props: RenderProps) => React.JSX.Element;
@@ -40,13 +44,29 @@ const renderTextInput = (options: any) => {
 };
 
 export const SearchBase: FC<SearchBaseProps> = props => {
-    const {render, leadingIcon, onChangeText, defaultValue, placeholder, ...renderProps} = props;
+    const {render, leadingIcon, onChangeText, defaultValue, placeholder, ref, ...renderProps} =
+        props;
     const [{value, layout}, setState] = useImmer(initialState);
     const {innerHeight} = useAnimated({value});
     const id = useId();
-    const inputRef = useRef<TextInput>(null);
+    const textFieldRef = useRef<TextInput>(null);
+    const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const theme = useTheme();
     const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
+    const underlayColor = theme.palette.surface.onSurface;
+
+    const processStateChange = useCallback(
+        (nextState: State) => {
+            nextState === 'focused' && inputRef.current?.focus();
+        },
+        [inputRef],
+    );
+
+    const {state, ...handleEvent} = useHandleEvent({
+        ...props,
+        omitEvents: ['onPress', 'onPressIn', 'onLongPress', 'onPressOut'],
+        onStateChange: processStateChange,
+    });
 
     const handleChangeText = useCallback(
         (text: string) => {
@@ -77,13 +97,16 @@ export const SearchBase: FC<SearchBaseProps> = props => {
                 testID: `search__input--${id}`,
                 value,
             }),
-        [defaultValue, handleChangeText, id, placeholder, placeholderTextColor, value],
+        [defaultValue, handleChangeText, id, inputRef, placeholder, placeholderTextColor, value],
     );
 
     return render({
+        ...handleEvent,
         ...renderProps,
         children,
         id,
+        state,
+        underlayColor,
         onLayout: processLayout,
         renderStyle: {
             width: layout.width,

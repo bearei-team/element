@@ -1,6 +1,7 @@
 import React, {FC, RefAttributes, forwardRef, memo} from 'react';
 import {
     Animated,
+    Pressable,
     PressableProps,
     TextInput,
     TextInputProps,
@@ -15,7 +16,6 @@ import {
     Content,
     Header,
     HeaderInner,
-    HeaderPressable,
     Label,
     LabelText,
     LabelTextBackground,
@@ -116,10 +116,10 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                 testID={`textfield--${id}`}>
                 <Container testID={`textfield__container--${id}`}>
                     <Header onLayout={onHeaderLayout} testID={`textfield__header--${id}`}>
-                        <HeaderPressable
+                        <Pressable
                             onHoverIn={onHoverIn}
                             onHoverOut={onHoverOut}
-                            testID={`textfield__headerPressable--${id}`}>
+                            testID={`textfield__pressable--${id}`}>
                             <AnimatedHeaderInner
                                 leadingIconShow={!!leadingIcon}
                                 shape={shape}
@@ -186,7 +186,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                     </>
                                 )}
                             </AnimatedHeaderInner>
-                        </HeaderPressable>
+                        </Pressable>
                     </Header>
 
                     <AnimatedSupportingText
