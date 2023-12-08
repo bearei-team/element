@@ -4,7 +4,7 @@ import {UTIL} from '../../utils/util';
 import {ValidateOptions} from '../../utils/validate.utils';
 import {ItemProps} from './Item/Item';
 
-export type Store = Record<any, any>;
+export type Store = Record<string, unknown>;
 export interface FieldError extends Pick<ValidateOptions, 'rules'> {
     errors: ValidateError[];
 }
@@ -20,7 +20,7 @@ export interface FieldEntity<T extends Store> {
     onStoreChange: (name?: keyof T) => void;
     props: ItemProps<T>;
     touched: boolean;
-    validate: (value?: keyof T) => Promise<FieldError | undefined>;
+    validate: (value?: unknown) => Promise<FieldError | undefined>;
 }
 
 export interface SetFieldValueOptions {
@@ -141,7 +141,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
 
                 skipValidate
                     ? processValidateResult()
-                    : await entity.validate(value[entity.props.name]).then(processValidateResult);
+                    : await entity.validate(value[entity.props.name!]).then(processValidateResult);
             }
         };
 
@@ -169,6 +169,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
     }
 
     const setFieldError = (err: Error<T>) => Object.assign(error, err);
+
     function getFieldError(): Error<T>;
     function getFieldError(name?: keyof T): Error<T>[keyof T];
     function getFieldError(name?: (keyof T)[]): Error<T>;
@@ -227,6 +228,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
     async function validateField(name?: NamePath<T>) {
         const names = UTIL.namePath(name);
         const entities = getFieldEntities();
+
         const processValidate = (entityName?: keyof T) => {
             if (entityName) {
                 const value = getFieldValue(entityName);
@@ -261,6 +263,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
 
     const resetField = (name?: NamePath<T>) => {
         const names = UTIL.namePath(name);
+
         const processReset = (entityName?: keyof T) => {
             if (entityName) {
                 setFieldValue({[entityName]: undefined} as T, {response: false});

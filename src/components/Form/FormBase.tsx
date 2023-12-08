@@ -22,10 +22,10 @@ export const FormBase = <T extends Store>(props: FormBaseProps<T>) => {
         ...renderProps
     } = props;
 
-    const id = useId();
     const [formStore] = useForm<T>(form);
     const [status, setStatus] = useImmer('idle');
     const {setCallback, setInitialValue} = formStore;
+    const id = useId();
 
     useEffect(() => {
         setCallback({onFinish, onFinishFailed, onValueChange});
