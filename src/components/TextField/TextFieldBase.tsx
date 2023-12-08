@@ -27,8 +27,8 @@ export interface RenderProps extends TextFieldProps {
             labelLineHeight: AnimatedInterpolation;
             labelLineLetterSpacing: AnimatedInterpolation;
             labelSize: AnimatedInterpolation;
-            labelTop?: AnimatedInterpolation;
             labelTextBackgroundWidth?: AnimatedInterpolation;
+            labelTop?: AnimatedInterpolation;
             supportingTextColor: AnimatedInterpolation;
             supportingTextOpacity: AnimatedInterpolation;
         }
@@ -51,9 +51,9 @@ export type RenderTextInputOptions = TextFieldProps & {
 };
 
 const initialState = {
-    labelTextLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
     headerLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
-    underlayColor: '',
+    labelTextLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    underlayColor: undefined,
     value: '',
 };
 
@@ -85,19 +85,19 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     const [{headerLayout, labelTextLayout, value}, setState] = useImmer(initialState);
     const [underlayColor] = useUnderlayColor({type});
     const {onAnimated, inputHeight, inputColor, ...animatedStyle} = useAnimated({
+        error,
         filled: !!value || !!placeholder,
         labelTextWidth: labelTextLayout.width,
+        leadingIconShow: !!leadingIcon,
         showSupportingText: !!supportingText,
-        showLeadingIcon: !!leadingIcon,
         type,
-        error,
     });
 
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
 
-    const processState = useCallback(
+    const processStateChange = useCallback(
         (nextState: State) => {
             onAnimated(nextState, {
                 finished: () => nextState === 'focused' && inputRef.current?.focus(),
@@ -109,16 +109,9 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
 
     const {state, ...handleEvent} = useHandleEvent({
         ...props,
-        omitEvents: ['onPress', 'onPressIn', 'onLongPress'],
-        onProcessState: processState,
+        omitEvents: ['onPress', 'onPressIn', 'onLongPress', 'onPressOut'],
+        onStateChange: processStateChange,
     });
-
-    const processAbnormalState = useCallback(
-        (nextState: State) => {
-            processState(nextState);
-        },
-        [processState],
-    );
 
     const processHeaderLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
@@ -138,11 +131,10 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
 
     const handleChangeText = useCallback(
         (text: string) => {
+            onChangeText?.(text);
             setState(draft => {
                 draft.value = text;
             });
-
-            onChangeText?.(text);
         },
         [onChangeText, setState],
     );
@@ -160,12 +152,12 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     );
 
     useEffect(() => {
-        processAbnormalState(disabled ? 'disabled' : state);
-    }, [disabled, processAbnormalState, state]);
+        processStateChange(disabled ? 'disabled' : state);
+    }, [disabled, processStateChange, state]);
 
     useEffect(() => {
-        !disabled && processState(error ? 'error' : state);
-    }, [disabled, error, processState, state]);
+        !disabled && processStateChange(error ? 'error' : state);
+    }, [disabled, error, processStateChange, state]);
 
     return render({
         ...handleEvent,
@@ -181,16 +173,16 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         renderStyle: {
             ...animatedStyle,
             headerHeight: headerLayout.height,
+            headerWidth: headerLayout.width,
             labelTextHeight: labelTextLayout.height,
             labelTextWidth: labelTextLayout.width,
-            headerWidth: headerLayout.width,
         },
         shape: type === 'filled' ? 'extraSmallTop' : 'extraSmall',
         state,
+        style,
         supportingText,
         trailingIcon,
         type,
         underlayColor,
-        style,
     });
 };

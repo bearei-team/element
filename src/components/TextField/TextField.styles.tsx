@@ -3,19 +3,19 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './TextFieldBase';
 
-export type MainProps = Pick<RenderProps, 'type'> & {
+export type HeaderInnerProps = Pick<RenderProps, 'type'> & {
     leadingIconShow: boolean;
     trailingIconShow: boolean;
 };
 
 export type LabelProps = Pick<RenderProps, 'type'>;
 export type SupportingTextProps = Pick<RenderProps, 'error'>;
-export interface LabelTextBackgroundContainerProps {
+export interface LabelTextBackgroundProps {
     height: number;
     width: number;
 }
 
-export type ActiveIndicatorProps = Pick<LabelTextBackgroundContainerProps, 'width'>;
+export type ActiveIndicatorProps = Pick<LabelTextBackgroundProps, 'width'>;
 
 export const Container = styled.View`
     display: flex;
@@ -31,7 +31,7 @@ export const Header = styled.View`
 `;
 
 export const HeaderPressable = styled.Pressable``;
-export const HeaderInner = styled(Shape)<MainProps>`
+export const HeaderInner = styled(Shape)<HeaderInnerProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -103,7 +103,7 @@ export const LabelText = styled.Text`
     `};
 `;
 
-export const LabelTextBackgroundContainer = styled.View<LabelTextBackgroundContainerProps>`
+export const LabelTextBackground = styled.View<LabelTextBackgroundProps>`
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -117,7 +117,7 @@ export const LabelTextBackgroundContainer = styled.View<LabelTextBackgroundConta
     `};
 `;
 
-export const LabelTextBackground = styled.View`
+export const LabelTextBackgroundInner = styled.View`
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surface};
     `};

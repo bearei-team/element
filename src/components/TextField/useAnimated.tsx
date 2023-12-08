@@ -18,28 +18,29 @@ export type ProcessAnimatedOptions = Pick<ProcessAnimatedTimingOptions, 'finishe
 export interface UseAnimatedOptions {
     filled: boolean;
     labelTextWidth: number;
-    showLeadingIcon: boolean;
+    leadingIconShow: boolean;
     showSupportingText: boolean;
     type: TextFieldType;
     error: boolean;
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {filled, labelTextWidth, showLeadingIcon, showSupportingText, type, error} = options;
+    const {filled, labelTextWidth, leadingIconShow, showSupportingText, type, error} = options;
     const [activeIndicatorAnimated] = useAnimatedValue(0);
-    const [borderAnimated] = useAnimatedValue(0);
     const [backgroundColorAnimated] = useAnimatedValue(1);
+    const [borderAnimated] = useAnimatedValue(0);
     const [colorAnimated] = useAnimatedValue(1);
+    const [inputColorAnimated] = useAnimatedValue(1);
     const filledValue = filled ? 1 : 0;
     const [inputHeightAnimated] = useAnimatedValue(filledValue);
-    const [inputColorAnimated] = useAnimatedValue(1);
     const [labeAnimated] = useAnimatedValue(filledValue);
     const [labelPlaceholderAnimated] = useAnimatedValue(filledValue);
     const [supportingTextColorAnimated] = useAnimatedValue(1);
     const [supportingTextColorOpacity] = useAnimatedValue(0);
     const theme = useTheme();
-    const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
     const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
+    const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
+
     const backgroundColorConfig = {
         filled: {
             inputRange: [0, 1],
@@ -104,7 +105,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const labelLeft = labeAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
-            showLeadingIcon
+            leadingIconShow
                 ? theme.adaptSize(theme.spacing.medium) + labelTextWidth
                 : theme.adaptSize(theme.spacing.medium),
             theme.adaptSize(theme.spacing.medium),
@@ -173,7 +174,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const backgroundColor = backgroundColorAnimated.interpolate(backgroundColorConfig[type]);
 
     const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, {toValue, finished}: ProcessAnimatedTimingOptions) => {
+        (animation: Animated.Value, {finished, toValue}: ProcessAnimatedTimingOptions) => {
             const animatedTiming = UTIL.animatedTiming(theme);
 
             requestAnimationFrame(() =>
@@ -208,19 +209,17 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 disabled: () => {
                     const toValue = 0;
 
-                    processBorderAnimated(toValue);
-                    processAnimatedTiming(colorAnimated, {toValue});
-                    processAnimatedTiming(supportingTextColorAnimated, {toValue});
                     processAnimatedTiming(backgroundColorAnimated, {toValue});
+                    processAnimatedTiming(colorAnimated, {toValue});
                     processAnimatedTiming(inputColorAnimated, {toValue});
+                    processAnimatedTiming(supportingTextColorAnimated, {toValue});
+                    processBorderAnimated(toValue);
                 },
                 enabled: () => {
-                    const toValue = filled ? 1 : 0;
-
-                    processAnimatedTiming(inputHeightAnimated, {toValue});
-                    processAnimatedTiming(labeAnimated, {toValue});
-                    processAnimatedTiming(labelPlaceholderAnimated, {toValue});
                     processAnimatedTiming(inputColorAnimated, {toValue: 1});
+                    processAnimatedTiming(inputHeightAnimated, {toValue: filledValue});
+                    processAnimatedTiming(labeAnimated, {toValue: filledValue});
+                    processAnimatedTiming(labelPlaceholderAnimated, {toValue: filledValue});
 
                     if (error) {
                         return processErrorAnimated();
@@ -245,17 +244,13 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     processAnimatedTiming(colorAnimated, {toValue: 2});
                     processBorderAnimated(1);
                 },
-                hovered: undefined,
-                pressIn: undefined,
-                longPressIn: undefined,
-                pressed: undefined,
-            };
+            } as Record<State, () => void>;
         },
         [
             backgroundColorAnimated,
             colorAnimated,
             error,
-            filled,
+            filledValue,
             inputColorAnimated,
             inputHeightAnimated,
             labeAnimated,

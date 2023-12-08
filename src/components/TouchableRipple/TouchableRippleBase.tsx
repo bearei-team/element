@@ -26,9 +26,9 @@ const renderRipples = (rippleSequence: RippleSequence, options: RenderRipplesOpt
     ));
 
 export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
+    const {children, onLayout, render, underlayColor, ...renderProps} = props;
     const [layout, setLayout] = useImmer({} as RippleProps['touchableLayout']);
     const [rippleSequence, setRippleSequence] = useImmer<RippleSequence>({});
-    const {children, onLayout, render, underlayColor, ...renderProps} = props;
     const id = useId();
 
     const processPressIn = useCallback(

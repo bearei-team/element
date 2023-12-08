@@ -12,7 +12,7 @@ import {
     Label,
     LabelText,
     LabelTextBackground,
-    LabelTextBackgroundContainer,
+    LabelTextBackgroundInner,
     LeadingIcon,
     SupportingText,
     TrailingIcon,
@@ -34,9 +34,9 @@ export interface TextFieldProps
 }
 
 const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
-const AnimatedLabel = Animated.createAnimatedComponent(Label);
-const AnimatedLabelTextBackground = Animated.createAnimatedComponent(LabelTextBackground);
 const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner);
+const AnimatedLabel = Animated.createAnimatedComponent(Label);
+const AnimatedLabelTextBackgroundInner = Animated.createAnimatedComponent(LabelTextBackgroundInner);
 const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
@@ -50,15 +50,14 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             onHoverIn,
             onHoverOut,
             onLabelTextLayout,
-            onPress,
             renderStyle,
             shape,
             state,
-            style,
             supportingText,
             trailingIcon,
             type,
             underlayColor,
+            error,
             ...containerProps
         } = renderProps;
 
@@ -102,15 +101,13 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         return (
             <Container
                 {...containerProps}
-                accessibilityLabel={state === 'error' ? supportingText : labelText}
-                accessibilityRole={state === 'error' ? 'alert' : 'keyboardkey'}
-                style={style}
+                accessibilityLabel={error ? supportingText : labelText}
+                accessibilityRole={error ? 'alert' : 'keyboardkey'}
                 testID={`textfield--${id}`}>
                 <Header onLayout={onHeaderLayout} testID={`textfield__header--${id}`}>
                     <HeaderPressable
                         onHoverIn={onHoverIn}
                         onHoverOut={onHoverOut}
-                        onPress={onPress}
                         testID={`textfield__headerPressable--${id}`}>
                         <AnimatedHeaderInner
                             leadingIconShow={!!leadingIcon}
@@ -165,15 +162,15 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                         {labelText}
                                     </LabelText>
 
-                                    <LabelTextBackgroundContainer
-                                        width={labelTextWidth}
+                                    <LabelTextBackground
                                         height={labelTextHeight}
-                                        testID={`textField__labelTextBackgroundContainer--${id}`}>
-                                        <AnimatedLabelTextBackground
-                                            testID={`textField__labelTextBackground--${id}`}
+                                        width={labelTextWidth}
+                                        testID={`textField__labelTextBackground--${id}`}>
+                                        <AnimatedLabelTextBackgroundInner
+                                            testID={`textField__labelTextBackgroundInner--${id}`}
                                             style={{width: labelTextBackgroundWidth}}
                                         />
-                                    </LabelTextBackgroundContainer>
+                                    </LabelTextBackground>
                                 </>
                             )}
                         </AnimatedHeaderInner>
