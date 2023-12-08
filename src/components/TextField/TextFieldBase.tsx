@@ -7,6 +7,7 @@ import {
     TextStyle,
     ViewStyle,
 } from 'react-native';
+import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {useHandleEvent} from '../../hooks/useHandleEvent';
 import {AnimatedInterpolation, State} from '../Common/interface';
@@ -84,6 +85,8 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
 
     const [{headerLayout, labelTextLayout, value}, setState] = useImmer(initialState);
     const [underlayColor] = useUnderlayColor({type});
+    const theme = useTheme();
+    const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
     const {onAnimated, inputHeight, inputColor, ...animatedStyle} = useAnimated({
         error,
         filled: !!value || !!placeholder,
@@ -143,13 +146,24 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     const children = useMemo(
         () =>
             renderTextInput({
+                placeholderTextColor,
                 defaultValue,
                 onChangeText: handleChangeText,
+                placeholder,
                 ref: inputRef,
                 renderStyle: {height: inputHeight, color: inputColor},
                 testID: `textfield__input--${id}`,
             }),
-        [defaultValue, handleChangeText, id, inputColor, inputHeight, inputRef],
+        [
+            defaultValue,
+            handleChangeText,
+            id,
+            inputColor,
+            inputHeight,
+            inputRef,
+            placeholder,
+            placeholderTextColor,
+        ],
     );
 
     useEffect(() => {
@@ -170,7 +184,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         leadingIcon,
         onHeaderLayout: processHeaderLayout,
         onLabelTextLayout: processLabelTextLayout,
-        placeholder,
+
         renderStyle: {
             ...animatedStyle,
             headerHeight: headerLayout.height,

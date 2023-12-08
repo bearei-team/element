@@ -1,11 +1,19 @@
-import {FC, useId} from 'react';
-import {Animated, ViewStyle} from 'react-native';
+import {FC, useCallback, useId, useMemo, useRef} from 'react';
+import {Animated, LayoutChangeEvent, LayoutRectangle, TextInput, ViewStyle} from 'react-native';
+import {useTheme} from 'styled-components/native';
+import {useImmer} from 'use-immer';
+import {AnimatedInterpolation} from '../Common/interface';
 import {Icon} from '../Icon/Icon';
 import {SearchProps, SourceMenu} from './Search';
+import {Input} from './Search.styles';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends SearchProps {
-    renderStyle: Animated.WithAnimatedObject<ViewStyle> & {};
+    renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
+        innerHeight: AnimatedInterpolation;
+    } & {
+        width: number;
+    };
 }
 export interface SearchBaseProps extends SearchProps {
     render: (props: RenderProps) => React.JSX.Element;
@@ -19,17 +27,69 @@ export interface Menu extends SourceMenu {
     active: boolean;
 }
 
+const initialState = {
+    layout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    underlayColor: undefined,
+    value: '',
+};
+
+const renderTextInput = (options: any) => {
+    const {renderStyle, ...props} = options;
+
+    return <Input {...props} style={renderStyle} />;
+};
+
 export const SearchBase: FC<SearchBaseProps> = props => {
-    const {render, trailingIcon, ...renderProps} = props;
-    const {height} = useAnimated({});
+    const {render, leadingIcon, onChangeText, defaultValue, placeholder, ...renderProps} = props;
+    const [{value, layout}, setState] = useImmer(initialState);
+    const {innerHeight} = useAnimated({value});
     const id = useId();
+    const inputRef = useRef<TextInput>(null);
+    const theme = useTheme();
+    const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
+
+    const handleChangeText = useCallback(
+        (text: string) => {
+            onChangeText?.(text);
+            setState(draft => {
+                draft.value = text;
+            });
+        },
+        [onChangeText, setState],
+    );
+
+    const processLayout = (event: LayoutChangeEvent) => {
+        const {height, width} = event.nativeEvent.layout;
+
+        setState(draft => {
+            draft.layout = {height, width};
+        });
+    };
+
+    const children = useMemo(
+        () =>
+            renderTextInput({
+                defaultValue,
+                onChangeText: handleChangeText,
+                placeholder,
+                placeholderTextColor,
+                ref: inputRef,
+                testID: `search__input--${id}`,
+                value,
+            }),
+        [defaultValue, handleChangeText, id, placeholder, placeholderTextColor, value],
+    );
 
     return render({
         ...renderProps,
+        children,
         id,
+        onLayout: processLayout,
         renderStyle: {
-            height,
+            width: layout.width,
+            height: layout.height,
+            innerHeight,
         },
-        trailingIcon: trailingIcon ?? <Icon></Icon>,
+        leadingIcon: leadingIcon ?? <Icon type="outlined" name="search" width={24} height={24} />,
     });
 };

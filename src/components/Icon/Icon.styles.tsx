@@ -8,8 +8,8 @@ export const Container = styled(View)<ContainerProps>`
     display: flex;
     flex: 1;
 
-    ${({width = 48, height = 48}) => css`
-        max-height: ${height}px;
-        max-width: ${width}px;
+    ${({width, height, theme}) => css`
+        max-height: ${height ?? theme.adaptSize(48)}px;
+        max-width: ${width ?? theme.adaptSize(48)}px;
     `}
 `;

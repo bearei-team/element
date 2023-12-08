@@ -6,22 +6,8 @@ export default {
     component: Search,
 } as Meta<typeof Search>;
 
-export const HorizontalNavigationBar: StoryObj<SearchProps> = {
+export const SearchBar: StoryObj<SearchProps> = {
     args: {
-        layout: 'horizontal',
-        menus: [
-            {
-                labelText: 'Label1',
-                key: 'name',
-            },
-            {
-                labelText: 'Label2',
-                key: 'age',
-            },
-            {
-                labelText: 'Label3',
-                key: 'sex',
-            },
-        ],
+        placeholder: 'Hinted search text',
     },
 };

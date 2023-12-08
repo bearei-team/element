@@ -2,6 +2,7 @@ import Circle from '@material-design-icons/svg/round/circle.svg';
 import Close from '@material-design-icons/svg/round/close.svg';
 import Lens from '@material-design-icons/svg/round/lens.svg';
 import Remove from '@material-design-icons/svg/round/remove.svg';
+import Search from '@material-design-icons/svg/round/search.svg';
 
 export const round = {
     image: {
@@ -9,5 +10,6 @@ export const round = {
         close: Close,
         lens: Lens,
         remove: Remove,
+        search: Search,
     },
 };

@@ -1,4 +1,3 @@
-import {TouchableWithoutFeedback} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './ButtonBase';
@@ -7,8 +6,7 @@ export type ContentProps = Pick<RenderProps, 'type' | 'iconShow' | 'category'>;
 export type LabelTextProps = Omit<ContentProps, 'iconShow'>;
 export type IconProps = Pick<ContentProps, 'category'>;
 
-export const Container = styled(TouchableWithoutFeedback)``;
-export const Inner = styled.View``;
+export const Container = styled.View``;
 export const Content = styled(Shape)<ContentProps>`
     align-items: center;
     display: flex;

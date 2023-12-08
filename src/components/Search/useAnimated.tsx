@@ -1,17 +1,20 @@
-import {useCallback} from 'react';
+import {useCallback, useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 
-export interface UseAnimatedOptions {}
+export interface UseAnimatedOptions {
+    value?: string;
+}
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const [opacityAnimated] = useAnimatedValue(0);
+    const {value} = options;
+    const [innerHeightAnimated] = useAnimatedValue(0);
     const theme = useTheme();
-    const height = opacityAnimated.interpolate({
+    const innerHeight = innerHeightAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [56, 273],
+        outputRange: [theme.adaptSize(56), theme.adaptSize(216)],
     });
 
     const processAnimatedTiming = useCallback(
@@ -29,5 +32,9 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         [theme],
     );
 
-    return {height};
+    useEffect(() => {
+        processAnimatedTiming(innerHeightAnimated, value ? 1 : 0);
+    }, [innerHeightAnimated, processAnimatedTiming, value]);
+
+    return {innerHeight};
 };

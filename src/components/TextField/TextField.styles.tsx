@@ -1,4 +1,4 @@
-import {TextInput, TouchableWithoutFeedback} from 'react-native';
+import {TextInput} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './TextFieldBase';
@@ -17,8 +17,7 @@ export interface LabelTextBackgroundProps {
 
 export type ActiveIndicatorProps = Pick<LabelTextBackgroundProps, 'width'>;
 
-export const Container = styled(TouchableWithoutFeedback)``;
-export const Inner = styled.View`
+export const Container = styled.View`
     display: flex;
     flex-direction: column;
 

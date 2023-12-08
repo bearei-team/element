@@ -18,5 +18,6 @@ export const Outlined: StoryObj<TextFieldProps> = {
         labelText: 'Label',
         supportingText: 'supportingText',
         type: 'outlined',
+        placeholder: 'placeholder',
     },
 };

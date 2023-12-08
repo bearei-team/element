@@ -1,7 +1,12 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, View, ViewProps} from 'react-native';
+import {
+    Animated,
+    TextInputProps,
+    TouchableWithoutFeedback,
+    TouchableWithoutFeedbackProps,
+} from 'react-native';
 import {Divider} from '../Divider/Divider';
-import {Container, Content, Header, LeadingIcon, List, TrailingIcon} from './Search.styles';
+import {Container, Content, Header, Inner, LeadingIcon, TrailingIcon} from './Search.styles';
 import {RenderProps, SearchBase} from './SearchBase';
 
 export interface SourceMenu {
@@ -9,45 +14,52 @@ export interface SourceMenu {
     labelText?: string;
 }
 
-export interface SearchProps extends Partial<ViewProps & RefAttributes<View>> {
+export interface SearchProps
+    extends Partial<
+        TextInputProps & TouchableWithoutFeedbackProps & RefAttributes<TouchableWithoutFeedback>
+    > {
     leadingIcon?: React.JSX.Element;
     menus?: SourceMenu[];
-    onChange?: (key: string) => void;
     trailingIcon?: React.JSX.Element;
 }
 
-const AnimatedContainer = Animated.createAnimatedComponent(Container);
-const ForwardRefSearch = forwardRef<View, SearchProps>((props, ref) => {
+const AnimatedInner = Animated.createAnimatedComponent(Inner);
+const ForwardRefSearch = forwardRef<TouchableWithoutFeedback, SearchProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {id, children, renderStyle, leadingIcon, trailingIcon, ...containerProps} =
+        const {id, children, renderStyle, leadingIcon, trailingIcon, onLayout, ...containerProps} =
             renderProps;
 
-        const {height} = renderStyle;
+        const {innerHeight, width} = renderStyle;
 
         return (
-            <AnimatedContainer
+            <TouchableWithoutFeedback
                 {...containerProps}
+                onLayout={onLayout}
                 ref={ref}
-                shape="full"
-                style={{height}}
                 testID={`search--${id}`}>
-                <Header>
-                    {leadingIcon && (
-                        <LeadingIcon testID={`search__leadingIcon--${id}`}>
-                            {leadingIcon}
-                        </LeadingIcon>
-                    )}
+                <Container testID={`search__container--${id}`}>
+                    {typeof width === 'number' && (
+                        <AnimatedInner
+                            style={{height: innerHeight}}
+                            shape="extraLarge"
+                            width={width}
+                            testID={`search__inner--${id}`}>
+                            <Header testID={`search__header--${id}`} width={width}>
+                                <LeadingIcon testID={`search__leadingIcon--${id}`}>
+                                    {leadingIcon}
+                                </LeadingIcon>
 
-                    <Content testID={`search__content--${id}`}></Content>
-                    {trailingIcon && (
-                        <TrailingIcon testID={`search__trailingIcon--${id}`}>
-                            {trailingIcon}
-                        </TrailingIcon>
+                                <Content testID={`search__content--${id}`}>{children}</Content>
+                                <TrailingIcon testID={`search__trailingIcon--${id}`}>
+                                    {trailingIcon}
+                                </TrailingIcon>
+                            </Header>
+
+                            {<Divider size="large" width={width} />}
+                        </AnimatedInner>
                     )}
-                </Header>
-                <Divider />
-                <List>{children}</List>
-            </AnimatedContainer>
+                </Container>
+            </TouchableWithoutFeedback>
         );
     };
 

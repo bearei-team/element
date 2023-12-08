@@ -2,7 +2,7 @@ import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {RenderProps} from './DividerBase';
 
-export type ContainerProps = Pick<RenderProps, 'layout' | 'size'>;
+export type ContainerProps = Pick<RenderProps, 'layout' | 'size' | 'width' | 'height'>;
 
 export const Container = styled(View)<ContainerProps>`
     align-items: flex-start;
@@ -14,12 +14,14 @@ export const Container = styled(View)<ContainerProps>`
         gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
     `}
 
-    ${({layout = 'horizontal', theme}) => {
+    ${({layout = 'horizontal', theme, width, height}) => {
         const containerLayout = {
             horizontal: css`
                 min-width: ${theme.adaptSize(320)}px;
+                width: ${width}px;
             `,
             vertical: css`
+                height: ${height}px;
                 min-height: ${theme.adaptSize(120)}px;
                 width: ${theme.adaptSize(1)}px;
             `,
@@ -45,7 +47,7 @@ export const Container = styled(View)<ContainerProps>`
                               ${theme.adaptSize(theme.spacing.medium)}px;
                       `
                     : css`
-                          padding-block-end: ${theme.adaptSize(theme.spacing.medium)}px
+                          padding: ${theme.adaptSize(theme.spacing.medium)}px
                               ${theme.adaptSize(0)}px;
                       `,
         };

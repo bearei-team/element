@@ -8,7 +8,7 @@ import {
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
-import {Container, Content, Icon, Inner, LabelText} from './Button.styles';
+import {Container, Content, Icon, LabelText} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
 export type ButtonType = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
@@ -55,7 +55,7 @@ const ForwardRefButton = forwardRef<TouchableWithoutFeedback, ButtonProps>((prop
         const isTouchableRippleLaidOut = typeof touchableRippleWidth === 'number';
 
         return (
-            <Container
+            <TouchableWithoutFeedback
                 {...containerProps}
                 accessibilityLabel={labelText}
                 accessibilityRole="button"
@@ -63,7 +63,7 @@ const ForwardRefButton = forwardRef<TouchableWithoutFeedback, ButtonProps>((prop
                 onFocus={onFocus}
                 ref={ref}
                 testID={`button--${id}`}>
-                <Inner testID={`button__inner--${id}`}>
+                <Container testID={`button__container--${id}`}>
                     <Elevation level={elevation} shape={shape}>
                         <TouchableRipple
                             shape={shape}
@@ -103,8 +103,8 @@ const ForwardRefButton = forwardRef<TouchableWithoutFeedback, ButtonProps>((prop
                             )}
                         </TouchableRipple>
                     </Elevation>
-                </Inner>
-            </Container>
+                </Container>
+            </TouchableWithoutFeedback>
         );
     };
 

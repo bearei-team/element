@@ -4,6 +4,7 @@ import {
     PressableProps,
     TextInput,
     TextInputProps,
+    TouchableWithoutFeedback,
     TouchableWithoutFeedbackProps,
 } from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
@@ -15,7 +16,6 @@ import {
     Header,
     HeaderInner,
     HeaderPressable,
-    Inner,
     Label,
     LabelText,
     LabelTextBackground,
@@ -109,12 +109,12 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
         );
 
         return (
-            <Container
+            <TouchableWithoutFeedback
                 {...(containerProps as TouchableWithoutFeedbackProps)}
                 accessibilityLabel={error ? supportingText : labelText}
                 accessibilityRole={error ? 'alert' : 'keyboardkey'}
                 testID={`textfield--${id}`}>
-                <Inner testID={`textfield__inner--${id}`}>
+                <Container testID={`textfield__container--${id}`}>
                     <Header onLayout={onHeaderLayout} testID={`textfield__header--${id}`}>
                         <HeaderPressable
                             onHoverIn={onHoverIn}
@@ -194,8 +194,8 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                         testID={`textfield__supportingText--${id}`}>
                         {supportingText}
                     </AnimatedSupportingText>
-                </Inner>
-            </Container>
+                </Container>
+            </TouchableWithoutFeedback>
         );
     };
 
