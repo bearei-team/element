@@ -1,7 +1,7 @@
 import {FC, useCallback, useEffect, useId} from 'react';
 import {GestureResponderEvent, LayoutChangeEvent} from 'react-native';
 import {useImmer} from 'use-immer';
-import {ProcessStateOptions, useHandleEvent} from '../../hooks/useHandleEvent';
+import {OnStateChangeOptions, useHandleEvent} from '../../hooks/useHandleEvent';
 import {State} from '../Common/interface';
 import {Ripple, RippleAnimatedOut, RippleProps} from './Ripple/Ripple';
 import {TouchableRippleProps} from './TouchableRipple';
@@ -26,12 +26,12 @@ const renderRipples = (rippleSequence: RippleSequence, options: RenderRipplesOpt
     ));
 
 export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
-    const {children, onLayout, render, underlayColor, ...renderProps} = props;
     const [layout, setLayout] = useImmer({} as RippleProps['touchableLayout']);
     const [rippleSequence, setRippleSequence] = useImmer<RippleSequence>({});
+    const {children, onLayout, render, underlayColor, ...renderProps} = props;
     const id = useId();
 
-    const processPressed = useCallback(
+    const processPressIn = useCallback(
         (event: GestureResponderEvent) => {
             const {locationX, locationY} = event.nativeEvent;
 
@@ -45,25 +45,25 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         [setRippleSequence],
     );
 
-    const processState = useCallback(
-        (nextState: State, options = {} as ProcessStateOptions) => {
+    const processStateChange = useCallback(
+        (nextState: State, options = {} as OnStateChangeOptions) => {
             const {event} = options;
 
-            nextState === 'pressIn' && processPressed(event as GestureResponderEvent);
+            nextState === 'pressIn' && processPressIn(event as GestureResponderEvent);
         },
-        [processPressed],
+        [processPressIn],
     );
 
     const {state, mobile, ...handleEvent} = useHandleEvent({
         ...props,
-        onProcessState: processState,
+        onStateChange: processStateChange,
     });
 
     const processLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
 
-        setLayout(() => ({height, width}));
         onLayout?.(event);
+        setLayout(() => ({height, width}));
     };
 
     const processRippleOut = useCallback(() => {
@@ -76,6 +76,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
                 }),
             );
         };
+
         Object.entries(rippleSequence).forEach(rippleOut);
     }, [rippleSequence, setRippleSequence]);
 

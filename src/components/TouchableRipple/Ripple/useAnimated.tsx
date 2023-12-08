@@ -9,9 +9,9 @@ export interface UseAnimatedOptions extends Pick<RippleProps, 'onAnimatedEnd' | 
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {minDuration, onAnimatedEnd, sequence} = options;
     const [opacityAnimated] = useAnimatedValue(0);
     const [scaleAnimated] = useAnimatedValue(0);
+    const {minDuration, onAnimatedEnd, sequence} = options;
     const opacity = opacityAnimated.interpolate({inputRange: [0, 1], outputRange: [1, 0]});
     const scale = scaleAnimated.interpolate({inputRange: [0, 1], outputRange: [0.1, 1]});
     const theme = useTheme();

@@ -1,11 +1,13 @@
 import {adapt} from './adapt.utils';
 import {animatedTiming} from './animatedTiming.utils';
 import {namePath} from './namePath.utils';
+import {omit} from './omit.utils';
 import {validate} from './validate.utils';
 
 export const UTIL = {
     animatedTiming,
-    namePath,
-    validate,
     adapt,
+    namePath,
+    omit,
+    validate,
 };

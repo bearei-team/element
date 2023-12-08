@@ -1,5 +1,12 @@
 import {FC, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, TextInput, ViewStyle} from 'react-native';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    TextInput,
+    TextStyle,
+    ViewStyle,
+} from 'react-native';
 import {useImmer} from 'use-immer';
 import {useHandleEvent} from '../../hooks/useHandleEvent';
 import {AnimatedInterpolation, State} from '../Common/interface';
@@ -39,7 +46,9 @@ export interface TextFieldBaseProps extends TextFieldProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export type RenderTextInputOptions = TextFieldProps;
+export type RenderTextInputOptions = TextFieldProps & {
+    renderStyle: Animated.WithAnimatedObject<TextStyle>;
+};
 
 const initialState = {
     labelTextLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
@@ -49,7 +58,12 @@ const initialState = {
 };
 
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-const renderTextInput = (options: RenderTextInputOptions) => <AnimatedTextInput {...options} />;
+const renderTextInput = (options: RenderTextInputOptions) => {
+    const {renderStyle, ...props} = options;
+
+    return <AnimatedTextInput {...props} style={renderStyle} />;
+};
+
 export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     const {
         defaultValue,
@@ -93,14 +107,9 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         [inputRef, onAnimated],
     );
 
-    const {
-        state,
-        onPress: _onPress,
-        onPressIn,
-        onLongPress,
-        ...handleEvent
-    } = useHandleEvent({
+    const {state, ...handleEvent} = useHandleEvent({
         ...props,
+        omitEvents: ['onPress', 'onPressIn', 'onLongPress'],
         onProcessState: processState,
     });
 
@@ -144,10 +153,10 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
                 defaultValue,
                 onChangeText: handleChangeText,
                 ref: inputRef,
-                style: {height: inputHeight, color: inputColor},
+                renderStyle: {height: inputHeight, color: inputColor},
                 testID: `textfield__input--${id}`,
             }),
-        [defaultValue, handleChangeText, id, inputHeight, inputRef],
+        [defaultValue, handleChangeText, id, inputColor, inputHeight, inputRef],
     );
 
     useEffect(() => {

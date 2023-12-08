@@ -9,11 +9,12 @@ import {
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {State} from '../components/Common/interface';
+import {UTIL} from '../utils/util';
 
 export interface ProcessStateOptions {
     callback?: () => void;
-    event: GestureResponderEvent | MouseEvent | NativeSyntheticEvent<TargetedEvent>;
     draft?: State;
+    event: GestureResponderEvent | MouseEvent | NativeSyntheticEvent<TargetedEvent>;
     eventName:
         | 'blur'
         | 'focus'
@@ -25,45 +26,49 @@ export interface ProcessStateOptions {
         | 'pressOut';
 }
 
+export type OnStateChangeOptions = Omit<ProcessStateOptions, 'callback'>;
 export type UseHandleEventOptions = PressableProps & {
     eventState?: State;
-    onProcessState?: (nextState: State, options?: ProcessStateOptions) => void;
+    omitEvents?: (keyof UseHandleEventOptions)[];
+    onStateChange?: (state: State, options?: OnStateChangeOptions) => void;
 };
 
 export const useHandleEvent = (options: UseHandleEventOptions) => {
     const {
+        eventState,
+        omitEvents = [],
         onBlur,
         onFocus,
         onHoverIn,
         onHoverOut,
-        onPressIn,
-        onPressOut,
         onLongPress,
         onPress,
-        onProcessState,
-        eventState,
+        onPressIn,
+        onPressOut,
+        onStateChange,
     } = options;
 
     const [state, setState] = useImmer<State>('enabled');
     const theme = useTheme();
     const mobile = ['ios', 'android'].includes(theme.OS);
+
     const processState = useCallback(
         (nextState: State, processStateOptions = {} as ProcessStateOptions) => {
-            const {event, callback, eventName} = processStateOptions;
+            const {callback, event, eventName} = processStateOptions;
 
             setState(draft => {
-                const isCheckUpdate = ['hoverIn', 'hoverOut'].includes(eventName);
-                const isFocused = draft === 'focused';
-                const updatedState = isCheckUpdate && isFocused ? draft : nextState;
+                const checkUpdate = ['hoverIn', 'hoverOut'].includes(eventName);
+                const focused = draft === 'focused';
+                const updatedState = checkUpdate && focused ? draft : nextState;
 
-                onProcessState?.(updatedState, {event, eventName, draft});
+                onStateChange?.(updatedState, {draft, event, eventName});
 
                 return updatedState;
             });
 
             callback?.();
         },
-        [onProcessState, setState],
+        [onStateChange, setState],
     );
 
     const handlePressIn = useCallback(
@@ -148,11 +153,8 @@ export const useHandleEvent = (options: UseHandleEventOptions) => {
         [onBlur, processState],
     );
 
-    useEffect(() => {
-        eventState && setState(() => eventState);
-    }, [eventState, setState]);
-
-    return {
+    const event = {
+        mobile,
         onBlur: handleBlur,
         onFocus: handleFocus,
         onHoverIn: handleHoverIn,
@@ -162,6 +164,11 @@ export const useHandleEvent = (options: UseHandleEventOptions) => {
         onPressIn: handlePressIn,
         onPressOut: handlePressOut,
         state,
-        mobile,
     };
+
+    useEffect(() => {
+        eventState && setState(() => eventState);
+    }, [eventState, setState]);
+
+    return UTIL.omit(event, omitEvents as (keyof typeof event)[]);
 };

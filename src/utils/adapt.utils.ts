@@ -6,20 +6,20 @@ export interface AdaptOptions {
     designDensity?: number;
 }
 
-export const adapt = (options: AdaptOptions = {}) => {
+export const adapt = (options = {} as AdaptOptions) => {
     const {designWidth = 750, designHeight = 1334, designDensity = 2} = options;
     const {width: screenWidth, height: screenHeight} = Dimensions.get('window');
-    const widthScale = screenWidth / (designWidth / designDensity);
-    const heightScale = screenHeight / (designHeight / designDensity);
-    const scale = Math.min(widthScale, heightScale);
     const fontScale = PixelRatio.getFontScale();
+    const heightScale = screenHeight / (designHeight / designDensity);
     const mobile = Platform.OS === 'ios' || Platform.OS === 'android';
+    const widthScale = screenWidth / (designWidth / designDensity);
+    const scale = Math.min(widthScale, heightScale);
 
-    const adaptSize = (size: number) => (mobile ? Math.round(size * scale) : size);
     const adaptFontSize = (size: number) => (mobile ? Math.round(size * scale * fontScale) : size);
+    const adaptSize = (size: number) => (mobile ? Math.round(size * scale) : size);
 
     return {
-        adaptSize,
         adaptFontSize,
+        adaptSize,
     };
 };

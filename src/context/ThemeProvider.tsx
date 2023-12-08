@@ -12,10 +12,10 @@ export interface ThemeProps {
 }
 
 export const ThemeProvider: FC<ThemeProps> = props => {
-    const {children, theme: themeProvider, adaptOptions} = props;
+    const {adaptOptions, children, theme: themeProvider} = props;
+    const {adaptFontSize, adaptSize} = UTIL.adapt(adaptOptions);
     const colorScheme = useColorScheme() ?? 'light';
     const OS = Platform.OS;
-    const {adaptSize, adaptFontSize} = UTIL.adapt(adaptOptions);
 
     return (
         <StyledComponentThemeProvider
