@@ -38,13 +38,14 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
             onHoverOut,
             onLayout,
             renderStyle,
+            shape,
             state,
             trailingIcon,
             underlayColor,
             ...containerProps
         } = renderProps;
 
-        const {innerHeight, width, height} = renderStyle;
+        const {height, innerHeight, width} = renderStyle;
 
         return (
             <TouchableWithoutFeedback
@@ -54,10 +55,10 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
                 <Container testID={`search__container--${id}`}>
                     {typeof width === 'number' && (
                         <AnimatedInner
+                            shape={shape}
                             style={{height: innerHeight}}
-                            shape="extraLarge"
-                            width={width}
-                            testID={`search__inner--${id}`}>
+                            testID={`search__inner--${id}`}
+                            width={width}>
                             <Pressable
                                 onHoverIn={onHoverIn}
                                 onHoverOut={onHoverOut}
@@ -74,11 +75,11 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
 
                                     <Hovered
                                         height={height}
-                                        shape={'extraLarge'}
+                                        opacities={[0.08, 0]}
+                                        shape={shape}
                                         state={state}
                                         underlayColor={underlayColor}
                                         width={width}
-                                        opacities={[0.08, 0]}
                                     />
                                 </Header>
                             </Pressable>

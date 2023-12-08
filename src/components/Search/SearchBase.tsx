@@ -3,13 +3,14 @@ import {Animated, LayoutChangeEvent, LayoutRectangle, TextInput, ViewStyle} from
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {useHandleEvent} from '../../hooks/useHandleEvent';
+import {ShapeProps} from '../Common/Common.styles';
 import {AnimatedInterpolation, State} from '../Common/interface';
 import {Icon} from '../Icon/Icon';
 import {SearchProps, SourceMenu} from './Search';
 import {Input} from './Search.styles';
 import {useAnimated} from './useAnimated';
 
-export interface RenderProps extends SearchProps {
+export interface RenderProps extends Partial<Pick<ShapeProps, 'shape'> & SearchProps> {
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         innerHeight: AnimatedInterpolation;
     } & {
@@ -105,13 +106,14 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         ...renderProps,
         children,
         id,
+        onLayout: processLayout,
+        shape: 'extraLarge',
         state,
         underlayColor,
-        onLayout: processLayout,
         renderStyle: {
-            width: layout.width,
             height: layout.height,
             innerHeight,
+            width: layout.width,
         },
         leadingIcon: leadingIcon ?? <Icon type="outlined" name="search" width={24} height={24} />,
     });
