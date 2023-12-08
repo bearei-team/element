@@ -5,9 +5,9 @@ import Remove from '@material-design-icons/svg/filled/remove.svg';
 
 export const filled = {
     image: {
-        lens: Lens,
         circle: Circle,
         close: Close,
+        lens: Lens,
         remove: Remove,
     },
 };

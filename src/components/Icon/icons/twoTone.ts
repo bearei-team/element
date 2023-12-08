@@ -5,9 +5,9 @@ import Remove from '@material-design-icons/svg/two-tone/remove.svg';
 
 export const twoTone = {
     image: {
-        lens: Lens,
         circle: Circle,
         close: Close,
+        lens: Lens,
         remove: Remove,
     },
 };

@@ -5,9 +5,9 @@ import Remove from '@material-design-icons/svg/sharp/remove.svg';
 
 export const sharp = {
     image: {
-        lens: Lens,
         circle: Circle,
         close: Close,
+        lens: Lens,
         remove: Remove,
     },
 };

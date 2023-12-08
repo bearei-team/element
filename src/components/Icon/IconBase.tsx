@@ -30,11 +30,11 @@ export const IconBase: FC<IconBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const id = useId();
-    const theme = useTheme();
     const {state, ...handleEvent} = useHandleEvent({...props, eventState});
     const {scale} = useAnimated({state});
+    const id = useId();
     const SvgIcon = icon?.[type]?.[category]?.[name];
+    const theme = useTheme();
 
     return render({
         ...handleEvent,
@@ -42,16 +42,16 @@ export const IconBase: FC<IconBaseProps> = props => {
         id,
         renderStyle: {
             height,
-            width,
             transform: [{scale}],
+            width,
         },
         children: SvgIcon && (
             <SvgIcon
-                width="100%"
-                height="100%"
-                viewBox="0 0 24 24"
-                testID={`icon__svg--${id}`}
                 fill={fill ?? theme.palette.surface.onSurfaceVariant}
+                height="100%"
+                testID={`icon__svg--${id}`}
+                viewBox="0 0 24 24"
+                width="100%"
             />
         ),
     });

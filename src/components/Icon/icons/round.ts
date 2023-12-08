@@ -5,9 +5,9 @@ import Remove from '@material-design-icons/svg/round/remove.svg';
 
 export const round = {
     image: {
-        lens: Lens,
         circle: Circle,
         close: Close,
+        lens: Lens,
         remove: Remove,
     },
 };

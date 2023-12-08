@@ -15,9 +15,9 @@ export interface IconProps
     category?: IconCategory;
     height?: number;
     name?: IconName;
+    state?: State;
     type?: IconType;
     width?: number;
-    state?: State;
 }
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
@@ -32,9 +32,9 @@ const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => {
                 accessibilityRole="image"
                 height={height}
                 ref={ref}
+                style={{transform}}
                 testID={`icon--${id}`}
-                width={width}
-                style={{transform}}>
+                width={width}>
                 {children}
             </AnimatedContainer>
         );

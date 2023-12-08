@@ -12,8 +12,8 @@ export interface UseAnimatedOptions {
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {state} = options;
     const [stateAnimated] = useAnimatedValue(1);
-    const theme = useTheme();
     const scale = stateAnimated.interpolate({inputRange: [0, 1, 2], outputRange: [0.95, 1, 1.05]});
+    const theme = useTheme();
 
     const processAnimatedTiming = useCallback(
         (animation: Animated.Value, toValue: number) => {
@@ -32,10 +32,9 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
     useEffect(() => {
         const pressedValue = state === 'pressIn' ? 0 : 1;
+
         processAnimatedTiming(stateAnimated, state === 'hovered' ? 2 : pressedValue);
     }, [processAnimatedTiming, state, stateAnimated]);
 
-    return {
-        scale,
-    };
+    return {scale};
 };
