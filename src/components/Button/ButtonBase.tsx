@@ -3,6 +3,7 @@ import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {useHandleEvent} from '../../hooks/useHandleEvent';
+import {ShapeProps} from '../Common/Common.styles';
 import {State} from '../Common/interface';
 import {ElevationProps} from '../Elevation/Elevation';
 import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
@@ -10,7 +11,7 @@ import {ButtonProps} from './Button';
 import {useAnimated} from './useAnimated';
 import {useUnderlayColor} from './useUnderlayColor';
 
-export interface RenderProps extends ButtonProps {
+export interface RenderProps extends Partial<Pick<ShapeProps, 'shape'> & ButtonProps> {
     elevation: ElevationProps['level'];
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         touchableRippleHeight: number;

@@ -1,5 +1,5 @@
 import React, {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, PressableProps, View} from 'react-native';
+import {Animated, View, ViewProps} from 'react-native';
 import {SvgProps} from 'react-native-svg';
 import {State} from '../Common/interface';
 import {Container} from './Icon.styles';
@@ -11,7 +11,7 @@ export type IconName = keyof (typeof filled)['image'];
 export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
 
 export interface IconProps
-    extends Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & PressableProps> {
+    extends Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps> {
     category?: IconCategory;
     height?: number;
     name?: IconName;
@@ -23,8 +23,8 @@ export interface IconProps
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {id, renderStyle, children, ...containerProps} = renderProps;
-        const {height, width, transform} = renderStyle;
+        const {id, renderStyle, children, style, ...containerProps} = renderProps;
+        const {height, width, ...containerStyle} = renderStyle;
 
         return (
             <AnimatedContainer
@@ -32,7 +32,7 @@ const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => {
                 accessibilityRole="image"
                 height={height}
                 ref={ref}
-                style={{transform}}
+                style={{...(typeof style === 'object' && style), ...containerStyle}}
                 testID={`icon--${id}`}
                 width={width}>
                 {children}

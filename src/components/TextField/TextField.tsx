@@ -1,5 +1,11 @@
 import React, {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, PressableProps, TextInput, TextInputProps} from 'react-native';
+import {
+    Animated,
+    PressableProps,
+    TextInput,
+    TextInputProps,
+    TouchableWithoutFeedbackProps,
+} from 'react-native';
 import {Disabled, ShapeProps} from '../Common/Common.styles';
 import {Hovered} from '../Hovered/Hovered';
 import {
@@ -9,6 +15,7 @@ import {
     Header,
     HeaderInner,
     HeaderPressable,
+    Inner,
     Label,
     LabelText,
     LabelTextBackground,
@@ -22,7 +29,11 @@ import {RenderProps, TextFieldBase} from './TextFieldBase';
 export type TextFieldType = 'filled' | 'outlined';
 export interface TextFieldProps
     extends Partial<
-        TextInputProps & PressableProps & RefAttributes<TextInput> & Pick<ShapeProps, 'shape'>
+        TextInputProps &
+            TouchableWithoutFeedbackProps &
+            PressableProps &
+            RefAttributes<TextInput> &
+            Pick<ShapeProps, 'shape'>
     > {
     disabled?: boolean;
     error?: boolean;
@@ -100,97 +111,99 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
 
         return (
             <Container
-                {...containerProps}
+                {...(containerProps as TouchableWithoutFeedbackProps)}
                 accessibilityLabel={error ? supportingText : labelText}
                 accessibilityRole={error ? 'alert' : 'keyboardkey'}
                 testID={`textfield--${id}`}>
-                <Header onLayout={onHeaderLayout} testID={`textfield__header--${id}`}>
-                    <HeaderPressable
-                        onHoverIn={onHoverIn}
-                        onHoverOut={onHoverOut}
-                        testID={`textfield__headerPressable--${id}`}>
-                        <AnimatedHeaderInner
-                            leadingIconShow={!!leadingIcon}
-                            shape={shape}
-                            style={{backgroundColor, borderColor, borderWidth}}
-                            testID={`textField__headerInner--${id}`}
-                            trailingIconShow={!!trailingIcon}>
-                            {leadingIcon && (
-                                <LeadingIcon testID={`textfield__leadingIcon--${id}`}>
-                                    {leadingIcon}
-                                </LeadingIcon>
-                            )}
+                <Inner testID={`textfield__inner--${id}`}>
+                    <Header onLayout={onHeaderLayout} testID={`textfield__header--${id}`}>
+                        <HeaderPressable
+                            onHoverIn={onHoverIn}
+                            onHoverOut={onHoverOut}
+                            testID={`textfield__headerPressable--${id}`}>
+                            <AnimatedHeaderInner
+                                leadingIconShow={!!leadingIcon}
+                                shape={shape}
+                                style={{backgroundColor, borderColor, borderWidth}}
+                                testID={`textField__headerInner--${id}`}
+                                trailingIconShow={!!trailingIcon}>
+                                {leadingIcon && (
+                                    <LeadingIcon testID={`textfield__leadingIcon--${id}`}>
+                                        {leadingIcon}
+                                    </LeadingIcon>
+                                )}
 
-                            <Content testID={`textfield__content--${id}`}>
-                                {type === 'filled' && LabelComponent}
-                                {children}
-                            </Content>
+                                <Content testID={`textfield__content--${id}`}>
+                                    {type === 'filled' && LabelComponent}
+                                    {children}
+                                </Content>
 
-                            {trailingIcon && (
-                                <TrailingIcon testID={`textfield__trailingIcon--${id}`}>
-                                    {trailingIcon}
-                                </TrailingIcon>
-                            )}
+                                {trailingIcon && (
+                                    <TrailingIcon testID={`textfield__trailingIcon--${id}`}>
+                                        {trailingIcon}
+                                    </TrailingIcon>
+                                )}
 
-                            {type === 'filled' && typeof headerWidth === 'number' && (
-                                <>
-                                    <AnimatedActiveIndicator
-                                        style={{
-                                            backgroundColor: activeIndicatorColor,
-                                            height: activeIndicatorHeight,
-                                        }}
-                                        testID={`textfield__activeIndicator--${id}`}
-                                        width={headerWidth}
-                                    />
-
-                                    <Hovered
-                                        height={headerHeight}
-                                        shape={shape}
-                                        state={state}
-                                        underlayColor={underlayColor}
-                                        width={headerWidth}
-                                    />
-                                </>
-                            )}
-
-                            {type === 'outlined' && (
-                                <>
-                                    {LabelComponent}
-                                    <LabelText
-                                        onLayout={onLabelTextLayout}
-                                        testID={`textField__labelText--${id}`}>
-                                        {labelText}
-                                    </LabelText>
-
-                                    <LabelTextBackground
-                                        height={labelTextHeight}
-                                        width={labelTextWidth}
-                                        testID={`textField__labelTextBackground--${id}`}>
-                                        <AnimatedLabelTextBackgroundInner
-                                            testID={`textField__labelTextBackgroundInner--${id}`}
-                                            style={{width: labelTextBackgroundWidth}}
+                                {type === 'filled' && typeof headerWidth === 'number' && (
+                                    <>
+                                        <AnimatedActiveIndicator
+                                            style={{
+                                                backgroundColor: activeIndicatorColor,
+                                                height: activeIndicatorHeight,
+                                            }}
+                                            testID={`textfield__activeIndicator--${id}`}
+                                            width={headerWidth}
                                         />
-                                    </LabelTextBackground>
-                                </>
-                            )}
-                        </AnimatedHeaderInner>
-                    </HeaderPressable>
 
-                    {disabled && typeof headerWidth === 'number' && (
-                        <Disabled
-                            height={headerHeight}
-                            shape={shape}
-                            testID={`textField__disabled--${id}`}
-                            width={headerWidth}
-                        />
-                    )}
-                </Header>
+                                        <Hovered
+                                            height={headerHeight}
+                                            shape={shape}
+                                            state={state}
+                                            underlayColor={underlayColor}
+                                            width={headerWidth}
+                                        />
+                                    </>
+                                )}
 
-                <AnimatedSupportingText
-                    style={{color: supportingTextColor, opacity: supportingTextOpacity}}
-                    testID={`textfield__supportingText--${id}`}>
-                    {supportingText}
-                </AnimatedSupportingText>
+                                {type === 'outlined' && (
+                                    <>
+                                        {LabelComponent}
+                                        <LabelText
+                                            onLayout={onLabelTextLayout}
+                                            testID={`textField__labelText--${id}`}>
+                                            {labelText}
+                                        </LabelText>
+
+                                        <LabelTextBackground
+                                            height={labelTextHeight}
+                                            width={labelTextWidth}
+                                            testID={`textField__labelTextBackground--${id}`}>
+                                            <AnimatedLabelTextBackgroundInner
+                                                testID={`textField__labelTextBackgroundInner--${id}`}
+                                                style={{width: labelTextBackgroundWidth}}
+                                            />
+                                        </LabelTextBackground>
+                                    </>
+                                )}
+                            </AnimatedHeaderInner>
+                        </HeaderPressable>
+
+                        {disabled && typeof headerWidth === 'number' && (
+                            <Disabled
+                                height={headerHeight}
+                                shape={shape}
+                                testID={`textField__disabled--${id}`}
+                                width={headerWidth}
+                            />
+                        )}
+                    </Header>
+
+                    <AnimatedSupportingText
+                        style={{color: supportingTextColor, opacity: supportingTextOpacity}}
+                        testID={`textfield__supportingText--${id}`}>
+                        {supportingText}
+                    </AnimatedSupportingText>
+                </Inner>
             </Container>
         );
     };

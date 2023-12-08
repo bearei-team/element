@@ -1,4 +1,4 @@
-import {TextInput} from 'react-native';
+import {TextInput, TouchableWithoutFeedback} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './TextFieldBase';
@@ -17,7 +17,8 @@ export interface LabelTextBackgroundProps {
 
 export type ActiveIndicatorProps = Pick<LabelTextBackgroundProps, 'width'>;
 
-export const Container = styled.View`
+export const Container = styled(TouchableWithoutFeedback)``;
+export const Inner = styled.View`
     display: flex;
     flex-direction: column;
 
@@ -133,7 +134,7 @@ export const Input = styled(TextInput)`
         font-weight: ${theme.typography.body.large.weight};
         letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
         line-height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
-    `}
+    `};
 `;
 
 export const ActiveIndicator = styled.View<ActiveIndicatorProps>`

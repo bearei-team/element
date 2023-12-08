@@ -1,5 +1,6 @@
 import {FC, useId} from 'react';
 import {Animated, ViewStyle} from 'react-native';
+import {Icon} from '../Icon/Icon';
 import {SearchProps, SourceMenu} from './Search';
 import {useAnimated} from './useAnimated';
 
@@ -19,7 +20,7 @@ export interface Menu extends SourceMenu {
 }
 
 export const SearchBase: FC<SearchBaseProps> = props => {
-    const {render, ...renderProps} = props;
+    const {render, trailingIcon, ...renderProps} = props;
     const {height} = useAnimated({});
     const id = useId();
 
@@ -29,5 +30,6 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         renderStyle: {
             height,
         },
+        trailingIcon: trailingIcon ?? <Icon></Icon>,
     });
 };
