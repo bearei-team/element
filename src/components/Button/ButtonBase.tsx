@@ -16,7 +16,7 @@ export interface RenderProps extends ButtonProps {
         touchableRippleHeight: number;
         touchableRippleWidth: number;
     };
-    showIcon: boolean;
+    iconShow: boolean;
     state: State;
     underlayColor: TouchableRippleProps['underlayColor'];
 }
@@ -33,12 +33,12 @@ const initialState = {
 
 export const ButtonBase: FC<ButtonBaseProps> = props => {
     const {
+        category = 'button',
         disabled = false,
         icon,
-        render,
-        category = 'button',
-        type = 'filled',
         onLayout,
+        render,
+        type = 'filled',
         ...renderProps
     } = props;
 
@@ -46,6 +46,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     const [underlayColor] = useUnderlayColor({type, category});
     const id = useId();
     const theme = useTheme();
+
     const processElevation = useCallback(
         (nextState: State) => {
             const level = {
@@ -69,18 +70,18 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         [category, setState, type],
     );
 
-    const processState = useCallback(
+    const processStateChange = useCallback(
         (nextState: State) => {
-            const isProcessElevation = ['elevated', 'filled', 'tonal'].includes(type);
+            const elevationType = ['elevated', 'filled', 'tonal'].includes(type);
 
-            isProcessElevation && processElevation(nextState);
+            elevationType && processElevation(nextState);
         },
         [processElevation, type],
     );
 
     const {state, ...handleEvent} = useHandleEvent({
         ...props,
-        onProcessState: processState,
+        onStateChange: processStateChange,
     });
 
     const {backgroundColor, borderColor, color} = useAnimated({type, disabled, state});
@@ -145,7 +146,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
             touchableRippleWidth: touchableRippleLayout.width,
         },
         shape: 'full',
-        showIcon: !!icon,
+        iconShow: !!icon,
         state,
         type,
         underlayColor,

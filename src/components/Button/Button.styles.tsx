@@ -2,8 +2,8 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './ButtonBase';
 
-export type ContentProps = Pick<RenderProps, 'type' | 'showIcon' | 'category'>;
-export type LabelTextProps = Omit<ContentProps, 'showIcon'>;
+export type ContentProps = Pick<RenderProps, 'type' | 'iconShow' | 'category'>;
+export type LabelTextProps = Omit<ContentProps, 'iconShow'>;
 export type IconProps = Pick<ContentProps, 'category'>;
 
 export const Container = styled.View`
@@ -48,7 +48,7 @@ export const Content = styled(Shape)<ContentProps>`
         return containerType[type];
     }}
 
-    ${({showIcon, theme, type = 'filled'}) => {
+    ${({iconShow, theme, type = 'filled'}) => {
         const containerType = {
             elevated: css`
                 padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
@@ -68,7 +68,7 @@ export const Content = styled(Shape)<ContentProps>`
             `,
         };
 
-        return showIcon && containerType[type];
+        return iconShow && containerType[type];
     }}
 
     ${({theme, category = 'button'}) => {

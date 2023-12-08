@@ -11,12 +11,12 @@ export type ButtonType = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
 export type Category = 'button' | 'iconButton';
 
 export interface ButtonProps extends TouchableRippleProps {
+    category?: Category;
     disabled?: boolean;
     icon?: React.JSX.Element;
     labelText?: string;
     loading?: boolean;
     type?: ButtonType;
-    category?: Category;
 }
 
 const AnimatedContent = Animated.createAnimatedComponent(Content);
@@ -31,7 +31,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             labelText,
             renderStyle,
             shape,
-            showIcon,
+            iconShow,
             state,
             style,
             type,
@@ -57,11 +57,11 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                         <AnimatedContent
                             category={category}
                             shape={shape}
-                            showIcon={showIcon}
+                            iconShow={iconShow}
                             style={{...(typeof style === 'object' && style), ...contentStyle}}
                             testID={`button__content--${id}`}
                             type={type}>
-                            {showIcon && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
+                            {iconShow && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
                             {category === 'button' && (
                                 <AnimatedLabelText
                                     style={{color}}
