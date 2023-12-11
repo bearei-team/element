@@ -9,5 +9,4 @@ export type State =
     | 'focused'
     | 'hovered'
     | 'longPressIn'
-    | 'pressed'
     | 'pressIn';

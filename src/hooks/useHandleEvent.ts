@@ -89,12 +89,12 @@ export const useHandleEvent = (options: UseHandleEventOptions) => {
 
     const handlePress = useCallback(
         (event: GestureResponderEvent) =>
-            processState('pressed', {
+            processState(mobile ? 'enabled' : 'hovered', {
                 callback: () => onPress?.(event),
                 event,
                 eventName: 'press',
             }),
-        [onPress, processState],
+        [mobile, onPress, processState],
     );
 
     const handleLongPress = useCallback(

@@ -175,8 +175,8 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     }, [disabled, error, processStateChange, state]);
 
     return render({
-        ...handleEvent,
         ...renderProps,
+        ...handleEvent,
         children,
         disabled,
         id,

@@ -1,24 +1,22 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {RenderProps} from './ItemBase';
-
-export type MainProps = Pick<RenderProps, 'state'>;
 
 export const Container = styled(View)`
-    width: 100%;
     overflow: hidden;
 `;
 
-export const Main = styled.View<MainProps>`
-    align-items: center;
-    display: inline-flex;
+export const Inner = styled.View`
+    display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.medium)}px;
         padding: ${theme.adaptSize(theme.spacing.small)}px
             ${theme.adaptSize(theme.spacing.medium)}px;
+
+        min-height: ${theme.adaptSize(56)}px;
     `};
 `;
 
@@ -30,7 +28,13 @@ export const Leading = styled.View`
 `;
 
 export const Content = styled.View`
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    ${({theme}) => css`
+        min-height: ${theme.adaptSize(56)}px;
+    `};
 `;
 
 export const Trailing = styled(Leading)``;

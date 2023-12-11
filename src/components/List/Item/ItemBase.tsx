@@ -1,24 +1,16 @@
 import {FC, useCallback, useId} from 'react';
-import {
-    Animated,
-    GestureResponderEvent,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    MouseEvent,
-    NativeSyntheticEvent,
-    TargetedEvent,
-    ViewStyle,
-} from 'react-native';
+import {Animated, LayoutChangeEvent, LayoutRectangle, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
+import {useHandleEvent} from '../../../hooks/useHandleEvent';
 import {Button} from '../../Button/Button';
-import {AnimatedInterpolation} from '../../Common/interface';
+import {AnimatedInterpolation, State} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
-import {ItemProps, ListItemState} from './Item';
+import {ItemProps} from './Item';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends ItemProps {
-    state: ListItemState;
+    state: State;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         touchableRippleHeight: number;
         touchableRippleWidth: number;
@@ -32,38 +24,32 @@ export interface ItemBaseProps extends ItemProps {
 }
 
 const initialState = {
-    state: 'enabled' as ListItemState,
+    trailingState: 'enabled' as State,
     touchableRippleLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
 };
 
 export const ItemBase: FC<ItemBaseProps> = props => {
-    const {
-        active = false,
-        close = false,
-        onBlur,
-        onFocus,
-        onHoverIn,
-        onHoverOut,
-        onLayout,
-        onPressIn,
-        onPressOut,
-        render,
-        trailing,
-        ...renderProps
-    } = props;
-
-    const [{state, touchableRippleLayout}, setState] = useImmer(initialState);
+    const {active = false, close = false, render, trailing, onLayout, ...renderProps} = props;
+    const [{touchableRippleLayout, trailingState}, setState] = useImmer(initialState);
     const id = useId();
     const theme = useTheme();
+    const underlayColor = theme.palette.surface.onSurface;
+    const {state, ...handleEvent} = useHandleEvent({
+        ...props,
+    });
+
     const {
         backgroundColor,
         height: animatedHeight,
         onCloseAnimated,
         trailingOpacity,
-    } = useAnimated({active, close, state});
-
-    const mobile = ['ios', 'android'].includes(theme.OS);
-    const underlayColor = theme.palette.surface.onSurface;
+    } = useAnimated({
+        active,
+        close,
+        state,
+        touchableRippleHeight: touchableRippleLayout.height,
+        trailingState,
+    });
 
     const processLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
@@ -75,10 +61,10 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         onLayout?.(event);
     };
 
-    const processState = useCallback(
-        (nextState: ListItemState, callback?: () => void) => {
+    const processTrailingState = useCallback(
+        (nextState: State, callback?: () => void) => {
             setState(draft => {
-                draft.state = nextState;
+                draft.trailingState = nextState;
             });
 
             callback?.();
@@ -86,45 +72,15 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         [setState],
     );
 
-    const handlePressIn = useCallback(
-        (event: GestureResponderEvent) => processState('pressed', () => onPressIn?.(event)),
-        [onPressIn, processState],
-    );
-
-    const handlePressOut = useCallback(
-        (event: GestureResponderEvent) =>
-            processState(mobile ? 'enabled' : 'hovered', () => onPressOut?.(event)),
-        [mobile, onPressOut, processState],
-    );
-
-    const handleHoverIn = useCallback(
-        (event: MouseEvent) => processState('hovered', () => onHoverIn?.(event)),
-        [onHoverIn, processState],
-    );
-
-    const handleHoverOut = useCallback(
-        (event: MouseEvent) => processState('enabled', () => onHoverOut?.(event)),
-        [onHoverOut, processState],
-    );
-
-    const handleFocus = useCallback(
-        (event: NativeSyntheticEvent<TargetedEvent>) =>
-            processState('focused', () => onFocus?.(event)),
-        [onFocus, processState],
-    );
-
-    const handleBlur = useCallback(
-        (event: NativeSyntheticEvent<TargetedEvent>) =>
-            processState('enabled', () => onBlur?.(event)),
-        [onBlur, processState],
-    );
-
     const handleTrailingHoverIn = useCallback(
-        () => processState('trailingHovered'),
-        [processState],
+        () => processTrailingState('hovered'),
+        [processTrailingState],
     );
 
-    const handleTrailingHoverOut = useCallback(() => processState('hovered'), [processState]);
+    const handleTrailingHoverOut = useCallback(
+        () => processTrailingState('enabled'),
+        [processTrailingState],
+    );
     const handleTrailingPress = useCallback(() => {
         close && onCloseAnimated();
     }, [close, onCloseAnimated]);
@@ -144,14 +100,9 @@ export const ItemBase: FC<ItemBaseProps> = props => {
 
     return render({
         ...renderProps,
+        ...handleEvent,
         id,
-        onBlur: handleBlur,
-        onFocus: handleFocus,
-        onHoverIn: handleHoverIn,
-        onHoverOut: handleHoverOut,
         onLayout: processLayout,
-        onPressIn: handlePressIn,
-        onPressOut: handlePressOut,
         renderStyle: {
             backgroundColor,
             height: animatedHeight,

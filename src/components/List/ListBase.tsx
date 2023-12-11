@@ -1,56 +1,71 @@
-import {FC, useEffect, useId} from 'react';
+import {FC, useCallback, useEffect, useId} from 'react';
+import {ListRenderItemInfo} from 'react-native';
 import {useImmer} from 'use-immer';
 import {Item} from './Item/Item';
-import {ListProps, ListSourceMenu} from './List';
+import {ListDataSource, ListProps} from './List';
 
 export type RenderProps = ListProps;
 export interface ListBaseProps extends ListProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface RenderMenusOptions extends Pick<ListProps, 'menus' | 'close'> {
+export interface RenderItemOptions extends ListRenderItemInfo<ListDataSource> {
+    active?: boolean;
+    close?: boolean;
     onActive: (key: string) => void;
 }
 
-export interface Menu extends ListSourceMenu {
+export interface Data extends ListDataSource {
     active: boolean;
 }
 
-const renderMenus = (options: RenderMenusOptions) => {
-    const {menus, onActive, close} = options;
+const renderItem = (options: RenderItemOptions) => {
+    const {item, onActive, close} = options;
 
-    return menus?.map(menu => (
-        <Item {...menu} close={close} key={menu.key} onPress={() => onActive(menu.key!)} />
-    ));
+    return <Item {...item} close={close} key={item.key} onPress={() => onActive(item.key!)} />;
 };
 
 export const ListBase: FC<ListBaseProps> = props => {
-    const {render, menus: sourceMenus, onChange, close, ...renderProps} = props;
+    const {render, data: dataSources, onChange, close, ...renderProps} = props;
     const id = useId();
-    const [menus, setMenus] = useImmer<Menu[]>([]);
+    const [data, setData] = useImmer<Data[]>([]);
 
-    const handleActive = (key: string) => {
-        setMenus(draft => {
-            draft.forEach(item => (item.active = item.key === key));
-        });
+    const handleActive = useCallback(
+        (key: string) => {
+            setData(draft => {
+                draft.forEach(datum => (datum.active = datum.key === key));
+            });
 
-        onChange?.(key);
-    };
+            onChange?.(key);
+        },
+        [onChange, setData],
+    );
+
+    const processRenderItem = useCallback(
+        (options: ListRenderItemInfo<ListDataSource>) =>
+            renderItem({
+                ...options,
+                close,
+                onActive: handleActive,
+            }),
+        [close, handleActive],
+    );
 
     useEffect(() => {
-        sourceMenus &&
-            setMenus(() =>
-                sourceMenus.map((menu, index) => ({
+        dataSources &&
+            setData(() =>
+                dataSources.map((menu, index) => ({
                     ...menu,
                     active: false,
                     key: menu.key ?? index,
                 })),
             );
-    }, [setMenus, sourceMenus]);
+    }, [dataSources, setData]);
 
     return render({
         ...renderProps,
+        data,
+        renderItem: processRenderItem,
         id,
-        children: renderMenus({menus, onActive: handleActive, close}),
     });
 };

@@ -1,12 +1,18 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
-import {State} from '../../Common/interface';
 import {Hovered} from '../../Hovered/Hovered';
 import {TouchableRipple, TouchableRippleProps} from '../../TouchableRipple/TouchableRipple';
-import {Container, Content, Headline, Leading, Main, SupportingText, Trailing} from './Item.styles';
+import {
+    Container,
+    Content,
+    Headline,
+    Inner,
+    Leading,
+    SupportingText,
+    Trailing,
+} from './Item.styles';
 import {ItemBase, RenderProps} from './ItemBase';
 
-export type ListItemState = State | 'trailingHovered' | 'removed';
 export interface ItemProps extends TouchableRippleProps {
     headline?: string;
     trailing?: React.JSX.Element;
@@ -16,8 +22,8 @@ export interface ItemProps extends TouchableRippleProps {
     close?: boolean;
 }
 
-const AnimatedMain = Animated.createAnimatedComponent(Main);
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
+const AnimatedInner = Animated.createAnimatedComponent(Inner);
 const AnimatedTrailing = Animated.createAnimatedComponent(Trailing);
 const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
@@ -48,10 +54,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                 style={{height}}
                 testID={`listItem--${id}`}>
                 <TouchableRipple {...touchableRippleProps} ref={ref} underlayColor={underlayColor}>
-                    <AnimatedMain
-                        testID={`listItem__main--${id}`}
-                        style={{backgroundColor}}
-                        state={state}>
+                    <AnimatedInner testID={`listItem__inner--${id}`} style={{backgroundColor}}>
                         {leading && (
                             <Leading testID={`listItem__leading--${id}`}>{leading}</Leading>
                         )}
@@ -72,16 +75,12 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                                 {trailing}
                             </AnimatedTrailing>
                         )}
-                    </AnimatedMain>
+                    </AnimatedInner>
 
                     {typeof touchableRippleWidth === 'number' && (
                         <Hovered
                             height={touchableRippleHeight}
-                            state={
-                                ['trailingHovered', 'removed'].includes(state)
-                                    ? 'enabled'
-                                    : (state as State)
-                            }
+                            state={state}
                             underlayColor={underlayColor}
                             width={touchableRippleWidth}
                         />

@@ -102,8 +102,8 @@ export const SearchBase: FC<SearchBaseProps> = props => {
     );
 
     return render({
-        ...handleEvent,
         ...renderProps,
+        ...handleEvent,
         children,
         id,
         onLayout: processLayout,

@@ -56,7 +56,6 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
                 error: 0,
                 focused: 0,
                 hovered: 1,
-                pressed: 0,
                 pressIn: 0,
                 longPressIn: 0,
             };
@@ -132,8 +131,8 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     }, [category, disabled, setState, type]);
 
     return render({
-        ...handleEvent,
         ...renderProps,
+        ...handleEvent,
         category,
         disabled,
         elevation,
