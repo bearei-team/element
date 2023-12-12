@@ -20,16 +20,13 @@ const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>((props,
         const {id, children, shape, ...pressableProps} = renderProps;
 
         return (
-            <Container testID={`touchableRipple--${id}`}>
-                <Pressable
-                    {...pressableProps}
-                    ref={ref}
-                    testID={`touchableRipple__pressable--${id}`}>
+            <Pressable {...pressableProps} ref={ref} testID={`touchableRipple__pressable--${id}`}>
+                <Container testID={`touchableRipple--${id}`}>
                     <Content shape={shape} testID={`touchableRipple__content--${id}`}>
                         {children}
                     </Content>
-                </Pressable>
-            </Container>
+                </Container>
+            </Pressable>
         );
     };
 
