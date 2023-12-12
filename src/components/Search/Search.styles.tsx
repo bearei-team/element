@@ -4,9 +4,6 @@ import styled from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 
 export type InnerProps = {width: number};
-
-export type HeaderProps = InnerProps;
-
 export const Container = styled.View`
     position: relative;
 
@@ -17,7 +14,6 @@ export const Container = styled.View`
 `;
 
 export const Inner = styled(Shape)<InnerProps>`
-    align-items: center;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -25,6 +21,7 @@ export const Inner = styled(Shape)<InnerProps>`
     position: absolute;
     top: 0;
     z-index: 2048;
+    overflow: hidden;
 
     ${({theme, width}) =>
         css`
@@ -33,7 +30,7 @@ export const Inner = styled(Shape)<InnerProps>`
         `};
 `;
 
-export const Header = styled.View<HeaderProps>`
+export const Header = styled.View<InnerProps>`
     align-items: center;
     display: flex;
     flex-direction: row;

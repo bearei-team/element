@@ -6,7 +6,8 @@ import {useHandleEvent} from '../../hooks/useHandleEvent';
 import {ShapeProps} from '../Common/Common.styles';
 import {AnimatedInterpolation, State} from '../Common/interface';
 import {Icon} from '../Icon/Icon';
-import {SearchProps, SourceMenu} from './Search';
+import {ListDataSource} from '../List/List';
+import {SearchProps} from './Search';
 import {Input} from './Search.styles';
 import {useAnimated} from './useAnimated';
 
@@ -24,13 +25,15 @@ export interface SearchBaseProps extends SearchProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface RenderRipplesOptions extends Pick<SearchProps, 'menus'> {
+export interface RenderRipplesOptions extends Pick<SearchProps, 'data'> {
     onActive: (key: string) => void;
 }
 
-export interface Menu extends SourceMenu {
+export interface Data extends ListDataSource {
     active: boolean;
 }
+
+export type RenderTextInputOptions = SearchProps;
 
 const initialState = {
     layout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
@@ -38,15 +41,11 @@ const initialState = {
     value: '',
 };
 
-const renderTextInput = (options: any) => {
-    const {renderStyle, ...props} = options;
-
-    return <Input {...props} style={renderStyle} />;
-};
-
+const renderTextInput = (options: RenderTextInputOptions) => <Input {...options} />;
 export const SearchBase: FC<SearchBaseProps> = props => {
     const {render, leadingIcon, onChangeText, defaultValue, placeholder, ref, ...renderProps} =
         props;
+
     const [{value, layout}, setState] = useImmer(initialState);
     const {innerHeight} = useAnimated({value});
     const id = useId();

@@ -16,9 +16,6 @@ export interface ListProps
     close?: boolean;
 }
 
-/**
- * TODO:
- */
 const ForwardRefList = forwardRef<FlatList<ListDataSource>, ListProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {id, ...containerProps} = renderProps;

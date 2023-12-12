@@ -5,7 +5,6 @@ import {
     PressableProps,
     TextInput,
     TextInputProps,
-    TouchableWithoutFeedback,
     TouchableWithoutFeedbackProps,
 } from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
@@ -58,9 +57,9 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             labelText,
             leadingIcon,
             onHeaderLayout,
-            onHoverIn,
-            onHoverOut,
             onLabelTextLayout,
+            onBlur,
+
             renderStyle,
             shape,
             state,
@@ -108,94 +107,91 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             </AnimatedLabel>
         );
 
+        console.info(containerProps);
+
         return (
-            <TouchableWithoutFeedback
-                {...(containerProps as TouchableWithoutFeedbackProps)}
-                accessibilityLabel={error ? supportingText : labelText}
-                accessibilityRole={error ? 'alert' : 'keyboardkey'}
-                testID={`textfield--${id}`}>
-                <Container testID={`textfield__container--${id}`}>
-                    <Header onLayout={onHeaderLayout} testID={`textfield__header--${id}`}>
-                        <Pressable
-                            onHoverIn={onHoverIn}
-                            onHoverOut={onHoverOut}
-                            testID={`textfield__pressable--${id}`}>
-                            <AnimatedHeaderInner
-                                leadingIconShow={!!leadingIcon}
-                                shape={shape}
-                                style={{backgroundColor, borderColor, borderWidth}}
-                                testID={`textField__headerInner--${id}`}
-                                trailingIconShow={!!trailingIcon}>
-                                {leadingIcon && (
-                                    <LeadingIcon testID={`textfield__leadingIcon--${id}`}>
-                                        {leadingIcon}
-                                    </LeadingIcon>
-                                )}
+            <Container testID={`textfield__container--${id}`}>
+                <Header onLayout={onHeaderLayout} testID={`textfield__header--${id}`}>
+                    <Pressable
+                        {...containerProps}
+                        testID={`textfield__pressable--${id}`}
+                        accessibilityLabel={error ? supportingText : labelText}
+                        accessibilityRole={error ? 'alert' : 'keyboardkey'}>
+                        <AnimatedHeaderInner
+                            leadingIconShow={!!leadingIcon}
+                            shape={shape}
+                            style={{backgroundColor, borderColor, borderWidth}}
+                            testID={`textField__headerInner--${id}`}
+                            trailingIconShow={!!trailingIcon}>
+                            {leadingIcon && (
+                                <LeadingIcon testID={`textfield__leadingIcon--${id}`}>
+                                    {leadingIcon}
+                                </LeadingIcon>
+                            )}
 
-                                <Content testID={`textfield__content--${id}`}>
-                                    {type === 'filled' && LabelComponent}
-                                    {children}
-                                </Content>
+                            <Content testID={`textfield__content--${id}`}>
+                                {type === 'filled' && LabelComponent}
+                                {children}
+                            </Content>
 
-                                {trailingIcon && (
-                                    <TrailingIcon testID={`textfield__trailingIcon--${id}`}>
-                                        {trailingIcon}
-                                    </TrailingIcon>
-                                )}
+                            {trailingIcon && (
+                                <TrailingIcon testID={`textfield__trailingIcon--${id}`}>
+                                    {trailingIcon}
+                                </TrailingIcon>
+                            )}
 
-                                {type === 'filled' && typeof headerWidth === 'number' && (
-                                    <>
-                                        <AnimatedActiveIndicator
-                                            style={{
-                                                backgroundColor: activeIndicatorColor,
-                                                height: activeIndicatorHeight,
-                                            }}
-                                            testID={`textfield__activeIndicator--${id}`}
-                                            width={headerWidth}
+                            {type === 'filled' && typeof headerWidth === 'number' && (
+                                <>
+                                    <AnimatedActiveIndicator
+                                        style={{
+                                            backgroundColor: activeIndicatorColor,
+                                            height: activeIndicatorHeight,
+                                        }}
+                                        testID={`textfield__activeIndicator--${id}`}
+                                        width={headerWidth}
+                                    />
+
+                                    <Hovered
+                                        height={headerHeight}
+                                        shape={shape}
+                                        state={state}
+                                        underlayColor={underlayColor}
+                                        width={headerWidth}
+                                        opacities={[0.08, 0]}
+                                    />
+                                </>
+                            )}
+
+                            {type === 'outlined' && (
+                                <>
+                                    {LabelComponent}
+                                    <LabelText
+                                        onLayout={onLabelTextLayout}
+                                        testID={`textField__labelText--${id}`}>
+                                        {labelText}
+                                    </LabelText>
+
+                                    <LabelTextBackground
+                                        height={labelTextHeight}
+                                        width={labelTextWidth}
+                                        testID={`textField__labelTextBackground--${id}`}>
+                                        <AnimatedLabelTextBackgroundInner
+                                            testID={`textField__labelTextBackgroundInner--${id}`}
+                                            style={{width: labelTextBackgroundWidth}}
                                         />
+                                    </LabelTextBackground>
+                                </>
+                            )}
+                        </AnimatedHeaderInner>
+                    </Pressable>
+                </Header>
 
-                                        <Hovered
-                                            height={headerHeight}
-                                            shape={shape}
-                                            state={state}
-                                            underlayColor={underlayColor}
-                                            width={headerWidth}
-                                            opacities={[0.08, 0]}
-                                        />
-                                    </>
-                                )}
-
-                                {type === 'outlined' && (
-                                    <>
-                                        {LabelComponent}
-                                        <LabelText
-                                            onLayout={onLabelTextLayout}
-                                            testID={`textField__labelText--${id}`}>
-                                            {labelText}
-                                        </LabelText>
-
-                                        <LabelTextBackground
-                                            height={labelTextHeight}
-                                            width={labelTextWidth}
-                                            testID={`textField__labelTextBackground--${id}`}>
-                                            <AnimatedLabelTextBackgroundInner
-                                                testID={`textField__labelTextBackgroundInner--${id}`}
-                                                style={{width: labelTextBackgroundWidth}}
-                                            />
-                                        </LabelTextBackground>
-                                    </>
-                                )}
-                            </AnimatedHeaderInner>
-                        </Pressable>
-                    </Header>
-
-                    <AnimatedSupportingText
-                        style={{color: supportingTextColor, opacity: supportingTextOpacity}}
-                        testID={`textfield__supportingText--${id}`}>
-                        {supportingText}
-                    </AnimatedSupportingText>
-                </Container>
-            </TouchableWithoutFeedback>
+                <AnimatedSupportingText
+                    style={{color: supportingTextColor, opacity: supportingTextOpacity}}
+                    testID={`textfield__supportingText--${id}`}>
+                    {supportingText}
+                </AnimatedSupportingText>
+            </Container>
         );
     };
 

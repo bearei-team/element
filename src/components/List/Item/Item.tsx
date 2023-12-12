@@ -33,6 +33,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
             leading,
             renderStyle,
             state,
+            style,
             supportingText,
             trailing,
             underlayColor,
@@ -48,13 +49,16 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
         } = renderStyle;
 
         return (
-            <AnimatedContainer
+            <TouchableRipple
+                {...touchableRippleProps}
                 accessibilityLabel={headline}
                 accessibilityRole="list"
-                style={{height}}
-                testID={`listItem--${id}`}>
-                <TouchableRipple {...touchableRippleProps} ref={ref} underlayColor={underlayColor}>
-                    <AnimatedInner testID={`listItem__inner--${id}`} style={{backgroundColor}}>
+                ref={ref}
+                underlayColor={underlayColor}>
+                <AnimatedContainer style={{height}} testID={`listItem--${id}`}>
+                    <AnimatedInner
+                        style={{...(typeof style === 'object' && style), backgroundColor}}
+                        testID={`listItem__inner--${id}`}>
                         {leading && (
                             <Leading testID={`listItem__leading--${id}`}>{leading}</Leading>
                         )}
@@ -70,23 +74,23 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
 
                         {trailing && (
                             <AnimatedTrailing
-                                testID={`listItem__trailing--${id}`}
-                                style={{opacity: trailingOpacity}}>
+                                style={{opacity: trailingOpacity}}
+                                testID={`listItem__trailing--${id}`}>
                                 {trailing}
                             </AnimatedTrailing>
                         )}
                     </AnimatedInner>
+                </AnimatedContainer>
 
-                    {typeof touchableRippleWidth === 'number' && (
-                        <Hovered
-                            height={touchableRippleHeight}
-                            state={state}
-                            underlayColor={underlayColor}
-                            width={touchableRippleWidth}
-                        />
-                    )}
-                </TouchableRipple>
-            </AnimatedContainer>
+                {typeof touchableRippleWidth === 'number' && (
+                    <Hovered
+                        height={touchableRippleHeight}
+                        state={state}
+                        underlayColor={underlayColor}
+                        width={touchableRippleWidth}
+                    />
+                )}
+            </TouchableRipple>
         );
     };
 

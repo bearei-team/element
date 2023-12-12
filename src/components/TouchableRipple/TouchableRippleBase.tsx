@@ -49,6 +49,8 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         (nextState: State, options = {} as OnStateChangeOptions) => {
             const {event} = options;
 
+            console.info(nextState, 'nextState');
+
             nextState === 'pressIn' && processPressIn(event as GestureResponderEvent);
         },
         [processPressIn],
@@ -91,6 +93,8 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         },
         [setRippleSequence],
     );
+
+    console.info(handleEvent.onPressIn);
 
     const childrenElement = (
         <>

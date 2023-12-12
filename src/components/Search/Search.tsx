@@ -5,25 +5,20 @@ import {
     PressableProps,
     TextInput,
     TextInputProps,
-    TouchableWithoutFeedback,
     TouchableWithoutFeedbackProps,
 } from 'react-native';
 import {Divider} from '../Divider/Divider';
 import {Hovered} from '../Hovered/Hovered';
+import {List, ListDataSource} from '../List/List';
 import {Container, Content, Header, Inner, LeadingIcon, TrailingIcon} from './Search.styles';
 import {RenderProps, SearchBase} from './SearchBase';
-
-export interface SourceMenu {
-    key?: string;
-    labelText?: string;
-}
 
 export interface SearchProps
     extends Partial<
         TextInputProps & PressableProps & TouchableWithoutFeedbackProps & RefAttributes<TextInput>
     > {
     leadingIcon?: React.JSX.Element;
-    menus?: SourceMenu[];
+    data?: ListDataSource[];
     trailingIcon?: React.JSX.Element;
 }
 
@@ -37,58 +32,60 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
             onHoverIn,
             onHoverOut,
             onLayout,
+            onBlur,
+            onFocus,
             renderStyle,
             shape,
             state,
             trailingIcon,
             underlayColor,
+            data,
             ...containerProps
         } = renderProps;
 
         const {height, innerHeight, width} = renderStyle;
 
         return (
-            <TouchableWithoutFeedback
-                {...(containerProps as TouchableWithoutFeedbackProps)}
-                onLayout={onLayout}
-                testID={`search--${id}`}>
-                <Container testID={`search__container--${id}`}>
-                    {typeof width === 'number' && (
-                        <AnimatedInner
-                            shape={shape}
-                            style={{height: innerHeight}}
-                            testID={`search__inner--${id}`}
-                            width={width}>
-                            <Pressable
-                                onHoverIn={onHoverIn}
-                                onHoverOut={onHoverOut}
-                                testID={`search__pressable--${id}`}>
-                                <Header testID={`search__header--${id}`} width={width}>
-                                    <LeadingIcon testID={`search__leadingIcon--${id}`}>
-                                        {leadingIcon}
-                                    </LeadingIcon>
+            <Container testID={`search--${id}`} onLayout={onLayout}>
+                {typeof width === 'number' && (
+                    <AnimatedInner
+                        shape={shape}
+                        style={{height: innerHeight}}
+                        testID={`search__inner--${id}`}
+                        width={width}>
+                        <Pressable
+                            onHoverIn={onHoverIn}
+                            onHoverOut={onHoverOut}
+                            onFocus={onFocus}
+                            onBlur={onBlur}
+                            testID={`search__pressable--${id}`}>
+                            <Header testID={`search__header--${id}`} width={width}>
+                                <LeadingIcon testID={`search__leadingIcon--${id}`}>
+                                    {leadingIcon}
+                                </LeadingIcon>
 
-                                    <Content testID={`search__content--${id}`}>{children}</Content>
-                                    <TrailingIcon testID={`search__trailingIcon--${id}`}>
-                                        {trailingIcon}
-                                    </TrailingIcon>
+                                <Content testID={`search__content--${id}`}>{children}</Content>
 
-                                    <Hovered
-                                        height={height}
-                                        opacities={[0.08, 0]}
-                                        shape={shape}
-                                        state={state}
-                                        underlayColor={underlayColor}
-                                        width={width}
-                                    />
-                                </Header>
-                            </Pressable>
+                                <TrailingIcon testID={`search__trailingIcon--${id}`}>
+                                    {trailingIcon}
+                                </TrailingIcon>
 
-                            {<Divider size="large" width={width} />}
-                        </AnimatedInner>
-                    )}
-                </Container>
-            </TouchableWithoutFeedback>
+                                <Hovered
+                                    height={height}
+                                    opacities={[0.08, 0]}
+                                    shape={shape}
+                                    state={state}
+                                    underlayColor={underlayColor}
+                                    width={width}
+                                />
+                            </Header>
+                        </Pressable>
+
+                        <Divider size="large" width={width} />
+                        <List data={data} />
+                    </AnimatedInner>
+                )}
+            </Container>
         );
     };
 

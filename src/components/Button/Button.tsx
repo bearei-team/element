@@ -1,20 +1,15 @@
 import {FC, forwardRef, memo} from 'react';
-import {
-    Animated,
-    PressableProps,
-    TouchableWithoutFeedback,
-    TouchableWithoutFeedbackProps,
-} from 'react-native';
+import {Animated, View} from 'react-native';
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
-import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
+import {TouchableProps, TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon, LabelText} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
 export type ButtonType = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
 export type Category = 'button' | 'iconButton';
 
-export interface ButtonProps extends Partial<TouchableWithoutFeedbackProps & PressableProps> {
+export interface ButtonProps extends TouchableProps {
     category?: Category;
     disabled?: boolean;
     icon?: React.JSX.Element;
@@ -25,7 +20,7 @@ export interface ButtonProps extends Partial<TouchableWithoutFeedbackProps & Pre
 
 const AnimatedContent = Animated.createAnimatedComponent(Content);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
-const ForwardRefButton = forwardRef<TouchableWithoutFeedback, ButtonProps>((props, ref) => {
+const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
             category,
@@ -34,77 +29,57 @@ const ForwardRefButton = forwardRef<TouchableWithoutFeedback, ButtonProps>((prop
             iconShow,
             id,
             labelText,
-            onBlur,
-            onFocus,
-            onHoverIn,
-            onHoverOut,
-            onLongPress,
-            onPress,
-            onPressIn,
-            onPressOut,
             renderStyle,
             shape,
             state,
             style,
             type,
             underlayColor,
-            ...containerProps
+            ...touchableRippleProps
         } = renderProps;
 
         const {color, touchableRippleHeight, touchableRippleWidth, ...contentStyle} = renderStyle;
-        const isTouchableRippleLaidOut = typeof touchableRippleWidth === 'number';
 
         return (
-            <TouchableWithoutFeedback
-                {...containerProps}
-                accessibilityLabel={labelText}
-                accessibilityRole="button"
-                onBlur={onBlur}
-                onFocus={onFocus}
-                ref={ref}
-                testID={`button--${id}`}>
-                <Container testID={`button__container--${id}`}>
-                    <Elevation level={elevation} shape={shape}>
-                        <TouchableRipple
+            <Elevation level={elevation} shape={shape}>
+                <TouchableRipple
+                    {...touchableRippleProps}
+                    accessibilityLabel={labelText}
+                    accessibilityRole="button"
+                    ref={ref}
+                    shape={shape}
+                    underlayColor={underlayColor}>
+                    <Container testID={`button--${id}`}>
+                        <AnimatedContent
+                            category={category}
                             shape={shape}
-                            underlayColor={underlayColor}
-                            onHoverIn={onHoverIn}
-                            onHoverOut={onHoverOut}
-                            onLongPress={onLongPress}
-                            onPress={onPress}
-                            onPressIn={onPressIn}
-                            onPressOut={onPressOut}>
-                            <AnimatedContent
-                                category={category}
-                                shape={shape}
-                                iconShow={iconShow}
-                                style={{...(typeof style === 'object' && style), ...contentStyle}}
-                                testID={`button__content--${id}`}
-                                type={type}>
-                                {iconShow && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
-                                {category === 'button' && (
-                                    <AnimatedLabelText
-                                        style={{color}}
-                                        testID={`button__labelText--${id}`}
-                                        type={type}>
-                                        {labelText}
-                                    </AnimatedLabelText>
-                                )}
-                            </AnimatedContent>
-
-                            {isTouchableRippleLaidOut && (
-                                <Hovered
-                                    height={touchableRippleHeight}
-                                    shape={shape}
-                                    state={state}
-                                    underlayColor={underlayColor}
-                                    width={touchableRippleWidth}
-                                />
+                            iconShow={iconShow}
+                            style={{...(typeof style === 'object' && style), ...contentStyle}}
+                            testID={`button__content--${id}`}
+                            type={type}>
+                            {iconShow && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
+                            {category === 'button' && (
+                                <AnimatedLabelText
+                                    style={{color}}
+                                    testID={`button__labelText--${id}`}
+                                    type={type}>
+                                    {labelText}
+                                </AnimatedLabelText>
                             )}
-                        </TouchableRipple>
-                    </Elevation>
-                </Container>
-            </TouchableWithoutFeedback>
+                        </AnimatedContent>
+                    </Container>
+
+                    {typeof touchableRippleWidth === 'number' && (
+                        <Hovered
+                            height={touchableRippleHeight}
+                            shape={shape}
+                            state={state}
+                            underlayColor={underlayColor}
+                            width={touchableRippleWidth}
+                        />
+                    )}
+                </TouchableRipple>
+            </Elevation>
         );
     };
 

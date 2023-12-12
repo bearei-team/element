@@ -12,7 +12,7 @@ const AnimatedShadow = Animated.createAnimatedComponent(Shadow);
 
 const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {children, id, level, onContentLayout, renderStyle, shape, ...containerProps} =
+        const {children, id, level, onContentLayout, renderStyle, shape, style, ...containerProps} =
             renderProps;
 
         const {contentHeight, opacity0, opacity1, contentWidth} = renderStyle;
@@ -27,6 +27,7 @@ const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
                 <Content
                     onLayout={onContentLayout}
                     shape={shape}
+                    style={style}
                     testID={`elevation__content--${id}`}>
                     {children}
                 </Content>
