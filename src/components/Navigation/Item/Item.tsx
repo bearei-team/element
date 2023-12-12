@@ -48,13 +48,13 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
         } = renderStyle;
 
         return (
-            <Pressable
-                {...containerProps}
-                ref={ref}
-                accessibilityLabel={labelText}
-                accessibilityRole="tab"
-                style={{flex}}>
-                <Container style={style} testID={`navigationItem--${id}`} onLayout={onLayout}>
+            <Pressable {...containerProps} ref={ref} style={{flex}}>
+                <Container
+                    accessibilityLabel={labelText}
+                    accessibilityRole="tab"
+                    onLayout={onLayout}
+                    style={style}
+                    testID={`navigationItem--${id}`}>
                     <Header
                         onLayout={onHeaderLayout}
                         pressPosition={pressPosition}

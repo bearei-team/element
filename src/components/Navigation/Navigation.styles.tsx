@@ -18,7 +18,9 @@ export const Container = styled(View)<ContentProps>`
             bar: css`
                 flex-direction: row;
                 gap: ${theme.adaptSize(theme.spacing.small)}px;
-                padding: ${theme.adaptSize(0)}px ${theme.adaptSize(theme.spacing.small)}px;
+                padding: ${theme.adaptSize(theme.spacing.none)}px
+                    ${theme.adaptSize(theme.spacing.small)}px;
+
                 justify-content: center;
             `,
             drawer: css`

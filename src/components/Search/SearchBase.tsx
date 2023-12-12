@@ -121,6 +121,7 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         listVisible,
         onFocus,
         onLayout: processLayout,
+        placeholder,
         shape: listVisible ? 'extraLargeTop' : 'extraLarge',
         state,
         underlayColor,

@@ -46,7 +46,6 @@ export const IconBase: FC<IconBaseProps> = props => {
             <SvgIcon
                 fill={fill ?? theme.palette.surface.onSurfaceVariant}
                 height="100%"
-                testID={`icon__svg--${id}`}
                 viewBox="0 0 24 24"
                 width="100%"
             />

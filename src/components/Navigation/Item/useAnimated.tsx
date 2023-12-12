@@ -12,11 +12,8 @@ export interface UseAnimatedOptions {
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {active, block} = options;
     const [stateAnimated] = useAnimatedValue(0);
-
     const [labelAnimated] = useAnimatedValue(0);
-
     const theme = useTheme();
-
     const iconBackgroundColor = stateAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [

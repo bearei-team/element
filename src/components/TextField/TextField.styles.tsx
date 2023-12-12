@@ -36,7 +36,8 @@ export const HeaderInner = styled(Shape)<HeaderInnerProps>`
     ${({theme}) =>
         css`
             height: ${theme.adaptSize(56)}px;
-            padding: ${theme.adaptSize(theme.spacing.extraSmall)}px 0;
+            padding: ${theme.adaptSize(theme.spacing.extraSmall)}px
+                ${theme.adaptSize(theme.spacing.none)}px;
         `}
 
     ${({theme, leadingIconShow}) =>

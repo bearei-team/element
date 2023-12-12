@@ -43,12 +43,12 @@ export const Container = styled(View)<ContainerProps>`
             small:
                 layout === 'horizontal'
                     ? css`
-                          padding: ${theme.adaptSize(0)}px
+                          padding: ${theme.adaptSize(theme.spacing.none)}px
                               ${theme.adaptSize(theme.spacing.medium)}px;
                       `
                     : css`
                           padding: ${theme.adaptSize(theme.spacing.medium)}px
-                              ${theme.adaptSize(0)}px;
+                              ${theme.adaptSize(theme.spacing.none)}px;
                       `,
         };
 

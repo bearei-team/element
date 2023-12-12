@@ -18,7 +18,8 @@ export const Container = styled(Shape)<ContainerProps>`
         const containerSize = {
             large: css`
                 min-width: ${theme.adaptSize(16)}px;
-                padding: ${theme.adaptSize(0)}px ${theme.adaptSize(theme.spacing.extraSmall)}px;
+                padding: ${theme.adaptSize(theme.spacing.none)}px
+                    ${theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
 
             medium: css`

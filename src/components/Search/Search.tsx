@@ -35,6 +35,7 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
             onHoverIn,
             onHoverOut,
             onLayout,
+            placeholder,
             renderStyle,
             shape,
             state,
@@ -59,7 +60,11 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
                             onHoverOut={onHoverOut}
                             onFocus={onFocus}
                             testID={`search__pressable--${id}`}>
-                            <Header testID={`search__header--${id}`} width={width}>
+                            <Header
+                                accessibilityLabel={placeholder}
+                                accessibilityRole="keyboardkey"
+                                testID={`search__header--${id}`}
+                                width={width}>
                                 <LeadingIcon testID={`search__leadingIcon--${id}`}>
                                     {leadingIcon}
                                 </LeadingIcon>
