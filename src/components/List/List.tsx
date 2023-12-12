@@ -20,7 +20,15 @@ const ForwardRefList = forwardRef<FlatList<ListDataSource>, ListProps>((props, r
     const render = (renderProps: RenderProps) => {
         const {id, ...containerProps} = renderProps;
 
-        return <Container<NativeTarget> {...containerProps} ref={ref} testID={`list--${id}`} />;
+        return (
+            <Container<NativeTarget>
+                {...containerProps}
+                accessibilityLabel="list"
+                accessibilityRole="grid"
+                ref={ref}
+                testID={`list--${id}`}
+            />
+        );
     };
 
     return <ListBase {...props} render={render} />;

@@ -27,37 +27,37 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
             children,
+            data,
             id,
             leadingIcon,
+            listVisible,
+            onFocus,
             onHoverIn,
             onHoverOut,
             onLayout,
-            onBlur,
-            onFocus,
             renderStyle,
             shape,
             state,
+            style,
             trailingIcon,
             underlayColor,
-            data,
             ...containerProps
         } = renderProps;
 
         const {height, innerHeight, width} = renderStyle;
 
         return (
-            <Container testID={`search--${id}`} onLayout={onLayout}>
+            <Container {...containerProps} onLayout={onLayout} testID={`search--${id}`}>
                 {typeof width === 'number' && (
                     <AnimatedInner
-                        shape={shape}
-                        style={{height: innerHeight}}
+                        shape={'extraLarge'}
+                        style={{...(typeof style === 'object' && style), height: innerHeight}}
                         testID={`search__inner--${id}`}
                         width={width}>
                         <Pressable
                             onHoverIn={onHoverIn}
                             onHoverOut={onHoverOut}
                             onFocus={onFocus}
-                            onBlur={onBlur}
                             testID={`search__pressable--${id}`}>
                             <Header testID={`search__header--${id}`} width={width}>
                                 <LeadingIcon testID={`search__leadingIcon--${id}`}>
@@ -82,7 +82,8 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
                         </Pressable>
 
                         <Divider size="large" width={width} />
-                        <List data={data} />
+
+                        {listVisible && <List data={data} />}
                     </AnimatedInner>
                 )}
             </Container>

@@ -44,12 +44,13 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             <Elevation level={elevation} shape={shape}>
                 <TouchableRipple
                     {...touchableRippleProps}
-                    accessibilityLabel={labelText}
-                    accessibilityRole="button"
                     ref={ref}
                     shape={shape}
                     underlayColor={underlayColor}>
-                    <Container testID={`button--${id}`}>
+                    <Container
+                        accessibilityLabel={labelText}
+                        accessibilityRole="button"
+                        testID={`button--${id}`}>
                         <AnimatedContent
                             category={category}
                             shape={shape}

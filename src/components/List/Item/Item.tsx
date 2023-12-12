@@ -49,13 +49,12 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
         } = renderStyle;
 
         return (
-            <TouchableRipple
-                {...touchableRippleProps}
-                accessibilityLabel={headline}
-                accessibilityRole="list"
-                ref={ref}
-                underlayColor={underlayColor}>
-                <AnimatedContainer style={{height}} testID={`listItem--${id}`}>
+            <TouchableRipple {...touchableRippleProps} ref={ref} underlayColor={underlayColor}>
+                <AnimatedContainer
+                    accessibilityLabel={headline}
+                    accessibilityRole="list"
+                    style={{height}}
+                    testID={`listItem--${id}`}>
                     <AnimatedInner
                         style={{...(typeof style === 'object' && style), backgroundColor}}
                         testID={`listItem__inner--${id}`}>

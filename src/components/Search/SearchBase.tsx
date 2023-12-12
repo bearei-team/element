@@ -20,13 +20,10 @@ export interface RenderProps extends Partial<Pick<ShapeProps, 'shape'> & SearchP
     };
     state: State;
     underlayColor: string;
+    listVisible?: boolean;
 }
 export interface SearchBaseProps extends SearchProps {
     render: (props: RenderProps) => React.JSX.Element;
-}
-
-export interface RenderRipplesOptions extends Pick<SearchProps, 'data'> {
-    onActive: (key: string) => void;
 }
 
 export interface Data extends ListDataSource {
@@ -54,17 +51,20 @@ export const SearchBase: FC<SearchBaseProps> = props => {
     const theme = useTheme();
     const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
     const underlayColor = theme.palette.surface.onSurface;
+    const listVisible = !!value;
 
     const processStateChange = useCallback(
         (nextState: State) => {
-            nextState === 'focused' && inputRef.current?.focus();
+            const focused = ['focused', 'pressIn', 'longPressIn'].includes(nextState);
+
+            focused && inputRef.current?.focus();
         },
         [inputRef],
     );
 
-    const {state, ...handleEvent} = useHandleEvent({
+    const {state, onBlur, onFocus, ...handleEvent} = useHandleEvent({
         ...props,
-        omitEvents: ['onPress', 'onPressIn', 'onLongPress', 'onPressOut'],
+        lockFocusEvent: true,
         onStateChange: processStateChange,
     });
 
@@ -90,14 +90,26 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         () =>
             renderTextInput({
                 defaultValue,
+                onBlur,
                 onChangeText: handleChangeText,
+                onFocus,
                 placeholder,
                 placeholderTextColor,
                 ref: inputRef,
                 testID: `search__input--${id}`,
                 value,
             }),
-        [defaultValue, handleChangeText, id, inputRef, placeholder, placeholderTextColor, value],
+        [
+            defaultValue,
+            handleChangeText,
+            id,
+            inputRef,
+            onBlur,
+            onFocus,
+            placeholder,
+            placeholderTextColor,
+            value,
+        ],
     );
 
     return render({
@@ -105,8 +117,10 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         ...handleEvent,
         children,
         id,
+        listVisible,
+        onFocus,
         onLayout: processLayout,
-        shape: 'extraLarge',
+        shape: listVisible ? 'extraLargeTop' : 'extraLarge',
         state,
         underlayColor,
         renderStyle: {

@@ -35,6 +35,7 @@ export const Header = styled.View<InnerProps>`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    position: relative;
 
     ${({theme, width}) =>
         css`
