@@ -102,18 +102,20 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
 
     const processStateChange = useCallback(
         (nextState: State) => {
-            onAnimated(nextState, {
-                finished: () => nextState === 'focused' && inputRef.current?.focus(),
+            const focused = ['focused', 'pressIn', 'longPressIn'].includes(nextState);
+
+            onAnimated(focused ? 'focused' : nextState, {
+                finished: () => focused && inputRef.current?.focus(),
             });
         },
 
         [inputRef, onAnimated],
     );
 
-    const {state, ...handleEvent} = useHandleEvent({
+    const {state, onBlur, onFocus, ...handleEvent} = useHandleEvent({
         ...props,
         disabled,
-        omitEvents: ['onPress', 'onPressIn', 'onLongPress', 'onPressOut'],
+        lockFocusEvent: true,
         onStateChange: processStateChange,
     });
 
@@ -149,6 +151,8 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
                 placeholderTextColor,
                 defaultValue,
                 onChangeText: handleChangeText,
+                onBlur,
+                onFocus,
                 placeholder,
                 ref: inputRef,
                 renderStyle: {height: inputHeight, color: inputColor},
@@ -161,6 +165,8 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
             inputColor,
             inputHeight,
             inputRef,
+            onBlur,
+            onFocus,
             placeholder,
             placeholderTextColor,
         ],
@@ -182,6 +188,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         id,
         labelText,
         leadingIcon,
+        onFocus,
         onHeaderLayout: processHeaderLayout,
         onLabelTextLayout: processLabelTextLayout,
         renderStyle: {

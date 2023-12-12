@@ -1,12 +1,5 @@
 import React, {FC, RefAttributes, forwardRef, memo} from 'react';
-import {
-    Animated,
-    Pressable,
-    PressableProps,
-    TextInput,
-    TextInputProps,
-    TouchableWithoutFeedbackProps,
-} from 'react-native';
+import {Animated, Pressable, PressableProps, TextInput, TextInputProps} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
 import {Hovered} from '../Hovered/Hovered';
 import {
@@ -28,11 +21,7 @@ import {RenderProps, TextFieldBase} from './TextFieldBase';
 export type TextFieldType = 'filled' | 'outlined';
 export interface TextFieldProps
     extends Partial<
-        TextInputProps &
-            TouchableWithoutFeedbackProps &
-            PressableProps &
-            RefAttributes<TextInput> &
-            Pick<ShapeProps, 'shape'>
+        TextInputProps & PressableProps & RefAttributes<TextInput> & Pick<ShapeProps, 'shape'>
     > {
     disabled?: boolean;
     error?: boolean;
@@ -58,8 +47,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             leadingIcon,
             onHeaderLayout,
             onLabelTextLayout,
-            onBlur,
-
+            style,
             renderStyle,
             shape,
             state,
@@ -67,7 +55,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             trailingIcon,
             type,
             underlayColor,
-            ...containerProps
+            ...pressableProps
         } = renderProps;
 
         const {
@@ -107,20 +95,28 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
             </AnimatedLabel>
         );
 
-        console.info(containerProps);
-
         return (
-            <Container testID={`textfield__container--${id}`}>
-                <Header onLayout={onHeaderLayout} testID={`textfield__header--${id}`}>
-                    <Pressable
-                        {...containerProps}
-                        testID={`textfield__pressable--${id}`}
-                        accessibilityLabel={error ? supportingText : labelText}
-                        accessibilityRole={error ? 'alert' : 'keyboardkey'}>
+            <Pressable
+                {...(error && {accessibilityLabel: supportingText, accessibilityRole: 'alert'})}
+                {...pressableProps}
+                testID={`textfield__pressable--${id}`}>
+                <Container testID={`textfield--${id}`}>
+                    <Header
+                        onLayout={onHeaderLayout}
+                        testID={`textfield__header--${id}`}
+                        {...(!error && {
+                            accessibilityLabel: labelText,
+                            accessibilityRole: 'keyboardkey',
+                        })}>
                         <AnimatedHeaderInner
                             leadingIconShow={!!leadingIcon}
                             shape={shape}
-                            style={{backgroundColor, borderColor, borderWidth}}
+                            style={{
+                                ...(typeof style === 'object' && style),
+                                backgroundColor,
+                                borderColor,
+                                borderWidth,
+                            }}
                             testID={`textField__headerInner--${id}`}
                             trailingIconShow={!!trailingIcon}>
                             {leadingIcon && (
@@ -183,15 +179,15 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
                                 </>
                             )}
                         </AnimatedHeaderInner>
-                    </Pressable>
-                </Header>
+                    </Header>
 
-                <AnimatedSupportingText
-                    style={{color: supportingTextColor, opacity: supportingTextOpacity}}
-                    testID={`textfield__supportingText--${id}`}>
-                    {supportingText}
-                </AnimatedSupportingText>
-            </Container>
+                    <AnimatedSupportingText
+                        style={{color: supportingTextColor, opacity: supportingTextOpacity}}
+                        testID={`textfield__supportingText--${id}`}>
+                        {supportingText}
+                    </AnimatedSupportingText>
+                </Container>
+            </Pressable>
         );
     };
 
