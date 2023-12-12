@@ -6,12 +6,17 @@ import {UTIL} from '../../../utils/util';
 
 export interface UseAnimatedOptions {
     active: boolean;
+    block: boolean;
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {active} = options;
+    const {active, block} = options;
     const [stateAnimated] = useAnimatedValue(0);
+
+    const [labelAnimated] = useAnimatedValue(0);
+
     const theme = useTheme();
+
     const iconBackgroundColor = stateAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
@@ -33,7 +38,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         outputRange: [theme.palette.surface.onSurfaceVariant, theme.palette.surface.onSurface],
     });
 
-    const labelHeight = stateAnimated.interpolate({
+    const labelHeight = labelAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [0, theme.adaptSize(theme.typography.label.medium.lineHeight)],
     });
@@ -54,8 +59,15 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        processAnimatedTiming(stateAnimated, active ? 1 : 0);
-    }, [active, processAnimatedTiming, stateAnimated]);
+        const toValue = active ? 1 : 0;
+
+        processAnimatedTiming(stateAnimated, toValue);
+        processAnimatedTiming(labelAnimated, toValue);
+    }, [active, labelAnimated, processAnimatedTiming, stateAnimated]);
+
+    useEffect(() => {
+        processAnimatedTiming(labelAnimated, block ? 1 : 0);
+    }, [block, labelAnimated, processAnimatedTiming]);
 
     return {iconBackgroundColor, labelColor, iconBackgroundWidth, labelHeight};
 };

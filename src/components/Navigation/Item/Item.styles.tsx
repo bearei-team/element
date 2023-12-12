@@ -8,22 +8,20 @@ export type LabelTextProps = Pick<RenderProps, 'active'>;
 
 export const Container = styled(View)`
     align-items: center;
-    align-items: center;
     display: flex;
     flex-direction: column;
-    flex: 1;
     justify-content: center;
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-        max-height: ${theme.adaptSize(80)}px;
+        min-height: ${theme.adaptSize(80)}px;
         min-width: ${theme.adaptSize(72)}px;
         padding-bottom: ${theme.adaptSize(theme.spacing.medium)}px;
         padding-top: ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px;
     `}
 `;
 
-export const Header = styled.Pressable<IconInnerProps>`
+export const Header = styled.View<IconInnerProps>`
     display: flex;
     flex-direction: row;
     position: relative;
@@ -45,11 +43,6 @@ export const Header = styled.Pressable<IconInnerProps>`
 `;
 
 export const IconBackground = styled(Shape)`
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    pointer-events: none;
-
     ${({theme}) => css`
         padding: ${theme.adaptSize(theme.spacing.extraSmall)}px
             ${theme.adaptSize(theme.spacing.large - theme.spacing.extraSmall)}px;
@@ -62,9 +55,8 @@ export const Icon = styled(View)`
 
     ${({theme}) => css`
         top: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-        left: ${theme.adaptSize(
-            (24 + (theme.spacing.large - theme.spacing.extraSmall) * 2) / 2 - 24 / 2,
-        )}px;
+        left: ${theme.adaptSize((24 + (theme.spacing.large - theme.spacing.extraSmall) * 2) / 2) -
+        24 / 2}px;
         height: ${theme.adaptSize(24)}px;
         width: ${theme.adaptSize(24)}px;
     `}

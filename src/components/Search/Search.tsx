@@ -44,7 +44,7 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
             ...containerProps
         } = renderProps;
 
-        const {height, innerHeight, width} = renderStyle;
+        const {height, innerHeight, width, listBackgroundColor} = renderStyle;
 
         return (
             <Container {...containerProps} onLayout={onLayout} testID={`search--${id}`}>
@@ -83,7 +83,9 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
 
                         <Divider size="large" width={width} />
 
-                        {listVisible && <List data={data} />}
+                        {listVisible && (
+                            <List data={data} style={{backgroundColor: listBackgroundColor}} />
+                        )}
                     </AnimatedInner>
                 )}
             </Container>

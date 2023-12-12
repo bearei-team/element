@@ -1,17 +1,15 @@
-import {FC, useCallback, useEffect, useId} from 'react';
+import {FC, cloneElement, useCallback, useEffect, useId} from 'react';
 import {
     Animated,
     GestureResponderEvent,
     LayoutChangeEvent,
     LayoutRectangle,
-    MouseEvent,
-    NativeSyntheticEvent,
-    TargetedEvent,
     TextStyle,
     ViewStyle,
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
+import {OnStateChangeOptions, useHandleEvent} from '../../../hooks/useHandleEvent';
 import {AnimatedInterpolation, State} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
 import {ItemProps} from './Item';
@@ -27,8 +25,10 @@ export interface RenderProps extends ItemProps {
         iconBackgroundColor: AnimatedInterpolation;
         labelColor: AnimatedInterpolation;
         labelHeight: AnimatedInterpolation;
+        flex: number;
     };
     underlayColor: string;
+    state: State;
 }
 
 export interface ItemBaseProps extends ItemProps {
@@ -36,48 +36,64 @@ export interface ItemBaseProps extends ItemProps {
 }
 
 const initialState = {
+    layout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
     headerLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
-    state: 'enabled' as State,
     pressPosition: 0.5,
 };
 
 export const ItemBase: FC<ItemBaseProps> = props => {
     const {
         active = false,
-        onBlur,
-        onFocus,
-        onHoverIn,
-        onHoverOut,
-        onPressIn,
-        onPressOut,
-        render,
-        icon = <Icon type="outlined" category="image" name="circle" />,
         activeIcon = <Icon type="filled" category="image" name="circle" />,
+        block = false,
+        icon = <Icon type="outlined" category="image" name="circle" />,
+        onLayout,
+        render,
         ...renderProps
     } = props;
 
-    const [{headerLayout, state, pressPosition}, setState] = useImmer(initialState);
+    const [{headerLayout, layout, pressPosition}, setState] = useImmer(initialState);
     const id = useId();
     const theme = useTheme();
     const {iconBackgroundColor, labelColor, iconBackgroundWidth, labelHeight} = useAnimated({
         active,
+        block,
     });
 
     const underlayColor = active
-        ? theme.palette.surface.onSurface
-        : theme.palette.secondary.onSecondaryContainer;
+        ? theme.palette.secondary.onSecondaryContainer
+        : theme.palette.surface.onSurface;
 
-    const mobile = ['ios', 'android'].includes(theme.OS);
-    const processState = useCallback(
-        (nextState: State, callback?: () => void) => {
-            setState(draft => {
-                draft.state = nextState;
-            });
+    const processStateChange = useCallback(
+        (nextState: State, options?: OnStateChangeOptions) => {
+            if (nextState === 'pressIn') {
+                const {event} = options ?? {};
+                const {locationX} = (event as GestureResponderEvent)?.nativeEvent;
+                const position = locationX / layout.width;
 
-            callback?.();
+                setState(draft => {
+                    draft.pressPosition = position;
+                });
+            }
         },
-        [setState],
+        [layout.width, setState],
     );
+
+    const {state, ...handleEvent} = useHandleEvent({
+        ...props,
+        disabled: false,
+        onStateChange: processStateChange,
+    });
+
+    const processLayout = (event: LayoutChangeEvent) => {
+        const {height, width} = event.nativeEvent.layout;
+
+        setState(draft => {
+            draft.layout = {height, width};
+        });
+
+        onLayout?.(event);
+    };
 
     const processHeaderLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
@@ -86,50 +102,6 @@ export const ItemBase: FC<ItemBaseProps> = props => {
             draft.headerLayout = {height, width};
         });
     };
-
-    const handleHoverIn = useCallback(
-        (event: MouseEvent) => processState('hovered', () => onHoverIn?.(event)),
-        [onHoverIn, processState],
-    );
-
-    const handleHoverOut = useCallback(
-        (event: MouseEvent) => processState('enabled', () => onHoverOut?.(event)),
-        [onHoverOut, processState],
-    );
-
-    const handleFocus = useCallback(
-        (event: NativeSyntheticEvent<TargetedEvent>) =>
-            processState('focused', () => onFocus?.(event)),
-        [onFocus, processState],
-    );
-
-    const handleBlur = useCallback(
-        (event: NativeSyntheticEvent<TargetedEvent>) =>
-            processState('enabled', () => onBlur?.(event)),
-        [onBlur, processState],
-    );
-
-    const handlePressIn = useCallback(
-        (event: GestureResponderEvent) => {
-            const {locationX} = event.nativeEvent;
-            const position = locationX / headerLayout.width;
-
-            !mobile &&
-                setState(draft => {
-                    draft.pressPosition = position;
-                });
-
-            processState('pressed', () => onPressIn?.(event));
-        },
-        [headerLayout.width, mobile, onPressIn, processState, setState],
-    );
-
-    const handlePressOut = useCallback(
-        (event: GestureResponderEvent) => {
-            processState(mobile ? 'enabled' : 'hovered', () => onPressOut?.(event));
-        },
-        [mobile, onPressOut, processState],
-    );
 
     useEffect(() => {
         !active &&
@@ -140,27 +112,24 @@ export const ItemBase: FC<ItemBaseProps> = props => {
 
     return render({
         ...renderProps,
+        ...handleEvent,
         active,
-        activeIcon,
-        icon,
+        activeIcon: cloneElement(activeIcon, {state}),
+        icon: cloneElement(icon, {state}),
         id,
-        pressPosition,
-        onBlur: handleBlur,
-        onFocus: handleFocus,
-        onHoverIn: handleHoverIn,
-        onHoverOut: handleHoverOut,
         onHeaderLayout: processHeaderLayout,
-        onPressIn: handlePressIn,
-        onPressOut: handlePressOut,
+        onLayout: processLayout,
+        pressPosition,
         renderStyle: {
-            iconBackgroundColor,
-            iconBackgroundWidth,
             headerHeight: headerLayout.height,
             headerWidth: headerLayout.width,
+            iconBackgroundColor,
+            iconBackgroundWidth,
             labelColor,
             labelHeight,
+            flex: 1,
         },
-        shape: 'full',
+        shape: 'large',
         state,
         underlayColor,
     });

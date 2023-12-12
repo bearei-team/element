@@ -54,10 +54,10 @@ export const ListBase: FC<ListBaseProps> = props => {
     useEffect(() => {
         dataSources &&
             setData(() =>
-                dataSources.map((menu, index) => ({
-                    ...menu,
+                dataSources.map((datum, index) => ({
+                    ...datum,
                     active: false,
-                    key: menu.key ?? index,
+                    key: datum.key ?? index,
                 })),
             );
     }, [dataSources, setData]);

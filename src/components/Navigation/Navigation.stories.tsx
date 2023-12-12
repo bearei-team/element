@@ -1,15 +1,14 @@
 import {Meta, StoryObj} from '@storybook/react';
-import {NavigationBar, NavigationBarProps} from './Navigation';
+import {Navigation, NavigationProps} from './Navigation';
 
 export default {
-    title: 'components/NavigationBar',
-    component: NavigationBar,
-} as Meta<typeof NavigationBar>;
+    title: 'components/Navigation',
+    component: Navigation,
+} as Meta<typeof Navigation>;
 
-export const HorizontalNavigationBar: StoryObj<NavigationBarProps> = {
+export const NavigationBar: StoryObj<NavigationProps> = {
     args: {
-        layout: 'horizontal',
-        menus: [
+        data: [
             {
                 labelText: 'Label1',
                 key: 'name',

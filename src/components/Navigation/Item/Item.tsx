@@ -1,32 +1,19 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, PressableProps, View, ViewProps} from 'react-native';
+import {Animated, Pressable, PressableProps, View, ViewProps} from 'react-native';
 import {ShapeProps} from '../../Common/Common.styles';
-import {State} from '../../Common/interface';
 import {Hovered} from '../../Hovered/Hovered';
 import {Container, Header, Icon, IconBackground, LabelText} from './Item.styles';
 import {ItemBase, RenderProps} from './ItemBase';
 
 export type PropsBase = Partial<
-    ViewProps &
-        RefAttributes<View> &
-        Pick<ShapeProps, 'shape'> &
-        Pick<
-            PressableProps,
-            | 'onBlur'
-            | 'onFocus'
-            | 'onHoverIn'
-            | 'onHoverOut'
-            | 'onPressIn'
-            | 'onPressOut'
-            | 'onPress'
-        >
+    ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & PressableProps
 >;
 export interface ItemProps extends PropsBase {
     active?: boolean;
     activeIcon?: React.JSX.Element;
     icon?: React.JSX.Element;
     labelText?: string;
-    state?: State;
+    block?: boolean;
 }
 
 const AnimatedIconBackground = Animated.createAnimatedComponent(IconBackground);
@@ -39,19 +26,14 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
             icon,
             id,
             labelText,
-            onBlur,
-            onFocus,
-            onHoverIn,
-            onHoverOut,
             onHeaderLayout,
-            onPress,
-            onPressIn,
-            onPressOut,
+            onLayout,
+            pressPosition,
             renderStyle,
             shape,
             state,
+            style,
             underlayColor,
-            pressPosition,
             ...containerProps
         } = renderProps;
 
@@ -62,54 +44,53 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
             headerWidth,
             labelColor,
             labelHeight,
+            flex,
         } = renderStyle;
 
         return (
-            <Container
+            <Pressable
                 {...containerProps}
+                ref={ref}
                 accessibilityLabel={labelText}
                 accessibilityRole="tab"
-                ref={ref}
-                testID={`navigationBarItem--${id}`}>
-                <Header
-                    pressPosition={pressPosition}
-                    onBlur={onBlur}
-                    onFocus={onFocus}
-                    onHoverIn={onHoverIn}
-                    onHoverOut={onHoverOut}
-                    onPressIn={onPressIn}
-                    onPressOut={onPressOut}
-                    onLayout={onHeaderLayout}
-                    onPress={onPress}
-                    testID={`navigationBarItem__header--${id}`}>
-                    <AnimatedIconBackground
-                        shape={shape}
-                        style={{backgroundColor: iconBackgroundColor, width: iconBackgroundWidth}}
-                        testID={`navigationBarItem__iconInner--${id}`}
-                    />
-
-                    <Icon testID={`navigationBarItem__icon--${id}`}>
-                        {active ? activeIcon : icon}
-                    </Icon>
-
-                    {typeof headerWidth === 'number' && (
-                        <Hovered
-                            height={headerHeight}
+                style={{flex}}>
+                <Container style={style} testID={`navigationItem--${id}`} onLayout={onLayout}>
+                    <Header
+                        onLayout={onHeaderLayout}
+                        pressPosition={pressPosition}
+                        testID={`navigationItem__header--${id}`}>
+                        <AnimatedIconBackground
                             shape={shape}
-                            state={state}
-                            underlayColor={underlayColor}
-                            width={headerWidth}
+                            style={{
+                                backgroundColor: iconBackgroundColor,
+                                width: iconBackgroundWidth,
+                            }}
+                            testID={`navigationItem__iconInner--${id}`}
                         />
-                    )}
-                </Header>
 
-                <AnimatedLabelText
-                    style={{color: labelColor, height: labelHeight}}
-                    testID={`navigationBarItem__label--${id}`}
-                    active={active}>
-                    {labelText}
-                </AnimatedLabelText>
-            </Container>
+                        <Icon testID={`navigationItem__icon--${id}`}>
+                            {active ? activeIcon : icon}
+                        </Icon>
+
+                        {typeof headerWidth === 'number' && (
+                            <Hovered
+                                height={headerHeight}
+                                shape={shape}
+                                state={state}
+                                underlayColor={underlayColor}
+                                width={headerWidth}
+                            />
+                        )}
+                    </Header>
+
+                    <AnimatedLabelText
+                        style={{color: labelColor, height: labelHeight}}
+                        testID={`navigationItem__labelText--${id}`}
+                        active={active}>
+                        {labelText}
+                    </AnimatedLabelText>
+                </Container>
+            </Pressable>
         );
     };
 

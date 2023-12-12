@@ -17,6 +17,7 @@ export interface RenderProps extends Partial<Pick<ShapeProps, 'shape'> & SearchP
     } & {
         width: number;
         height: number;
+        listBackgroundColor: string;
     };
     state: State;
     underlayColor: string;
@@ -127,6 +128,7 @@ export const SearchBase: FC<SearchBaseProps> = props => {
             height: layout.height,
             innerHeight,
             width: layout.width,
+            listBackgroundColor: theme.color.rgba(theme.palette.surface.surface, 0),
         },
         leadingIcon: leadingIcon ?? <Icon type="outlined" name="search" width={24} height={24} />,
     });
