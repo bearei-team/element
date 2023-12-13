@@ -1,6 +1,6 @@
 {
     "name": "@bearei/element",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "main": "lib/commonjs/index.js",
     "react-native": "src/index.tsx",
     "module": "lib/module/index.js",
@@ -95,7 +95,6 @@
     "engines": {
         "node": ">=16"
     },
-    "packageManager": "yarn@3.6.4",
     "source": "src/index.tsx",
     "files": [
         "src",
@@ -138,5 +137,6 @@
     "eslintIgnore": [
         "node_modules/",
         "lib/"
-    ]
+    ],
+    "packageManager": "yarn@4.0.2"
 }

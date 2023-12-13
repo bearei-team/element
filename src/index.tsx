@@ -8,5 +8,6 @@ export * from './components/Form/Form';
 export * from './components/Icon/Icon';
 export * from './components/List/List';
 export * from './components/Navigation/Navigation';
+export * from './components/Search/Search';
 export * from './components/TextField/TextField';
 export * from './context/ThemeProvider';
