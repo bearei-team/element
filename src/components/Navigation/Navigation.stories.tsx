@@ -24,3 +24,23 @@ export const NavigationBar: StoryObj<NavigationProps> = {
         ],
     },
 };
+
+export const NavigationRail: StoryObj<NavigationProps> = {
+    args: {
+        type: 'rail',
+        data: [
+            {
+                labelText: 'Label1',
+                key: 'name',
+            },
+            {
+                labelText: 'Label2',
+                key: 'age',
+            },
+            {
+                labelText: 'Label3',
+                key: 'sex',
+            },
+        ],
+    },
+};

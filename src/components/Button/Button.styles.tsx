@@ -2,9 +2,13 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './ButtonBase';
 
-export type ContentProps = Pick<RenderProps, 'type' | 'iconShow' | 'category'>;
+export type ContentProps = Pick<
+    RenderProps,
+    'type' | 'iconShow' | 'category' | 'size' | 'labelTextShow'
+>;
+
 export type LabelTextProps = Omit<ContentProps, 'iconShow'>;
-export type IconProps = Pick<ContentProps, 'category'>;
+export type IconProps = Pick<ContentProps, 'category' | 'size'>;
 
 export const Container = styled.View``;
 export const Content = styled(Shape)<ContentProps>`
@@ -68,13 +72,17 @@ export const Content = styled(Shape)<ContentProps>`
         return iconShow && containerType[type];
     }}
 
-    ${({theme, category = 'button'}) => {
+    ${({theme, category = 'common'}) => {
         const categoryType = {
-            button: css`
+            common: css`
                 height: ${theme.adaptSize(40)}px;
             `,
-            iconButton: css`
+            icon: css`
                 width: ${theme.adaptSize(40)}px;
+                height: ${theme.adaptSize(40)}px;
+                padding: ${theme.adaptSize(theme.spacing.small)}px;
+            `,
+            fab: css`
                 height: ${theme.adaptSize(40)}px;
                 padding: ${theme.adaptSize(theme.spacing.small)}px;
             `,
@@ -82,6 +90,37 @@ export const Content = styled(Shape)<ContentProps>`
 
         return categoryType[category];
     }}
+
+    ${({theme, category, size = 'medium'}) => {
+        const containerSize = {
+            small: css`
+                height: ${theme.adaptSize(40)}px;
+                padding: ${theme.adaptSize(theme.spacing.small)}px;
+            `,
+            medium: css`
+                height: ${theme.adaptSize(56)}px;
+                padding: ${theme.adaptSize(theme.spacing.medium)}px;
+            `,
+            large: css`
+                height: ${theme.adaptSize(96)}px;
+                padding: ${theme.adaptSize(theme.spacing.extraLarge - 2)}px;
+            `,
+        };
+
+        return category === 'fab' && containerSize[size];
+    }}
+    
+    ${({theme, category, labelTextShow}) =>
+        category === 'fab' &&
+        labelTextShow &&
+        css`
+            gap: ${theme.adaptSize(theme.spacing.small + theme.spacing.extraSmall)}px;
+            height: ${theme.adaptSize(56)}px;
+            padding: ${theme.adaptSize(theme.spacing.medium)}px
+                ${theme.adaptSize(theme.spacing.medium + theme.spacing.extraSmall)}px
+                ${theme.adaptSize(theme.spacing.medium)}px
+                ${theme.adaptSize(theme.spacing.medium)}px;
+        `}
 `;
 
 export const LabelText = styled.Text<LabelTextProps>`
@@ -99,18 +138,41 @@ export const LabelText = styled.Text<LabelTextProps>`
 export const Icon = styled.View<IconProps>`
     overflow: hidden;
 
-    ${({theme, category = 'button'}) => {
+    ${({theme, category = 'common'}) => {
         const categoryType = {
-            button: css`
+            common: css`
                 height: ${theme.adaptSize(18)}px;
                 width: ${theme.adaptSize(18)}px;
             `,
-            iconButton: css`
+            icon: css`
+                height: ${theme.adaptSize(24)}px;
+                width: ${theme.adaptSize(24)}px;
+            `,
+            fab: css`
                 height: ${theme.adaptSize(24)}px;
                 width: ${theme.adaptSize(24)}px;
             `,
         };
 
         return categoryType[category];
+    }}
+
+    ${({theme, category, size = 'medium'}) => {
+        const iconSize = {
+            small: css`
+                height: ${theme.adaptSize(24)}px;
+                width: ${theme.adaptSize(24)}px;
+            `,
+            medium: css`
+                height: ${theme.adaptSize(24)}px;
+                width: ${theme.adaptSize(24)}px;
+            `,
+            large: css`
+                height: ${theme.adaptSize(36)}px;
+                width: ${theme.adaptSize(36)}px;
+            `,
+        };
+
+        return category === 'fab' && iconSize[size];
     }}
 `;

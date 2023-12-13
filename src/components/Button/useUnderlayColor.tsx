@@ -1,28 +1,32 @@
 import {useTheme} from 'styled-components/native';
-import {ButtonType, Category} from './Button';
+import {RenderProps} from './ButtonBase';
 
-export interface UseUnderlayColorOptions {
-    type: ButtonType;
-    category: Category;
-}
+export type UseUnderlayColorOptions = Required<Pick<RenderProps, 'type' | 'fabType' | 'category'>>;
 
 export const useUnderlayColor = (options: UseUnderlayColorOptions) => {
-    const {type, category} = options;
+    const {type, category, fabType} = options;
     const theme = useTheme();
-    const underlay = {
+    const commonUnderlay = {
         elevated: theme.palette.primary.primary,
         filled: theme.palette.primary.onPrimary,
         outlined:
-            category === 'button'
+            category === 'common'
                 ? theme.palette.primary.primary
                 : theme.palette.surface.onSurfaceVariant,
         text:
-            category === 'button'
+            category === 'common'
                 ? theme.palette.primary.primary
                 : theme.palette.surface.onSurfaceVariant,
 
         tonal: theme.palette.secondary.onSecondaryContainer,
     };
 
-    return [underlay[type]];
+    const fabUnderlay = {
+        primary: theme.palette.primary.onPrimaryContainer,
+        secondary: theme.palette.secondary.onSecondaryContainer,
+        surface: theme.palette.primary.primary,
+        tertiary: theme.palette.tertiary.onTertiaryContainer,
+    };
+
+    return [category === 'fab' ? fabUnderlay[fabType] : commonUnderlay[type]];
 };

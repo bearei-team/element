@@ -20,6 +20,7 @@ export interface RenderProps extends Partial<Pick<ShapeProps, 'shape'> & ButtonP
     iconShow: boolean;
     state: State;
     underlayColor: TouchableRippleProps['underlayColor'];
+    labelTextShow?: boolean;
 }
 
 export interface ButtonBaseProps extends ButtonProps {
@@ -34,17 +35,19 @@ const initialState = {
 
 export const ButtonBase: FC<ButtonBaseProps> = props => {
     const {
-        category = 'button',
+        category = 'common',
         disabled = false,
         icon,
         onLayout,
         render,
         type = 'filled',
+        fabType = 'primary',
+        labelText,
         ...renderProps
     } = props;
 
     const [{elevation, touchableRippleLayout}, setState] = useImmer(initialState);
-    const [underlayColor] = useUnderlayColor({type, category});
+    const [underlayColor] = useUnderlayColor({type, category, fabType});
     const id = useId();
     const theme = useTheme();
 
@@ -60,11 +63,13 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
                 longPressIn: 0,
             };
 
-            category !== 'iconButton' &&
+            category !== 'icon' &&
                 setState(draft => {
-                    draft.elevation = (
-                        type === 'elevated' ? level[nextState] + 1 : level[nextState]
-                    ) as ElevationProps['level'];
+                    const nextElevation = type === 'elevated' ? 1 : 0;
+                    const correctionCoefficient = category === 'fab' ? 3 : nextElevation;
+
+                    draft.elevation = (level[nextState] +
+                        correctionCoefficient) as ElevationProps['level'];
                 });
         },
         [category, setState, type],
@@ -85,7 +90,14 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         onStateChange: processStateChange,
     });
 
-    const {backgroundColor, borderColor, color} = useAnimated({type, disabled, state});
+    const {backgroundColor, borderColor, color} = useAnimated({
+        category,
+        disabled,
+        fabType,
+        state,
+        type,
+    });
+
     const border = borderColor && {
         borderColor,
         borderStyle: 'solid' as ViewStyle['borderStyle'],
@@ -106,27 +118,44 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     );
 
     const processIcon = () => {
-        const fillType = {
+        const commonFillType = {
             filled: theme.palette.primary.onPrimary,
             outlined: theme.palette.surface.onSurfaceVariant,
             tonal: theme.palette.surface.onSurfaceVariant,
         };
 
-        return category === 'button' || !icon
-            ? icon
-            : cloneElement(icon, {
-                  state,
-                  fill: disabled
-                      ? theme.color.rgba(theme.palette.surface.onSurface, 0.38)
-                      : fillType[type as keyof typeof fillType],
-              });
+        const fabFillType = {
+            primary: theme.palette.primary.onPrimaryContainer,
+            secondary: theme.palette.secondary.onSecondaryContainer,
+            surface: theme.palette.primary.primary,
+            tertiary: theme.palette.tertiary.onTertiaryContainer,
+        };
+
+        const fill =
+            category === 'fab'
+                ? fabFillType[fabType]
+                : commonFillType[type as keyof typeof commonFillType];
+
+        if (category === 'common' || !icon) {
+            return icon;
+        }
+
+        return cloneElement(icon, {
+            state,
+            fill: disabled ? theme.color.rgba(theme.palette.surface.onSurface, 0.38) : fill,
+        });
     };
 
     useEffect(() => {
-        type === 'elevated' &&
-            category === 'button' &&
+        category === 'common' &&
+            type === 'elevated' &&
             setState(draft => {
                 draft.elevation = disabled ? 0 : 1;
+            });
+
+        category === 'fab' &&
+            setState(draft => {
+                draft.elevation = disabled ? 0 : 3;
             });
     }, [category, disabled, setState, type]);
 
@@ -138,6 +167,8 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         elevation,
         icon: processIcon(),
         id,
+        labelText: labelText ?? (category === 'common' ? 'Label' : labelText),
+        labelTextShow: !!labelText,
         onLayout: processLayout,
         renderStyle: {
             ...border,
@@ -146,7 +177,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
             touchableRippleHeight: touchableRippleLayout.height,
             touchableRippleWidth: touchableRippleLayout.width,
         },
-        shape: 'full',
+        shape: category === 'fab' ? 'large' : 'full',
         iconShow: !!icon,
         state,
         type,

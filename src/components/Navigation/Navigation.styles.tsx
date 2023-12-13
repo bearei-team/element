@@ -10,7 +10,6 @@ export const Container = styled(View)<ContentProps>`
     ${({theme}) =>
         css`
             background-color: ${theme.palette.surface.surfaceContainer};
-            height: ${theme.adaptSize(80)}px;
         `};
 
     ${({theme, type = 'bar'}) => {
@@ -18,6 +17,7 @@ export const Container = styled(View)<ContentProps>`
             bar: css`
                 flex-direction: row;
                 gap: ${theme.adaptSize(theme.spacing.small)}px;
+                height: ${theme.adaptSize(80)}px;
                 padding: ${theme.adaptSize(theme.spacing.none)}px
                     ${theme.adaptSize(theme.spacing.small)}px;
 
@@ -28,6 +28,8 @@ export const Container = styled(View)<ContentProps>`
             `,
             rail: css`
                 flex-direction: column;
+                gap: ${theme.adaptSize(theme.spacing.small)}px;
+                width: ${theme.adaptSize(80)}px;
             `,
         };
 

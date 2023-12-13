@@ -1,5 +1,6 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
+import {Size} from '../Common/interface';
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
 import {TouchableProps, TouchableRipple} from '../TouchableRipple/TouchableRipple';
@@ -7,15 +8,26 @@ import {Container, Content, Icon, LabelText} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
 export type ButtonType = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
-export type Category = 'button' | 'iconButton';
+export type Category = 'common' | 'icon' | 'fab';
+export type FabType = 'surface' | 'primary' | 'secondary' | 'tertiary';
 
 export interface ButtonProps extends TouchableProps {
     category?: Category;
     disabled?: boolean;
     icon?: React.JSX.Element;
     labelText?: string;
-    loading?: boolean;
+
+    /**
+     * The button type only takes effect on the general button; it does not work for categories such as 'fab' and 'icon'
+     */
     type?: ButtonType;
+
+    /**
+     * The size of the button only takes effect on buttons with the type set to 'fab'.
+     */
+    size?: Size;
+
+    fabType?: FabType;
 }
 
 const AnimatedContent = Animated.createAnimatedComponent(Content);
@@ -35,6 +47,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             style,
             type,
             underlayColor,
+            labelTextShow,
             ...touchableRippleProps
         } = renderProps;
 
@@ -53,13 +66,19 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                         testID={`button--${id}`}>
                         <AnimatedContent
                             category={category}
-                            shape={shape}
                             iconShow={iconShow}
+                            labelTextShow={labelTextShow}
+                            shape={shape}
                             style={{...(typeof style === 'object' && style), ...contentStyle}}
                             testID={`button__content--${id}`}
                             type={type}>
-                            {iconShow && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
-                            {category === 'button' && (
+                            {iconShow && (
+                                <Icon category={category} testID={`button__icon--${id}`}>
+                                    {icon}
+                                </Icon>
+                            )}
+
+                            {category !== 'icon' && labelText && (
                                 <AnimatedLabelText
                                     style={{color}}
                                     testID={`button__labelText--${id}`}

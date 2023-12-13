@@ -44,7 +44,31 @@ export const Tonal: StoryObj<ButtonProps> = {
 
 export const IconFilled: StoryObj<ButtonProps> = {
     args: {
-        category: 'iconButton',
+        category: 'icon',
+        icon: <Icon />,
+    },
+};
+
+export const FAB: StoryObj<ButtonProps> = {
+    args: {
+        category: 'fab',
+        icon: <Icon />,
+    },
+};
+
+export const FABSurface: StoryObj<ButtonProps> = {
+    args: {
+        category: 'fab',
+        fabType: 'surface',
+        icon: <Icon />,
+    },
+};
+
+export const FABExtended: StoryObj<ButtonProps> = {
+    args: {
+        category: 'fab',
+        fabType: 'surface',
+        labelText: 'Label',
         icon: <Icon />,
     },
 };
