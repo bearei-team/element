@@ -68,7 +68,7 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         (nextState: State, options?: OnStateChangeOptions) => {
             if (nextState === 'pressIn') {
                 const {event} = options ?? {};
-                const {locationX} = (event as GestureResponderEvent)?.nativeEvent;
+                const {locationX} = (event as GestureResponderEvent)?.nativeEvent ?? 0;
                 const position = locationX / layout.width;
 
                 setState(draft => {
