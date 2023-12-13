@@ -14,10 +14,8 @@ export const Container = styled(View)`
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-        min-height: ${theme.adaptSize(80)}px;
-        min-width: ${theme.adaptSize(72)}px;
-        padding-bottom: ${theme.adaptSize(theme.spacing.medium)}px;
-        padding-top: ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px;
+        min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+        min-width: ${theme.adaptSize(theme.spacing.small * 8)}px;
     `}
 `;
 
@@ -27,8 +25,10 @@ export const Header = styled.View<IconInnerProps>`
     position: relative;
 
     ${({theme}) => css`
-        width: ${theme.adaptSize(24 + (theme.spacing.large - theme.spacing.extraSmall) * 2)}px;
-        height: ${theme.adaptSize(24 + theme.spacing.extraSmall * 2)}px;
+        width: ${theme.adaptSize(
+            theme.spacing.large + (theme.spacing.large - theme.spacing.extraSmall) * 2,
+        )}px;
+        height: ${theme.adaptSize(theme.spacing.large + theme.spacing.extraSmall * 2)}px;
     `}
 
     ${({pressPosition}) => {
@@ -55,10 +55,12 @@ export const Icon = styled(View)`
 
     ${({theme}) => css`
         top: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-        left: ${theme.adaptSize((24 + (theme.spacing.large - theme.spacing.extraSmall) * 2) / 2) -
-        24 / 2}px;
-        height: ${theme.adaptSize(24)}px;
-        width: ${theme.adaptSize(24)}px;
+        left: ${theme.adaptSize(
+            (theme.spacing.large + (theme.spacing.large - theme.spacing.extraSmall) * 2) / 2,
+        ) -
+        theme.spacing.large / 2}px;
+        height: ${theme.adaptSize(theme.spacing.large)}px;
+        width: ${theme.adaptSize(theme.spacing.large)}px;
     `}
 `;
 

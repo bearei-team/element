@@ -58,7 +58,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         () =>
             inputHeightAnimated.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0, theme.adaptSize(24)],
+                outputRange: [0, theme.adaptSize(theme.spacing.large)],
             }),
         [inputHeightAnimated, theme],
     );

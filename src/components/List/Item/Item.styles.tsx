@@ -16,14 +16,14 @@ export const Inner = styled.View`
         padding: ${theme.adaptSize(theme.spacing.small)}px
             ${theme.adaptSize(theme.spacing.medium)}px;
 
-        min-height: ${theme.adaptSize(56)}px;
+        min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
     `};
 `;
 
 export const Leading = styled.View`
     ${({theme}) => css`
-        max-width: ${theme.adaptSize(40)}px;
-        max-height: ${theme.adaptSize(40)}px;
+        max-width: ${theme.adaptSize(theme.spacing.small * 5)}px;
+        max-height: ${theme.adaptSize(theme.spacing.small * 5)}px;
     `}
 `;
 
@@ -33,7 +33,7 @@ export const Content = styled.View`
     justify-content: center;
 
     ${({theme}) => css`
-        min-height: ${theme.adaptSize(56)}px;
+        min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
     `};
 `;
 

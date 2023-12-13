@@ -17,12 +17,12 @@ export const Container = styled(View)<ContainerProps>`
     ${({layout = 'horizontal', theme, width, height}) => {
         const containerLayout = {
             horizontal: css`
-                min-width: ${theme.adaptSize(320)}px;
+                min-width: ${theme.adaptSize(theme.spacing.small * 40)}px;
                 width: ${width}px;
             `,
             vertical: css`
                 height: ${height}px;
-                min-height: ${theme.adaptSize(120)}px;
+                min-height: ${theme.adaptSize(theme.spacing.small * 15)}px;
                 width: ${theme.adaptSize(1)}px;
             `,
         };

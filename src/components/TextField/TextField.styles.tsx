@@ -35,7 +35,7 @@ export const HeaderInner = styled(Shape)<HeaderInnerProps>`
 
     ${({theme}) =>
         css`
-            height: ${theme.adaptSize(56)}px;
+            height: ${theme.adaptSize(theme.spacing.small * 7)}px;
             padding: ${theme.adaptSize(theme.spacing.extraSmall)}px
                 ${theme.adaptSize(theme.spacing.none)}px;
         `}
@@ -144,9 +144,9 @@ export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
 
 export const TrailingIcon = styled.View`
     ${({theme}) => css`
-        height: ${theme.adaptSize(48)}px;
+        height: ${theme.adaptSize(theme.spacing.small * 6)}px;
         padding: ${theme.adaptSize(theme.spacing.small)}px ${theme.adaptSize(theme.spacing.small)}px;
-        width: ${theme.adaptSize(48)}px;
+        width: ${theme.adaptSize(theme.spacing.small * 6)}px;
     `}
 `;
 

@@ -87,7 +87,7 @@ export const ItemBase: FC<ItemBaseProps> = props => {
 
     const trailingElement = close ? (
         <Button
-            category="iconButton"
+            category="icon"
             icon={<Icon type="filled" name={active ? 'remove' : 'close'} />}
             onHoverIn={handleTrailingHoverIn}
             onHoverOut={handleTrailingHoverOut}

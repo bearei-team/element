@@ -60,7 +60,6 @@ export const FABSurface: StoryObj<ButtonProps> = {
     args: {
         category: 'fab',
         fabType: 'surface',
-        icon: <Icon />,
     },
 };
 

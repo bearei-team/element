@@ -75,15 +75,15 @@ export const Content = styled(Shape)<ContentProps>`
     ${({theme, category = 'common'}) => {
         const categoryType = {
             common: css`
-                height: ${theme.adaptSize(40)}px;
+                height: ${theme.adaptSize(theme.spacing.small * 5)}px;
             `,
             icon: css`
-                width: ${theme.adaptSize(40)}px;
-                height: ${theme.adaptSize(40)}px;
+                width: ${theme.adaptSize(theme.spacing.small * 5)}px;
+                height: ${theme.adaptSize(theme.spacing.small * 5)}px;
                 padding: ${theme.adaptSize(theme.spacing.small)}px;
             `,
             fab: css`
-                height: ${theme.adaptSize(40)}px;
+                height: ${theme.adaptSize(theme.spacing.small * 5)}px;
                 padding: ${theme.adaptSize(theme.spacing.small)}px;
             `,
         };
@@ -94,15 +94,15 @@ export const Content = styled(Shape)<ContentProps>`
     ${({theme, category, size = 'medium'}) => {
         const containerSize = {
             small: css`
-                height: ${theme.adaptSize(40)}px;
+                height: ${theme.adaptSize(theme.spacing.small * 5)}px;
                 padding: ${theme.adaptSize(theme.spacing.small)}px;
             `,
             medium: css`
-                height: ${theme.adaptSize(56)}px;
+                height: ${theme.adaptSize(theme.spacing.small * 7)}px;
                 padding: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             large: css`
-                height: ${theme.adaptSize(96)}px;
+                height: ${theme.adaptSize(theme.spacing.small * 12)}px;
                 padding: ${theme.adaptSize(theme.spacing.extraLarge - 2)}px;
             `,
         };
@@ -115,7 +115,7 @@ export const Content = styled(Shape)<ContentProps>`
         labelTextShow &&
         css`
             gap: ${theme.adaptSize(theme.spacing.small + theme.spacing.extraSmall)}px;
-            height: ${theme.adaptSize(56)}px;
+            height: ${theme.adaptSize(theme.spacing.small * 7)}px;
             padding: ${theme.adaptSize(theme.spacing.medium)}px
                 ${theme.adaptSize(theme.spacing.medium + theme.spacing.extraSmall)}px
                 ${theme.adaptSize(theme.spacing.medium)}px
@@ -141,16 +141,16 @@ export const Icon = styled.View<IconProps>`
     ${({theme, category = 'common'}) => {
         const categoryType = {
             common: css`
-                height: ${theme.adaptSize(18)}px;
-                width: ${theme.adaptSize(18)}px;
+                height: ${theme.adaptSize(theme.spacing.large - 6)}px;
+                width: ${theme.adaptSize(theme.spacing.large - 6)}px;
             `,
             icon: css`
-                height: ${theme.adaptSize(24)}px;
-                width: ${theme.adaptSize(24)}px;
+                height: ${theme.adaptSize(theme.spacing.large)}px;
+                width: ${theme.adaptSize(theme.spacing.large)}px;
             `,
             fab: css`
-                height: ${theme.adaptSize(24)}px;
-                width: ${theme.adaptSize(24)}px;
+                height: ${theme.adaptSize(theme.spacing.large)}px;
+                width: ${theme.adaptSize(theme.spacing.large)}px;
             `,
         };
 
@@ -160,16 +160,16 @@ export const Icon = styled.View<IconProps>`
     ${({theme, category, size = 'medium'}) => {
         const iconSize = {
             small: css`
-                height: ${theme.adaptSize(24)}px;
-                width: ${theme.adaptSize(24)}px;
+                height: ${theme.adaptSize(theme.spacing.large)}px;
+                width: ${theme.adaptSize(theme.spacing.large)}px;
             `,
             medium: css`
-                height: ${theme.adaptSize(24)}px;
-                width: ${theme.adaptSize(24)}px;
+                height: ${theme.adaptSize(theme.spacing.large)}px;
+                width: ${theme.adaptSize(theme.spacing.large)}px;
             `,
             large: css`
-                height: ${theme.adaptSize(36)}px;
-                width: ${theme.adaptSize(36)}px;
+                height: ${theme.adaptSize(theme.spacing.small * 4)}px;
+                width: ${theme.adaptSize(theme.spacing.small * 4)}px;
             `,
         };
 

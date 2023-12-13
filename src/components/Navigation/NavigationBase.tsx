@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect, useId} from 'react';
+import {FC, cloneElement, useCallback, useEffect, useId} from 'react';
 import {useImmer} from 'use-immer';
 import {ListDataSource} from '../List/List';
 import {Item} from './Item/Item';
@@ -29,9 +29,16 @@ const renderItems = (options: RenderItemOptions) => {
 };
 
 export const NavigationBase: FC<NavigationBaseProps> = props => {
-    const {render, onChange, data: dataSources, block = false, ...renderProps} = props;
+    const {block = false, data: dataSources, fab, onChange, render, ...renderProps} = props;
     const [data, setData] = useImmer<Data[]>([]);
     const id = useId();
+    const processFAB = () => {
+        if (!fab) {
+            return fab;
+        }
+
+        return cloneElement(fab, {elevation: false, size: 'medium'});
+    };
 
     const handleActive = useCallback(
         (key: string) => {
@@ -58,6 +65,7 @@ export const NavigationBase: FC<NavigationBaseProps> = props => {
     return render({
         ...renderProps,
         id,
+        fab: processFAB(),
         children: renderItems({data, block, onActive: handleActive}),
     });
 };

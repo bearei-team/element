@@ -16,7 +16,7 @@ export interface ButtonProps extends TouchableProps {
     disabled?: boolean;
     icon?: React.JSX.Element;
     labelText?: string;
-
+    elevation?: boolean;
     /**
      * The button type only takes effect on the general button; it does not work for categories such as 'fab' and 'icon'
      */
@@ -46,6 +46,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             state,
             style,
             type,
+            size,
             underlayColor,
             labelTextShow,
             ...touchableRippleProps
@@ -69,6 +70,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                             iconShow={iconShow}
                             labelTextShow={labelTextShow}
                             shape={shape}
+                            size={size}
                             style={{...(typeof style === 'object' && style), ...contentStyle}}
                             testID={`button__content--${id}`}
                             type={type}>

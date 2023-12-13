@@ -9,7 +9,7 @@ export const Container = styled(View)<ContainerProps>`
     flex: 1;
 
     ${({width, height, theme}) => css`
-        max-height: ${height ?? theme.adaptSize(48)}px;
-        max-width: ${width ?? theme.adaptSize(48)}px;
+        max-height: ${height ?? theme.adaptSize(theme.spacing.small * 6)}px;
+        max-width: ${width ?? theme.adaptSize(theme.spacing.small * 6)}px;
     `}
 `;

@@ -11,8 +11,8 @@ export const Container = styled(Shape)<ContainerProps>`
 
     ${({height, theme, width}) => css`
         background-color: ${theme.palette.primary.primaryContainer};
-        min-height: ${height ?? theme.adaptSize(40)}px;
-        min-width: ${width ?? theme.adaptSize(40)}px;
+        min-height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
+        min-width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
     `}
 `;
 

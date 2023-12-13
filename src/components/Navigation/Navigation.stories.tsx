@@ -1,4 +1,5 @@
 import {Meta, StoryObj} from '@storybook/react';
+import {Button} from '../Button/Button';
 import {Navigation, NavigationProps} from './Navigation';
 
 export default {
@@ -28,6 +29,7 @@ export const NavigationBar: StoryObj<NavigationProps> = {
 export const NavigationRail: StoryObj<NavigationProps> = {
     args: {
         type: 'rail',
+        fab: <Button category="fab" fabType="tertiary" size="small" />,
         data: [
             {
                 labelText: 'Label1',

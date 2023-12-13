@@ -17,14 +17,15 @@ export const Container = styled(Shape)<ContainerProps>`
     ${({theme, size = 'medium'}) => {
         const containerSize = {
             large: css`
-                min-width: ${theme.adaptSize(16)}px;
+                min-width: ${theme.adaptSize(theme.spacing.medium)}px;
                 padding: ${theme.adaptSize(theme.spacing.none)}px
                     ${theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
 
             medium: css`
-                min-width: ${theme.adaptSize(16)}px;
-                padding: ${theme.adaptSize(theme.spacing.extraSmall)}px ${theme.adaptSize(0)}px;
+                min-width: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding: ${theme.adaptSize(theme.spacing.extraSmall)}px
+                    ${theme.adaptSize(theme.spacing.none)}px;
             `,
 
             small: css`
@@ -45,7 +46,7 @@ export const LabelText = styled.Text`
         font-weight: ${theme.typography.label.small.weight};
         letter-spacing: ${theme.adaptSize(theme.typography.label.small.letterSpacing)}px;
         line-height: ${theme.adaptSize(theme.typography.label.small.lineHeight)}px;
-        min-height: ${theme.adaptSize(2)}px;
-        min-width: ${theme.adaptSize(2)}px;
+        min-height: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px
+        min-width:  ${theme.adaptSize(theme.spacing.extraSmall - 2)}px
     `}
 `;

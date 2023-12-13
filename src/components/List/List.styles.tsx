@@ -7,6 +7,6 @@ export const Container = styled(FlatList)`
 
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surface};
-        padding: ${theme.adaptSize(theme.spacing.small)}px ${theme.adaptSize(0)}px;
+        padding: ${theme.adaptSize(theme.spacing.small)}px ${theme.adaptSize(theme.spacing.none)}px;
     `};
 `;

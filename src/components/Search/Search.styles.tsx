@@ -9,7 +9,7 @@ export const Container = styled.View`
 
     ${({theme}) =>
         css`
-            height: ${theme.adaptSize(56)}px;
+            height: ${theme.adaptSize(theme.spacing.small * 7)}px;
         `};
 `;
 
@@ -53,9 +53,9 @@ export const LeadingIcon = styled.View`
 
     ${({theme}) =>
         css`
-            height: ${theme.adaptSize(48)}px;
+            height: ${theme.adaptSize(theme.spacing.small * 6)}px;
             padding: ${theme.adaptSize(theme.spacing.small)}px;
-            width: ${theme.adaptSize(48)}px;
+            width: ${theme.adaptSize(theme.spacing.small * 6)}px;
         `};
 `;
 
@@ -64,7 +64,7 @@ export const Content = styled.View`
 
     ${({theme}) =>
         css`
-            height: ${theme.adaptSize(48)}px;
+            height: ${theme.adaptSize(theme.spacing.small * 6)}px;
         `};
 `;
 
