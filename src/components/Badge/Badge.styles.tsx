@@ -46,7 +46,7 @@ export const LabelText = styled.Text`
         font-weight: ${theme.typography.label.small.weight};
         letter-spacing: ${theme.adaptSize(theme.typography.label.small.letterSpacing)}px;
         line-height: ${theme.adaptSize(theme.typography.label.small.lineHeight)}px;
-        min-height: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px
-        min-width:  ${theme.adaptSize(theme.spacing.extraSmall - 2)}px
+        min-height: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
+        min-width: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
     `}
 `;

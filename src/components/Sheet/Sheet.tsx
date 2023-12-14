@@ -1,5 +1,7 @@
 import React, {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Modal, View, ViewProps} from 'react-native';
+import {Animated, GestureResponderEvent, Modal, ModalProps, View, ViewProps} from 'react-native';
+import {ShapeProps} from '../Common/Common.styles';
+import {Divider} from '../Divider/Divider';
 import {
     BackAffordance,
     CloseAffordance,
@@ -16,77 +18,106 @@ import {RenderProps, SheetBase} from './SheetBase';
 
 export type SheetType = 'side' | 'bottom';
 
-export interface SheetProps extends Partial<ViewProps & RefAttributes<View>> {
+export interface SheetProps
+    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & ModalProps> {
+    back?: boolean;
     backIcon?: React.JSX.Element;
     closeIcon?: React.JSX.Element;
     footer?: boolean;
     headlineText?: string;
-    onBack?: () => void;
-    onClose?: () => void;
-    onPrimaryButtonPr?: () => void;
-    onSecondaryButtonPr?: () => void;
+    onBack?: (event: GestureResponderEvent) => void;
+    onClose?: (event: GestureResponderEvent) => void;
+    onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
+    onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
     primaryButton?: React.JSX.Element;
+    primaryButtonLabelText?: string;
     secondaryButton?: React.JSX.Element;
+    secondaryButtonLabelText?: string;
     type?: SheetType;
     visible?: boolean;
+
+    /**
+     * horizontalStart' | 'horizontalEnd' only takes effect when the type is 'side', and 'verticalEnd' only takes effect when the type is 'bottom'.
+     */
+    position?: 'horizontalStart' | 'horizontalEnd' | 'verticalEnd';
 }
 
 /**
  * TODO: "bottom"
  */
+
+const AnimatedContainer = Animated.createAnimatedComponent(Container);
+const AnimatedInner = Animated.createAnimatedComponent(Inner);
 const ForwardRefSheet = forwardRef<View, SheetProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
-            id,
-            primaryButton,
-            secondaryButton,
-            footer,
+            back,
             backIcon,
-            closeIcon,
             children,
+            closeIcon,
+            footer,
             headlineText,
+            id,
+            onShow,
+            primaryButton,
+            renderStyle,
+            secondaryButton,
+            shape,
+            visible,
             ...containerProps
         } = renderProps;
+
+        const {backgroundColor, innerTranslateX} = renderStyle;
 
         return (
             <Modal
                 animationType="none"
+                onShow={onShow}
                 presentationStyle="overFullScreen"
+                testID={`sheet__modal--${id}`}
                 transparent={true}
-                testID={`sheet__modal--${id}`}>
-                <Container {...containerProps} ref={ref} shape="full" testID={`sheet--${id}`}>
-                    <Inner testID={`sheet__inner--${id}`}>
+                visible={visible}>
+                <AnimatedContainer
+                    {...containerProps}
+                    ref={ref}
+                    testID={`sheet--${id}`}
+                    style={{backgroundColor}}>
+                    <AnimatedInner
+                        shape={shape}
+                        style={{transform: [{translateX: innerTranslateX}]}}
+                        testID={`sheet__inner--${id}`}
+                        accessibilityRole="alert">
                         <Header testID={`sheet__header--${id}`}>
-                            {backIcon && (
+                            {back && (
                                 <BackAffordance testID={`sheet__backAffordance--${id}`}>
                                     {backIcon}
                                 </BackAffordance>
                             )}
 
                             <HeadlineText>{headlineText}</HeadlineText>
-
-                            {closeIcon && (
-                                <CloseAffordance testID={`sheet__closeAffordance--${id}`}>
-                                    {closeIcon}
-                                </CloseAffordance>
-                            )}
+                            <CloseAffordance testID={`sheet__closeAffordance--${id}`}>
+                                {closeIcon}
+                            </CloseAffordance>
                         </Header>
 
                         <Content testID={`sheet__content--${id}`}>{children}</Content>
 
                         {footer && (
-                            <Footer testID={`sheet__footer--${id}`}>
-                                <PrimaryButton testID={`sheet__primaryButton--${id}`}>
-                                    {primaryButton}
-                                </PrimaryButton>
+                            <>
+                                <Divider size="large" />
+                                <Footer testID={`sheet__footer--${id}`}>
+                                    <PrimaryButton testID={`sheet__primaryButton--${id}`}>
+                                        {primaryButton}
+                                    </PrimaryButton>
 
-                                <SecondaryButton testID={`sheet__secondaryButton--${id}`}>
-                                    {secondaryButton}
-                                </SecondaryButton>
-                            </Footer>
+                                    <SecondaryButton testID={`sheet__secondaryButton--${id}`}>
+                                        {secondaryButton}
+                                    </SecondaryButton>
+                                </Footer>
+                            </>
                         )}
-                    </Inner>
-                </Container>
+                    </AnimatedInner>
+                </AnimatedContainer>
             </Modal>
         );
     };

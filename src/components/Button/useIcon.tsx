@@ -29,7 +29,7 @@ export const useIcon = (options: UseIconOptions) => {
             ? fabFillType[fabType]
             : commonFillType[type as keyof typeof commonFillType];
 
-    const defaultIcon = icon ?? category === 'fab' ? <Icon /> : icon;
+    const defaultIcon = icon ?? (category === 'fab' ? <Icon /> : icon);
 
     if (category === 'common' || !defaultIcon) {
         return icon;

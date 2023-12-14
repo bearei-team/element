@@ -1,4 +1,4 @@
-import {FC, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
+import {FC, RefObject, useCallback, useId, useMemo, useRef} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
@@ -87,36 +87,32 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     const [underlayColor] = useUnderlayColor({type});
     const theme = useTheme();
     const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
-    const {onAnimated, inputHeight, inputColor, ...animatedStyle} = useAnimated({
-        error,
-        filled: !!value || !!placeholder,
-        labelTextWidth: labelTextLayout.width,
-        leadingIconShow: !!leadingIcon,
-        showSupportingText: !!supportingText,
-        type,
-    });
-
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
-
-    const processStateChange = useCallback(
-        (nextState: State) => {
-            const focused = ['focused', 'pressIn', 'longPressIn'].includes(nextState);
-
-            onAnimated(focused ? 'focused' : nextState, {
-                finished: () => focused && inputRef.current?.focus(),
-            });
-        },
-
-        [inputRef, onAnimated],
-    );
-
     const {state, onBlur, onFocus, ...handleEvent} = useHandleEvent({
         ...props,
         disabled,
         lockFocusEvent: true,
-        onStateChange: processStateChange,
+    });
+
+    const processAnimatedFinished = useCallback(
+        (focused: boolean) => {
+            focused && inputRef.current?.focus();
+        },
+        [inputRef],
+    );
+
+    const {inputHeight, inputColor, ...animatedStyle} = useAnimated({
+        disabled,
+        error,
+        filled: !!value || !!placeholder,
+        finished: processAnimatedFinished,
+        labelTextWidth: labelTextLayout.width,
+        leadingIconShow: !!leadingIcon,
+        state,
+        supportingTextShow: !!supportingText,
+        type,
     });
 
     const processHeaderLayout = (event: LayoutChangeEvent) => {
@@ -171,14 +167,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
             placeholderTextColor,
         ],
     );
-
-    useEffect(() => {
-        processStateChange(disabled ? 'disabled' : state);
-    }, [disabled, processStateChange, state]);
-
-    useEffect(() => {
-        !disabled && processStateChange(error ? 'error' : state);
-    }, [disabled, error, processStateChange, state]);
 
     return render({
         ...renderProps,

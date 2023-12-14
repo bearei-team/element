@@ -6,14 +6,10 @@ export default {
     component: Sheet,
 } as Meta<typeof Sheet>;
 
-export const NoneContentText: StoryObj<SheetProps> = {
+export const SheetSide: StoryObj<SheetProps> = {
     args: {},
 };
 
-export const ContentText: StoryObj<SheetProps> = {
-    args: {headlineText: '3'},
-};
-
-export const MaxContentText: StoryObj<SheetProps> = {
-    args: {headlineText: '9999'},
+export const SheetSideFooter: StoryObj<SheetProps> = {
+    args: {footer: true, visible: true},
 };

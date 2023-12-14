@@ -1,52 +1,91 @@
-import {useCallback} from 'react';
+import {useCallback, useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {AnimatedTimingOptions} from '../../utils/animatedTiming.utils';
 import {UTIL} from '../../utils/util';
+import {RenderProps} from './SheetBase';
 
-export interface UseAnimatedOptions {
-    active: boolean;
-    block: boolean;
+export interface ProcessAnimatedTimingOptions
+    extends Pick<AnimatedTimingOptions, 'duration' | 'easing'> {
+    toValue: number;
+    finished?: () => void;
+}
+
+export interface UseAnimatedOptions extends Required<Pick<RenderProps, 'visible' | 'position'>> {
+    finished: () => void;
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {active, block} = options;
+    const {visible, finished, position} = options;
     const [containerAnimated] = useAnimatedValue(0);
-
+    const [innerAnimated] = useAnimatedValue(0);
     const theme = useTheme();
     const backgroundColor = containerAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
-            theme.color.rgba(theme.palette.secondary.secondaryContainer, 0),
-            theme.palette.secondary.secondaryContainer,
+            theme.color.rgba(theme.palette.scrim.scrim, 0),
+            theme.color.rgba(theme.palette.scrim.scrim, 0.32),
+        ],
+    });
+
+    const innerTranslateX = innerAnimated.interpolate({
+        inputRange: [0, 1],
+        outputRange: [
+            position === 'horizontalEnd'
+                ? theme.adaptSize(theme.spacing.small * 40)
+                : -theme.adaptSize(theme.spacing.small * 40),
+            theme.adaptSize(theme.spacing.none),
         ],
     });
 
     const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, toValue: number) => {
+        (animation: Animated.Value, processAnimatedTimingOptions: ProcessAnimatedTimingOptions) => {
+            const {
+                toValue,
+                duration = 'short3',
+                easing = 'standard',
+                finished: animatedFinished,
+            } = processAnimatedTimingOptions;
+
             const animatedTiming = UTIL.animatedTiming(theme);
 
             requestAnimationFrame(() =>
                 animatedTiming(animation, {
-                    duration: 'short3',
-                    easing: 'standard',
+                    duration,
+                    easing,
                     toValue,
-                }).start(),
+                }).start(animatedFinished),
             );
         },
         [theme],
     );
 
-    // useEffect(() => {
-    //     const toValue = active ? 1 : 0;
+    useEffect(() => {
+        const enterScreen = () => {
+            const animatedTimingOptions = {
+                toValue: 1,
+                duration: 'medium3',
+                easing: 'emphasizedDecelerate',
+            } as ProcessAnimatedTimingOptions;
 
-    //     processAnimatedTiming(stateAnimated, toValue);
-    //     processAnimatedTiming(labelAnimated, toValue);
-    // }, [active, labelAnimated, processAnimatedTiming, stateAnimated]);
+            processAnimatedTiming(containerAnimated, animatedTimingOptions);
+            processAnimatedTiming(innerAnimated, animatedTimingOptions);
+        };
 
-    // useEffect(() => {
-    //     processAnimatedTiming(labelAnimated, block ? 1 : 0);
-    // }, [block, labelAnimated, processAnimatedTiming]);
+        const exitScreen = () => {
+            const animatedTimingOptions = {
+                toValue: 0,
+                duration: 'short3',
+                easing: 'emphasizedAccelerate',
+            } as ProcessAnimatedTimingOptions;
 
-    return {backgroundColor};
+            processAnimatedTiming(containerAnimated, animatedTimingOptions);
+            processAnimatedTiming(innerAnimated, {...animatedTimingOptions, finished});
+        };
+
+        visible ? enterScreen() : exitScreen();
+    }, [containerAnimated, finished, innerAnimated, processAnimatedTiming, visible]);
+
+    return {backgroundColor, innerTranslateX};
 };

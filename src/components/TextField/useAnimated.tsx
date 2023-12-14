@@ -4,7 +4,7 @@ import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 import {State} from '../Common/interface';
-import {TextFieldType} from './TextField';
+import {RenderProps} from './TextFieldBase';
 
 export interface ProcessAnimatedTimingOptions {
     toValue: number;
@@ -13,17 +13,28 @@ export interface ProcessAnimatedTimingOptions {
 
 export type ProcessAnimatedOptions = Pick<ProcessAnimatedTimingOptions, 'finished'>;
 
-export interface UseAnimatedOptions {
+export interface UseAnimatedOptions
+    extends Required<Pick<RenderProps, 'type' | 'error' | 'state' | 'disabled'>> {
     filled: boolean;
     labelTextWidth: number;
     leadingIconShow: boolean;
-    showSupportingText: boolean;
-    type: TextFieldType;
-    error: boolean;
+    supportingTextShow: boolean;
+    finished: (focused: boolean) => void;
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {filled, labelTextWidth, leadingIconShow, showSupportingText, type, error} = options;
+    const {
+        disabled,
+        error,
+        filled,
+        finished,
+        labelTextWidth,
+        leadingIconShow,
+        state,
+        supportingTextShow,
+        type,
+    } = options;
+
     const [activeIndicatorHeightAnimated] = useAnimatedValue(0);
     const [backgroundColorAnimated] = useAnimatedValue(1);
     const [borderAnimated] = useAnimatedValue(0);
@@ -174,7 +185,8 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const backgroundColor = backgroundColorAnimated.interpolate(backgroundColorConfig[type]);
 
     const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, {finished, toValue}: ProcessAnimatedTimingOptions) => {
+        (animation: Animated.Value, processAnimatedTimingOptions: ProcessAnimatedTimingOptions) => {
+            const {finished: animatedFinished, toValue} = processAnimatedTimingOptions;
             const animatedTiming = UTIL.animatedTiming(theme);
 
             requestAnimationFrame(() =>
@@ -182,7 +194,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     duration: 'short3',
                     easing: 'standard',
                     toValue,
-                }).start(finished),
+                }).start(animatedFinished),
             );
         },
         [theme],
@@ -272,8 +284,22 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        processAnimatedTiming(supportingTextColorOpacity, {toValue: showSupportingText ? 1 : 0});
-    }, [processAnimatedTiming, showSupportingText, supportingTextColorOpacity]);
+        processAnimatedTiming(supportingTextColorOpacity, {toValue: supportingTextShow ? 1 : 0});
+    }, [processAnimatedTiming, supportingTextShow, supportingTextColorOpacity]);
+
+    useEffect(() => {
+        const focused = ['focused', 'pressIn', 'longPressIn'].includes(state);
+
+        processAnimated(focused ? 'focused' : state, {finished: () => finished(focused)});
+    }, [finished, processAnimated, state]);
+
+    useEffect(() => {
+        processAnimated(disabled ? 'disabled' : state);
+    }, [disabled, processAnimated, state]);
+
+    useEffect(() => {
+        !disabled && processAnimated(error ? 'error' : state);
+    }, [disabled, error, processAnimated, state]);
 
     return {
         activeIndicatorColor,

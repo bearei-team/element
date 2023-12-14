@@ -86,10 +86,11 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
                             </Header>
                         </Pressable>
 
-                        <Divider size="large" width={width} />
-
                         {listVisible && (
-                            <List data={data} style={{backgroundColor: listBackgroundColor}} />
+                            <>
+                                <Divider size="large" width={width} />
+                                <List data={data} style={{backgroundColor: listBackgroundColor}} />
+                            </>
                         )}
                     </AnimatedInner>
                 )}
