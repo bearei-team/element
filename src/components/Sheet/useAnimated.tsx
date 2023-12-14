@@ -1,22 +1,24 @@
-import {useCallback, useEffect} from 'react';
+import {useCallback} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 
 export interface UseAnimatedOptions {
-    value?: string;
+    active: boolean;
+    block: boolean;
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {value} = options;
-    const [innerHeightAnimated] = useAnimatedValue(0);
+    const {active, block} = options;
+    const [containerAnimated] = useAnimatedValue(0);
+
     const theme = useTheme();
-    const innerHeight = innerHeightAnimated.interpolate({
+    const backgroundColor = containerAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
-            theme.adaptSize(theme.spacing.small * 8),
-            theme.adaptSize(theme.spacing.small * 27),
+            theme.color.rgba(theme.palette.secondary.secondaryContainer, 0),
+            theme.palette.secondary.secondaryContainer,
         ],
     });
 
@@ -35,9 +37,16 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         [theme],
     );
 
-    useEffect(() => {
-        processAnimatedTiming(innerHeightAnimated, value ? 1 : 0);
-    }, [innerHeightAnimated, processAnimatedTiming, value]);
+    // useEffect(() => {
+    //     const toValue = active ? 1 : 0;
 
-    return {innerHeight};
+    //     processAnimatedTiming(stateAnimated, toValue);
+    //     processAnimatedTiming(labelAnimated, toValue);
+    // }, [active, labelAnimated, processAnimatedTiming, stateAnimated]);
+
+    // useEffect(() => {
+    //     processAnimatedTiming(labelAnimated, block ? 1 : 0);
+    // }, [block, labelAnimated, processAnimatedTiming]);
+
+    return {backgroundColor};
 };

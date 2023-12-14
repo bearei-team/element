@@ -11,8 +11,8 @@ export interface UseAnimatedOptions {
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {state} = options;
-    const [stateAnimated] = useAnimatedValue(1);
-    const scale = stateAnimated.interpolate({inputRange: [0, 1, 2], outputRange: [0.97, 1, 1.03]});
+    const [scaleAnimated] = useAnimatedValue(1);
+    const scale = scaleAnimated.interpolate({inputRange: [0, 1, 2], outputRange: [0.97, 1, 1.03]});
     const theme = useTheme();
 
     const processAnimatedTiming = useCallback(
@@ -33,8 +33,8 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     useEffect(() => {
         const pressValue = ['pressIn', 'longPressIn'].includes(state) ? 0 : 1;
 
-        processAnimatedTiming(stateAnimated, state === 'hovered' ? 2 : pressValue);
-    }, [processAnimatedTiming, state, stateAnimated]);
+        processAnimatedTiming(scaleAnimated, state === 'hovered' ? 2 : pressValue);
+    }, [processAnimatedTiming, state, scaleAnimated]);
 
     return {scale};
 };

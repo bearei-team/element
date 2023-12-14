@@ -20,11 +20,11 @@ export interface ProcessAnimatedTimingOptions {
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {active, close, state, touchableRippleHeight, trailingState} = options;
-    const [stateAnimated] = useAnimatedValue(0);
-    const [trailingAnimated] = useAnimatedValue(0);
+    const [backgroundColorAnimated] = useAnimatedValue(0);
+    const [trailingOpacityAnimated] = useAnimatedValue(0);
     const [closedAnimated] = useAnimatedValue(1);
     const theme = useTheme();
-    const backgroundColor = stateAnimated.interpolate({
+    const backgroundColor = backgroundColorAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
             theme.color.rgba(theme.palette.secondary.secondaryContainer, 0),
@@ -32,7 +32,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const trailingOpacity = trailingAnimated.interpolate({
+    const trailingOpacity = trailingOpacityAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [close ? 0 : 1, 1],
     });
@@ -68,17 +68,17 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        processAnimatedTiming(stateAnimated, {toValue: active ? 1 : 0});
-    }, [active, processAnimatedTiming, stateAnimated]);
+        processAnimatedTiming(backgroundColorAnimated, {toValue: active ? 1 : 0});
+    }, [active, processAnimatedTiming, backgroundColorAnimated]);
 
     useEffect(() => {
         const closeToValue = state === 'hovered' || trailingState === 'hovered' ? 1 : 0;
         const toValue = trailingState === 'hovered' ? 1 : 0;
 
-        processAnimatedTiming(trailingAnimated, {
+        processAnimatedTiming(trailingOpacityAnimated, {
             toValue: close ? closeToValue : toValue,
         });
-    }, [close, processAnimatedTiming, state, trailingAnimated, trailingState]);
+    }, [close, processAnimatedTiming, state, trailingOpacityAnimated, trailingState]);
 
     return {
         backgroundColor,

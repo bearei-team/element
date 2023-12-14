@@ -38,7 +38,7 @@ export const Content = styled(Shape)<ContentProps>`
             `,
             text: css`
                 padding: ${theme.adaptSize(theme.spacing.small + 2)}px
-                    ${theme.adaptSize(theme.spacing.medium - 4)}px;
+                    ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px;
             `,
             tonal: css`
                 padding: ${theme.adaptSize(theme.spacing.small + 2)}px

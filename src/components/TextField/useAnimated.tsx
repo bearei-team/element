@@ -11,9 +11,7 @@ export interface ProcessAnimatedTimingOptions {
     finished?: () => void;
 }
 
-export type ProcessAnimatedOptions = Pick<ProcessAnimatedTimingOptions, 'finished'> & {
-    input?: boolean;
-};
+export type ProcessAnimatedOptions = Pick<ProcessAnimatedTimingOptions, 'finished'>;
 
 export interface UseAnimatedOptions {
     filled: boolean;
@@ -26,7 +24,7 @@ export interface UseAnimatedOptions {
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {filled, labelTextWidth, leadingIconShow, showSupportingText, type, error} = options;
-    const [activeIndicatorAnimated] = useAnimatedValue(0);
+    const [activeIndicatorHeightAnimated] = useAnimatedValue(0);
     const [backgroundColorAnimated] = useAnimatedValue(1);
     const [borderAnimated] = useAnimatedValue(0);
     const [colorAnimated] = useAnimatedValue(1);
@@ -139,7 +137,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const activeIndicatorHeight = activeIndicatorAnimated.interpolate({
+    const activeIndicatorHeight = activeIndicatorHeightAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [theme.adaptSize(1), theme.adaptSize(2)],
     });
@@ -193,12 +191,12 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const processBorderAnimated = useCallback(
         (toValue: number) =>
             type === 'filled'
-                ? processAnimatedTiming(activeIndicatorAnimated, {toValue})
+                ? processAnimatedTiming(activeIndicatorHeightAnimated, {toValue})
                 : processAnimatedTiming(borderAnimated, {toValue}),
-        [activeIndicatorAnimated, borderAnimated, processAnimatedTiming, type],
+        [activeIndicatorHeightAnimated, borderAnimated, processAnimatedTiming, type],
     );
 
-    const processStateAnimated = useCallback(
+    const processStateChangeAnimated = useCallback(
         (processStateAnimatedOptions = {} as ProcessAnimatedOptions) => {
             const {finished} = processStateAnimatedOptions;
             const processErrorAnimated = () => {
@@ -265,12 +263,12 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
     const processAnimated = useCallback(
         (nextState: State, processAnimatedOptions: ProcessAnimatedOptions = {}) => {
-            processStateAnimated(processAnimatedOptions)[nextState]?.();
+            processStateChangeAnimated(processAnimatedOptions)[nextState]?.();
 
             nextState !== 'disabled' &&
                 processAnimatedTiming(backgroundColorAnimated, {toValue: 1});
         },
-        [backgroundColorAnimated, processAnimatedTiming, processStateAnimated],
+        [backgroundColorAnimated, processAnimatedTiming, processStateChangeAnimated],
     );
 
     useEffect(() => {

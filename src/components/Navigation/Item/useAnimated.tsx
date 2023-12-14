@@ -11,10 +11,10 @@ export interface UseAnimatedOptions {
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {active, block} = options;
-    const [stateAnimated] = useAnimatedValue(0);
-    const [labelAnimated] = useAnimatedValue(0);
+    const [stateChangeAnimated] = useAnimatedValue(0);
+    const [labelHeightAnimated] = useAnimatedValue(0);
     const theme = useTheme();
-    const iconBackgroundColor = stateAnimated.interpolate({
+    const iconBackgroundColor = stateChangeAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
             theme.color.rgba(theme.palette.secondary.secondaryContainer, 0),
@@ -22,7 +22,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const iconBackgroundWidth = stateAnimated.interpolate({
+    const iconBackgroundWidth = stateChangeAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
             theme.adaptSize(24),
@@ -30,12 +30,12 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const labelColor = stateAnimated.interpolate({
+    const labelColor = stateChangeAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [theme.palette.surface.onSurfaceVariant, theme.palette.surface.onSurface],
     });
 
-    const labelHeight = labelAnimated.interpolate({
+    const labelHeight = labelHeightAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [0, theme.adaptSize(theme.typography.label.medium.lineHeight)],
     });
@@ -58,13 +58,13 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     useEffect(() => {
         const toValue = active ? 1 : 0;
 
-        processAnimatedTiming(stateAnimated, toValue);
-        processAnimatedTiming(labelAnimated, toValue);
-    }, [active, labelAnimated, processAnimatedTiming, stateAnimated]);
+        processAnimatedTiming(stateChangeAnimated, toValue);
+        processAnimatedTiming(labelHeightAnimated, toValue);
+    }, [active, labelHeightAnimated, processAnimatedTiming, stateChangeAnimated]);
 
     useEffect(() => {
-        processAnimatedTiming(labelAnimated, block ? 1 : 0);
-    }, [block, labelAnimated, processAnimatedTiming]);
+        processAnimatedTiming(labelHeightAnimated, block ? 1 : 0);
+    }, [block, labelHeightAnimated, processAnimatedTiming]);
 
     return {iconBackgroundColor, labelColor, iconBackgroundWidth, labelHeight};
 };

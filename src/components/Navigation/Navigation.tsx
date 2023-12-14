@@ -23,7 +23,7 @@ export interface NavigationProps extends Partial<ViewProps & RefAttributes<View>
 }
 
 /**
- * TODO: "drawer"
+ * TODO: "drawer" | "bar"
  */
 const ForwardRefNavigation = forwardRef<View, NavigationProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
@@ -31,7 +31,7 @@ const ForwardRefNavigation = forwardRef<View, NavigationProps>((props, ref) => {
 
         return (
             <Container {...containerProps} ref={ref} type={type} testID={`navigation--${id}`}>
-                {fab && <Fab>{fab}</Fab>}
+                {fab && <Fab testID={`navigation__fab--${id}`}>{fab}</Fab>}
                 <Destination type={type} testID={`navigation__destination--${id}`}>
                     {children}
                 </Destination>
