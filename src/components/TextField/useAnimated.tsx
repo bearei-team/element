@@ -210,7 +210,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
     const processStateChangeAnimated = useCallback(
         (processStateAnimatedOptions = {} as ProcessAnimatedOptions) => {
-            const {finished} = processStateAnimatedOptions;
+            const {finished: animatedFinished} = processStateAnimatedOptions;
             const processErrorAnimated = () => {
                 processAnimatedTiming(colorAnimated, {toValue: 3});
                 processAnimatedTiming(supportingTextColorAnimated, {toValue: 2});
@@ -246,7 +246,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 },
                 focused: () => {
                     processAnimatedTiming(inputHeightAnimated, {toValue: 1});
-                    processAnimatedTiming(labeAnimated, {toValue: 1, finished});
+                    processAnimatedTiming(labeAnimated, {toValue: 1, finished: animatedFinished});
                     processAnimatedTiming(labelPlaceholderAnimated, {toValue: 1});
 
                     if (error) {
