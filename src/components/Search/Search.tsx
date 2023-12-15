@@ -35,6 +35,8 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
             onHoverIn,
             onHoverOut,
             onLayout,
+            onPressIn,
+            onLongPress,
             placeholder,
             renderStyle,
             shape,
@@ -59,6 +61,8 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
                             onHoverIn={onHoverIn}
                             onHoverOut={onHoverOut}
                             onFocus={onFocus}
+                            onPressIn={onPressIn}
+                            onLongPress={onLongPress}
                             testID={`search__pressable--${id}`}>
                             <Header
                                 accessibilityLabel={placeholder}
@@ -86,11 +90,9 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
                             </Header>
                         </Pressable>
 
+                        <Divider size="large" width={width} />
                         {listVisible && (
-                            <>
-                                <Divider size="large" width={width} />
-                                <List data={data} style={{backgroundColor: listBackgroundColor}} />
-                            </>
+                            <List data={data} style={{backgroundColor: listBackgroundColor}} />
                         )}
                     </AnimatedInner>
                 )}

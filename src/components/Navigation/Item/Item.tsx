@@ -44,11 +44,10 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
             headerWidth,
             labelColor,
             labelHeight,
-            flex,
         } = renderStyle;
 
         return (
-            <Pressable {...containerProps} ref={ref} style={{flex}}>
+            <Pressable {...containerProps} ref={ref}>
                 <Container
                     accessibilityLabel={labelText}
                     accessibilityRole="tab"

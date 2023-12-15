@@ -14,7 +14,7 @@ export const Container = styled(View)`
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-        min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+        height: ${theme.adaptSize(theme.spacing.small * 7)}px;
         min-width: ${theme.adaptSize(theme.spacing.small * 8)}px;
     `}
 `;

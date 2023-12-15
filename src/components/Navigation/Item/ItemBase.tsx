@@ -25,7 +25,6 @@ export interface RenderProps extends ItemProps {
         iconBackgroundColor: AnimatedInterpolation;
         labelColor: AnimatedInterpolation;
         labelHeight: AnimatedInterpolation;
-        flex: number;
     };
     underlayColor: string;
     state: State;
@@ -127,7 +126,6 @@ export const ItemBase: FC<ItemBaseProps> = props => {
             iconBackgroundWidth,
             labelColor,
             labelHeight,
-            flex: 1,
         },
         shape: 'large',
         state,

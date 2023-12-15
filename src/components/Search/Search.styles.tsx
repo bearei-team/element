@@ -14,14 +14,15 @@ export const Container = styled.View`
 `;
 
 export const Inner = styled(Shape)<InnerProps>`
+    align-items: center;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     left: 0;
+    overflow: hidden;
     position: absolute;
     top: 0;
     z-index: 2048;
-    overflow: hidden;
 
     ${({theme, width}) =>
         css`
@@ -61,16 +62,18 @@ export const LeadingIcon = styled.View`
 
 export const Content = styled.View`
     flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 
     ${({theme}) =>
         css`
-            height: ${theme.adaptSize(theme.spacing.small * 6)}px;
+            height: ${theme.adaptSize(theme.spacing.large)}px;
         `};
 `;
 
 export const Input = styled(TextInput)`
     flex: 1;
-    outline-style: none;
 
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurface};
@@ -78,7 +81,6 @@ export const Input = styled(TextInput)`
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
         letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
-        line-height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
     `};
 `;
 

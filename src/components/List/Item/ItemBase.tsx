@@ -47,7 +47,7 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         active,
         close,
         state,
-        touchableRippleHeight: touchableRippleLayout.height,
+        touchableRippleHeight: touchableRippleLayout.height ?? 0,
         trailingState,
     });
 

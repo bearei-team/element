@@ -8,6 +8,7 @@ export type DestinationProps = Pick<RenderProps, 'type'>;
 
 export const Container = styled(View)<ContentProps>`
     display: flex;
+    flex: 1;
 
     ${({theme, type = 'bar'}) => {
         const containerType = {
@@ -31,6 +32,7 @@ export const Container = styled(View)<ContentProps>`
 
 export const Destination = styled.View<DestinationProps>`
     display: flex;
+    flex: 1;
 
     ${({theme, type = 'bar'}) => {
         const containerType = {
