@@ -2,7 +2,7 @@ import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {FlatList, FlatListProps} from 'react-native';
 import {NativeTarget} from 'styled-components/native';
 import {ItemProps} from './Item/Item';
-import {Container} from './List.styles';
+import {Container, Content} from './List.styles';
 import {ListBase, RenderProps} from './ListBase';
 
 export interface ListDataSource
@@ -23,16 +23,20 @@ export interface ListProps
 
 const ForwardRefList = forwardRef<FlatList<ListDataSource>, ListProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {id, ...containerProps} = renderProps;
+        const {id, style, ...containerProps} = renderProps;
 
         return (
-            <Container<NativeTarget>
-                {...containerProps}
+            <Container
                 accessibilityLabel="list"
-                accessibilityRole="grid"
-                ref={ref}
-                testID={`list--${id}`}
-            />
+                accessibilityRole="list"
+                style={style}
+                testID={`list--${id}`}>
+                <Content<NativeTarget>
+                    {...containerProps}
+                    ref={ref}
+                    testID={`list__content--${id}`}
+                />
+            </Container>
         );
     };
 

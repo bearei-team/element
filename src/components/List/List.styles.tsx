@@ -1,8 +1,8 @@
-import {FlatList} from 'react-native';
+import {View} from 'react-native';
 import {css} from 'styled-components';
 import styled from 'styled-components/native';
 
-export const Container = styled(FlatList)`
+export const Container = styled(View)`
     flex: 1;
 
     ${({theme}) => css`
@@ -10,3 +10,5 @@ export const Container = styled(FlatList)`
         padding: ${theme.adaptSize(theme.spacing.small)}px ${theme.adaptSize(theme.spacing.none)}px;
     `};
 `;
+
+export const Content = styled.FlatList``;

@@ -67,7 +67,13 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                         )}
 
                         <Content>
-                            <Headline testID={`listItem__headline--${id}`}>{headline}</Headline>
+                            <Headline
+                                ellipsizeMode="tail"
+                                numberOfLines={1}
+                                testID={`listItem__headline--${id}`}>
+                                {headline}
+                            </Headline>
+
                             {supportingText && (
                                 <SupportingText
                                     {...(typeof supportingTextNumberOfLines === 'number' && {

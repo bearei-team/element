@@ -32,6 +32,7 @@ export const Content = styled.View`
     flex-direction: column;
     flex: 1;
     justify-content: center;
+    pointer-events: none;
 
     ${({theme}) => css`
         min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
