@@ -37,6 +37,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
             supportingText,
             trailing,
             underlayColor,
+            onLayout,
             ...touchableRippleProps
         } = renderProps;
 
@@ -56,6 +57,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                     style={{height}}
                     testID={`listItem--${id}`}>
                     <AnimatedInner
+                        onLayout={onLayout}
                         style={{...(typeof style === 'object' && style), backgroundColor}}
                         testID={`listItem__inner--${id}`}>
                         {leading && (
