@@ -13,6 +13,7 @@ export interface RenderItemOptions extends ListRenderItemInfo<ListDataSource> {
     active?: boolean;
     close?: boolean;
     onActive: (key: string) => void;
+    supportingTextNumberOfLines?: ListDataSource['supportingTextNumberOfLines'];
 }
 
 export interface Data extends ListDataSource {
@@ -20,13 +21,30 @@ export interface Data extends ListDataSource {
 }
 
 const renderItem = (options: RenderItemOptions) => {
-    const {item, onActive, close} = options;
+    const {item, onActive, supportingTextNumberOfLines, close} = options;
 
-    return <Item {...item} close={close} key={item.key} onPress={() => onActive(item.key!)} />;
+    return (
+        <Item
+            {...item}
+            {...(typeof item.supportingTextNumberOfLines !== 'number' && {
+                supportingTextNumberOfLines,
+            })}
+            close={close}
+            key={item.key}
+            onPress={() => onActive(item.key!)}
+        />
+    );
 };
 
 export const ListBase: FC<ListBaseProps> = props => {
-    const {render, data: dataSources, onChange, close, ...renderProps} = props;
+    const {
+        render,
+        data: dataSources,
+        onChange,
+        close,
+        supportingTextNumberOfLines,
+        ...renderProps
+    } = props;
     const id = useId();
     const [data, setData] = useImmer<Data[]>([]);
 
@@ -47,8 +65,9 @@ export const ListBase: FC<ListBaseProps> = props => {
                 ...options,
                 close,
                 onActive: handleActive,
+                supportingTextNumberOfLines,
             }),
-        [close, handleActive],
+        [close, handleActive, supportingTextNumberOfLines],
     );
 
     useEffect(() => {

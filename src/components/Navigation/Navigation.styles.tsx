@@ -3,7 +3,6 @@ import styled, {css} from 'styled-components/native';
 import {RenderProps} from './NavigationBase';
 
 export type ContentProps = Pick<RenderProps, 'type'>;
-
 export type DestinationProps = Pick<RenderProps, 'type'>;
 
 export const Container = styled(View)<ContentProps>`

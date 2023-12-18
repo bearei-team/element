@@ -14,12 +14,13 @@ import {
 import {ItemBase, RenderProps} from './ItemBase';
 
 export interface ItemProps extends TouchableRippleProps {
-    headline?: string;
-    trailing?: React.JSX.Element;
-    supportingText?: string;
-    leading?: React.JSX.Element;
     active?: boolean;
     close?: boolean;
+    headline?: string;
+    leading?: React.JSX.Element;
+    supportingText?: string;
+    supportingTextNumberOfLines?: number;
+    trailing?: React.JSX.Element;
 }
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
@@ -31,13 +32,14 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
             headline,
             id,
             leading,
+            onLayout,
             renderStyle,
             state,
             style,
             supportingText,
+            supportingTextNumberOfLines,
             trailing,
             underlayColor,
-            onLayout,
             ...touchableRippleProps
         } = renderProps;
 
@@ -67,7 +69,12 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                         <Content>
                             <Headline testID={`listItem__headline--${id}`}>{headline}</Headline>
                             {supportingText && (
-                                <SupportingText testID={`listItem__supportingText--${id}`}>
+                                <SupportingText
+                                    {...(typeof supportingTextNumberOfLines === 'number' && {
+                                        ellipsizeMode: 'tail',
+                                        numberOfLines: supportingTextNumberOfLines,
+                                    })}
+                                    testID={`listItem__supportingText--${id}`}>
                                     {supportingText}
                                 </SupportingText>
                             )}

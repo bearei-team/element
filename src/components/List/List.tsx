@@ -5,15 +5,20 @@ import {ItemProps} from './Item/Item';
 import {Container} from './List.styles';
 import {ListBase, RenderProps} from './ListBase';
 
-export interface ListDataSource extends Pick<ItemProps, 'headline' | 'supportingText' | 'leading'> {
+export interface ListDataSource
+    extends Pick<
+        ItemProps,
+        'headline' | 'supportingText' | 'leading' | 'supportingTextNumberOfLines'
+    > {
     key?: string;
 }
 
 export interface ListProps
     extends Partial<FlatListProps<ListDataSource> & RefAttributes<FlatList<ListDataSource>>> {
+    close?: boolean;
     data?: ListDataSource[];
     onChange?: (key: string) => void;
-    close?: boolean;
+    supportingTextNumberOfLines?: ListDataSource['supportingTextNumberOfLines'];
 }
 
 const ForwardRefList = forwardRef<FlatList<ListDataSource>, ListProps>((props, ref) => {

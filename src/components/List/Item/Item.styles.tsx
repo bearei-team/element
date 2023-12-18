@@ -30,6 +30,7 @@ export const Leading = styled.View`
 export const Content = styled.View`
     display: flex;
     flex-direction: column;
+    flex: 1;
     justify-content: center;
 
     ${({theme}) => css`
