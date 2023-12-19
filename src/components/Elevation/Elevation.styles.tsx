@@ -25,6 +25,7 @@ export const Container = styled(Shape)<ContainerProps>`
 
 export const Content = styled(Shape)`
     position: absolute;
+
     z-index: 2;
 `;
 

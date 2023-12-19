@@ -19,7 +19,6 @@ export const Inner = styled(Shape)<InnerProps>`
     flex-direction: column;
     justify-content: flex-start;
     left: 0;
-    overflow: hidden;
     position: absolute;
     top: 0;
     z-index: 2048;

@@ -16,7 +16,7 @@ export const Inner = styled.View`
         padding: ${theme.adaptSize(theme.spacing.small)}px
             ${theme.adaptSize(theme.spacing.medium)}px;
 
-        min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+        min-height: ${theme.adaptSize(theme.spacing.small * 5)}px;
     `};
 `;
 
@@ -33,10 +33,6 @@ export const Content = styled.View`
     flex: 1;
     justify-content: center;
     pointer-events: none;
-
-    ${({theme}) => css`
-        min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
-    `};
 `;
 
 export const Trailing = styled(Leading)``;

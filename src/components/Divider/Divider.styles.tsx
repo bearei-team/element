@@ -29,7 +29,8 @@ export const Container = styled(View)<ContainerProps>`
 
         return containerLayout[layout];
     }}
-        ${({layout = 'horizontal', size = 'medium', theme}) => {
+    
+    ${({layout = 'horizontal', size = 'medium', theme}) => {
         const containerSize = {
             large: css``,
             medium:

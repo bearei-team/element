@@ -18,6 +18,8 @@ export interface DisabledProps {
 }
 
 export const Shape = styled(View)<ShapeProps>`
+    overflow: hidden;
+
     ${({shape = 'none', theme}) => css`
         border-bottom-left-radius: ${theme.adaptSize(theme.shape[shape].bottomLeft)}px;
         border-bottom-right-radius: ${theme.adaptSize(theme.shape[shape].bottomLeft)}px;
