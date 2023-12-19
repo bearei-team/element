@@ -25,12 +25,16 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
             underlayColor,
             ...containerProps
         } = renderProps;
+
         const {width, height, color} = renderStyle;
 
         return (
             <TouchableRipple {...containerProps} ref={ref} underlayColor={underlayColor}>
                 <Container testID={`tabItem--${id}`}>
-                    <AnimatedLabelText onLayout={onLabelTextLayout} style={{color}}>
+                    <AnimatedLabelText
+                        onLayout={onLabelTextLayout}
+                        style={{color}}
+                        testID={`tabItem__labelText--${id}`}>
                         {labelText}
                     </AnimatedLabelText>
 

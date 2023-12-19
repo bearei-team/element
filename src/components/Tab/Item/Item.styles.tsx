@@ -2,13 +2,13 @@ import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 
 export const Container = styled(View)`
+    align-items: center;
     display: flex;
     justify-content: center;
-    align-items: center;
 
     ${({theme}) => css`
-        padding: ${theme.spacing.medium}px;
-        min-width: 88px;
+        min-width: ${theme.adaptSize(theme.spacing.small * 11)}px;
+        padding: ${theme.adaptSize(theme.spacing.medium)}px;
     `}
 `;
 

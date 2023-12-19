@@ -18,6 +18,7 @@ export interface RenderProps extends TabProps {
         height: number;
         itemWidth: number;
         width: number;
+        headerHeight: AnimatedInterpolation;
     };
 }
 
@@ -61,16 +62,28 @@ const renderItem = (options: RenderItemOptions) => {
 };
 
 export const TabBase: FC<TabBaseProps> = props => {
-    const {data: dataSources, defaultActiveKey, onChange, onLayout, render, ...renderProps} = props;
+    const {
+        data: dataSources,
+        defaultActiveKey,
+        onChange,
+        onLayout,
+        render,
+        headerVisible = true,
+        ...renderProps
+    } = props;
+
     const id = useId();
     const [{activeIndicatorOffsetPosition, data, itemLayout, layout}, setState] =
         useImmer(initialState);
 
-    const {activeIndicatorLeft, activeIndicatorWidth, contentInnerLeft} = useAnimated({
-        data,
-        itemWidth: itemLayout.width ?? 0,
-        layoutWidth: layout.width ?? 0,
-    });
+    const {activeIndicatorLeft, activeIndicatorWidth, contentInnerLeft, headerHeight} = useAnimated(
+        {
+            data,
+            itemLayout,
+            layout,
+            headerVisible,
+        },
+    );
 
     const processLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
@@ -86,7 +99,9 @@ export const TabBase: FC<TabBaseProps> = props => {
             const {height, width} = event.nativeEvent.layout;
 
             setState(draft => {
-                typeof draft.itemLayout.width !== 'number' && (draft.itemLayout = {height, width});
+                if (typeof draft.itemLayout.width !== 'number') {
+                    draft.itemLayout = {height, width};
+                }
             });
         },
         [setState],
@@ -168,6 +183,7 @@ export const TabBase: FC<TabBaseProps> = props => {
             activeIndicatorLeft,
             activeIndicatorWidth,
             contentInnerLeft,
+            headerHeight,
             height: layout.height,
             itemWidth: itemLayout.width,
             width: layout.width,

@@ -26,9 +26,8 @@ export const HeaderInner = styled.View<HeaderInnerProps>`
     flex-direction: row;
     justify-content: center;
 
-    ${({theme, width}) => css`
-        min-height: ${theme.spacing.small * 6}px;
-        width: ${width};
+    ${({width}) => css`
+        width: ${width}px;
     `};
 `;
 
@@ -44,7 +43,7 @@ export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
     position: absolute;
 
     ${({width, theme, paddingHorizontal}) => css`
-        width: ${width};
+        width: ${width}px;
         padding: ${theme.adaptSize(theme.spacing.none)}px ${paddingHorizontal}px;
     `};
 
@@ -67,15 +66,15 @@ export const ActiveIndicatorInner = styled(Shape)`
 
 export const Content = styled.View`
     flex: 1;
-    min-height: 60px;
-    width: 100%;
     overflow: hidden;
     position: relative;
+    width: 100%;
 `;
 
 export const ContentInner = styled.View`
     display: flex;
     flex-direction: row;
+    overflow: hidden;
     position: absolute;
     top: 0;
 `;

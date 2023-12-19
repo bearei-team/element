@@ -8,6 +8,7 @@ export default {
 
 export const TabHorizontal: StoryObj<TabProps> = {
     args: {
+        headerVisible: true,
         data: [
             {
                 labelText: 'TabA',
