@@ -2,7 +2,10 @@ import {FC, forwardRef, memo} from 'react';
 import {Animated, LayoutChangeEvent, View} from 'react-native';
 
 import {Hovered} from '../../Hovered/Hovered';
-import {TouchableRipple, TouchableRippleProps} from '../../TouchableRipple/TouchableRipple';
+import {
+    TouchableRipple,
+    TouchableRippleProps,
+} from '../../TouchableRipple/TouchableRipple';
 import {Container, LabelText} from './Item.styles';
 import {ItemBase, RenderProps} from './ItemBase';
 
@@ -29,8 +32,13 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
         const {width, height, color} = renderStyle;
 
         return (
-            <TouchableRipple {...containerProps} ref={ref} underlayColor={underlayColor}>
-                <Container testID={`tabItem--${id}`}>
+            <TouchableRipple
+                {...containerProps}
+                ref={ref}
+                underlayColor={underlayColor}>
+                <Container
+                    testID={`tabItem--${id}`}
+                    onLayout={e => console.info(e.nativeEvent.layout)}>
                     <AnimatedLabelText
                         onLayout={onLabelTextLayout}
                         style={{color}}

@@ -48,9 +48,16 @@ export const Header = styled.View<HeaderProps>`
     flex-direction: row;
 
     ${({theme}) => css`
-        height: ${theme.adaptSize(theme.spacing.small * 9 + theme.spacing.extraSmall)}px;
-        padding: ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px
-            ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px
+        height: ${theme.adaptSize(
+            theme.spacing.small * 9 + theme.spacing.extraSmall,
+        )}px;
+
+        padding: ${theme.adaptSize(
+                theme.spacing.medium - theme.spacing.extraSmall,
+            )}px
+            ${theme.adaptSize(
+                theme.spacing.medium - theme.spacing.extraSmall,
+            )}px
             ${theme.adaptSize(theme.spacing.medium)}px
             ${theme.adaptSize(theme.spacing.extraSmall)}px;
     `}
@@ -70,8 +77,13 @@ export const HeadlineText = styled.Text`
         font-size: ${theme.adaptFontSize(theme.typography.title.large.size)}px;
         font-style: ${theme.typography.title.large.style};
         font-weight: ${theme.typography.title.large.weight};
-        letter-spacing: ${theme.adaptSize(theme.typography.title.large.letterSpacing)}px;
-        line-height: ${theme.adaptSize(theme.typography.title.large.lineHeight)}px;
+        letter-spacing: ${theme.adaptSize(
+            theme.typography.title.large.letterSpacing,
+        )}px;
+
+        line-height: ${theme.adaptSize(
+            theme.typography.title.large.lineHeight,
+        )}px;
     `}
 `;
 
@@ -107,6 +119,7 @@ export const Footer = styled.View`
         gap: ${theme.adaptSize(theme.spacing.small)}px;
         min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
         padding: ${theme.adaptSize(theme.spacing.medium)}px
-            ${theme.adaptSize(theme.spacing.large)}px ${theme.adaptSize(theme.spacing.none)}px;
+            ${theme.adaptSize(theme.spacing.large)}px
+            ${theme.adaptSize(theme.spacing.none)}px;
     `}
 `;

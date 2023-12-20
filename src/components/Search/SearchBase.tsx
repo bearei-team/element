@@ -1,5 +1,11 @@
 import {FC, RefObject, useCallback, useId, useMemo, useRef} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, TextInput, ViewStyle} from 'react-native';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    TextInput,
+    ViewStyle,
+} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {useHandleEvent} from '../../hooks/useHandleEvent';
@@ -11,7 +17,8 @@ import {SearchProps} from './Search';
 import {Input} from './Search.styles';
 import {useAnimated} from './useAnimated';
 
-export interface RenderProps extends Partial<Pick<ShapeProps, 'shape'> & SearchProps> {
+export interface RenderProps
+    extends Partial<Pick<ShapeProps, 'shape'> & SearchProps> {
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         innerHeight: AnimatedInterpolation;
     } & {
@@ -34,15 +41,25 @@ export interface Data extends ListDataSource {
 export type RenderTextInputOptions = SearchProps;
 
 const initialState = {
-    layout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    layout: {} as LayoutRectangle,
     underlayColor: undefined,
     value: '',
 };
 
-const renderTextInput = (options: RenderTextInputOptions) => <Input {...options} />;
+const renderTextInput = (options: RenderTextInputOptions) => (
+    <Input {...options} />
+);
+
 export const SearchBase: FC<SearchBaseProps> = props => {
-    const {render, leadingIcon, onChangeText, defaultValue, placeholder, ref, ...renderProps} =
-        props;
+    const {
+        render,
+        leadingIcon,
+        onChangeText,
+        defaultValue,
+        placeholder,
+        ref,
+        ...renderProps
+    } = props;
 
     const [{value, layout}, setState] = useImmer(initialState);
     const {innerHeight} = useAnimated({value});
@@ -56,7 +73,9 @@ export const SearchBase: FC<SearchBaseProps> = props => {
 
     const processStateChange = useCallback(
         (nextState: State) => {
-            const focused = ['focused', 'pressIn', 'longPressIn'].includes(nextState);
+            const focused = ['focused', 'pressIn', 'longPressIn'].includes(
+                nextState,
+            );
 
             focused && inputRef.current?.focus();
         },
@@ -80,10 +99,8 @@ export const SearchBase: FC<SearchBaseProps> = props => {
     );
 
     const processLayout = (event: LayoutChangeEvent) => {
-        const {height, width} = event.nativeEvent.layout;
-
         setState(draft => {
-            draft.layout = {height, width};
+            draft.layout = event.nativeEvent.layout;
         });
     };
 
@@ -129,8 +146,13 @@ export const SearchBase: FC<SearchBaseProps> = props => {
             height: layout.height,
             innerHeight,
             width: layout.width,
-            listBackgroundColor: theme.color.rgba(theme.palette.surface.surface, 0),
+            listBackgroundColor: theme.color.rgba(
+                theme.palette.surface.surface,
+                0,
+            ),
         },
-        leadingIcon: leadingIcon ?? <Icon type="outlined" name="search" width={24} height={24} />,
+        leadingIcon: leadingIcon ?? (
+            <Icon type="outlined" name="search" width={24} height={24} />
+        ),
     });
 };

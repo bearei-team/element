@@ -2,7 +2,10 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './HoveredBase';
 
-export type ContainerProps = Pick<RenderProps, 'underlayColor' | 'width' | 'height'>;
+export type ContainerProps = Pick<
+    RenderProps,
+    'underlayColor' | 'width' | 'height'
+>;
 
 export const Container = styled(Shape)<ContainerProps>`
     left: 0;
@@ -14,7 +17,7 @@ export const Container = styled(Shape)<ContainerProps>`
         underlayColor &&
         css`
             background-color: ${underlayColor};
-            width: ${width}px;
             height: ${height}px;
+            width: ${width}px;
         `}
 `;

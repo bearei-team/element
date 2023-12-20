@@ -1,5 +1,11 @@
 import {FC, useCallback, useEffect, useId} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    TextStyle,
+    ViewStyle,
+} from 'react-native';
 import {useImmer} from 'use-immer';
 import {useHandleEvent} from '../../hooks/useHandleEvent';
 import {ShapeProps} from '../Common/Common.styles';
@@ -14,16 +20,18 @@ import {useIcon} from './useIcon';
 import {useUnderlayColor} from './useUnderlayColor';
 
 export interface RenderProps
-    extends Partial<Pick<ShapeProps, 'shape'> & Omit<ButtonProps, 'elevation'>> {
+    extends Partial<
+        Pick<ShapeProps, 'shape'> & Omit<ButtonProps, 'elevation'>
+    > {
     elevation: ElevationProps['level'];
+    iconShow: boolean;
+    labelTextShow?: boolean;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         touchableRippleHeight: number;
         touchableRippleWidth: number;
     };
-    iconShow: boolean;
     state: State;
     underlayColor: TouchableRippleProps['underlayColor'];
-    labelTextShow?: boolean;
 }
 
 export interface ButtonBaseProps extends ButtonProps {
@@ -33,7 +41,7 @@ export interface ButtonBaseProps extends ButtonProps {
 const initialState = {
     elevation: 0 as ElevationProps['level'],
     state: 'enabled' as State,
-    touchableRippleLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    touchableRippleLayout: {} as LayoutRectangle,
 };
 
 export const ButtonBase: FC<ButtonBaseProps> = props => {
@@ -50,7 +58,9 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{elevation, touchableRippleLayout}, setState] = useImmer(initialState);
+    const [{elevation, touchableRippleLayout}, setState] =
+        useImmer(initialState);
+
     const [underlayColor] = useUnderlayColor({type, category, fabType});
     const id = useId();
 
@@ -62,12 +72,13 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
                 error: 0,
                 focused: 0,
                 hovered: 1,
-                pressIn: 0,
                 longPressIn: 0,
+                pressIn: 0,
             };
 
             const nextElevation = type === 'elevated' ? 1 : 0;
-            const correctionCoefficient = category === 'fab' ? 3 : nextElevation;
+            const correctionCoefficient =
+                category === 'fab' ? 3 : nextElevation;
 
             category !== 'icon' &&
                 elevationStyle &&
@@ -81,7 +92,9 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
 
     const processStateChange = useCallback(
         (nextState: State) => {
-            const elevationType = ['elevated', 'filled', 'tonal'].includes(type);
+            const elevationType = ['elevated', 'filled', 'tonal'].includes(
+                type,
+            );
 
             elevationType && processElevation(nextState);
         },
@@ -115,10 +128,8 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
 
     const processLayout = useCallback(
         (event: LayoutChangeEvent) => {
-            const {height, width} = event.nativeEvent.layout;
-
             setState(draft => {
-                draft.touchableRippleLayout = {height, width};
+                draft.touchableRippleLayout = event.nativeEvent.layout;
             });
 
             onLayout?.(event);
@@ -127,8 +138,8 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     );
 
     useEffect(() => {
-        const fabElevation = disabled ? 0 : 3;
         const commonElevation = disabled ? 0 : 1;
+        const fabElevation = disabled ? 0 : 3;
 
         category === 'common' &&
             type === 'elevated' &&

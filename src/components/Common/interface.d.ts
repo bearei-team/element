@@ -1,4 +1,6 @@
-export type AnimatedInterpolation = Animated.AnimatedInterpolation<string | number>;
+export type AnimatedInterpolation = Animated.AnimatedInterpolation<
+    string | number
+>;
 export type BorderStyle = 'dotted' | 'solid' | 'dashed';
 export type Layout = 'horizontal' | 'vertical';
 export type Size = 'large' | 'medium' | 'small';

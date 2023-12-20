@@ -20,13 +20,29 @@ export type RenderRipplesOptions = Pick<
     'underlayColor' | 'touchableLayout' | 'onAnimatedEnd'
 >;
 
-const renderRipples = (rippleSequence: RippleSequence, options: RenderRipplesOptions) =>
+const renderRipples = (
+    rippleSequence: RippleSequence,
+    options: RenderRipplesOptions,
+) =>
     Object.entries(rippleSequence).map(([sequence, {location}]) => (
-        <Ripple {...options} key={`ripple_${sequence}`} location={location} sequence={sequence} />
+        <Ripple
+            {...options}
+            key={`ripple_${sequence}`}
+            location={location}
+            sequence={sequence}
+        />
     ));
 
 export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
-    const {children, onLayout, render, underlayColor, disabled = false, ...renderProps} = props;
+    const {
+        children,
+        onLayout,
+        render,
+        underlayColor,
+        disabled = false,
+        ...renderProps
+    } = props;
+
     const [layout, setLayout] = useImmer({} as RippleProps['touchableLayout']);
     const [rippleSequence, setRippleSequence] = useImmer<RippleSequence>({});
     const id = useId();
@@ -49,7 +65,8 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         (nextState: State, options = {} as OnStateChangeOptions) => {
             const {event} = options;
 
-            nextState === 'pressIn' && processPressIn(event as GestureResponderEvent);
+            nextState === 'pressIn' &&
+                processPressIn(event as GestureResponderEvent);
         },
         [processPressIn],
     );

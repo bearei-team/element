@@ -52,8 +52,8 @@ export type RenderTextInputOptions = TextFieldProps & {
 };
 
 const initialState = {
-    headerLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
-    labelTextLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    headerLayout: {} as LayoutRectangle,
+    labelTextLayout: {} as LayoutRectangle,
     underlayColor: undefined,
     value: '',
 };
@@ -83,7 +83,9 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{headerLayout, labelTextLayout, value}, setState] = useImmer(initialState);
+    const [{headerLayout, labelTextLayout, value}, setState] =
+        useImmer(initialState);
+
     const [underlayColor] = useUnderlayColor({type});
     const theme = useTheme();
     const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
@@ -116,18 +118,14 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     });
 
     const processHeaderLayout = (event: LayoutChangeEvent) => {
-        const {height, width} = event.nativeEvent.layout;
-
         setState(draft => {
-            draft.headerLayout = {height, width};
+            draft.headerLayout = event.nativeEvent.layout;
         });
     };
 
     const processLabelTextLayout = (event: LayoutChangeEvent) => {
-        const {height, width} = event.nativeEvent.layout;
-
         setState(draft => {
-            draft.labelTextLayout = {height, width};
+            draft.labelTextLayout = event.nativeEvent.layout;
         });
     };
 

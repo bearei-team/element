@@ -22,7 +22,12 @@ export const LabelText = styled.Text`
         font-size: ${theme.adaptFontSize(theme.typography.title.medium.size)}px;
         font-style: ${theme.typography.title.medium.style};
         font-weight: ${theme.typography.title.medium.weight};
-        letter-spacing: ${theme.adaptSize(theme.typography.title.medium.letterSpacing)}px;
-        line-height: ${theme.adaptSize(theme.typography.title.medium.lineHeight)}px;
+        letter-spacing: ${theme.adaptSize(
+            theme.typography.title.medium.letterSpacing,
+        )}px;
+
+        line-height: ${theme.adaptSize(
+            theme.typography.title.medium.lineHeight,
+        )}px;
     `}
 `;

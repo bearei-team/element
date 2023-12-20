@@ -15,22 +15,31 @@ export interface TouchableRippleProps extends Omit<TouchableProps, 'children'> {
     disabled?: boolean;
 }
 
-const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {id, children, shape, ...pressableProps} = renderProps;
+const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>(
+    (props, ref) => {
+        const render = (renderProps: RenderProps) => {
+            const {id, children, shape, ...pressableProps} = renderProps;
 
-        return (
-            <Pressable {...pressableProps} ref={ref} testID={`touchableRipple__pressable--${id}`}>
-                <Container testID={`touchableRipple--${id}`}>
-                    <Content shape={shape} testID={`touchableRipple__content--${id}`}>
-                        {children}
-                    </Content>
-                </Container>
-            </Pressable>
-        );
-    };
+            return (
+                <Pressable
+                    {...pressableProps}
+                    ref={ref}
+                    testID={`touchableRipple__pressable--${id}`}>
+                    <Container testID={`touchableRipple--${id}`}>
+                        <Content
+                            shape={shape}
+                            testID={`touchableRipple__content--${id}`}>
+                            {children}
+                        </Content>
+                    </Container>
+                </Pressable>
+            );
+        };
 
-    return <TouchableRippleBase {...props} render={render} />;
-});
+        return <TouchableRippleBase {...props} render={render} />;
+    },
+);
 
-export const TouchableRipple: FC<TouchableRippleProps> = memo(ForwardRefTouchableRipple);
+export const TouchableRipple: FC<TouchableRippleProps> = memo(
+    ForwardRefTouchableRipple,
+);

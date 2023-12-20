@@ -1,10 +1,17 @@
 import {FC, forwardRef, memo} from 'react';
-import {Animated, LayoutRectangle, NativeTouchEvent, View, ViewProps} from 'react-native';
+import {
+    Animated,
+    LayoutRectangle,
+    NativeTouchEvent,
+    View,
+    ViewProps,
+} from 'react-native';
 import {Container} from './Ripple.styles';
 import {RenderProps, RippleBase} from './RippleBase';
 
 export type RippleAnimatedOut = (finished?: () => void) => number;
-export interface RippleProps extends Partial<ViewProps & React.RefAttributes<View>> {
+export interface RippleProps
+    extends Partial<ViewProps & React.RefAttributes<View>> {
     centered?: boolean;
     location: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     onAnimatedEnd: (sequence: string, animatedOut: RippleAnimatedOut) => void;
@@ -25,7 +32,10 @@ const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => {
                 height={height}
                 ref={ref}
                 shape="full"
-                style={{...(typeof style === 'object' && style), ...containerStyle}}
+                style={{
+                    ...(typeof style === 'object' && style),
+                    ...containerStyle,
+                }}
                 testID={`ripple--${id}`}
                 width={width}
                 x={x}

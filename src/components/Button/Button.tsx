@@ -3,7 +3,10 @@ import {Animated, View} from 'react-native';
 import {Size} from '../Common/interface';
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
-import {TouchableProps, TouchableRipple} from '../TouchableRipple/TouchableRipple';
+import {
+    TouchableProps,
+    TouchableRipple,
+} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon, LabelText} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
@@ -14,20 +17,12 @@ export type FabType = 'surface' | 'primary' | 'secondary' | 'tertiary';
 export interface ButtonProps extends TouchableProps {
     category?: Category;
     disabled?: boolean;
+    elevation?: boolean;
+    fabType?: FabType;
     icon?: React.JSX.Element;
     labelText?: string;
-    elevation?: boolean;
-    /**
-     * The button type only takes effect on the general button; it does not work for categories such as 'fab' and 'icon'
-     */
-    type?: ButtonType;
-
-    /**
-     * The size of the button only takes effect on buttons with the type set to 'fab'.
-     */
     size?: Size;
-
-    fabType?: FabType;
+    type?: ButtonType;
 }
 
 const AnimatedContent = Animated.createAnimatedComponent(Content);
@@ -41,18 +36,23 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             iconShow,
             id,
             labelText,
+            labelTextShow,
             renderStyle,
             shape,
+            size,
             state,
             style,
             type,
-            size,
             underlayColor,
-            labelTextShow,
             ...touchableRippleProps
         } = renderProps;
 
-        const {color, touchableRippleHeight, touchableRippleWidth, ...contentStyle} = renderStyle;
+        const {
+            color,
+            touchableRippleHeight,
+            touchableRippleWidth,
+            ...contentStyle
+        } = renderStyle;
 
         return (
             <Elevation level={elevation} shape={shape}>
@@ -71,11 +71,16 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                             labelTextShow={labelTextShow}
                             shape={shape}
                             size={size}
-                            style={{...(typeof style === 'object' && style), ...contentStyle}}
+                            style={{
+                                ...(typeof style === 'object' && style),
+                                ...contentStyle,
+                            }}
                             testID={`button__content--${id}`}
                             type={type}>
                             {iconShow && (
-                                <Icon category={category} testID={`button__icon--${id}`}>
+                                <Icon
+                                    category={category}
+                                    testID={`button__icon--${id}`}>
                                     {icon}
                                 </Icon>
                             )}

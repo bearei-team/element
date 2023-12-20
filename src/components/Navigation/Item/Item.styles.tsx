@@ -26,9 +26,13 @@ export const Header = styled.View<IconInnerProps>`
 
     ${({theme}) => css`
         width: ${theme.adaptSize(
-            theme.spacing.large + (theme.spacing.large - theme.spacing.extraSmall) * 2,
+            theme.spacing.large +
+                (theme.spacing.large - theme.spacing.extraSmall) * 2,
         )}px;
-        height: ${theme.adaptSize(theme.spacing.large + theme.spacing.extraSmall * 2)}px;
+
+        height: ${theme.adaptSize(
+            theme.spacing.large + theme.spacing.extraSmall * 2,
+        )}px;
     `}
 
     ${({pressPosition}) => {
@@ -56,9 +60,12 @@ export const Icon = styled(View)`
     ${({theme}) => css`
         top: ${theme.adaptSize(theme.spacing.extraSmall)}px;
         left: ${theme.adaptSize(
-            (theme.spacing.large + (theme.spacing.large - theme.spacing.extraSmall) * 2) / 2,
+            (theme.spacing.large +
+                (theme.spacing.large - theme.spacing.extraSmall) * 2) /
+                2,
         ) -
         theme.spacing.large / 2}px;
+
         height: ${theme.adaptSize(theme.spacing.large)}px;
         width: ${theme.adaptSize(theme.spacing.large)}px;
     `}
@@ -70,8 +77,16 @@ export const LabelText = styled.Text<LabelTextProps>`
     ${({theme, active}) => css`
         font-size: ${theme.adaptFontSize(theme.typography.label.medium.size)}px;
         font-style: ${theme.typography.label.medium.style};
-        letter-spacing: ${theme.adaptSize(theme.typography.label.medium.letterSpacing)}px;
-        line-height: ${theme.adaptSize(theme.typography.label.medium.lineHeight)}px;
-        font-weight: ${active ? theme.font.weight.bold : theme.font.weight.medium};
+        letter-spacing: ${theme.adaptSize(
+            theme.typography.label.medium.letterSpacing,
+        )}px;
+
+        line-height: ${theme.adaptSize(
+            theme.typography.label.medium.lineHeight,
+        )}px;
+
+        font-weight: ${active
+            ? theme.font.weight.bold
+            : theme.font.weight.medium};
     `}
 `;

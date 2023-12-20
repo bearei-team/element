@@ -9,17 +9,13 @@ export interface NavigationDataSource extends ItemProps {
 }
 
 export type NavigationType = 'bar' | 'drawer' | 'rail';
-export interface NavigationProps extends Partial<ViewProps & RefAttributes<View>> {
+export interface NavigationProps
+    extends Partial<ViewProps & RefAttributes<View>> {
+    block?: boolean;
     data?: NavigationDataSource[];
+    fab?: React.JSX.Element;
     onChange?: (key: string) => void;
     type?: NavigationType;
-
-    /**
-     * Setting the navigation item style determines whether to consistently display the labelText.
-     * This only takes effect in navigation types 'bar' and 'rail'.
-     */
-    block?: boolean;
-    fab?: React.JSX.Element;
 }
 
 /**
@@ -30,9 +26,15 @@ const ForwardRefNavigation = forwardRef<View, NavigationProps>((props, ref) => {
         const {id, children, type, fab, ...containerProps} = renderProps;
 
         return (
-            <Container {...containerProps} ref={ref} type={type} testID={`navigation--${id}`}>
+            <Container
+                {...containerProps}
+                ref={ref}
+                type={type}
+                testID={`navigation--${id}`}>
                 {fab && <Fab testID={`navigation__fab--${id}`}>{fab}</Fab>}
-                <Destination type={type} testID={`navigation__destination--${id}`}>
+                <Destination
+                    type={type}
+                    testID={`navigation__destination--${id}`}>
                     {children}
                 </Destination>
             </Container>

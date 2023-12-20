@@ -10,15 +10,25 @@ import {
 import {Divider} from '../Divider/Divider';
 import {Hovered} from '../Hovered/Hovered';
 import {List, ListDataSource} from '../List/List';
-import {Container, Content, Header, Inner, LeadingIcon, TrailingIcon} from './Search.styles';
+import {
+    Container,
+    Content,
+    Header,
+    Inner,
+    LeadingIcon,
+    TrailingIcon,
+} from './Search.styles';
 import {RenderProps, SearchBase} from './SearchBase';
 
 export interface SearchProps
     extends Partial<
-        TextInputProps & PressableProps & TouchableWithoutFeedbackProps & RefAttributes<TextInput>
+        TextInputProps &
+            PressableProps &
+            TouchableWithoutFeedbackProps &
+            RefAttributes<TextInput>
     > {
-    leadingIcon?: React.JSX.Element;
     data?: ListDataSource[];
+    leadingIcon?: React.JSX.Element;
     trailingIcon?: React.JSX.Element;
 }
 
@@ -35,8 +45,8 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
             onHoverIn,
             onHoverOut,
             onLayout,
-            onPressIn,
             onLongPress,
+            onPressIn,
             placeholder,
             renderStyle,
             shape,
@@ -50,11 +60,17 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
         const {height, innerHeight, width, listBackgroundColor} = renderStyle;
 
         return (
-            <Container {...containerProps} onLayout={onLayout} testID={`search--${id}`}>
+            <Container
+                {...containerProps}
+                onLayout={onLayout}
+                testID={`search--${id}`}>
                 {typeof width === 'number' && (
                     <AnimatedInner
                         shape={'extraLarge'}
-                        style={{...(typeof style === 'object' && style), height: innerHeight}}
+                        style={{
+                            ...(typeof style === 'object' && style),
+                            height: innerHeight,
+                        }}
                         testID={`search__inner--${id}`}
                         width={width}>
                         <Pressable
@@ -69,13 +85,17 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
                                 accessibilityRole="keyboardkey"
                                 testID={`search__header--${id}`}
                                 width={width}>
-                                <LeadingIcon testID={`search__leadingIcon--${id}`}>
+                                <LeadingIcon
+                                    testID={`search__leadingIcon--${id}`}>
                                     {leadingIcon}
                                 </LeadingIcon>
 
-                                <Content testID={`search__content--${id}`}>{children}</Content>
+                                <Content testID={`search__content--${id}`}>
+                                    {children}
+                                </Content>
 
-                                <TrailingIcon testID={`search__trailingIcon--${id}`}>
+                                <TrailingIcon
+                                    testID={`search__trailingIcon--${id}`}>
                                     {trailingIcon}
                                 </TrailingIcon>
 
@@ -92,7 +112,10 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
 
                         <Divider size="large" width={width} />
                         {listVisible && (
-                            <List data={data} style={{backgroundColor: listBackgroundColor}} />
+                            <List
+                                data={data}
+                                style={{backgroundColor: listBackgroundColor}}
+                            />
                         )}
                     </AnimatedInner>
                 )}

@@ -15,16 +15,30 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const [colorAnimated] = useAnimatedValue(1);
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
-    const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
-    const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
+    const disabledBackgroundColor = theme.color.rgba(
+        theme.palette.surface.onSurface,
+        0.12,
+    );
+
+    const disabledColor = theme.color.rgba(
+        theme.palette.surface.onSurface,
+        0.38,
+    );
+
     const commonBackgroundColorConfig = {
         elevated: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.surface.surfaceContainerLow],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.surface.surfaceContainerLow,
+            ],
         },
         filled: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.primary.primary],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.primary.primary,
+            ],
         },
         outlined: {
             inputRange: [0, 1],
@@ -42,26 +56,41 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         },
         tonal: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.secondary.secondaryContainer],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.secondary.secondaryContainer,
+            ],
         },
     };
 
     const fabBackgroundColorConfig = {
         surface: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.surface.surfaceContainerHigh],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.surface.surfaceContainerHigh,
+            ],
         },
         primary: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.primary.primaryContainer],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.primary.primaryContainer,
+            ],
         },
         secondary: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.secondary.secondaryContainer],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.secondary.secondaryContainer,
+            ],
         },
         tertiary: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.tertiary.tertiaryContainer],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.tertiary.tertiaryContainer,
+            ],
         },
     };
 
@@ -84,26 +113,41 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         },
         tonal: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.secondary.onSecondaryContainer],
+            outputRange: [
+                disabledColor,
+                theme.palette.secondary.onSecondaryContainer,
+            ],
         },
     };
 
     const fabColorConfig = {
         surface: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.primary.primary],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.primary.primary,
+            ],
         },
         primary: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.primary.onPrimaryContainer],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.primary.onPrimaryContainer,
+            ],
         },
         secondary: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.secondary.onSecondaryContainer],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.secondary.onSecondaryContainer,
+            ],
         },
         tertiary: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.tertiary.onTertiaryContainer],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.tertiary.onTertiaryContainer,
+            ],
         },
     };
 
@@ -146,7 +190,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
     useEffect(() => {
         if (type === 'outlined') {
-            const value = disabled ? 0 : borderInputRange[borderInputRange.length - 2];
+            const value = disabled
+                ? 0
+                : borderInputRange[borderInputRange.length - 2];
+
             const toValue = state === 'focused' ? borderInputRange[2] : value;
 
             processAnimatedTiming(borderAnimated, toValue);

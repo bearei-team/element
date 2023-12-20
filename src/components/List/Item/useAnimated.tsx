@@ -19,7 +19,9 @@ export interface ProcessAnimatedTimingOptions {
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {active, close, state, touchableRippleHeight, trailingState} = options;
+    const {active, close, state, touchableRippleHeight, trailingState} =
+        options;
+
     const [backgroundColorAnimated] = useAnimatedValue(0);
     const [trailingOpacityAnimated] = useAnimatedValue(0);
     const [closedAnimated] = useAnimatedValue(1);
@@ -43,7 +45,11 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     });
 
     const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, {toValue, finished}: ProcessAnimatedTimingOptions) => {
+        (
+            animation: Animated.Value,
+            processAnimatedTimingOptions: ProcessAnimatedTimingOptions,
+        ) => {
+            const {toValue, finished} = processAnimatedTimingOptions;
             const animatedTiming = UTIL.animatedTiming(theme);
 
             requestAnimationFrame(() =>
@@ -68,17 +74,27 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        processAnimatedTiming(backgroundColorAnimated, {toValue: active ? 1 : 0});
+        processAnimatedTiming(backgroundColorAnimated, {
+            toValue: active ? 1 : 0,
+        });
     }, [active, processAnimatedTiming, backgroundColorAnimated]);
 
     useEffect(() => {
-        const closeToValue = state === 'hovered' || trailingState === 'hovered' ? 1 : 0;
+        const closeToValue =
+            state === 'hovered' || trailingState === 'hovered' ? 1 : 0;
+
         const toValue = trailingState === 'hovered' ? 1 : 0;
 
         processAnimatedTiming(trailingOpacityAnimated, {
             toValue: close ? closeToValue : toValue,
         });
-    }, [close, processAnimatedTiming, state, trailingOpacityAnimated, trailingState]);
+    }, [
+        close,
+        processAnimatedTiming,
+        state,
+        trailingOpacityAnimated,
+        trailingState,
+    ]);
 
     return {
         backgroundColor,

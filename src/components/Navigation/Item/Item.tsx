@@ -1,8 +1,20 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, Pressable, PressableProps, View, ViewProps} from 'react-native';
+import {
+    Animated,
+    Pressable,
+    PressableProps,
+    View,
+    ViewProps,
+} from 'react-native';
 import {ShapeProps} from '../../Common/Common.styles';
 import {Hovered} from '../../Hovered/Hovered';
-import {Container, Header, Icon, IconBackground, LabelText} from './Item.styles';
+import {
+    Container,
+    Header,
+    Icon,
+    IconBackground,
+    LabelText,
+} from './Item.styles';
 import {ItemBase, RenderProps} from './ItemBase';
 
 export type PropsBase = Partial<

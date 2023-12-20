@@ -98,6 +98,8 @@ export const TabBase: FC<TabBaseProps> = props => {
         (event: LayoutChangeEvent) => {
             const {height, width} = event.nativeEvent.layout;
 
+            console.info(event.nativeEvent.layout);
+
             setState(draft => {
                 if (typeof draft.itemLayout.width !== 'number') {
                     draft.itemLayout = {height, width};

@@ -39,6 +39,8 @@ export const ItemBase: FC<ItemBaseProps> = props => {
     const processLayout = (event: LayoutChangeEvent) => {
         const {height, width} = event.nativeEvent.layout;
 
+        console.info(event.nativeEvent.layout, 'item');
+
         setState(draft => {
             draft.layout = {height, width};
         });

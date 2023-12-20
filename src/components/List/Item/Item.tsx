@@ -1,7 +1,10 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Hovered} from '../../Hovered/Hovered';
-import {TouchableRipple, TouchableRippleProps} from '../../TouchableRipple/TouchableRipple';
+import {
+    TouchableRipple,
+    TouchableRippleProps,
+} from '../../TouchableRipple/TouchableRipple';
 import {
     Container,
     Content,
@@ -52,7 +55,10 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
         } = renderStyle;
 
         return (
-            <TouchableRipple {...touchableRippleProps} ref={ref} underlayColor={underlayColor}>
+            <TouchableRipple
+                {...touchableRippleProps}
+                ref={ref}
+                underlayColor={underlayColor}>
                 <AnimatedContainer
                     accessibilityLabel={headline}
                     accessibilityRole="list"
@@ -60,10 +66,15 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                     testID={`listItem--${id}`}>
                     <AnimatedInner
                         onLayout={onLayout}
-                        style={{...(typeof style === 'object' && style), backgroundColor}}
+                        style={{
+                            ...(typeof style === 'object' && style),
+                            backgroundColor,
+                        }}
                         testID={`listItem__inner--${id}`}>
                         {leading && (
-                            <Leading testID={`listItem__leading--${id}`}>{leading}</Leading>
+                            <Leading testID={`listItem__leading--${id}`}>
+                                {leading}
+                            </Leading>
                         )}
 
                         <Content>
@@ -76,9 +87,11 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
 
                             {supportingText && (
                                 <SupportingText
-                                    {...(typeof supportingTextNumberOfLines === 'number' && {
+                                    {...(typeof supportingTextNumberOfLines ===
+                                        'number' && {
                                         ellipsizeMode: 'tail',
-                                        numberOfLines: supportingTextNumberOfLines,
+                                        numberOfLines:
+                                            supportingTextNumberOfLines,
                                     })}
                                     testID={`listItem__supportingText--${id}`}>
                                     {supportingText}

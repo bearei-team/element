@@ -7,12 +7,12 @@ import {Container} from './Item.styles';
 import {ItemBase, RenderProps} from './ItemBase';
 
 export interface ControlProps {
-    value?: unknown;
-    onValueChange?: (value?: unknown) => void;
-    errors?: ValidateError[];
     errorMessage?: string;
+    errors?: ValidateError[];
     id?: string;
     labelText?: string;
+    onValueChange?: (value?: unknown) => void;
+    value?: unknown;
 }
 
 export interface ItemProps<T extends Store = Store>
@@ -22,8 +22,8 @@ export interface ItemProps<T extends Store = Store>
             Pick<ValidateOptions, 'rules' | 'validateFirst'> &
             Pick<ControlProps, 'labelText'>
     > {
-    name?: keyof T;
     initialValue?: Store;
+    name?: keyof T;
     renderControl?: (props: ControlProps) => JSX.Element;
 }
 

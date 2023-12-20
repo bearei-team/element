@@ -1,5 +1,10 @@
 import {FC, useCallback, useId} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, ViewStyle} from 'react-native';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    ViewStyle,
+} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {useHandleEvent} from '../../../hooks/useHandleEvent';
@@ -25,12 +30,22 @@ export interface ItemBaseProps extends ItemProps {
 
 const initialState = {
     trailingState: 'enabled' as State,
-    touchableRippleLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    touchableRippleLayout: {} as LayoutRectangle,
 };
 
 export const ItemBase: FC<ItemBaseProps> = props => {
-    const {active = false, close = false, render, trailing, onLayout, ...renderProps} = props;
-    const [{touchableRippleLayout, trailingState}, setState] = useImmer(initialState);
+    const {
+        active = false,
+        close = false,
+        onLayout,
+        render,
+        trailing,
+        ...renderProps
+    } = props;
+
+    const [{touchableRippleLayout, trailingState}, setState] =
+        useImmer(initialState);
+
     const id = useId();
     const theme = useTheme();
     const underlayColor = theme.palette.surface.onSurface;
@@ -52,10 +67,8 @@ export const ItemBase: FC<ItemBaseProps> = props => {
     });
 
     const processLayout = (event: LayoutChangeEvent) => {
-        const {height, width} = event.nativeEvent.layout;
-
         setState(draft => {
-            draft.touchableRippleLayout = {height, width};
+            draft.touchableRippleLayout = event.nativeEvent.layout;
         });
 
         onLayout?.(event);
@@ -81,6 +94,7 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         () => processTrailingState('enabled'),
         [processTrailingState],
     );
+
     const handleTrailingPress = useCallback(() => {
         close && onCloseAnimated();
     }, [close, onCloseAnimated]);

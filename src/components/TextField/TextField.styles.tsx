@@ -93,9 +93,17 @@ export const LabelText = styled.Text`
         font-style: ${theme.typography.body.small.style};
         font-weight: ${theme.typography.body.small.weight};
         left: ${theme.adaptSize(theme.spacing.medium - theme.spacing.small)}px;
-        letter-spacing: ${theme.adaptSize(theme.typography.body.small.letterSpacing)}px;
-        line-height: ${theme.adaptSize(theme.typography.body.small.lineHeight)}px;
-        padding: ${theme.adaptSize(0)}px ${theme.adaptSize(theme.spacing.small)}px;
+        letter-spacing: ${theme.adaptSize(
+            theme.typography.body.small.letterSpacing,
+        )}px;
+
+        line-height: ${theme.adaptSize(
+            theme.typography.body.small.lineHeight,
+        )}px;
+
+        padding: ${theme.adaptSize(0)}px
+            ${theme.adaptSize(theme.spacing.small)}px;
+
         top: ${theme.adaptSize(-theme.typography.body.small.lineHeight / 2)}px;
     `};
 `;
@@ -121,14 +129,17 @@ export const LabelTextBackgroundInner = styled.View`
 `;
 
 export const Input = styled(TextInput)`
-    outline-style: none;
-
     ${({theme}) => css`
         font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
-        letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
-        line-height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
+        letter-spacing: ${theme.adaptSize(
+            theme.typography.body.large.letterSpacing,
+        )}px;
+
+        line-height: ${theme.adaptSize(
+            theme.typography.body.large.lineHeight,
+        )}px;
     `};
 `;
 
@@ -145,7 +156,8 @@ export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
 export const TrailingIcon = styled.View`
     ${({theme}) => css`
         height: ${theme.adaptSize(theme.spacing.small * 6)}px;
-        padding: ${theme.adaptSize(theme.spacing.small)}px ${theme.adaptSize(theme.spacing.small)}px;
+        padding: ${theme.adaptSize(theme.spacing.small)}px
+            ${theme.adaptSize(theme.spacing.small)}px;
         width: ${theme.adaptSize(theme.spacing.small * 6)}px;
     `}
 `;
@@ -156,8 +168,15 @@ export const SupportingText = styled.Text<SupportingTextProps>`
         font-size: ${theme.adaptSize(theme.typography.body.small.size)}px;
         font-style: ${theme.typography.body.small.style};
         font-weight: ${theme.typography.body.small.weight};
-        letter-spacing: ${theme.adaptSize(theme.typography.body.small.letterSpacing)}px;
-        line-height: ${theme.adaptSize(theme.typography.body.small.lineHeight)}px;
-        padding: ${theme.adaptSize(0)}px ${theme.adaptSize(theme.spacing.medium)}px;
+        letter-spacing: ${theme.adaptSize(
+            theme.typography.body.small.letterSpacing,
+        )}px;
+
+        line-height: ${theme.adaptSize(
+            theme.typography.body.small.lineHeight,
+        )}px;
+
+        padding: ${theme.adaptSize(theme.spacing.none)}px
+            ${theme.adaptSize(theme.spacing.medium)}px;
     `}
 `;

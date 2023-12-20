@@ -4,9 +4,9 @@ import {Container, LabelText} from './Avatar.styles';
 import {AvatarBase, RenderProps} from './AvatarBase';
 
 export interface AvatarProps extends Partial<ViewProps & RefAttributes<View>> {
-    labelText?: number | string;
-    width?: number;
     height?: number;
+    labelText?: string;
+    width?: number;
 }
 
 /**
@@ -17,8 +17,14 @@ const ForwardRefAvatar = forwardRef<View, AvatarProps>((props, ref) => {
         const {id, labelText, ...containerProps} = renderProps;
 
         return (
-            <Container {...containerProps} ref={ref} shape="full" testID={`avatar--${id}`}>
-                <LabelText testID={`avatar__labelText--${id}`}>{labelText}</LabelText>
+            <Container
+                {...containerProps}
+                ref={ref}
+                shape="full"
+                testID={`avatar--${id}`}>
+                <LabelText testID={`avatar__labelText--${id}`}>
+                    {labelText}
+                </LabelText>
             </Container>
         );
     };

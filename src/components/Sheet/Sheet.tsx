@@ -1,5 +1,12 @@
 import React, {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, GestureResponderEvent, Modal, ModalProps, View, ViewProps} from 'react-native';
+import {
+    Animated,
+    GestureResponderEvent,
+    Modal,
+    ModalProps,
+    View,
+    ViewProps,
+} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
 import {Divider} from '../Divider/Divider';
 import {
@@ -19,7 +26,9 @@ import {RenderProps, SheetBase} from './SheetBase';
 export type SheetType = 'side' | 'bottom';
 
 export interface SheetProps
-    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & ModalProps> {
+    extends Partial<
+        ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & ModalProps
+    > {
     back?: boolean;
     backIcon?: React.JSX.Element;
     closeIcon?: React.JSX.Element;
@@ -89,28 +98,34 @@ const ForwardRefSheet = forwardRef<View, SheetProps>((props, ref) => {
                         accessibilityRole="alert">
                         <Header testID={`sheet__header--${id}`}>
                             {back && (
-                                <BackAffordance testID={`sheet__backAffordance--${id}`}>
+                                <BackAffordance
+                                    testID={`sheet__backAffordance--${id}`}>
                                     {backIcon}
                                 </BackAffordance>
                             )}
 
                             <HeadlineText>{headlineText}</HeadlineText>
-                            <CloseAffordance testID={`sheet__closeAffordance--${id}`}>
+                            <CloseAffordance
+                                testID={`sheet__closeAffordance--${id}`}>
                                 {closeIcon}
                             </CloseAffordance>
                         </Header>
 
-                        <Content testID={`sheet__content--${id}`}>{children}</Content>
+                        <Content testID={`sheet__content--${id}`}>
+                            {children}
+                        </Content>
 
                         {footer && (
                             <>
                                 <Divider size="large" />
                                 <Footer testID={`sheet__footer--${id}`}>
-                                    <PrimaryButton testID={`sheet__primaryButton--${id}`}>
+                                    <PrimaryButton
+                                        testID={`sheet__primaryButton--${id}`}>
                                         {primaryButton}
                                     </PrimaryButton>
 
-                                    <SecondaryButton testID={`sheet__secondaryButton--${id}`}>
+                                    <SecondaryButton
+                                        testID={`sheet__secondaryButton--${id}`}>
                                         {secondaryButton}
                                     </SecondaryButton>
                                 </Footer>

@@ -7,10 +7,10 @@ import {UTIL} from '../../utils/util';
 import {Data} from './TabBase';
 
 export interface UseAnimatedOptions {
-    itemLayout: Pick<LayoutRectangle, 'height' | 'width'>;
-    layout: Pick<LayoutRectangle, 'height' | 'width'>;
     data: Data[];
     headerVisible: boolean;
+    itemLayout: LayoutRectangle;
+    layout: LayoutRectangle;
 }
 
 export interface ProcessAnimatedTimingOptions extends AnimatedTimingOptions {
@@ -20,16 +20,22 @@ export interface ProcessAnimatedTimingOptions extends AnimatedTimingOptions {
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {data, itemLayout, layout, headerVisible} = options;
+    const {width: layoutWidth = 0} = layout;
+    const {height: itemLayoutHeight = 0, width: itemLayoutWidth = 0} =
+        itemLayout;
+
     const dataIndexes = Array.from({length: data.length}, (_, index) => index);
     const defaultRange = dataIndexes.length === 0 ? [0, 1] : dataIndexes;
-    const draftActiveIndicatorWidth = data.find(({active}) => active)?.labelTextLayout.width ?? 0;
+    const draftActiveIndicatorWidth =
+        data.find(({active}) => active)?.labelTextLayout.width ?? 0;
+
     const [headerAnimated] = useAnimatedValue(1);
     const [activeAnimated] = useAnimatedValue(0);
     const [activeIndicatorWidthAnimated] = useAnimatedValue(0);
     const theme = useTheme();
     const headerHeight = headerAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, itemLayout.height],
+        outputRange: [0, itemLayoutHeight === 0 ? 48 : 0],
     });
 
     const activeIndicatorLeft = activeAnimated.interpolate({
@@ -37,7 +43,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         outputRange:
             dataIndexes.length === 0
                 ? defaultRange
-                : dataIndexes.map(index => index * (itemLayout.width ?? 0)),
+                : dataIndexes.map(index => index * itemLayoutWidth),
     });
 
     const contentInnerLeft = activeAnimated.interpolate({
@@ -45,17 +51,24 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         outputRange:
             dataIndexes.length === 0
                 ? defaultRange
-                : dataIndexes.map(index => -(index * (layout.width ?? 0))),
+                : dataIndexes.map(index => -(index * layoutWidth)),
     });
 
     const activeIndicatorWidth = activeIndicatorWidthAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [draftActiveIndicatorWidth, draftActiveIndicatorWidth * 1.5],
+        outputRange: [
+            draftActiveIndicatorWidth,
+            draftActiveIndicatorWidth * 1.5,
+        ],
     });
 
     const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, processAnimatedTimingOptions: ProcessAnimatedTimingOptions) => {
-            const {toValue, finished, duration, easing} = processAnimatedTimingOptions;
+        (
+            animation: Animated.Value,
+            processAnimatedTimingOptions: ProcessAnimatedTimingOptions,
+        ) => {
+            const {toValue, finished, duration, easing} =
+                processAnimatedTimingOptions;
             const animatedTiming = UTIL.animatedTiming(theme);
 
             requestAnimationFrame(() =>
@@ -91,7 +104,12 @@ export const useAnimated = (options: UseAnimatedOptions) => {
             duration: 'medium3',
             easing: 'emphasizedDecelerate',
         });
-    }, [activeAnimated, activeIndicatorWidthAnimated, data, processAnimatedTiming]);
+    }, [
+        activeAnimated,
+        activeIndicatorWidthAnimated,
+        data,
+        processAnimatedTiming,
+    ]);
 
     useEffect(() => {
         processAnimatedTiming(headerAnimated, {
@@ -101,5 +119,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         });
     }, [headerAnimated, headerVisible, processAnimatedTiming]);
 
-    return {activeIndicatorLeft, activeIndicatorWidth, contentInnerLeft, headerHeight};
+    return {
+        activeIndicatorLeft,
+        activeIndicatorWidth,
+        contentInnerLeft,
+        headerHeight,
+    };
 };

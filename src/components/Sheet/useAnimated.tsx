@@ -12,7 +12,8 @@ export interface ProcessAnimatedTimingOptions
     finished?: () => void;
 }
 
-export interface UseAnimatedOptions extends Required<Pick<RenderProps, 'visible' | 'position'>> {
+export interface UseAnimatedOptions
+    extends Required<Pick<RenderProps, 'visible' | 'position'>> {
     finished: () => void;
 }
 
@@ -40,12 +41,15 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     });
 
     const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, processAnimatedTimingOptions: ProcessAnimatedTimingOptions) => {
+        (
+            animation: Animated.Value,
+            processAnimatedTimingOptions: ProcessAnimatedTimingOptions,
+        ) => {
             const {
-                toValue,
                 duration = 'short3',
                 easing = 'standard',
                 finished: animatedFinished,
+                toValue,
             } = processAnimatedTimingOptions;
 
             const animatedTiming = UTIL.animatedTiming(theme);
@@ -81,11 +85,20 @@ export const useAnimated = (options: UseAnimatedOptions) => {
             } as ProcessAnimatedTimingOptions;
 
             processAnimatedTiming(containerAnimated, animatedTimingOptions);
-            processAnimatedTiming(innerAnimated, {...animatedTimingOptions, finished});
+            processAnimatedTiming(innerAnimated, {
+                ...animatedTimingOptions,
+                finished,
+            });
         };
 
         visible ? enterScreen() : exitScreen();
-    }, [containerAnimated, finished, innerAnimated, processAnimatedTiming, visible]);
+    }, [
+        containerAnimated,
+        finished,
+        innerAnimated,
+        processAnimatedTiming,
+        visible,
+    ]);
 
     return {backgroundColor, innerTranslateX};
 };

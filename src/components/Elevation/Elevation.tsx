@@ -4,7 +4,9 @@ import {ShapeProps} from '../Common/Common.styles';
 import {Container, Content, Shadow} from './Elevation.styles';
 import {ElevationBase, RenderProps} from './ElevationBase';
 export interface ElevationProps
-    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>> {
+    extends Partial<
+        ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>
+    > {
     level?: 0 | 1 | 2 | 3 | 4 | 5;
 }
 
@@ -12,8 +14,16 @@ const AnimatedShadow = Animated.createAnimatedComponent(Shadow);
 
 const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {children, id, level, onContentLayout, renderStyle, shape, style, ...containerProps} =
-            renderProps;
+        const {
+            children,
+            id,
+            level,
+            onContentLayout,
+            renderStyle,
+            shape,
+            style,
+            ...containerProps
+        } = renderProps;
 
         const {contentHeight, opacity0, opacity1, contentWidth} = renderStyle;
 

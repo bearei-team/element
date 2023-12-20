@@ -9,7 +9,10 @@ import {
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
-import {OnStateChangeOptions, useHandleEvent} from '../../../hooks/useHandleEvent';
+import {
+    OnStateChangeOptions,
+    useHandleEvent,
+} from '../../../hooks/useHandleEvent';
 import {AnimatedInterpolation, State} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
 import {ItemProps} from './Item';
@@ -51,13 +54,16 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{headerLayout, layout, pressPosition}, setState] = useImmer(initialState);
+    const [{headerLayout, layout, pressPosition}, setState] =
+        useImmer(initialState);
+
     const id = useId();
     const theme = useTheme();
-    const {iconBackgroundColor, labelColor, iconBackgroundWidth, labelHeight} = useAnimated({
-        active,
-        block,
-    });
+    const {iconBackgroundColor, labelColor, iconBackgroundWidth, labelHeight} =
+        useAnimated({
+            active,
+            block,
+        });
 
     const underlayColor = active
         ? theme.palette.secondary.onSecondaryContainer
@@ -67,7 +73,9 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         (nextState: State, options?: OnStateChangeOptions) => {
             if (nextState === 'pressIn') {
                 const {event} = options ?? {};
-                const {locationX} = (event as GestureResponderEvent)?.nativeEvent ?? 0;
+                const {locationX} =
+                    (event as GestureResponderEvent)?.nativeEvent ?? 0;
+
                 const position = locationX / layout.width;
 
                 setState(draft => {

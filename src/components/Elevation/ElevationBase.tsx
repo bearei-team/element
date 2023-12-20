@@ -1,5 +1,10 @@
 import {FC, useId} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, ViewStyle} from 'react-native';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    ViewStyle,
+} from 'react-native';
 import {useImmer} from 'use-immer';
 import {AnimatedInterpolation} from '../Common/interface';
 import {ElevationProps} from './Elevation';
@@ -24,17 +29,12 @@ export interface ElevationBaseProps extends ElevationProps {
 
 export const ElevationBase: FC<ElevationBaseProps> = props => {
     const {level = 0, render, ...renderProps} = props;
-    const [contentLayout, setContentLayout] = useImmer(
-        {} as Pick<LayoutRectangle, 'height' | 'width'>,
-    );
-
+    const [contentLayout, setContentLayout] = useImmer({} as LayoutRectangle);
     const {shadow0Opacity, shadow1Opacity} = useAnimated({level});
     const id = useId();
 
     const processLayout = (event: LayoutChangeEvent) => {
-        const {height, width} = event.nativeEvent.layout;
-
-        setContentLayout(() => ({height, width}));
+        setContentLayout(() => event.nativeEvent.layout);
     };
 
     return render({

@@ -2,7 +2,10 @@ import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {RenderProps} from './DividerBase';
 
-export type ContainerProps = Pick<RenderProps, 'layout' | 'size' | 'width' | 'height'>;
+export type ContainerProps = Pick<
+    RenderProps,
+    'layout' | 'size' | 'width' | 'height'
+>;
 
 export const Container = styled(View)<ContainerProps>`
     align-items: flex-start;
@@ -36,10 +39,14 @@ export const Container = styled(View)<ContainerProps>`
             medium:
                 layout === 'horizontal'
                     ? css`
-                          padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
+                          padding-left: ${theme.adaptSize(
+                              theme.spacing.medium,
+                          )}px;
                       `
                     : css`
-                          padding-top: ${theme.adaptSize(theme.spacing.medium)}px;
+                          padding-top: ${theme.adaptSize(
+                              theme.spacing.medium,
+                          )}px;
                       `,
             small:
                 layout === 'horizontal'
@@ -75,7 +82,12 @@ export const Subheader = styled.Text`
         font-size: ${theme.adaptFontSize(theme.typography.title.small.size)}px;
         font-style: ${theme.typography.title.small.style};
         font-weight: ${theme.typography.title.small.weight};
-        letter-spacing: ${theme.adaptSize(theme.typography.title.small.letterSpacing)}px;
-        line-height: ${theme.adaptSize(theme.typography.title.small.lineHeight)}px;
+        letter-spacing: ${theme.adaptSize(
+            theme.typography.title.small.letterSpacing,
+        )}px;
+
+        line-height: ${theme.adaptSize(
+            theme.typography.title.small.lineHeight,
+        )}px;
     `}
 `;

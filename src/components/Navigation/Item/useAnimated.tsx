@@ -26,18 +26,26 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         inputRange: [0, 1],
         outputRange: [
             theme.adaptSize(24),
-            theme.adaptSize(24 + (theme.spacing.large - theme.spacing.extraSmall) * 2),
+            theme.adaptSize(
+                24 + (theme.spacing.large - theme.spacing.extraSmall) * 2,
+            ),
         ],
     });
 
     const labelColor = stateChangeAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [theme.palette.surface.onSurfaceVariant, theme.palette.surface.onSurface],
+        outputRange: [
+            theme.palette.surface.onSurfaceVariant,
+            theme.palette.surface.onSurface,
+        ],
     });
 
     const labelHeight = labelHeightAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, theme.adaptSize(theme.typography.label.medium.lineHeight)],
+        outputRange: [
+            0,
+            theme.adaptSize(theme.typography.label.medium.lineHeight),
+        ],
     });
 
     const processAnimatedTiming = useCallback(
@@ -60,7 +68,12 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
         processAnimatedTiming(stateChangeAnimated, toValue);
         processAnimatedTiming(labelHeightAnimated, toValue);
-    }, [active, labelHeightAnimated, processAnimatedTiming, stateChangeAnimated]);
+    }, [
+        active,
+        labelHeightAnimated,
+        processAnimatedTiming,
+        stateChangeAnimated,
+    ]);
 
     useEffect(() => {
         processAnimatedTiming(labelHeightAnimated, block ? 1 : 0);

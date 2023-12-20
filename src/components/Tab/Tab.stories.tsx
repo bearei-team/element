@@ -26,6 +26,22 @@ export const TabHorizontal: StoryObj<TabProps> = {
                 labelText: 'TabD',
                 content: 'D',
             },
+            {
+                labelText: 'TabA',
+                content: 'A',
+            },
+            {
+                labelText: 'TabBcc',
+                content: 'B',
+            },
+            {
+                labelText: 'TabC',
+                content: 'C',
+            },
+            {
+                labelText: 'TabD',
+                content: 'D',
+            },
         ],
     },
 };

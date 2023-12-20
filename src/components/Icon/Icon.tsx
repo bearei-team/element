@@ -11,7 +11,9 @@ export type IconName = keyof (typeof filled)['image'];
 export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
 
 export interface IconProps
-    extends Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps> {
+    extends Partial<
+        Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps
+    > {
     category?: IconCategory;
     height?: number;
     name?: IconName;
@@ -23,7 +25,9 @@ export interface IconProps
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {id, renderStyle, children, style, ...containerProps} = renderProps;
+        const {id, renderStyle, children, style, ...containerProps} =
+            renderProps;
+
         const {height, width, ...containerStyle} = renderStyle;
 
         return (
@@ -32,7 +36,10 @@ const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => {
                 accessibilityRole="image"
                 height={height}
                 ref={ref}
-                style={{...(typeof style === 'object' && style), ...containerStyle}}
+                style={{
+                    ...(typeof style === 'object' && style),
+                    ...containerStyle,
+                }}
                 testID={`icon--${id}`}
                 width={width}>
                 {children}

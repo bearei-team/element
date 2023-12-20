@@ -11,10 +11,15 @@ export interface ProcessAnimatedTimingOptions {
     finished?: () => void;
 }
 
-export type ProcessAnimatedOptions = Pick<ProcessAnimatedTimingOptions, 'finished'>;
+export type ProcessAnimatedOptions = Pick<
+    ProcessAnimatedTimingOptions,
+    'finished'
+>;
 
 export interface UseAnimatedOptions
-    extends Required<Pick<RenderProps, 'type' | 'error' | 'state' | 'disabled'>> {
+    extends Required<
+        Pick<RenderProps, 'type' | 'error' | 'state' | 'disabled'>
+    > {
     filled: boolean;
     labelTextWidth: number;
     leadingIconShow: boolean;
@@ -47,12 +52,23 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const [supportingTextColorAnimated] = useAnimatedValue(1);
     const [supportingTextColorOpacity] = useAnimatedValue(0);
     const theme = useTheme();
-    const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
-    const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
+    const disabledBackgroundColor = theme.color.rgba(
+        theme.palette.surface.onSurface,
+        0.12,
+    );
+
+    const disabledColor = theme.color.rgba(
+        theme.palette.surface.onSurface,
+        0.38,
+    );
+
     const backgroundColorConfig = {
         filled: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.surface.surfaceContainerHighest],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.surface.surfaceContainerHighest,
+            ],
         },
         outlined: {
             inputRange: [0, 1],
@@ -182,11 +198,18 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         outputRange: [theme.adaptSize(1), theme.adaptSize(2)],
     });
 
-    const backgroundColor = backgroundColorAnimated.interpolate(backgroundColorConfig[type]);
+    const backgroundColor = backgroundColorAnimated.interpolate(
+        backgroundColorConfig[type],
+    );
 
     const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, processAnimatedTimingOptions: ProcessAnimatedTimingOptions) => {
-            const {finished: animatedFinished, toValue} = processAnimatedTimingOptions;
+        (
+            animation: Animated.Value,
+            processAnimatedTimingOptions: ProcessAnimatedTimingOptions,
+        ) => {
+            const {finished: animatedFinished, toValue} =
+                processAnimatedTimingOptions;
+
             const animatedTiming = UTIL.animatedTiming(theme);
 
             requestAnimationFrame(() =>
@@ -203,9 +226,16 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const processBorderAnimated = useCallback(
         (toValue: number) =>
             type === 'filled'
-                ? processAnimatedTiming(activeIndicatorHeightAnimated, {toValue})
+                ? processAnimatedTiming(activeIndicatorHeightAnimated, {
+                      toValue,
+                  })
                 : processAnimatedTiming(borderAnimated, {toValue}),
-        [activeIndicatorHeightAnimated, borderAnimated, processAnimatedTiming, type],
+        [
+            activeIndicatorHeightAnimated,
+            borderAnimated,
+            processAnimatedTiming,
+            type,
+        ],
     );
 
     const processStateChangeAnimated = useCallback(
@@ -213,7 +243,9 @@ export const useAnimated = (options: UseAnimatedOptions) => {
             const {finished: animatedFinished} = processStateAnimatedOptions;
             const processErrorAnimated = () => {
                 processAnimatedTiming(colorAnimated, {toValue: 3});
-                processAnimatedTiming(supportingTextColorAnimated, {toValue: 2});
+                processAnimatedTiming(supportingTextColorAnimated, {
+                    toValue: 2,
+                });
                 processBorderAnimated(1);
             };
 
@@ -224,21 +256,29 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     processAnimatedTiming(backgroundColorAnimated, {toValue});
                     processAnimatedTiming(colorAnimated, {toValue});
                     processAnimatedTiming(inputColorAnimated, {toValue});
-                    processAnimatedTiming(supportingTextColorAnimated, {toValue});
+                    processAnimatedTiming(supportingTextColorAnimated, {
+                        toValue,
+                    });
                     processBorderAnimated(toValue);
                 },
                 enabled: () => {
                     processAnimatedTiming(inputColorAnimated, {toValue: 1});
-                    processAnimatedTiming(inputHeightAnimated, {toValue: filledValue});
+                    processAnimatedTiming(inputHeightAnimated, {
+                        toValue: filledValue,
+                    });
                     processAnimatedTiming(labeAnimated, {toValue: filledValue});
-                    processAnimatedTiming(labelPlaceholderAnimated, {toValue: filledValue});
+                    processAnimatedTiming(labelPlaceholderAnimated, {
+                        toValue: filledValue,
+                    });
 
                     if (error) {
                         return processErrorAnimated();
                     }
 
                     processAnimatedTiming(colorAnimated, {toValue: 1});
-                    processAnimatedTiming(supportingTextColorAnimated, {toValue: 1});
+                    processAnimatedTiming(supportingTextColorAnimated, {
+                        toValue: 1,
+                    });
                     processBorderAnimated(0);
                 },
                 error: () => {
@@ -246,8 +286,13 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 },
                 focused: () => {
                     processAnimatedTiming(inputHeightAnimated, {toValue: 1});
-                    processAnimatedTiming(labeAnimated, {toValue: 1, finished: animatedFinished});
-                    processAnimatedTiming(labelPlaceholderAnimated, {toValue: 1});
+                    processAnimatedTiming(labeAnimated, {
+                        toValue: 1,
+                        finished: animatedFinished,
+                    });
+                    processAnimatedTiming(labelPlaceholderAnimated, {
+                        toValue: 1,
+                    });
 
                     if (error) {
                         return processErrorAnimated();
@@ -274,23 +319,34 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     const processAnimated = useCallback(
-        (nextState: State, processAnimatedOptions: ProcessAnimatedOptions = {}) => {
+        (
+            nextState: State,
+            processAnimatedOptions: ProcessAnimatedOptions = {},
+        ) => {
             processStateChangeAnimated(processAnimatedOptions)[nextState]?.();
 
             nextState !== 'disabled' &&
                 processAnimatedTiming(backgroundColorAnimated, {toValue: 1});
         },
-        [backgroundColorAnimated, processAnimatedTiming, processStateChangeAnimated],
+        [
+            backgroundColorAnimated,
+            processAnimatedTiming,
+            processStateChangeAnimated,
+        ],
     );
 
     useEffect(() => {
-        processAnimatedTiming(supportingTextColorOpacity, {toValue: supportingTextShow ? 1 : 0});
+        processAnimatedTiming(supportingTextColorOpacity, {
+            toValue: supportingTextShow ? 1 : 0,
+        });
     }, [processAnimatedTiming, supportingTextShow, supportingTextColorOpacity]);
 
     useEffect(() => {
         const focused = ['focused', 'pressIn', 'longPressIn'].includes(state);
 
-        processAnimated(focused ? 'focused' : state, {finished: () => finished(focused)});
+        processAnimated(focused ? 'focused' : state, {
+            finished: () => finished(focused),
+        });
     }, [finished, processAnimated, state]);
 
     useEffect(() => {

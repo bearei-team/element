@@ -11,9 +11,9 @@ export interface NavigationBaseProps extends NavigationProps {
 
 export interface RenderItemOptions {
     active?: boolean;
-    onActive: (key: string) => void;
-    data: ListDataSource[];
     block: boolean;
+    data: ListDataSource[];
+    onActive: (key: string) => void;
 }
 
 export interface Data extends ListDataSource {
@@ -24,12 +24,25 @@ const renderItems = (options: RenderItemOptions) => {
     const {onActive, block, data} = options;
 
     return data.map(({key, ...props}) => (
-        <Item {...props} key={key} block={block} onPress={() => onActive(key!)} />
+        <Item
+            {...props}
+            block={block}
+            key={key}
+            onPress={() => onActive(key!)}
+        />
     ));
 };
 
 export const NavigationBase: FC<NavigationBaseProps> = props => {
-    const {block = false, data: dataSources, fab, onChange, render, ...renderProps} = props;
+    const {
+        block = false,
+        data: dataSources,
+        fab,
+        onChange,
+        render,
+        ...renderProps
+    } = props;
+
     const [data, setData] = useImmer<Data[]>([]);
     const id = useId();
     const processFAB = () => {
@@ -64,8 +77,8 @@ export const NavigationBase: FC<NavigationBaseProps> = props => {
 
     return render({
         ...renderProps,
-        id,
-        fab: processFAB(),
         children: renderItems({data, block, onActive: handleActive}),
+        fab: processFAB(),
+        id,
     });
 };

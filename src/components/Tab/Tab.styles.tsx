@@ -2,16 +2,15 @@ import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 
-export interface HeaderInnerProps {
+export interface ActiveIndicatorProps {
+    offsetPosition: 'left' | 'right';
+    paddingHorizontal: number;
     width: number;
 }
 
-export interface ActiveIndicatorProps extends HeaderInnerProps {
-    offsetPosition: 'left' | 'right';
-    paddingHorizontal: number;
+export interface ContentItemProps {
+    width: number;
 }
-
-export interface ContentItemProps extends HeaderInnerProps {}
 
 export const Container = styled(View)`
     align-items: center;
@@ -20,18 +19,17 @@ export const Container = styled(View)`
     flex: 1;
 `;
 
-export const Header = styled.ScrollView``;
-export const HeaderInner = styled.View<HeaderInnerProps>`
+export const HeaderScrollView = styled.ScrollView`
+    width: 100%;
+`;
+
+export const Header = styled.View`
     display: flex;
     flex-direction: row;
     justify-content: center;
-
-    ${({width}) => css`
-        width: ${width}px;
-    `};
 `;
 
-export const HeaderContent = styled.View`
+export const HeaderInner = styled.View`
     display: flex;
     flex-direction: row;
 `;
@@ -42,9 +40,9 @@ export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
     flex-direction: row;
     position: absolute;
 
-    ${({width, theme, paddingHorizontal}) => css`
-        width: ${width}px;
+    ${({width, theme, paddingHorizontal = 0}) => css`
         padding: ${theme.adaptSize(theme.spacing.none)}px ${paddingHorizontal}px;
+        width: ${width}px;
     `};
 
     ${({offsetPosition}) =>
@@ -80,7 +78,7 @@ export const ContentInner = styled.View`
 `;
 
 export const ContentItem = styled.View<ContentItemProps>`
-    ${({width}) => css`
+    ${({width = 0}) => css`
         width: ${width}px;
     `};
 `;

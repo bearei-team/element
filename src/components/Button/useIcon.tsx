@@ -37,6 +37,8 @@ export const useIcon = (options: UseIconOptions) => {
 
     return cloneElement(defaultIcon, {
         state,
-        fill: disabled ? theme.color.rgba(theme.palette.surface.onSurface, 0.38) : fill,
+        fill: disabled
+            ? theme.color.rgba(theme.palette.surface.onSurface, 0.38)
+            : fill,
     });
 };

@@ -18,18 +18,33 @@ export interface DisabledProps {
 }
 
 export const Shape = styled(View)<ShapeProps>`
-    overflow: hidden;
-
     ${({shape = 'none', theme}) => css`
-        border-bottom-left-radius: ${theme.adaptSize(theme.shape[shape].bottomLeft)}px;
-        border-bottom-right-radius: ${theme.adaptSize(theme.shape[shape].bottomLeft)}px;
-        border-top-left-radius: ${theme.adaptSize(theme.shape[shape].topLeft)}px;
-        border-top-right-radius: ${theme.adaptSize(theme.shape[shape].topRight)}px;
+        border-bottom-left-radius: ${theme.adaptSize(
+            theme.shape[shape].bottomLeft,
+        )}px;
+
+        border-bottom-right-radius: ${theme.adaptSize(
+            theme.shape[shape].bottomLeft,
+        )}px;
+
+        border-top-left-radius: ${theme.adaptSize(
+            theme.shape[shape].topLeft,
+        )}px;
+
+        border-top-right-radius: ${theme.adaptSize(
+            theme.shape[shape].topRight,
+        )}px;
     `}
 
     ${({border = {}, theme}) => {
-        const {color = theme.palette.primary, style = 'solid', width = theme.adaptSize(1)} = border;
-        const isAnimatedInterpolation = typeof color !== 'string' || typeof width !== 'number';
+        const {
+            color = theme.palette.primary,
+            style = 'solid',
+            width = theme.adaptSize(1),
+        } = border;
+
+        const isAnimatedInterpolation =
+            typeof color !== 'string' || typeof width !== 'number';
 
         return (
             border &&

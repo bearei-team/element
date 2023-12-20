@@ -12,7 +12,13 @@ export default {
 
 export const FormA: FC<FormProps> = () => {
     const [form] = Form.useForm<{a: string; b: string}>();
-    const renderControl = ({value, onValueChange, errorMessage, id, labelText}: ControlProps) => (
+    const renderControl = ({
+        value,
+        onValueChange,
+        errorMessage,
+        id,
+        labelText,
+    }: ControlProps) => (
         <TextField
             key={id}
             value={value as string}
@@ -40,7 +46,11 @@ export const FormA: FC<FormProps> = () => {
                 labelText="name"
             />
 
-            <Form.Item name="age" renderControl={renderControl} labelText="age" />
+            <Form.Item
+                name="age"
+                renderControl={renderControl}
+                labelText="age"
+            />
 
             <Button labelText="submit" onPress={handleSubmit} />
         </Form>

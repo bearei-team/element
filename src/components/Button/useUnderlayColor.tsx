@@ -1,7 +1,9 @@
 import {useTheme} from 'styled-components/native';
 import {RenderProps} from './ButtonBase';
 
-export type UseUnderlayColorOptions = Required<Pick<RenderProps, 'type' | 'fabType' | 'category'>>;
+export type UseUnderlayColorOptions = Required<
+    Pick<RenderProps, 'type' | 'fabType' | 'category'>
+>;
 
 export const useUnderlayColor = (options: UseUnderlayColorOptions) => {
     const {type, category, fabType} = options;

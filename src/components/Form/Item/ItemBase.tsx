@@ -11,9 +11,20 @@ export interface ItemBaseProps extends ItemProps {
 }
 
 export const ItemBase: FC<ItemBaseProps> = props => {
-    const {labelText, name, render, renderControl, rules, validateFirst, ...renderProps} = props;
+    const {
+        labelText,
+        name,
+        render,
+        renderControl,
+        rules,
+        validateFirst,
+        ...renderProps
+    } = props;
+
     const [, forceUpdate] = useImmer({});
-    const {getFieldError, getFieldValue, setFieldValue, signInField} = useFormContext();
+    const {getFieldError, getFieldValue, setFieldValue, signInField} =
+        useFormContext();
+
     const errors = getFieldError(name)?.errors;
     const errorMessage = errors?.[0].message;
     const id = useId();
@@ -51,7 +62,16 @@ export const ItemBase: FC<ItemBaseProps> = props => {
                 onValueChange: onValueChange,
                 value: name ? getFieldValue(name) : name,
             }),
-        [errorMessage, errors, getFieldValue, id, labelText, name, onValueChange, renderControl],
+        [
+            errorMessage,
+            errors,
+            getFieldValue,
+            id,
+            labelText,
+            name,
+            onValueChange,
+            renderControl,
+        ],
     );
 
     useEffect(() => {

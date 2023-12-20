@@ -38,7 +38,9 @@ export const Content = styled(Shape)<ContentProps>`
             `,
             text: css`
                 padding: ${theme.adaptSize(theme.spacing.small + 2)}px
-                    ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px;
+                    ${theme.adaptSize(
+                        theme.spacing.medium - theme.spacing.extraSmall,
+                    )}px;
             `,
             tonal: css`
                 padding: ${theme.adaptSize(theme.spacing.small + 2)}px
@@ -114,10 +116,14 @@ export const Content = styled(Shape)<ContentProps>`
         category === 'fab' &&
         labelTextShow &&
         css`
-            gap: ${theme.adaptSize(theme.spacing.small + theme.spacing.extraSmall)}px;
+            gap: ${theme.adaptSize(
+                theme.spacing.small + theme.spacing.extraSmall,
+            )}px;
             height: ${theme.adaptSize(theme.spacing.small * 7)}px;
             padding: ${theme.adaptSize(theme.spacing.medium)}px
-                ${theme.adaptSize(theme.spacing.medium + theme.spacing.extraSmall)}px
+                ${theme.adaptSize(
+                    theme.spacing.medium + theme.spacing.extraSmall,
+                )}px
                 ${theme.adaptSize(theme.spacing.medium)}px
                 ${theme.adaptSize(theme.spacing.medium)}px;
         `}
@@ -130,8 +136,13 @@ export const LabelText = styled.Text<LabelTextProps>`
         font-size: ${theme.adaptFontSize(theme.typography.label.large.size)}px;
         font-style: ${theme.typography.label.large.style};
         font-weight: ${theme.typography.label.large.weight};
-        letter-spacing: ${theme.adaptSize(theme.typography.label.large.letterSpacing)}px;
-        line-height: ${theme.adaptSize(theme.typography.label.large.lineHeight)}px;
+        letter-spacing: ${theme.adaptSize(
+            theme.typography.label.large.letterSpacing,
+        )}px;
+
+        line-height: ${theme.adaptSize(
+            theme.typography.label.large.lineHeight,
+        )}px;
     `}
 `;
 
