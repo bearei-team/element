@@ -36,9 +36,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
                 {...containerProps}
                 ref={ref}
                 underlayColor={underlayColor}>
-                <Container
-                    testID={`tabItem--${id}`}
-                    onLayout={e => console.info(e.nativeEvent.layout)}>
+                <Container testID={`tabItem--${id}`}>
                     <AnimatedLabelText
                         onLayout={onLabelTextLayout}
                         style={{color}}

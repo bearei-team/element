@@ -35,7 +35,12 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const theme = useTheme();
     const headerHeight = headerAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, itemLayoutHeight === 0 ? 48 : 0],
+        outputRange: [
+            0,
+            !itemLayoutHeight
+                ? theme.adaptSize(theme.spacing.small * 6)
+                : itemLayoutHeight,
+        ],
     });
 
     const activeIndicatorLeft = activeAnimated.interpolate({
@@ -58,7 +63,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         inputRange: [0, 1],
         outputRange: [
             draftActiveIndicatorWidth,
-            draftActiveIndicatorWidth * 1.5,
+            draftActiveIndicatorWidth * 1.2,
         ],
     });
 
@@ -69,6 +74,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ) => {
             const {toValue, finished, duration, easing} =
                 processAnimatedTimingOptions;
+
             const animatedTiming = UTIL.animatedTiming(theme);
 
             requestAnimationFrame(() =>
@@ -84,8 +90,6 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
     useEffect(() => {
         const index = data.findIndex(({active}) => active);
-
-        console.info(index);
 
         processAnimatedTiming(activeIndicatorWidthAnimated, {
             duration: 'short3',

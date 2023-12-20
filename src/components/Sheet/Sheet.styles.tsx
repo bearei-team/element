@@ -7,8 +7,7 @@ export type InnerProps = Pick<RenderProps, 'position'>;
 export type HeaderProps = Pick<RenderProps, 'back'>;
 
 export const Container = styled(View)`
-    height: 100%;
-    width: 100%;
+    flex: 1;
     position: relative;
 `;
 

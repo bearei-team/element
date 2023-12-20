@@ -118,14 +118,18 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     });
 
     const processHeaderLayout = (event: LayoutChangeEvent) => {
+        const nativeEventLayout = event.nativeEvent.layout;
+
         setState(draft => {
-            draft.headerLayout = event.nativeEvent.layout;
+            draft.headerLayout = nativeEventLayout;
         });
     };
 
     const processLabelTextLayout = (event: LayoutChangeEvent) => {
+        const nativeEventLayout = event.nativeEvent.layout;
+
         setState(draft => {
-            draft.labelTextLayout = event.nativeEvent.layout;
+            draft.labelTextLayout = nativeEventLayout;
         });
     };
 

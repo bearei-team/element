@@ -128,8 +128,10 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
 
     const processLayout = useCallback(
         (event: LayoutChangeEvent) => {
+            const nativeEventLayout = event.nativeEvent.layout;
+
             setState(draft => {
-                draft.touchableRippleLayout = event.nativeEvent.layout;
+                draft.touchableRippleLayout = layout;
             });
 
             onLayout?.(event);

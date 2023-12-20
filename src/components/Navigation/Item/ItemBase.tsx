@@ -38,8 +38,8 @@ export interface ItemBaseProps extends ItemProps {
 }
 
 const initialState = {
-    layout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
-    headerLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    layout: {} as LayoutRectangle,
+    headerLayout: {} as LayoutRectangle,
     pressPosition: 0.5,
 };
 
@@ -93,20 +93,20 @@ export const ItemBase: FC<ItemBaseProps> = props => {
     });
 
     const processLayout = (event: LayoutChangeEvent) => {
-        const {height, width} = event.nativeEvent.layout;
+        const nativeEventLayout = event.nativeEvent.layout;
 
         setState(draft => {
-            draft.layout = {height, width};
+            draft.layout = nativeEventLayout;
         });
 
         onLayout?.(event);
     };
 
     const processHeaderLayout = (event: LayoutChangeEvent) => {
-        const {height, width} = event.nativeEvent.layout;
+        const nativeEventLayout = event.nativeEvent.layout;
 
         setState(draft => {
-            draft.headerLayout = {height, width};
+            draft.headerLayout = nativeEventLayout;
         });
     };
 

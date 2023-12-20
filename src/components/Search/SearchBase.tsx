@@ -99,8 +99,10 @@ export const SearchBase: FC<SearchBaseProps> = props => {
     );
 
     const processLayout = (event: LayoutChangeEvent) => {
+        const nativeEventLayout = event.nativeEvent.layout;
+
         setState(draft => {
-            draft.layout = event.nativeEvent.layout;
+            draft.layout = nativeEventLayout;
         });
     };
 

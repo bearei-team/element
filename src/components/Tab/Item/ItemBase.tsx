@@ -1,5 +1,11 @@
 import {FC, useId} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    TextStyle,
+    ViewStyle,
+} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {useHandleEvent} from '../../../hooks/useHandleEvent';
@@ -22,11 +28,19 @@ export interface ItemBaseProps extends ItemProps {
 }
 
 const initialState = {
-    layout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+    layout: {} as LayoutRectangle,
 };
 
 export const ItemBase: FC<ItemBaseProps> = props => {
-    const {render, onLayout, onLabelTextLayout, indexKey, active = false, ...renderProps} = props;
+    const {
+        render,
+        onLayout,
+        onLabelTextLayout,
+        indexKey,
+        active = false,
+        ...renderProps
+    } = props;
+
     const [{layout}, setState] = useImmer(initialState);
     const id = useId();
     const theme = useTheme();
@@ -37,12 +51,10 @@ export const ItemBase: FC<ItemBaseProps> = props => {
     });
 
     const processLayout = (event: LayoutChangeEvent) => {
-        const {height, width} = event.nativeEvent.layout;
-
-        console.info(event.nativeEvent.layout, 'item');
+        const nativeEventLayout = event.nativeEvent.layout;
 
         setState(draft => {
-            draft.layout = {height, width};
+            draft.layout = nativeEventLayout;
         });
 
         onLayout?.(event);

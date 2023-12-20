@@ -78,10 +78,10 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
     });
 
     const processLayout = (event: LayoutChangeEvent) => {
-        const {height, width} = event.nativeEvent.layout;
+        const nativeEventLayout = event.nativeEvent.layout;
 
         onLayout?.(event);
-        setLayout(() => ({height, width}));
+        setLayout(() => nativeEventLayout);
     };
 
     const processRippleOut = useCallback(() => {

@@ -26,12 +26,7 @@ export const HeaderScrollView = styled.ScrollView`
 export const Header = styled.View`
     display: flex;
     flex-direction: row;
-    justify-content: center;
-`;
-
-export const HeaderInner = styled.View`
-    display: flex;
-    flex-direction: row;
+    position: relative;
 `;
 
 export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
@@ -67,12 +62,15 @@ export const Content = styled.View`
     overflow: hidden;
     position: relative;
     width: 100%;
+
+    ${({theme}) => css`
+        min-height: ${theme.adaptSize(theme.spacing.small * 9)}px;
+    `};
 `;
 
 export const ContentInner = styled.View`
     display: flex;
     flex-direction: row;
-    overflow: hidden;
     position: absolute;
     top: 0;
 `;

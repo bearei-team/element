@@ -1,5 +1,10 @@
 import {FC, ReactNode, useCallback, useEffect, useId, useMemo} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, ViewStyle} from 'react-native';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    ViewStyle,
+} from 'react-native';
 import {useImmer} from 'use-immer';
 import {AnimatedInterpolation} from '../Common/interface';
 import {Item} from './Item/Item';
@@ -8,17 +13,17 @@ import {ContentItem} from './Tab.styles';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends TabProps {
-    items: ReactNode;
     activeIndicatorOffsetPosition: 'left' | 'right';
+    items: ReactNode;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         activeIndicatorLeft: AnimatedInterpolation;
         activeIndicatorPaddingHorizontal: number;
         activeIndicatorWidth: AnimatedInterpolation;
         contentInnerLeft: AnimatedInterpolation;
+        headerHeight: AnimatedInterpolation;
         height: number;
         itemWidth: number;
         width: number;
-        headerHeight: AnimatedInterpolation;
     };
 }
 
@@ -36,14 +41,14 @@ export interface RenderItemOptions {
 
 export interface Data extends TabDataSource {
     active: boolean;
-    labelTextLayout: Pick<LayoutRectangle, 'height' | 'width'>;
+    labelTextLayout: LayoutRectangle;
 }
 
 const initialState = {
-    layout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
-    itemLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
-    data: [] as Data[],
     activeIndicatorOffsetPosition: 'left' as 'left' | 'right',
+    data: [] as Data[],
+    itemLayout: {} as LayoutRectangle,
+    layout: {} as LayoutRectangle,
 };
 
 const renderItem = (options: RenderItemOptions) => {
@@ -65,44 +70,47 @@ export const TabBase: FC<TabBaseProps> = props => {
     const {
         data: dataSources,
         defaultActiveKey,
+        headerVisible = true,
         onChange,
         onLayout,
         render,
-        headerVisible = true,
         ...renderProps
     } = props;
 
     const id = useId();
-    const [{activeIndicatorOffsetPosition, data, itemLayout, layout}, setState] =
-        useImmer(initialState);
+    const [
+        {activeIndicatorOffsetPosition, data, itemLayout, layout},
+        setState,
+    ] = useImmer(initialState);
 
-    const {activeIndicatorLeft, activeIndicatorWidth, contentInnerLeft, headerHeight} = useAnimated(
-        {
-            data,
-            itemLayout,
-            layout,
-            headerVisible,
-        },
-    );
+    const {
+        activeIndicatorLeft,
+        activeIndicatorWidth,
+        contentInnerLeft,
+        headerHeight,
+    } = useAnimated({
+        data,
+        headerVisible,
+        itemLayout,
+        layout,
+    });
 
     const processLayout = (event: LayoutChangeEvent) => {
-        const {height, width} = event.nativeEvent.layout;
+        const nativeEventLayout = event.nativeEvent.layout;
 
         onLayout?.(event);
         setState(draft => {
-            draft.layout = {height, width};
+            draft.layout = nativeEventLayout;
         });
     };
 
     const processItemLayout = useCallback(
         (event: LayoutChangeEvent) => {
-            const {height, width} = event.nativeEvent.layout;
-
-            console.info(event.nativeEvent.layout);
+            const nativeEventLayout = event.nativeEvent.layout;
 
             setState(draft => {
                 if (typeof draft.itemLayout.width !== 'number') {
-                    draft.itemLayout = {height, width};
+                    draft.itemLayout = nativeEventLayout;
                 }
             });
         },
@@ -111,12 +119,12 @@ export const TabBase: FC<TabBaseProps> = props => {
 
     const processItemLabelTextLayout = useCallback(
         (event: LayoutChangeEvent, key: string) => {
-            const {height, width} = event.nativeEvent.layout;
+            const nativeEventLayout = event.nativeEvent.layout;
 
             setState(draft => {
                 const dataItem = draft.data.find(datum => datum.key === key);
 
-                dataItem && (dataItem.labelTextLayout = {height, width});
+                dataItem && (dataItem.labelTextLayout = nativeEventLayout);
             });
         },
         [setState],
@@ -125,12 +133,20 @@ export const TabBase: FC<TabBaseProps> = props => {
     const handleActive = useCallback(
         (key: string) => {
             setState(draft => {
-                const draftActiveItemIndex = draft.data.findIndex(({active}) => active);
-                const nextActiveItemIndex = draft.data.findIndex(datum => datum.key === key);
+                const draftActiveItemIndex = draft.data.findIndex(
+                    ({active}) => active,
+                );
+
+                const nextActiveItemIndex = draft.data.findIndex(
+                    datum => datum.key === key,
+                );
+
+                draft.activeIndicatorOffsetPosition =
+                    nextActiveItemIndex > draftActiveItemIndex
+                        ? 'right'
+                        : 'left';
 
                 draft.data.forEach(datum => (datum.active = datum.key === key));
-                draft.activeIndicatorOffsetPosition =
-                    nextActiveItemIndex > draftActiveItemIndex ? 'right' : 'left';
             });
 
             onChange?.(key);
@@ -166,9 +182,11 @@ export const TabBase: FC<TabBaseProps> = props => {
             setState(draft => {
                 draft.data = dataSources.map((datum, index) => ({
                     ...datum,
-                    active: defaultActiveKey ? datum.key === defaultActiveKey : index === 0,
+                    active: defaultActiveKey
+                        ? datum.key === defaultActiveKey
+                        : index === 0,
                     key: datum.key ?? `${index}`,
-                    labelTextLayout: {} as Pick<LayoutRectangle, 'height' | 'width'>,
+                    labelTextLayout: {} as LayoutRectangle,
                 }));
             });
     }, [dataSources, defaultActiveKey, setState]);
@@ -191,7 +209,8 @@ export const TabBase: FC<TabBaseProps> = props => {
             width: layout.width,
             activeIndicatorPaddingHorizontal:
                 ((itemLayout.width ?? 0) -
-                    (data.find(({active}) => active)?.labelTextLayout.width ?? 0)) /
+                    (data.find(({active}) => active)?.labelTextLayout.width ??
+                        0)) /
                 2,
         },
     });

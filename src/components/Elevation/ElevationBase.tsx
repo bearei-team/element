@@ -34,7 +34,9 @@ export const ElevationBase: FC<ElevationBaseProps> = props => {
     const id = useId();
 
     const processLayout = (event: LayoutChangeEvent) => {
-        setContentLayout(() => event.nativeEvent.layout);
+        const nativeEventLayout = event.nativeEvent.layout;
+
+        setContentLayout(() => layout);
     };
 
     return render({
