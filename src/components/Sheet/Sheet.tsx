@@ -2,12 +2,10 @@ import React, {FC, RefAttributes, forwardRef, memo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
-    Modal,
     ModalProps,
     View,
     ViewProps,
 } from 'react-native';
-import {emitter} from '../../context/ThemeProvider';
 import {ShapeProps} from '../Common/Common.styles';
 import {Divider} from '../Divider/Divider';
 import {
@@ -19,6 +17,7 @@ import {
     Header,
     HeadlineText,
     Inner,
+    Modal,
     PrimaryButton,
     SecondaryButton,
 } from './Sheet.styles';
@@ -79,7 +78,8 @@ const ForwardRefSheet = forwardRef<View, SheetProps>((props, ref) => {
         } = renderProps;
 
         const {backgroundColor, innerTranslateX} = renderStyle;
-        const sheet = (
+
+        return (
             <>
                 {visible && (
                     <Modal onLayout={onShow} testID={`sheet__modal--${id}`}>
@@ -136,10 +136,6 @@ const ForwardRefSheet = forwardRef<View, SheetProps>((props, ref) => {
                 )}
             </>
         );
-
-        emitter.emit('sheet', sheet);
-
-        return <></>;
     };
 
     return <SheetBase {...props} render={render} />;

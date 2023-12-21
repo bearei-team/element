@@ -1,4 +1,4 @@
-import {useCallback, useEffect} from 'react';
+import {useCallback, useEffect, useMemo} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
@@ -22,23 +22,31 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const [containerAnimated] = useAnimatedValue(0);
     const [innerAnimated] = useAnimatedValue(0);
     const theme = useTheme();
-    const backgroundColor = containerAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [
-            theme.color.rgba(theme.palette.scrim.scrim, 0),
-            theme.color.rgba(theme.palette.scrim.scrim, 0.32),
-        ],
-    });
+    const backgroundColor = useMemo(
+        () =>
+            containerAnimated.interpolate({
+                inputRange: [0, 1],
+                outputRange: [
+                    theme.color.rgba(theme.palette.scrim.scrim, 0),
+                    theme.color.rgba(theme.palette.scrim.scrim, 0.32),
+                ],
+            }),
+        [containerAnimated, theme.color, theme.palette.scrim.scrim],
+    );
 
-    const innerTranslateX = innerAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [
-            position === 'horizontalEnd'
-                ? theme.adaptSize(theme.spacing.small * 40)
-                : -theme.adaptSize(theme.spacing.small * 40),
-            theme.adaptSize(theme.spacing.none),
-        ],
-    });
+    const innerTranslateX = useMemo(
+        () =>
+            innerAnimated.interpolate({
+                inputRange: [0, 1],
+                outputRange: [
+                    position === 'horizontalEnd'
+                        ? theme.adaptSize(theme.spacing.small * 40)
+                        : -theme.adaptSize(theme.spacing.small * 40),
+                    theme.adaptSize(theme.spacing.none),
+                ],
+            }),
+        [innerAnimated, position, theme],
+    );
 
     const processAnimatedTiming = useCallback(
         (
