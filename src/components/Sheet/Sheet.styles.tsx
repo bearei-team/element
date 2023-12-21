@@ -6,6 +6,15 @@ import {RenderProps} from './SheetBase';
 export type InnerProps = Pick<RenderProps, 'position'>;
 export type HeaderProps = Pick<RenderProps, 'back'>;
 
+export const Modal = styled.View`
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 2048;
+`;
+
 export const Container = styled(View)`
     flex: 1;
     position: relative;
@@ -17,8 +26,8 @@ export const Inner = styled(Shape)<InnerProps>`
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surfaceContainerLow};
         height: 100%;
-        width: ${theme.adaptSize(theme.spacing.small * 40)}px;
         padding-bottom: ${theme.adaptSize(theme.spacing.large)}px;
+        width: ${theme.adaptSize(theme.spacing.small * 40)}px;
     `}
 
     ${({theme, position = 'horizontalEnd'}) => {
@@ -32,8 +41,8 @@ export const Inner = styled(Shape)<InnerProps>`
                 top: ${theme.adaptSize(theme.spacing.none)}px;
             `,
             verticalEnd: css`
-                left: ${theme.adaptSize(theme.spacing.none)}px;
                 bottom: ${theme.adaptSize(theme.spacing.none)}px;
+                left: ${theme.adaptSize(theme.spacing.none)}px;
             `,
         };
 
@@ -87,14 +96,14 @@ export const HeadlineText = styled.Text`
 `;
 
 export const Icon = styled.View`
-    overflow: hidden;
+    align-items: center;
     display: flex;
     justify-content: center;
-    align-items: center;
+    overflow: hidden;
 
     ${({theme}) => css`
-        width: ${theme.adaptSize(theme.spacing.small * 6)}px;
         height: ${theme.adaptSize(theme.spacing.small * 6)}px;
+        width: ${theme.adaptSize(theme.spacing.small * 6)}px;
     `}
 `;
 
@@ -105,14 +114,12 @@ export const Content = styled.ScrollView`
 `;
 
 export const Button = styled.View``;
-
 export const PrimaryButton = styled(Button)``;
 export const SecondaryButton = styled(Button)``;
-
 export const Footer = styled.View`
+    align-items: center;
     display: flex;
     flex-direction: row;
-    align-items: center;
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.small)}px;

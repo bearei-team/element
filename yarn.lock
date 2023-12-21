@@ -1909,6 +1909,7 @@ __metadata:
     immer: "npm:^10.0.3"
     jest: "npm:^29.2.1"
     metro-react-native-babel-preset: "npm:^0.76.8"
+    mitt: "npm:^3.0.1"
     prettier: "npm:^2.4.1"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
@@ -14754,6 +14755,13 @@ __metadata:
     stream-each: "npm:^1.1.0"
     through2: "npm:^2.0.0"
   checksum: 47afcd689839082ff987f53aed49498f6740ced585215887adf029ecd01c101dae6c2426ea81aef59bed4dbabb21b8247f0dae41f91af30ef0ca862841375420
+  languageName: node
+  linkType: hard
+
+"mitt@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "mitt@npm:3.0.1"
+  checksum: 287c70d8e73ffc25624261a4989c783768aed95ecb60900f051d180cf83e311e3e59865bfd6e9d029cdb149dc20ba2f128a805e9429c5c4ce33b1416c65bbd14
   languageName: node
   linkType: hard
 

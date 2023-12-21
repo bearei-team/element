@@ -131,7 +131,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
             const nativeEventLayout = event.nativeEvent.layout;
 
             setState(draft => {
-                draft.touchableRippleLayout = layout;
+                draft.touchableRippleLayout = nativeEventLayout;
             });
 
             onLayout?.(event);

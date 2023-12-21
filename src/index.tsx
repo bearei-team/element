@@ -10,6 +10,7 @@ export * from './components/Icon/Icon';
 export * from './components/List/List';
 export * from './components/Navigation/Navigation';
 export * from './components/Search/Search';
+export * from './components/Sheet/Sheet';
 export * from './components/Tab/Tab';
 export * from './components/TextField/TextField';
 export * from './components/TouchableRipple/TouchableRipple';

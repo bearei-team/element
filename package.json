@@ -1,6 +1,6 @@
 {
     "name": "@bearei/element",
-    "version": "0.0.17",
+    "version": "0.0.21",
     "main": "lib/commonjs/index.js",
     "react-native": "src/index.tsx",
     "module": "lib/module/index.js",
@@ -42,6 +42,7 @@
         "@material-design-icons/svg": "latest",
         "async-validator": "^4.2.5",
         "immer": "^10.0.3",
+        "mitt": "^3.0.1",
         "react": "^18.2.0",
         "react-native": "^0.72.5",
         "react-native-svg": "^14.0.0",

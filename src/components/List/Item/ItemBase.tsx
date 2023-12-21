@@ -70,7 +70,7 @@ export const ItemBase: FC<ItemBaseProps> = props => {
         const nativeEventLayout = event.nativeEvent.layout;
 
         setState(draft => {
-            draft.touchableRippleLayout = layout;
+            draft.touchableRippleLayout = nativeEventLayout;
         });
 
         onLayout?.(event);

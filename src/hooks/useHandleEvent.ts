@@ -14,7 +14,10 @@ import {UTIL} from '../utils/util';
 export interface ProcessStateOptions {
     callback?: () => void;
     draft?: State;
-    event: GestureResponderEvent | MouseEvent | NativeSyntheticEvent<TargetedEvent>;
+    event:
+        | GestureResponderEvent
+        | MouseEvent
+        | NativeSyntheticEvent<TargetedEvent>;
     eventName:
         | 'blur'
         | 'focus'
@@ -73,12 +76,19 @@ export const useHandleEvent = (options: UseHandleEventOptions) => {
             setState(draft => {
                 const checkUpdate =
                     lockFocusEvent &&
-                    ['hoverIn', 'hoverOut', 'longPressIn', 'press', 'pressIn', 'pressOut'].includes(
-                        eventName,
-                    );
+                    [
+                        'hoverIn',
+                        'hoverOut',
+                        'longPressIn',
+                        'press',
+                        'pressIn',
+                        'pressOut',
+                    ].includes(eventName);
 
                 const updatedState =
-                    checkUpdate && draft === 'focused' && eventName !== 'blur' ? draft : nextState;
+                    checkUpdate && draft === 'focused' && eventName !== 'blur'
+                        ? draft
+                        : nextState;
 
                 onStateChange?.(updatedState, {draft, event, eventName});
 

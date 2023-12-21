@@ -19,11 +19,17 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const theme = useTheme();
     const color = activeAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [theme.palette.surface.onSurface, theme.palette.primary.primary],
+        outputRange: [
+            theme.palette.surface.onSurface,
+            theme.palette.primary.primary,
+        ],
     });
 
     const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, processAnimatedTimingOptions: ProcessAnimatedTimingOptions) => {
+        (
+            animation: Animated.Value,
+            processAnimatedTimingOptions: ProcessAnimatedTimingOptions,
+        ) => {
             const {toValue, finished} = processAnimatedTimingOptions;
             const animatedTiming = UTIL.animatedTiming(theme);
 

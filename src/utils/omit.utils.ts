@@ -1,4 +1,7 @@
-export const omit = <T extends Record<string, unknown>, K extends keyof T>(obj: T, keys: K[]) => {
+export const omit = <T extends Record<string, unknown>, K extends keyof T>(
+    obj: T,
+    keys: K[],
+) => {
     const result = {...obj};
 
     keys.forEach(key => {

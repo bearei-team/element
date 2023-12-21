@@ -2,9 +2,8 @@ import {FC, useCallback, useEffect, useId} from 'react';
 import {Animated, GestureResponderEvent, ViewStyle} from 'react-native';
 import {useImmer} from 'use-immer';
 import {Button} from '../Button/Button';
-import {SheetProps} from './Sheet';
-
 import {Icon} from '../Icon/Icon';
+import {SheetProps} from './Sheet';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends SheetProps {
@@ -17,8 +16,8 @@ export interface SheetBaseProps extends SheetProps {
 }
 
 const initialState = {
-    visible: false,
     modalVisible: false,
+    visible: false,
 };
 
 export const SheetBase: FC<SheetBaseProps> = props => {
@@ -75,22 +74,24 @@ export const SheetBase: FC<SheetBaseProps> = props => {
         });
     }, [setState, sheetVisible]);
 
+    console.info(sheetVisible, 'sheetVisible');
+
     return render({
         ...renderProps,
         backIcon: backIcon ?? (
             <Button
                 category="icon"
                 icon={<Icon type="filled" name="arrowBack" />}
-                type="text"
                 onPress={handleClose}
+                type="text"
             />
         ),
         closeIcon: closeIcon ?? (
             <Button
                 category="icon"
                 icon={<Icon type="filled" name="close" />}
-                type="text"
                 onPress={handleClose}
+                type="text"
             />
         ),
         headlineText,
@@ -111,11 +112,8 @@ export const SheetBase: FC<SheetBaseProps> = props => {
             />
         ),
         onShow: processModalShow,
-        renderStyle: {
-            backgroundColor,
-            innerTranslateX,
-        },
         position,
+        renderStyle: {backgroundColor, innerTranslateX},
         visible: modalVisible,
     });
 };

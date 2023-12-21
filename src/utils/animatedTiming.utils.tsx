@@ -6,9 +6,13 @@ export interface AnimatedTimingOptions extends TransitionOptions {
 }
 
 export const animatedTiming =
-    (theme: Theme) => (animation: Animated.Value, options: AnimatedTimingOptions) => {
+    (theme: Theme) =>
+    (animation: Animated.Value, options: AnimatedTimingOptions) => {
         const {duration, easing, toValue} = options;
-        const {bezier, duration: transitionDuration} = theme.transition({duration, easing});
+        const {bezier, duration: transitionDuration} = theme.transition({
+            duration,
+            easing,
+        });
 
         return Animated.timing(animation, {
             duration: transitionDuration,
@@ -16,6 +20,8 @@ export const animatedTiming =
             toValue,
 
             /**
+             * TODO: Native animation optimization
+             *
              * Currently, many animation features are only supported at runtime in JavaScript.
              * The decision to iterate towards native animation features will be evaluated based
              * on the performance requirements of the actual released products.

@@ -7,6 +7,7 @@ import {
     View,
     ViewProps,
 } from 'react-native';
+import {emitter} from '../../context/ThemeProvider';
 import {ShapeProps} from '../Common/Common.styles';
 import {Divider} from '../Divider/Divider';
 import {
@@ -22,7 +23,6 @@ import {
     SecondaryButton,
 } from './Sheet.styles';
 import {RenderProps, SheetBase} from './SheetBase';
-
 export type SheetType = 'side' | 'bottom';
 
 export interface SheetProps
@@ -53,6 +53,8 @@ export interface SheetProps
 
 /**
  * TODO: "bottom"
+ *
+ * Compatible with macOS, does not use iOS native modal for now. Needs to be implemented in javascript runtime.
  */
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
@@ -77,64 +79,67 @@ const ForwardRefSheet = forwardRef<View, SheetProps>((props, ref) => {
         } = renderProps;
 
         const {backgroundColor, innerTranslateX} = renderStyle;
+        const sheet = (
+            <>
+                {visible && (
+                    <Modal onLayout={onShow} testID={`sheet__modal--${id}`}>
+                        <AnimatedContainer
+                            {...containerProps}
+                            ref={ref}
+                            style={{backgroundColor}}
+                            testID={`sheet--${id}`}>
+                            <AnimatedInner
+                                shape={shape}
+                                style={{
+                                    transform: [{translateX: innerTranslateX}],
+                                }}
+                                testID={`sheet__inner--${id}`}
+                                accessibilityRole="alert">
+                                <Header testID={`sheet__header--${id}`}>
+                                    {back && (
+                                        <BackAffordance
+                                            testID={`sheet__backAffordance--${id}`}>
+                                            {backIcon}
+                                        </BackAffordance>
+                                    )}
 
-        return (
-            <Modal
-                animationType="none"
-                onShow={onShow}
-                presentationStyle="overFullScreen"
-                testID={`sheet__modal--${id}`}
-                transparent={true}
-                visible={visible}>
-                <AnimatedContainer
-                    {...containerProps}
-                    ref={ref}
-                    testID={`sheet--${id}`}
-                    style={{backgroundColor}}>
-                    <AnimatedInner
-                        shape={shape}
-                        style={{transform: [{translateX: innerTranslateX}]}}
-                        testID={`sheet__inner--${id}`}
-                        accessibilityRole="alert">
-                        <Header testID={`sheet__header--${id}`}>
-                            {back && (
-                                <BackAffordance
-                                    testID={`sheet__backAffordance--${id}`}>
-                                    {backIcon}
-                                </BackAffordance>
-                            )}
+                                    <HeadlineText>{headlineText}</HeadlineText>
+                                    <CloseAffordance
+                                        testID={`sheet__closeAffordance--${id}`}>
+                                        {closeIcon}
+                                    </CloseAffordance>
+                                </Header>
 
-                            <HeadlineText>{headlineText}</HeadlineText>
-                            <CloseAffordance
-                                testID={`sheet__closeAffordance--${id}`}>
-                                {closeIcon}
-                            </CloseAffordance>
-                        </Header>
+                                <Content testID={`sheet__content--${id}`}>
+                                    {children}
+                                </Content>
 
-                        <Content testID={`sheet__content--${id}`}>
-                            {children}
-                        </Content>
+                                {footer && (
+                                    <>
+                                        <Divider size="large" />
+                                        <Footer testID={`sheet__footer--${id}`}>
+                                            <PrimaryButton
+                                                testID={`sheet__primaryButton--${id}`}>
+                                                {primaryButton}
+                                            </PrimaryButton>
 
-                        {footer && (
-                            <>
-                                <Divider size="large" />
-                                <Footer testID={`sheet__footer--${id}`}>
-                                    <PrimaryButton
-                                        testID={`sheet__primaryButton--${id}`}>
-                                        {primaryButton}
-                                    </PrimaryButton>
-
-                                    <SecondaryButton
-                                        testID={`sheet__secondaryButton--${id}`}>
-                                        {secondaryButton}
-                                    </SecondaryButton>
-                                </Footer>
-                            </>
-                        )}
-                    </AnimatedInner>
-                </AnimatedContainer>
-            </Modal>
+                                            <SecondaryButton
+                                                testID={`sheet__secondaryButton--${id}`}>
+                                                {secondaryButton}
+                                            </SecondaryButton>
+                                        </Footer>
+                                    </>
+                                )}
+                            </AnimatedInner>
+                        </AnimatedContainer>
+                    </Modal>
+                )}
+            </>
         );
+
+        emitter.emit('sheet', sheet);
+
+        return <></>;
     };
 
     return <SheetBase {...props} render={render} />;

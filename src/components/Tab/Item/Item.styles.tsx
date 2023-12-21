@@ -5,7 +5,6 @@ export const Container = styled(View)`
     align-items: center;
     display: flex;
     justify-content: center;
-    flex: 1;
 
     ${({theme}) => css`
         min-height: ${theme.adaptSize(theme.spacing.small * 6)}px;

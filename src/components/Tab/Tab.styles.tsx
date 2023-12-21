@@ -19,11 +19,17 @@ export const Container = styled(View)`
     flex: 1;
 `;
 
-export const HeaderScrollView = styled.ScrollView`
-    width: 100%;
+export const Header = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
 `;
 
-export const Header = styled.View`
+export const HeaderScrollView = styled.ScrollView`
+    flex: 1;
+`;
+
+export const HeaderInner = styled.View`
     display: flex;
     flex-direction: row;
     position: relative;

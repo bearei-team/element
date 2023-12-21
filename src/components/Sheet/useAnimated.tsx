@@ -8,8 +8,8 @@ import {RenderProps} from './SheetBase';
 
 export interface ProcessAnimatedTimingOptions
     extends Pick<AnimatedTimingOptions, 'duration' | 'easing'> {
-    toValue: number;
     finished?: () => void;
+    toValue: number;
 }
 
 export interface UseAnimatedOptions
@@ -68,9 +68,9 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     useEffect(() => {
         const enterScreen = () => {
             const animatedTimingOptions = {
-                toValue: 1,
                 duration: 'medium3',
                 easing: 'emphasizedDecelerate',
+                toValue: 1,
             } as ProcessAnimatedTimingOptions;
 
             processAnimatedTiming(containerAnimated, animatedTimingOptions);
@@ -79,9 +79,9 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
         const exitScreen = () => {
             const animatedTimingOptions = {
-                toValue: 0,
                 duration: 'short3',
                 easing: 'emphasizedAccelerate',
+                toValue: 0,
             } as ProcessAnimatedTimingOptions;
 
             processAnimatedTiming(containerAnimated, animatedTimingOptions);
