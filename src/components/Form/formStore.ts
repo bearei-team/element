@@ -18,7 +18,7 @@ export interface Callback<T extends Store> {
 
 export interface FieldEntity<T extends Store> {
     onStoreChange: (name?: keyof T) => void;
-    props: ItemProps<T>;
+    props: ItemProps;
     touched: boolean;
     validate: (value?: unknown) => Promise<FieldError | undefined>;
 }

@@ -14,4 +14,4 @@ export * from './components/Sheet/Sheet';
 export * from './components/Tab/Tab';
 export * from './components/TextField/TextField';
 export * from './components/TouchableRipple/TouchableRipple';
-export * from './context/ThemeProvider';
+export * from './context/context';

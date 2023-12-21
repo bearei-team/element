@@ -3,7 +3,7 @@ import {FC} from 'react';
 import {Button} from '../Button/Button';
 import {TextField} from '../TextField/TextField';
 import {Form, FormProps} from './Form';
-import {ControlProps} from './Item/Item';
+import {ControlProps, ItemProps} from './Item/Item';
 
 export default {
     title: 'components/Form',
@@ -11,7 +11,7 @@ export default {
 } as Meta<typeof Form>;
 
 export const FormA: FC<FormProps> = () => {
-    const [form] = Form.useForm<{a: string; b: string}>();
+    const [form] = Form.useForm();
     const renderControl = ({
         value,
         onValueChange,
@@ -29,7 +29,22 @@ export const FormA: FC<FormProps> = () => {
         />
     );
 
-    const processFinish = (value: {a: string; b: string}) => {
+    const items = [
+        {
+            name: 'name',
+            renderControl,
+            rules: [{type: 'number'}],
+            labelText: 'name',
+        },
+        {
+            name: 'age',
+            renderControl,
+            rules: [{type: 'number'}],
+            labelText: 'age',
+        },
+    ] as ItemProps[];
+
+    const processFinish = (value: any) => {
         console.info(value);
     };
 
@@ -38,21 +53,9 @@ export const FormA: FC<FormProps> = () => {
     };
 
     return (
-        <Form form={form} onFinish={processFinish}>
-            <Form.Item
-                name="name"
-                renderControl={renderControl}
-                rules={[{type: 'number'}]}
-                labelText="name"
-            />
-
-            <Form.Item
-                name="age"
-                renderControl={renderControl}
-                labelText="age"
-            />
-
+        <>
+            <Form form={form} onFinish={processFinish} items={items} />
             <Button labelText="submit" onPress={handleSubmit} />
-        </Form>
+        </>
     );
 };

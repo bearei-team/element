@@ -15,7 +15,7 @@ export interface ControlProps {
     value?: unknown;
 }
 
-export interface ItemProps<T extends Store = Store>
+export interface ItemProps
     extends Partial<
         ViewProps &
             RefAttributes<View> &
@@ -23,7 +23,7 @@ export interface ItemProps<T extends Store = Store>
             Pick<ControlProps, 'labelText'>
     > {
     initialValue?: Store;
-    name?: keyof T;
+    name?: string;
     renderControl?: (props: ControlProps) => JSX.Element;
 }
 

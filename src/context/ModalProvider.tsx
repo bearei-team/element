@@ -1,6 +1,5 @@
 import mitt from 'mitt';
 import React, {FC} from 'react';
-
 import {useImmer} from 'use-immer';
 
 export type EmitterEvent = {

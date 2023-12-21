@@ -1,6 +1,7 @@
-import {useEffect, useId} from 'react';
+import {useCallback, useEffect, useId, useMemo} from 'react';
 import {useImmer} from 'use-immer';
 import {FormProps} from './Form';
+import {Item} from './Item/Item';
 import {FormStore, Store} from './formStore';
 import {useForm} from './useForm';
 import {FormContext} from './useFormContext';
@@ -10,9 +11,9 @@ export interface FormBaseProps<T extends Store> extends FormProps<T> {
     render: (props: RenderProps<T>) => React.JSX.Element;
 }
 
-export const FormBase = <T extends Store>(props: FormBaseProps<T>) => {
+export const FormBase = <T extends Store = Store>(props: FormBaseProps<T>) => {
     const {
-        children,
+        items,
         form,
         initialValue,
         onFinish,
@@ -26,6 +27,16 @@ export const FormBase = <T extends Store>(props: FormBaseProps<T>) => {
     const [status, setStatus] = useImmer('idle');
     const {setCallback, setInitialValue} = formStore;
     const id = useId();
+
+    const renderChildren = useCallback(
+        () =>
+            items?.map((item, index) => (
+                <Item {...item} key={(item.name ?? index).toString()} />
+            )),
+        [items],
+    );
+
+    const children = useMemo(() => renderChildren(), [renderChildren]);
 
     useEffect(() => {
         setCallback({onFinish, onFinishFailed, onValueChange});

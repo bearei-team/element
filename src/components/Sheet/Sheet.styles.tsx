@@ -9,7 +9,7 @@ export type HeaderProps = Pick<RenderProps, 'back'>;
 export const Modal = styled.View`
     height: 100%;
     left: 0;
-    position: fixed;
+    position: absolute;
     top: 0;
     width: 100%;
     z-index: 2048;

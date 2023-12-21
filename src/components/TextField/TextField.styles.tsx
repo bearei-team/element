@@ -115,7 +115,7 @@ export const LabelTextBackground = styled.View<LabelTextBackgroundProps>`
     position: absolute;
 
     ${({theme, width, height}) => css`
-        height: ${height};
+        height: ${height}px;
         left: ${theme.adaptSize(theme.spacing.medium - theme.spacing.small)}px;
         top: ${theme.adaptSize(-theme.typography.body.small.lineHeight / 2)}px;
         width: ${width}px;

@@ -1,22 +1,16 @@
 import {Theme, theme} from '@bearei/theme';
-import mitt from 'mitt';
 import React, {FC, ReactNode} from 'react';
 import {Platform, useColorScheme} from 'react-native';
 import {ThemeProvider as StyledComponentThemeProvider} from 'styled-components/native';
 import {AdaptOptions} from '../utils/adapt.utils';
 import {UTIL} from '../utils/util';
-import {ModalProvider} from './ModalProvider';
+
 export interface ThemeProps {
     adaptOptions?: AdaptOptions;
     children?: ReactNode;
     theme?: Theme;
 }
 
-export type EmitterEvent = {
-    sheet: React.JSX.Element;
-};
-
-export const emitter = mitt<EmitterEvent>();
 export const ThemeProvider: FC<ThemeProps> = props => {
     const {adaptOptions, children, theme: themeProvider} = props;
     const {adaptFontSize, adaptSize} = UTIL.adapt(adaptOptions);
@@ -33,7 +27,6 @@ export const ThemeProvider: FC<ThemeProps> = props => {
                 OS,
             }}>
             {children}
-            <ModalProvider />
         </StyledComponentThemeProvider>
     );
 };
