@@ -62,7 +62,19 @@ const AnimatedTextInput = Animated.createAnimatedComponent(Input);
 const renderTextInput = (options: RenderTextInputOptions) => {
     const {renderStyle, ...props} = options;
 
-    return <AnimatedTextInput {...props} style={renderStyle} />;
+    return (
+        <AnimatedTextInput
+            {...props}
+            style={renderStyle}
+            /**
+             * The current parameter function has been implemented,
+             * but react-native-macos doesn't provide a special typescript type declaration yet,
+             * so the current attribute ignores the type error hints for the time being.
+             */
+            // @ts-ignore
+            enableFocusRing={false}
+        />
+    );
 };
 
 export const TextFieldBase: FC<TextFieldBaseProps> = props => {
