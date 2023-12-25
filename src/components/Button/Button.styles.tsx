@@ -149,6 +149,9 @@ export const Content = styled(Shape)<ContentProps>`
             icon: css`
                 padding: ${theme.adaptSize(theme.spacing.small)}px;
             `,
+            radio: css`
+                padding: ${theme.adaptSize(theme.spacing.small)}px;
+            `,
             fab: css`
                 padding: ${theme.adaptSize(theme.spacing.small)}px;
             `,
@@ -223,6 +226,10 @@ export const Icon = styled.View<IconProps>`
                 width: ${theme.adaptSize(theme.spacing.large - 6)}px;
             `,
             icon: css`
+                height: ${theme.adaptSize(theme.spacing.large)}px;
+                width: ${theme.adaptSize(theme.spacing.large)}px;
+            `,
+            radio: css`
                 height: ${theme.adaptSize(theme.spacing.large)}px;
                 width: ${theme.adaptSize(theme.spacing.large)}px;
             `,

@@ -1,15 +1,22 @@
-import {cloneElement} from 'react';
+import React, {cloneElement} from 'react';
 import {useTheme} from 'styled-components/native';
 import {Icon} from '../Icon/Icon';
+import {ButtonType, FabType} from './Button';
 import {RenderProps} from './ButtonBase';
 
-export type UseIconOptions = Required<
-    Pick<RenderProps, 'disabled' | 'type' | 'fabType' | 'category' | 'state'>
-> &
-    Pick<RenderProps, 'icon'>;
+export interface UseIconOptions
+    extends Required<
+        Pick<
+            RenderProps,
+            'disabled' | 'type' | 'fabType' | 'category' | 'state'
+        >
+    > {
+    checked: boolean;
+    icon?: React.JSX.Element;
+}
 
 export const useIcon = (options: UseIconOptions) => {
-    const {disabled, icon, type, fabType, category, state} = options;
+    const {disabled, icon, type, fabType, category, state, checked} = options;
     const theme = useTheme();
     const commonFillType = {
         filled: theme.palette.primary.onPrimary,
@@ -24,12 +31,29 @@ export const useIcon = (options: UseIconOptions) => {
         tertiary: theme.palette.tertiary.onTertiaryContainer,
     };
 
-    const fill =
-        category === 'fab'
-            ? fabFillType[fabType]
-            : commonFillType[type as keyof typeof commonFillType];
+    const radioType = {primary: theme.palette.primary.primary};
+    const categoryIcon = {
+        common: commonFillType,
+        fab: fabFillType,
+        radio: radioType,
+        icon: undefined,
+    };
 
-    const defaultIcon = icon ?? (category === 'fab' ? <Icon /> : icon);
+    const categoryType = category === 'fab' ? fabType : type;
+    const iconType = (
+        category === 'radio' ? 'primary' : categoryType
+    ) as ButtonType & FabType;
+
+    const fill = categoryIcon[category]?.[iconType];
+    const checkedIcon = (
+        <Icon
+            type="outlined"
+            name={checked ? 'radioButtonChecked' : 'radioButtonUnchecked'}
+        />
+    );
+
+    const radioIcon = category === 'radio' ? checkedIcon : icon;
+    const defaultIcon = icon ?? (category === 'fab' ? <Icon /> : radioIcon);
 
     if (category === 'common' || !defaultIcon) {
         return icon;

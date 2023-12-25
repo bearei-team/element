@@ -11,7 +11,7 @@ import {Container, Content, Icon, LabelText} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
 export type ButtonType = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
-export type Category = 'common' | 'icon' | 'fab';
+export type Category = 'common' | 'icon' | 'fab' | 'radio';
 export type FabType = 'surface' | 'primary' | 'secondary' | 'tertiary';
 
 export interface ButtonProps extends TouchableProps {

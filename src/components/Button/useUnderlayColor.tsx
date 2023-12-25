@@ -15,10 +15,9 @@ export const useUnderlayColor = (options: UseUnderlayColorOptions) => {
             category === 'common'
                 ? theme.palette.primary.primary
                 : theme.palette.surface.onSurfaceVariant,
-        text:
-            category === 'common'
-                ? theme.palette.primary.primary
-                : theme.palette.surface.onSurfaceVariant,
+        text: ['common', 'radio'].includes(category)
+            ? theme.palette.primary.primary
+            : theme.palette.surface.onSurfaceVariant,
 
         tonal: theme.palette.secondary.onSecondaryContainer,
     };
