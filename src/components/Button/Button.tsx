@@ -43,70 +43,68 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             state,
             style,
             type,
+            onLayout,
             underlayColor,
             ...touchableRippleProps
         } = renderProps;
 
-        const {
-            color,
-            touchableRippleHeight,
-            touchableRippleWidth,
-            ...contentStyle
-        } = renderStyle;
+        const {color, height, width, ...contentStyle} = renderStyle;
 
         return (
-            <Elevation level={elevation} shape={shape}>
-                <TouchableRipple
-                    {...touchableRippleProps}
-                    ref={ref}
-                    shape={shape}
-                    underlayColor={underlayColor}>
-                    <Container
-                        accessibilityLabel={labelText}
-                        accessibilityRole="button"
-                        testID={`button--${id}`}>
-                        <AnimatedContent
-                            category={category}
-                            iconShow={iconShow}
-                            labelTextShow={labelTextShow}
+            <Container
+                accessibilityLabel={labelText}
+                accessibilityRole="button"
+                testID={`button--${id}`}
+                onLayout={onLayout}>
+                {typeof width === 'number' && (
+                    <Elevation level={elevation} shape={shape}>
+                        <TouchableRipple
+                            {...touchableRippleProps}
+                            ref={ref}
                             shape={shape}
-                            size={size}
-                            style={{
-                                ...(typeof style === 'object' && style),
-                                ...contentStyle,
-                            }}
-                            testID={`button__content--${id}`}
-                            type={type}>
-                            {iconShow && (
-                                <Icon
-                                    category={category}
-                                    testID={`button__icon--${id}`}>
-                                    {icon}
-                                </Icon>
-                            )}
+                            underlayColor={underlayColor}>
+                            <AnimatedContent
+                                category={category}
+                                iconShow={iconShow}
+                                labelTextShow={labelTextShow}
+                                shape={shape}
+                                size={size}
+                                style={{
+                                    ...(typeof style === 'object' && style),
+                                    ...contentStyle,
+                                }}
+                                testID={`button__content--${id}`}
+                                type={type}
+                                width={width}>
+                                {iconShow && (
+                                    <Icon
+                                        category={category}
+                                        testID={`button__icon--${id}`}>
+                                        {icon}
+                                    </Icon>
+                                )}
 
-                            {category !== 'icon' && labelText && (
-                                <AnimatedLabelText
-                                    style={{color}}
-                                    testID={`button__labelText--${id}`}
-                                    type={type}>
-                                    {labelText}
-                                </AnimatedLabelText>
-                            )}
-                        </AnimatedContent>
-                    </Container>
+                                {category !== 'icon' && labelText && (
+                                    <AnimatedLabelText
+                                        style={{color}}
+                                        testID={`button__labelText--${id}`}
+                                        type={type}>
+                                        {labelText}
+                                    </AnimatedLabelText>
+                                )}
+                            </AnimatedContent>
 
-                    {typeof touchableRippleWidth === 'number' && (
-                        <Hovered
-                            height={touchableRippleHeight}
-                            shape={shape}
-                            state={state}
-                            underlayColor={underlayColor}
-                            width={touchableRippleWidth}
-                        />
-                    )}
-                </TouchableRipple>
-            </Elevation>
+                            <Hovered
+                                height={height}
+                                shape={shape}
+                                state={state}
+                                underlayColor={underlayColor}
+                                width={width}
+                            />
+                        </TouchableRipple>
+                    </Elevation>
+                )}
+            </Container>
         );
     };
 

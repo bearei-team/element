@@ -13,7 +13,6 @@ import {State} from '../Common/interface';
 import {ElevationProps} from '../Elevation/Elevation';
 import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {ButtonProps} from './Button';
-
 import {useAnimated} from './useAnimated';
 import {useBorder} from './useBorder';
 import {useIcon} from './useIcon';
@@ -27,8 +26,8 @@ export interface RenderProps
     iconShow: boolean;
     labelTextShow?: boolean;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        touchableRippleHeight: number;
-        touchableRippleWidth: number;
+        height: number;
+        width: number;
     };
     state: State;
     underlayColor: TouchableRippleProps['underlayColor'];
@@ -41,7 +40,7 @@ export interface ButtonBaseProps extends ButtonProps {
 const initialState = {
     elevation: 0 as ElevationProps['level'],
     state: 'enabled' as State,
-    touchableRippleLayout: {} as LayoutRectangle,
+    layout: {} as LayoutRectangle,
 };
 
 export const ButtonBase: FC<ButtonBaseProps> = props => {
@@ -58,9 +57,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{elevation, touchableRippleLayout}, setState] =
-        useImmer(initialState);
-
+    const [{elevation, layout}, setState] = useImmer(initialState);
     const [underlayColor] = useUnderlayColor({type, category, fabType});
     const id = useId();
 
@@ -131,7 +128,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
             const nativeEventLayout = event.nativeEvent.layout;
 
             setState(draft => {
-                draft.touchableRippleLayout = nativeEventLayout;
+                draft.layout = nativeEventLayout;
             });
 
             onLayout?.(event);
@@ -173,8 +170,8 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
             ...border,
             backgroundColor,
             color,
-            touchableRippleHeight: touchableRippleLayout.height,
-            touchableRippleWidth: touchableRippleLayout.width,
+            height: layout.height,
+            width: layout.width,
         },
         shape: category === 'fab' ? 'large' : 'full',
         state,

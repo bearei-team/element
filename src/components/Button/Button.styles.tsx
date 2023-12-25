@@ -2,21 +2,31 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './ButtonBase';
 
-export type ContentProps = Pick<
-    RenderProps,
-    'type' | 'iconShow' | 'category' | 'size' | 'labelTextShow'
->;
+export interface ContentProps
+    extends Pick<
+        RenderProps,
+        'type' | 'iconShow' | 'category' | 'size' | 'labelTextShow'
+    > {
+    width: number;
+}
 
-export type LabelTextProps = Omit<ContentProps, 'iconShow'>;
+export type LabelTextProps = Omit<ContentProps, 'iconShow' | 'width'>;
 export type IconProps = Pick<ContentProps, 'category' | 'size'>;
 
-export const Container = styled.View``;
+export const Container = styled.View`
+    flex: 1;
+`;
+
 export const Content = styled(Shape)<ContentProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
     justify-content: center;
     pointer-events: none;
+
+    ${({width}) => css`
+        width: ${width}px;
+    `}
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.small)}px;
@@ -54,19 +64,24 @@ export const Content = styled(Shape)<ContentProps>`
     ${({iconShow, theme, type = 'filled'}) => {
         const containerType = {
             elevated: css`
+                min-width: ${theme.adaptSize(theme.spacing.small * 10 + 3)}px;
                 padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             filled: css`
+                min-width: ${theme.adaptSize(theme.spacing.small * 10 + 3)}px;
                 padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             outlined: css`
+                min-width: ${theme.adaptSize(theme.spacing.small * 10 + 3)}px;
                 padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             text: css`
+                min-width: ${theme.adaptSize(theme.spacing.small * 9 + 5)}px;
                 padding-left: ${theme.adaptSize(theme.spacing.medium - 4)}px;
                 padding-right: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             tonal: css`
+                min-width: ${theme.adaptSize(theme.spacing.small * 10 + 3)}px;
                 padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
         };
@@ -96,14 +111,17 @@ export const Content = styled(Shape)<ContentProps>`
     ${({theme, category, size = 'medium'}) => {
         const containerSize = {
             small: css`
+                min-width: ${theme.adaptSize(theme.spacing.small * 5)}px;
                 height: ${theme.adaptSize(theme.spacing.small * 5)}px;
                 padding: ${theme.adaptSize(theme.spacing.small)}px;
             `,
             medium: css`
+                min-width: ${theme.adaptSize(theme.spacing.small * 7)}px;
                 height: ${theme.adaptSize(theme.spacing.small * 7)}px;
                 padding: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             large: css`
+                min-width: ${theme.adaptSize(theme.spacing.small * 12)}px;
                 height: ${theme.adaptSize(theme.spacing.small * 12)}px;
                 padding: ${theme.adaptSize(theme.spacing.extraLarge - 2)}px;
             `,
