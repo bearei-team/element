@@ -15,10 +15,10 @@ import {
 } from '../../../hooks/useHandleEvent';
 import {AnimatedInterpolation, State} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
-import {ItemProps} from './Item';
+import {NavigationItemProps} from './NavigationItem';
 import {useAnimated} from './useAnimated';
 
-export interface RenderProps extends ItemProps {
+export interface RenderProps extends NavigationItemProps {
     pressPosition: number;
     onHeaderLayout: (event: LayoutChangeEvent) => void;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
@@ -33,7 +33,7 @@ export interface RenderProps extends ItemProps {
     state: State;
 }
 
-export interface ItemBaseProps extends ItemProps {
+export interface NavigationItemBaseProps extends NavigationItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
@@ -43,7 +43,7 @@ const initialState = {
     pressPosition: 0.5,
 };
 
-export const ItemBase: FC<ItemBaseProps> = props => {
+export const NavigationItemBase: FC<NavigationItemBaseProps> = props => {
     const {
         active = false,
         activeIcon = <Icon type="filled" category="image" name="circle" />,

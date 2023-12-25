@@ -1,8 +1,8 @@
 import {FC, cloneElement, useCallback, useEffect, useId} from 'react';
 import {useImmer} from 'use-immer';
 import {ListDataSource} from '../List/List';
-import {Item} from './Item/Item';
 import {NavigationProps} from './Navigation';
+import {NavigationItem} from './NavigationItem/NavigationItem';
 
 export type RenderProps = NavigationProps;
 export interface NavigationBaseProps extends NavigationProps {
@@ -24,7 +24,7 @@ const renderItems = (options: RenderItemOptions) => {
     const {onActive, block, data} = options;
 
     return data.map(({key, ...props}) => (
-        <Item
+        <NavigationItem
             {...props}
             block={block}
             key={key}

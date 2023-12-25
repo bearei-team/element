@@ -3,8 +3,8 @@ import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {View, ViewProps} from 'react-native';
 import {ValidateOptions} from '../../../utils/validate.utils';
 import {Store} from '../formStore';
-import {Container} from './Item.styles';
-import {ItemBase, RenderProps} from './ItemBase';
+import {Container} from './FormItem.styles';
+import {FormItemBase, RenderProps} from './FormItemBase';
 
 export interface ControlProps {
     errorMessage?: string;
@@ -15,7 +15,7 @@ export interface ControlProps {
     value?: unknown;
 }
 
-export interface ItemProps
+export interface FormItemProps
     extends Partial<
         ViewProps &
             RefAttributes<View> &
@@ -27,7 +27,7 @@ export interface ItemProps
     renderControl?: (props: ControlProps) => JSX.Element;
 }
 
-const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
+const ForwardRefFormItem = forwardRef<View, FormItemProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {id, children, ...containerProps} = renderProps;
 
@@ -38,7 +38,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
         );
     };
 
-    return <ItemBase {...props} render={render} />;
+    return <FormItemBase {...props} render={render} />;
 });
 
-export const Item: FC<ItemProps> = memo(ForwardRefItem);
+export const FormItem: FC<FormItemProps> = memo(ForwardRefFormItem);

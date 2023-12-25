@@ -3,7 +3,7 @@ import {FC} from 'react';
 import {Button} from '../Button/Button';
 import {TextField} from '../TextField/TextField';
 import {Form, FormProps} from './Form';
-import {ControlProps, ItemProps} from './Item/Item';
+import {ControlProps, FormItemProps} from './FormItem/FormItem';
 
 export default {
     title: 'components/Form',
@@ -42,7 +42,7 @@ export const FormA: FC<FormProps> = () => {
             rules: [{type: 'number'}],
             labelText: 'age',
         },
-    ] as ItemProps[];
+    ] as FormItemProps[];
 
     const processFinish = (value: any) => {
         console.info(value);

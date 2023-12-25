@@ -2,7 +2,7 @@ import {ValidateError} from 'async-validator';
 import {NamePath} from '../../utils/namePath.utils';
 import {UTIL} from '../../utils/util';
 import {ValidateOptions} from '../../utils/validate.utils';
-import {ItemProps} from './Item/Item';
+import {FormItemProps} from './FormItem/FormItem';
 
 export type Store = Record<string, unknown>;
 export interface FieldError extends Pick<ValidateOptions, 'rules'> {
@@ -18,7 +18,7 @@ export interface Callback<T extends Store> {
 
 export interface FieldEntity<T extends Store> {
     onStoreChange: (name?: keyof T) => void;
-    props: ItemProps;
+    props: FormItemProps;
     touched: boolean;
     validate: (value?: unknown) => Promise<FieldError | undefined>;
 }

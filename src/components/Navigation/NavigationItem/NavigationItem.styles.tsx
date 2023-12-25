@@ -1,7 +1,7 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../../Common/Common.styles';
-import {RenderProps} from './ItemBase';
+import {RenderProps} from './NavigationItemBase';
 
 export type IconInnerProps = Pick<RenderProps, 'pressPosition'>;
 export type LabelTextProps = Pick<RenderProps, 'active'>;

@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useId, useMemo} from 'react';
 import {useImmer} from 'use-immer';
 import {FormProps} from './Form';
-import {Item} from './Item/Item';
+import {FormItem} from './FormItem/FormItem';
 import {FormStore, Store} from './formStore';
 import {useForm} from './useForm';
 import {FormContext} from './useFormContext';
@@ -31,7 +31,7 @@ export const FormBase = <T extends Store = Store>(props: FormBaseProps<T>) => {
     const renderChildren = useCallback(
         () =>
             items?.map((item, index) => (
-                <Item {...item} key={(item.name ?? index).toString()} />
+                <FormItem {...item} key={(item.name ?? index).toString()} />
             )),
         [items],
     );

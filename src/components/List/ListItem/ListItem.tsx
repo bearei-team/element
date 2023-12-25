@@ -13,10 +13,10 @@ import {
     Leading,
     SupportingText,
     Trailing,
-} from './Item.styles';
-import {ItemBase, RenderProps} from './ItemBase';
+} from './ListItem.styles';
+import {ListItemBase, RenderProps} from './ListItemBase';
 
-export interface ItemProps extends TouchableRippleProps {
+export interface ListItemProps extends TouchableRippleProps {
     active?: boolean;
     close?: boolean;
     headline?: string;
@@ -29,7 +29,7 @@ export interface ItemProps extends TouchableRippleProps {
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedInner = Animated.createAnimatedComponent(Inner);
 const AnimatedTrailing = Animated.createAnimatedComponent(Trailing);
-const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
+const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
             headline,
@@ -121,7 +121,7 @@ const ForwardRefItem = forwardRef<View, ItemProps>((props, ref) => {
         );
     };
 
-    return <ItemBase {...props} render={render} />;
+    return <ListItemBase {...props} render={render} />;
 });
 
-export const Item: FC<ItemProps> = memo(ForwardRefItem);
+export const ListItem: FC<ListItemProps> = memo(ForwardRefListItem);

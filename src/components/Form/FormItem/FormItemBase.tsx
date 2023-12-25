@@ -3,14 +3,14 @@ import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {useImmer} from 'use-immer';
 import {UTIL} from '../../../utils/util';
 import {useFormContext} from '../useFormContext';
-import {ItemProps} from './Item';
+import {FormItemProps} from './FormItem';
 
-export type RenderProps = ItemProps;
-export interface ItemBaseProps extends ItemProps {
+export type RenderProps = FormItemProps;
+export interface FormItemBaseProps extends FormItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const ItemBase: FC<ItemBaseProps> = props => {
+export const FormItemBase: FC<FormItemBaseProps> = props => {
     const {
         labelText,
         name,

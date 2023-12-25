@@ -2,12 +2,11 @@ import React, {ForwardedRef, RefAttributes, forwardRef, memo} from 'react';
 import {View, ViewProps} from 'react-native';
 import {Container} from './Form.styles';
 import {FormBase, RenderProps} from './FormBase';
-import {Item, ItemProps} from './Item/Item';
+import {FormItemProps} from './FormItem/FormItem';
 import {Callback, FormStore, Store} from './formStore';
 import {useForm} from './useForm';
 
 export type FormComponent = typeof MemoForm & {
-    Item: typeof Item;
     useForm: typeof useForm;
 };
 
@@ -15,7 +14,7 @@ export interface FormProps<T extends Store = Store>
     extends Partial<ViewProps & RefAttributes<View> & Callback<T>> {
     form?: FormStore<T>;
     initialValue?: T;
-    items?: ItemProps[];
+    items?: FormItemProps[];
     layout?: 'horizontal' | 'vertical';
 }
 

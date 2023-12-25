@@ -12,19 +12,23 @@ export const Headline: StoryObj<ListProps> = {
         data: [
             {
                 headline: 'TitleA',
-                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                supportingText:
+                    'Supporting line text lorem ipsum dolor sit amet, consectetur.',
             },
             {
                 headline: 'TitleB',
-                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                supportingText:
+                    'Supporting line text lorem ipsum dolor sit amet, consectetur.',
             },
             {
                 headline: 'TitleC',
-                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                supportingText:
+                    'Supporting line text lorem ipsum dolor sit amet, consectetur.',
             },
             {
                 headline: 'TitleD',
-                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                supportingText:
+                    'Supporting line text lorem ipsum dolor sit amet, consectetur.',
             },
         ],
     },

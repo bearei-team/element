@@ -11,10 +11,10 @@ import {useHandleEvent} from '../../../hooks/useHandleEvent';
 import {Button} from '../../Button/Button';
 import {AnimatedInterpolation, State} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
-import {ItemProps} from './Item';
+import {ListItemProps} from './ListItem';
 import {useAnimated} from './useAnimated';
 
-export interface RenderProps extends ItemProps {
+export interface RenderProps extends ListItemProps {
     state: State;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         touchableRippleHeight: number;
@@ -24,7 +24,7 @@ export interface RenderProps extends ItemProps {
     underlayColor: string;
 }
 
-export interface ItemBaseProps extends ItemProps {
+export interface ListItemBaseProps extends ListItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
@@ -33,7 +33,7 @@ const initialState = {
     touchableRippleLayout: {} as LayoutRectangle,
 };
 
-export const ItemBase: FC<ItemBaseProps> = props => {
+export const ListItemBase: FC<ListItemBaseProps> = props => {
     const {
         active = false,
         close = false,

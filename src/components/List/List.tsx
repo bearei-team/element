@@ -1,13 +1,13 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {FlatList, FlatListProps} from 'react-native';
 import {NativeTarget} from 'styled-components/native';
-import {ItemProps} from './Item/Item';
 import {Container, Content} from './List.styles';
 import {ListBase, RenderProps} from './ListBase';
+import {ListItemProps} from './ListItem/ListItem';
 
 export interface ListDataSource
     extends Pick<
-        ItemProps,
+        ListItemProps,
         | 'headline'
         | 'supportingText'
         | 'leading'

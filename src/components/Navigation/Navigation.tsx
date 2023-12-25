@@ -1,10 +1,10 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {View, ViewProps} from 'react-native';
-import {ItemProps} from './Item/Item';
 import {Container, Destination, Fab} from './Navigation.styles';
 import {NavigationBase, RenderProps} from './NavigationBase';
+import {NavigationItemProps} from './NavigationItem/NavigationItem';
 
-export interface NavigationDataSource extends ItemProps {
+export interface NavigationDataSource extends NavigationItemProps {
     key?: string;
 }
 

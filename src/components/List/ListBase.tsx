@@ -1,8 +1,8 @@
 import {FC, useCallback, useEffect, useId} from 'react';
 import {ListRenderItemInfo} from 'react-native';
 import {useImmer} from 'use-immer';
-import {Item} from './Item/Item';
 import {ListDataSource, ListProps} from './List';
+import {ListItem} from './ListItem/ListItem';
 
 export type RenderProps = ListProps;
 export interface ListBaseProps extends ListProps {
@@ -24,7 +24,7 @@ const renderItem = (options: RenderItemOptions) => {
     const {item, onActive, supportingTextNumberOfLines, close} = options;
 
     return (
-        <Item
+        <ListItem
             {...item}
             {...(typeof item.supportingTextNumberOfLines !== 'number' && {
                 supportingTextNumberOfLines,
