@@ -15,6 +15,7 @@ export type Category = 'common' | 'icon' | 'fab';
 export type FabType = 'surface' | 'primary' | 'secondary' | 'tertiary';
 
 export interface ButtonProps extends TouchableProps {
+    block?: boolean;
     category?: Category;
     disabled?: boolean;
     elevation?: boolean;
@@ -30,6 +31,7 @@ const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
+            block,
             category,
             elevation,
             icon,
@@ -37,13 +39,13 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             id,
             labelText,
             labelTextShow,
+            onLayout,
             renderStyle,
             shape,
             size,
             state,
             style,
             type,
-            onLayout,
             underlayColor,
             ...touchableRippleProps
         } = renderProps;
@@ -54,8 +56,12 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             <Container
                 accessibilityLabel={labelText}
                 accessibilityRole="button"
+                block={block}
+                category={category}
+                onLayout={onLayout}
+                size={size}
                 testID={`button--${id}`}
-                onLayout={onLayout}>
+                type={type}>
                 {typeof width === 'number' && (
                     <Elevation level={elevation} shape={shape}>
                         <TouchableRipple
@@ -64,18 +70,19 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                             shape={shape}
                             underlayColor={underlayColor}>
                             <AnimatedContent
+                                block={block}
                                 category={category}
                                 iconShow={iconShow}
                                 labelTextShow={labelTextShow}
                                 shape={shape}
                                 size={size}
+                                width={width}
                                 style={{
                                     ...(typeof style === 'object' && style),
                                     ...contentStyle,
                                 }}
                                 testID={`button__content--${id}`}
-                                type={type}
-                                width={width}>
+                                type={type}>
                                 {iconShow && (
                                     <Icon
                                         category={category}

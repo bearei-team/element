@@ -14,6 +14,13 @@ export const Filled: StoryObj<ButtonProps> = {
     },
 };
 
+export const FilledBlock: StoryObj<ButtonProps> = {
+    args: {
+        labelText: 'Label',
+        block: true,
+    },
+};
+
 export const Outlined: StoryObj<ButtonProps> = {
     args: {
         labelText: 'Label',

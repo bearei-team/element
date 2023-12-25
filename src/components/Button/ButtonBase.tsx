@@ -49,6 +49,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         disabled = false,
         elevation: elevationStyle = true,
         fabType = 'primary',
+        block = false,
         icon,
         labelText,
         onLayout,
@@ -157,6 +158,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     return render({
         ...renderProps,
         ...handleEvent,
+        block,
         category,
         disabled,
         elevation,
