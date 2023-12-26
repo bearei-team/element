@@ -11,7 +11,7 @@ import {Container, Content, Icon, LabelText} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
 export type ButtonType = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
-export type Category = 'common' | 'icon' | 'fab' | 'radio';
+export type Category = 'common' | 'icon' | 'fab' | 'radio' | 'checkbox';
 export type FabType = 'surface' | 'primary' | 'secondary' | 'tertiary';
 
 export interface ButtonProps extends TouchableProps {
@@ -22,10 +22,15 @@ export interface ButtonProps extends TouchableProps {
     elevation?: boolean;
     fabType?: FabType;
     icon?: React.JSX.Element;
+    indeterminate?: boolean;
+
+    /**
+     * Sets the button text, this parameter is only valid for buttons with categories common and fab
+     */
     labelText?: string;
 
     /**
-     *  Listen for the radio check state to change, this option only works on buttons whose category is radio
+     *  Listen to the button checked state, this option is only available when the button category is radio or checkbox
      */
     onCheckedChange?: (checked: boolean) => void;
 
@@ -57,10 +62,18 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             style,
             type,
             underlayColor,
+            onContentLayout,
             ...touchableRippleProps
         } = renderProps;
 
-        const {color, height, width, ...contentStyle} = renderStyle;
+        const {
+            color,
+            height,
+            width,
+            contentWidth,
+            contentHeight,
+            ...contentStyle
+        } = renderStyle;
 
         return (
             <Container
@@ -72,53 +85,61 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                 size={size}
                 testID={`button--${id}`}
                 type={type}
-                style={{...(typeof style === 'object' && style)}}>
-                {typeof width === 'number' && (
-                    <Elevation level={elevation} shape={shape}>
-                        <TouchableRipple
-                            {...touchableRippleProps}
-                            ref={ref}
+                width={contentWidth}>
+                <Elevation level={elevation} shape={shape}>
+                    <TouchableRipple
+                        {...touchableRippleProps}
+                        ref={ref}
+                        shape={shape}
+                        underlayColor={underlayColor}>
+                        <AnimatedContent
+                            block={block}
+                            category={category}
+                            iconShow={iconShow}
+                            labelTextShow={labelTextShow}
+                            onLayout={onContentLayout}
                             shape={shape}
-                            underlayColor={underlayColor}>
-                            <AnimatedContent
-                                block={block}
-                                category={category}
-                                iconShow={iconShow}
-                                labelTextShow={labelTextShow}
-                                shape={shape}
-                                size={size}
-                                style={contentStyle}
-                                testID={`button__content--${id}`}
-                                type={type}
-                                width={width}>
-                                {iconShow && (
-                                    <Icon
-                                        category={category}
-                                        testID={`button__icon--${id}`}>
-                                        {icon}
-                                    </Icon>
-                                )}
+                            size={size}
+                            style={{
+                                ...(typeof style === 'object' && style),
+                                ...contentStyle,
+                            }}
+                            testID={`button__content--${id}`}
+                            type={type}
+                            width={width}>
+                            {iconShow && (
+                                <Icon
+                                    category={category}
+                                    testID={`button__icon--${id}`}>
+                                    {icon}
+                                </Icon>
+                            )}
 
-                                {category !== 'icon' && labelText && (
-                                    <AnimatedLabelText
-                                        style={{color}}
-                                        testID={`button__labelText--${id}`}
-                                        type={type}>
-                                        {labelText}
-                                    </AnimatedLabelText>
-                                )}
-                            </AnimatedContent>
+                            {category !== 'icon' && labelText && (
+                                <AnimatedLabelText
+                                    ellipsizeMode="tail"
+                                    numberOfLines={1}
+                                    style={{color}}
+                                    testID={`button__labelText--${id}`}
+                                    type={type}>
+                                    {labelText}
+                                </AnimatedLabelText>
+                            )}
+                        </AnimatedContent>
 
+                        {[typeof contentWidth, typeof width].includes(
+                            'number',
+                        ) && (
                             <Hovered
-                                height={height}
+                                height={block ? height : contentHeight}
                                 shape={shape}
                                 state={state}
                                 underlayColor={underlayColor}
-                                width={width}
+                                width={block ? width : contentWidth}
                             />
-                        </TouchableRipple>
-                    </Elevation>
-                )}
+                        )}
+                    </TouchableRipple>
+                </Elevation>
             </Container>
         );
     };

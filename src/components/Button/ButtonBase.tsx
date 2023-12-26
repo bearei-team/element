@@ -28,9 +28,12 @@ export interface RenderProps
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
         width: number;
+        contentWidth: number;
+        contentHeight: number;
     };
     state: State;
     underlayColor: TouchableRippleProps['underlayColor'];
+    onContentLayout: (event: LayoutChangeEvent) => void;
 }
 
 export interface ButtonBaseProps extends ButtonProps {
@@ -78,6 +81,7 @@ const initialState = {
     checked: false,
     elevation: 0 as ElevationProps['level'],
     layout: {} as LayoutRectangle,
+    contentLayout: {} as LayoutRectangle,
     state: 'enabled' as State,
 };
 
@@ -90,6 +94,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         elevation: elevationStyle = true,
         fabType = 'primary',
         icon,
+        indeterminate = false,
         labelText,
         onCheckedChange,
         onLayout,
@@ -98,10 +103,13 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const buttonType = category === 'radio' ? 'text' : type;
+    const checkButton = ['radio', 'checkbox'].includes(category);
+    const buttonType = checkButton ? 'text' : type;
     const id = useId();
-    const [{checked: radioChecked, elevation, layout}, setState] =
-        useImmer(initialState);
+    const [
+        {checked: buttonChecked, elevation, layout, contentLayout},
+        setState,
+    ] = useImmer(initialState);
 
     const [underlayColor] = useUnderlayColor({
         type: buttonType,
@@ -110,7 +118,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     });
 
     const processChecked = useCallback(() => {
-        if (category === 'radio') {
+        if (checkButton) {
             setState(draft => {
                 const nextChecked = !draft.checked;
 
@@ -119,7 +127,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
                 onCheckedChange?.(nextChecked);
             });
         }
-    }, [category, onCheckedChange, setState]);
+    }, [checkButton, onCheckedChange, setState]);
 
     const processElevation = useCallback(
         (nextState: State) => {
@@ -169,12 +177,14 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
 
     const iconElement = useIcon({
         category,
+        checkButton,
+        checked: buttonChecked,
         disabled,
         fabType,
         icon,
+        indeterminate,
         state,
         type: buttonType,
-        checked: radioChecked,
     });
 
     const {backgroundColor, borderColor, color} = useAnimated({
@@ -190,13 +200,28 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         (event: LayoutChangeEvent) => {
             const nativeEventLayout = event.nativeEvent.layout;
 
-            setState(draft => {
-                draft.layout = nativeEventLayout;
-            });
+            block &&
+                setState(draft => {
+                    draft.layout = nativeEventLayout;
+                });
 
             onLayout?.(event);
         },
-        [onLayout, setState],
+        [block, onLayout, setState],
+    );
+
+    const processContentLayout = useCallback(
+        (event: LayoutChangeEvent) => {
+            const nativeEventLayout = event.nativeEvent.layout;
+
+            !block &&
+                setState(draft => {
+                    draft.contentLayout = nativeEventLayout;
+                });
+
+            onLayout?.(event);
+        },
+        [block, onLayout, setState],
     );
 
     useEffect(() => {
@@ -238,11 +263,14 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         id,
         labelText: processDefaultLabelText({labelText, category}),
         labelTextShow: !!labelText,
+        onContentLayout: processContentLayout,
         onLayout: processLayout,
         renderStyle: {
             ...border,
             backgroundColor,
             color,
+            contentHeight: contentLayout.height,
+            contentWidth: contentLayout.width,
             height: layout.height,
             width: layout.width,
         },

@@ -15,7 +15,7 @@ export const useUnderlayColor = (options: UseUnderlayColorOptions) => {
             category === 'common'
                 ? theme.palette.primary.primary
                 : theme.palette.surface.onSurfaceVariant,
-        text: ['common', 'radio'].includes(category)
+        text: ['common', 'radio', 'checkbox'].includes(category)
             ? theme.palette.primary.primary
             : theme.palette.surface.onSurfaceVariant,
 
