@@ -6,7 +6,7 @@ export type UseUnderlayColorOptions = Required<
 >;
 
 export const useUnderlayColor = (options: UseUnderlayColorOptions) => {
-    const {type, category, fabType} = options;
+    const {category, fabType, type} = options;
     const theme = useTheme();
     const commonUnderlay = {
         elevated: theme.palette.primary.primary,

@@ -37,28 +37,27 @@ export interface ButtonBaseProps extends ButtonProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export type SetElevationOptions = Pick<
-    ButtonProps,
-    'category' | 'type' | 'elevation'
->;
-
-const initialState = {
-    elevation: 0 as ElevationProps['level'],
-    state: 'enabled' as State,
-    layout: {} as LayoutRectangle,
-    checked: false,
-};
-
-const checkSetCommonElevation = (options: SetElevationOptions) => {
+const checkSetCommonElevation = (
+    options: Pick<ButtonProps, 'category' | 'type' | 'elevation'>,
+) => {
     const {category, type, elevation} = options;
 
     return category === 'common' && type === 'elevated' && elevation;
 };
 
-const checkSetFabElevation = (options: Omit<SetElevationOptions, 'type'>) => {
+const checkSetFabElevation = (options: Omit<ButtonProps, 'type'>) => {
     const {category, elevation} = options;
 
     return category === 'fab' && elevation;
+};
+
+const processCorrectionCoefficient = (
+    options: Pick<RenderProps, 'category' | 'type'>,
+) => {
+    const {category, type} = options;
+    const nextElevation = type === 'elevated' ? 1 : 0;
+
+    return category === 'fab' ? 3 : nextElevation;
 };
 
 const processDefaultLabelText = (
@@ -75,36 +74,52 @@ const processShape = (options: Pick<RenderProps, 'category'>) => {
     return category === 'fab' ? 'large' : 'full';
 };
 
+const initialState = {
+    checked: false,
+    elevation: 0 as ElevationProps['level'],
+    layout: {} as LayoutRectangle,
+    state: 'enabled' as State,
+};
+
 export const ButtonBase: FC<ButtonBaseProps> = props => {
     const {
+        block = false,
         category = 'common',
+        checked = false,
         disabled = false,
         elevation: elevationStyle = true,
         fabType = 'primary',
-        block = false,
         icon,
         labelText,
+        onCheckedChange,
         onLayout,
         render,
         type = 'filled',
         ...renderProps
     } = props;
 
-    const [{elevation, layout, checked}, setState] = useImmer(initialState);
     const buttonType = category === 'radio' ? 'text' : type;
+    const id = useId();
+    const [{checked: radioChecked, elevation, layout}, setState] =
+        useImmer(initialState);
+
     const [underlayColor] = useUnderlayColor({
         type: buttonType,
         category,
         fabType,
     });
 
-    const id = useId();
     const processChecked = useCallback(() => {
-        category === 'radio' &&
+        if (category === 'radio') {
             setState(draft => {
-                draft.checked = !draft.checked;
+                const nextChecked = !draft.checked;
+
+                draft.checked = nextChecked;
+
+                onCheckedChange?.(nextChecked);
             });
-    }, [category, setState]);
+        }
+    }, [category, onCheckedChange, setState]);
 
     const processElevation = useCallback(
         (nextState: State) => {
@@ -118,9 +133,10 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
                 pressIn: 0,
             };
 
-            const nextElevation = buttonType === 'elevated' ? 1 : 0;
-            const correctionCoefficient =
-                category === 'fab' ? 3 : nextElevation;
+            const correctionCoefficient = processCorrectionCoefficient({
+                type: buttonType,
+                category,
+            });
 
             category !== 'icon' &&
                 elevationStyle &&
@@ -129,7 +145,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
                         correctionCoefficient) as ElevationProps['level'];
                 });
         },
-        [category, elevationStyle, setState, buttonType],
+        [buttonType, category, elevationStyle, setState],
     );
 
     const processStateChange = useCallback(
@@ -158,7 +174,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         icon,
         state,
         type: buttonType,
-        checked,
+        checked: radioChecked,
     });
 
     const {backgroundColor, borderColor, color} = useAnimated({
@@ -170,7 +186,6 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     });
 
     const border = useBorder({borderColor});
-
     const processLayout = useCallback(
         (event: LayoutChangeEvent) => {
             const nativeEventLayout = event.nativeEvent.layout;
@@ -187,21 +202,29 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     useEffect(() => {
         const commonElevation = disabled ? 0 : 1;
         const fabElevation = disabled ? 0 : 3;
-
-        checkSetCommonElevation({
+        const setCommonElevation = checkSetCommonElevation({
             category,
             type: buttonType,
             elevation: elevationStyle,
-        }) &&
-            setState(draft => {
+        });
+
+        if (setCommonElevation) {
+            return setState(draft => {
                 draft.elevation = commonElevation;
             });
+        }
 
         checkSetFabElevation({category, elevation: elevationStyle}) &&
             setState(draft => {
                 draft.elevation = fabElevation;
             });
-    }, [category, disabled, elevationStyle, setState, buttonType]);
+    }, [buttonType, category, disabled, elevationStyle, setState]);
+
+    useEffect(() => {
+        setState(draft => {
+            draft.checked = checked;
+        });
+    }, [checked, setState]);
 
     return render({
         ...renderProps,

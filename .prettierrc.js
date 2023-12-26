@@ -6,8 +6,4 @@ module.exports = {
     bracketSpacing: false,
     singleQuote: true,
     trailingComma: 'all',
-    'object-curly-newline': {
-        ObjectExpression: 'always',
-        ObjectPattern: 'always',
-    },
 };

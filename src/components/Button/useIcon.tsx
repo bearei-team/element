@@ -16,7 +16,7 @@ export interface UseIconOptions
 }
 
 export const useIcon = (options: UseIconOptions) => {
-    const {disabled, icon, type, fabType, category, state, checked} = options;
+    const {category, checked, disabled, fabType, icon, state, type} = options;
     const theme = useTheme();
     const commonFillType = {
         filled: theme.palette.primary.onPrimary,
@@ -44,8 +44,7 @@ export const useIcon = (options: UseIconOptions) => {
         category === 'radio' ? 'primary' : categoryType
     ) as ButtonType & FabType;
 
-    const fill = categoryIcon[category]?.[iconType];
-    const checkedIcon = (
+    const checkedIcon = category === 'radio' && (
         <Icon
             type="outlined"
             name={checked ? 'radioButtonChecked' : 'radioButtonUnchecked'}
@@ -53,7 +52,8 @@ export const useIcon = (options: UseIconOptions) => {
     );
 
     const radioIcon = category === 'radio' ? checkedIcon : icon;
-    const defaultIcon = icon ?? (category === 'fab' ? <Icon /> : radioIcon);
+    const defaultIcon =
+        radioIcon ?? (category === 'fab' ? <Icon /> : radioIcon);
 
     if (category === 'common' || !defaultIcon) {
         return icon;
@@ -63,6 +63,6 @@ export const useIcon = (options: UseIconOptions) => {
         state,
         fill: disabled
             ? theme.color.rgba(theme.palette.surface.onSurface, 0.38)
-            : fill,
+            : categoryIcon[category]?.[iconType],
     });
 };

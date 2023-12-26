@@ -17,11 +17,21 @@ export type FabType = 'surface' | 'primary' | 'secondary' | 'tertiary';
 export interface ButtonProps extends TouchableProps {
     block?: boolean;
     category?: Category;
+    checked?: boolean;
     disabled?: boolean;
     elevation?: boolean;
     fabType?: FabType;
     icon?: React.JSX.Element;
     labelText?: string;
+
+    /**
+     *  Listen for the radio check state to change, this option only works on buttons whose category is radio
+     */
+    onCheckedChange?: (checked: boolean) => void;
+
+    /**
+     * The size option is only available for buttons in the Fab category
+     */
     size?: Size;
     type?: ButtonType;
 }
@@ -61,7 +71,8 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                 onLayout={onLayout}
                 size={size}
                 testID={`button--${id}`}
-                type={type}>
+                type={type}
+                style={{...(typeof style === 'object' && style)}}>
                 {typeof width === 'number' && (
                     <Elevation level={elevation} shape={shape}>
                         <TouchableRipple
@@ -76,13 +87,10 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                                 labelTextShow={labelTextShow}
                                 shape={shape}
                                 size={size}
-                                width={width}
-                                style={{
-                                    ...(typeof style === 'object' && style),
-                                    ...contentStyle,
-                                }}
+                                style={contentStyle}
                                 testID={`button__content--${id}`}
-                                type={type}>
+                                type={type}
+                                width={width}>
                                 {iconShow && (
                                     <Icon
                                         category={category}

@@ -82,5 +82,6 @@ export const FABExtended: StoryObj<ButtonProps> = {
 export const Radio: StoryObj<ButtonProps> = {
     args: {
         category: 'radio',
+        checked: true,
     },
 };
