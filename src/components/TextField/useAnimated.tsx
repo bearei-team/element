@@ -113,6 +113,14 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
+    const labelHeight = labeAnimated.interpolate({
+        inputRange: [0, 1],
+        outputRange: [
+            theme.adaptSize(theme.typography.body.large.lineHeight),
+            theme.adaptSize(theme.typography.body.small.lineHeight),
+        ],
+    });
+
     const labelLineLetterSpacing = labeAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
@@ -365,6 +373,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         inputHeight,
         labelColor,
         labelLineHeight,
+        labelHeight,
         labelLineLetterSpacing,
         labelSize,
         onAnimated: processAnimated,

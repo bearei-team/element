@@ -85,6 +85,7 @@ export const HeadlineText = styled.Text`
         font-size: ${theme.adaptFontSize(theme.typography.title.large.size)}px;
         font-style: ${theme.typography.title.large.style};
         font-weight: ${theme.typography.title.large.weight};
+        height: ${theme.adaptSize(theme.typography.title.large.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(
             theme.typography.title.large.letterSpacing,
         )}px;

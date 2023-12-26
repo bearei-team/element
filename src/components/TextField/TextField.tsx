@@ -84,6 +84,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>(
                 labelColor,
                 labelLeft,
                 labelLineHeight,
+                labelHeight,
                 labelLineLetterSpacing,
                 labelSize,
                 labelTextBackgroundWidth,
@@ -103,6 +104,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>(
                         letterSpacing: labelLineLetterSpacing,
                         lineHeight: labelLineHeight,
                         top: labelTop,
+                        height: labelHeight,
                     }}
                     testID={`textField__label--${id}`}
                     type={type}>

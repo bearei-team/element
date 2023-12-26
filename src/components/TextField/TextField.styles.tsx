@@ -93,6 +93,7 @@ export const LabelText = styled.Text`
         font-style: ${theme.typography.body.small.style};
         font-weight: ${theme.typography.body.small.weight};
         left: ${theme.adaptSize(theme.spacing.medium - theme.spacing.small)}px;
+        height: ${theme.adaptSize(theme.typography.body.small.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(
             theme.typography.body.small.letterSpacing,
         )}px;
@@ -133,6 +134,7 @@ export const Input = styled(TextInput)`
         font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
+        height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(
             theme.typography.body.large.letterSpacing,
         )}px;
@@ -168,6 +170,7 @@ export const SupportingText = styled.Text<SupportingTextProps>`
         font-size: ${theme.adaptSize(theme.typography.body.small.size)}px;
         font-style: ${theme.typography.body.small.style};
         font-weight: ${theme.typography.body.small.weight};
+        height: ${theme.adaptSize(theme.typography.body.small.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(
             theme.typography.body.small.letterSpacing,
         )}px;

@@ -24,6 +24,7 @@ export interface RenderProps extends TextFieldProps {
             activeIndicatorColor: AnimatedInterpolation;
             activeIndicatorHeight: AnimatedInterpolation;
             labelColor: AnimatedInterpolation;
+            labelHeight: AnimatedInterpolation;
             labelLeft?: AnimatedInterpolation;
             labelLineHeight: AnimatedInterpolation;
             labelLineLetterSpacing: AnimatedInterpolation;

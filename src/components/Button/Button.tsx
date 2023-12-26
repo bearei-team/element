@@ -81,6 +81,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                 accessibilityRole="button"
                 block={block}
                 category={category}
+                height={contentHeight}
                 onLayout={onLayout}
                 size={size}
                 testID={`button--${id}`}

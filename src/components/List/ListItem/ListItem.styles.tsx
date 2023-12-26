@@ -42,6 +42,7 @@ export const Headline = styled.Text`
         font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
+        height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(
             theme.typography.body.large.letterSpacing,
         )}px;
@@ -58,6 +59,7 @@ export const SupportingText = styled.Text`
         font-size: ${theme.adaptFontSize(theme.typography.body.medium.size)}px;
         font-style: ${theme.typography.body.medium.style};
         font-weight: ${theme.typography.body.medium.weight};
+        height: ${theme.adaptSize(theme.typography.body.medium.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(
             theme.typography.body.medium.letterSpacing,
         )}px;

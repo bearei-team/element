@@ -21,6 +21,7 @@ export const LabelText = styled.Text`
         font-size: ${theme.adaptFontSize(theme.typography.label.large.size)}px;
         font-style: ${theme.typography.label.large.style};
         font-weight: ${theme.typography.label.large.weight};
+        height: ${theme.adaptSize(theme.typography.label.large.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(
             theme.typography.label.large.letterSpacing,
         )}px;

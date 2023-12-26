@@ -77,6 +77,7 @@ export const LabelText = styled.Text<LabelTextProps>`
     ${({theme, active}) => css`
         font-size: ${theme.adaptFontSize(theme.typography.label.medium.size)}px;
         font-style: ${theme.typography.label.medium.style};
+        height: ${theme.adaptSize(theme.typography.label.medium.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(
             theme.typography.label.medium.letterSpacing,
         )}px;

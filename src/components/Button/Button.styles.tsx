@@ -5,6 +5,7 @@ import {RenderProps} from './ButtonBase';
 export interface ContainerProps
     extends Pick<RenderProps, 'block' | 'type' | 'size' | 'category'> {
     width: number;
+    height: number;
 }
 
 export interface ContentProps
@@ -19,9 +20,9 @@ export type LabelTextProps = Omit<ContentProps, 'iconShow' | 'width' | 'block'>;
 export type IconProps = Pick<ContentProps, 'category' | 'size'>;
 
 export const Container = styled.View<ContainerProps>`
-    ${({theme}) =>
+    ${({height}) =>
         css`
-            height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+            height: ${height}px;
         `}
 
     ${({block, width}) =>
@@ -43,9 +44,10 @@ export const Content = styled(Shape)<ContentProps>`
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.small)}px;
+        height: ${theme.adaptSize(theme.spacing.small * 5)}px;
     `}
 
-    ${({theme, type = 'filled'}) => {
+    ${({theme, category, type = 'filled'}) => {
         const contentType = {
             elevated: css`
                 min-width: ${theme.adaptSize(theme.spacing.small * 10 + 3)}px;
@@ -76,7 +78,7 @@ export const Content = styled(Shape)<ContentProps>`
             `,
         };
 
-        return contentType[type];
+        return category === 'common' && contentType[type];
     }}
 
     ${({iconShow, theme, type = 'filled'}) => {
@@ -106,19 +108,22 @@ export const Content = styled(Shape)<ContentProps>`
         const contentCategory = {
             common: css``,
             icon: css`
+                height: ${theme.adaptSize(theme.spacing.small * 6)}px;
                 min-width: ${theme.adaptSize(theme.spacing.small * 6)}px;
-                width: ${theme.adaptSize(theme.spacing.small * 6)}px;
                 padding: ${theme.adaptSize(theme.spacing.small)}px;
+                width: ${theme.adaptSize(theme.spacing.small * 6)}px;
             `,
             radio: css`
+                height: ${theme.adaptSize(theme.spacing.small * 6)}px;
                 min-width: ${theme.adaptSize(theme.spacing.small * 6)}px;
-                width: ${theme.adaptSize(theme.spacing.small * 6)}px;
                 padding: ${theme.adaptSize(theme.spacing.small)}px;
+                width: ${theme.adaptSize(theme.spacing.small * 6)}px;
             `,
             checkbox: css`
+                height: ${theme.adaptSize(theme.spacing.small * 6)}px;
                 min-width: ${theme.adaptSize(theme.spacing.small * 6)}px;
-                width: ${theme.adaptSize(theme.spacing.small * 6)}px;
                 padding: ${theme.adaptSize(theme.spacing.small)}px;
+                width: ${theme.adaptSize(theme.spacing.small * 6)}px;
             `,
             fab: css`
                 padding: ${theme.adaptSize(theme.spacing.small)}px;
@@ -180,6 +185,7 @@ export const LabelText = styled.Text<LabelTextProps>`
         font-size: ${theme.adaptFontSize(theme.typography.label.large.size)}px;
         font-style: ${theme.typography.label.large.style};
         font-weight: ${theme.typography.label.large.weight};
+        height: ${theme.adaptSize(theme.typography.label.large.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(
             theme.typography.label.large.letterSpacing,
         )}px;

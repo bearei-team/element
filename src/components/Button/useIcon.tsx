@@ -80,9 +80,8 @@ export const useIcon = (options: UseIconOptions) => {
     };
 
     const categoryType = category === 'fab' ? fabType : type;
-    const iconType = (
-        category === 'radio' ? 'primary' : categoryType
-    ) as ButtonType & FabType;
+    const iconType = (checkButton ? 'primary' : categoryType) as ButtonType &
+        FabType;
 
     const checkedIcon =
         checkButton && processCheckedIcon({category, checked, indeterminate});
