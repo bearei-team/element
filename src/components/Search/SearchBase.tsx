@@ -73,9 +73,7 @@ export const SearchBase: FC<SearchBaseProps> = props => {
 
     const processStateChange = useCallback(
         (nextState: State) => {
-            const focused = ['focused', 'pressIn', 'longPressIn'].includes(
-                nextState,
-            );
+            const focused = ['focus', 'pressOut'].includes(nextState);
 
             focused && inputRef.current?.focus();
         },
@@ -84,7 +82,7 @@ export const SearchBase: FC<SearchBaseProps> = props => {
 
     const {state, onBlur, onFocus, ...handleEvent} = useHandleEvent({
         ...props,
-        lockFocusEvent: true,
+        lockFocusState: true,
         onStateChange: processStateChange,
     });
 

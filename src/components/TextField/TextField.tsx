@@ -1,7 +1,6 @@
 import React, {FC, RefAttributes, forwardRef, memo} from 'react';
 import {
     Animated,
-    Pressable,
     PressableProps,
     TextInput,
     TextInputProps,
@@ -14,6 +13,8 @@ import {
     Content,
     Header,
     HeaderInner,
+    Inner,
+    InputContainer,
     Label,
     LabelText,
     LabelTextBackground,
@@ -45,6 +46,7 @@ const AnimatedActiveIndicator =
     Animated.createAnimatedComponent(ActiveIndicator);
 
 const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner);
+const AnimatedInputContainer = Animated.createAnimatedComponent(InputContainer);
 const AnimatedLabel = Animated.createAnimatedComponent(Label);
 const AnimatedLabelTextBackgroundInner = Animated.createAnimatedComponent(
     LabelTextBackgroundInner,
@@ -81,10 +83,11 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>(
                 borderWidth,
                 headerHeight,
                 headerWidth,
+                inputContainerHeight,
                 labelColor,
+                labelHeight,
                 labelLeft,
                 labelLineHeight,
-                labelHeight,
                 labelLineLetterSpacing,
                 labelSize,
                 labelTextBackgroundWidth,
@@ -100,11 +103,11 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>(
                     style={{
                         color: labelColor,
                         fontSize: labelSize,
+                        height: labelHeight,
                         left: labelLeft,
                         letterSpacing: labelLineLetterSpacing,
                         lineHeight: labelLineHeight,
                         top: labelTop,
-                        height: labelHeight,
                     }}
                     testID={`textField__label--${id}`}
                     type={type}>
@@ -113,14 +116,16 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>(
             );
 
             return (
-                <Pressable
+                <Container
                     {...(error && {
                         accessibilityLabel: supportingText,
                         accessibilityRole: 'alert',
                     })}
-                    {...pressableProps}
-                    testID={`textfield__pressable--${id}`}>
-                    <Container testID={`textfield--${id}`}>
+                    testID={`textfield--${id}`}
+                    style={{...(typeof style === 'object' && style)}}>
+                    <Inner
+                        {...pressableProps}
+                        testID={`textfield__inner--${id}`}>
                         <Header
                             onLayout={onHeaderLayout}
                             testID={`textfield__header--${id}`}
@@ -132,7 +137,6 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>(
                                 leadingIconShow={!!leadingIcon}
                                 shape={shape}
                                 style={{
-                                    ...(typeof style === 'object' && style),
                                     backgroundColor,
                                     borderColor,
                                     borderWidth,
@@ -148,7 +152,10 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>(
 
                                 <Content testID={`textfield__content--${id}`}>
                                     {type === 'filled' && LabelComponent}
-                                    {children}
+                                    <AnimatedInputContainer
+                                        style={{height: inputContainerHeight}}>
+                                        {children}
+                                    </AnimatedInputContainer>
                                 </Content>
 
                                 {trailingIcon && (
@@ -208,6 +215,8 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>(
                         </Header>
 
                         <AnimatedSupportingText
+                            ellipsizeMode="tail"
+                            numberOfLines={1}
                             style={{
                                 color: supportingTextColor,
                                 opacity: supportingTextOpacity,
@@ -215,8 +224,8 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>(
                             testID={`textfield__supportingText--${id}`}>
                             {supportingText}
                         </AnimatedSupportingText>
-                    </Container>
-                </Pressable>
+                    </Inner>
+                </Container>
             );
         };
 

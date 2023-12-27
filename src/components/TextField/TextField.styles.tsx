@@ -17,7 +17,8 @@ export interface LabelTextBackgroundProps {
 
 export type ActiveIndicatorProps = Pick<LabelTextBackgroundProps, 'width'>;
 
-export const Container = styled.View`
+export const Container = styled.View``;
+export const Inner = styled.Pressable`
     display: flex;
     flex-direction: column;
 
@@ -129,7 +130,17 @@ export const LabelTextBackgroundInner = styled.View`
     `};
 `;
 
+export const InputContainer = styled.View`
+    align-items: center;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+`;
+
 export const Input = styled(TextInput)`
+    flex: 1;
+
     ${({theme}) => css`
         font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
         font-style: ${theme.typography.body.large.style};
@@ -137,10 +148,6 @@ export const Input = styled(TextInput)`
         height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(
             theme.typography.body.large.letterSpacing,
-        )}px;
-
-        line-height: ${theme.adaptSize(
-            theme.typography.body.large.lineHeight,
         )}px;
     `};
 `;

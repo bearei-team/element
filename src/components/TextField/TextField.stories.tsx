@@ -13,6 +13,14 @@ export const Filled: StoryObj<TextFieldProps> = {
     },
 };
 
+export const FilledPassword: StoryObj<TextFieldProps> = {
+    args: {
+        labelText: 'Label',
+        supportingText: 'supportingText',
+        textContentType: 'password',
+    },
+};
+
 export const Outlined: StoryObj<TextFieldProps> = {
     args: {
         labelText: 'Label',

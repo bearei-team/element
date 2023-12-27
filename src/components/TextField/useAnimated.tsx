@@ -3,7 +3,7 @@ import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
-import {State} from '../Common/interface';
+import {EventName, State} from '../Common/interface';
 import {RenderProps} from './TextFieldBase';
 
 export interface ProcessAnimatedTimingOptions {
@@ -20,17 +20,19 @@ export interface UseAnimatedOptions
     extends Required<
         Pick<RenderProps, 'type' | 'error' | 'state' | 'disabled'>
     > {
+    eventName: EventName;
     filled: boolean;
+    finished: (focused: boolean) => void;
     labelTextWidth: number;
     leadingIconShow: boolean;
     supportingTextShow: boolean;
-    finished: (focused: boolean) => void;
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {
         disabled,
         error,
+        eventName,
         filled,
         finished,
         labelTextWidth,
@@ -46,7 +48,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const [colorAnimated] = useAnimatedValue(1);
     const [inputColorAnimated] = useAnimatedValue(1);
     const filledValue = filled ? 1 : 0;
-    const [inputHeightAnimated] = useAnimatedValue(filledValue);
+    const [inputContainerAnimated] = useAnimatedValue(filledValue);
     const [labeAnimated] = useAnimatedValue(filledValue);
     const [labelPlaceholderAnimated] = useAnimatedValue(filledValue);
     const [supportingTextColorAnimated] = useAnimatedValue(1);
@@ -79,14 +81,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         },
     };
 
-    const inputHeight = useMemo(
-        () =>
-            inputHeightAnimated.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, theme.adaptSize(theme.spacing.large)],
-            }),
-        [inputHeightAnimated, theme],
-    );
+    const inputContainerHeight = inputContainerAnimated.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, theme.adaptSize(theme.spacing.large)],
+    });
 
     const inputColor = useMemo(
         () =>
@@ -271,9 +269,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 },
                 enabled: () => {
                     processAnimatedTiming(inputColorAnimated, {toValue: 1});
-                    processAnimatedTiming(inputHeightAnimated, {
+                    processAnimatedTiming(inputContainerAnimated, {
                         toValue: filledValue,
                     });
+
                     processAnimatedTiming(labeAnimated, {toValue: filledValue});
                     processAnimatedTiming(labelPlaceholderAnimated, {
                         toValue: filledValue,
@@ -287,17 +286,19 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     processAnimatedTiming(supportingTextColorAnimated, {
                         toValue: 1,
                     });
+
                     processBorderAnimated(0);
                 },
                 error: () => {
                     processErrorAnimated();
                 },
                 focused: () => {
-                    processAnimatedTiming(inputHeightAnimated, {toValue: 1});
+                    processAnimatedTiming(inputContainerAnimated, {toValue: 1});
                     processAnimatedTiming(labeAnimated, {
                         toValue: 1,
                         finished: animatedFinished,
                     });
+
                     processAnimatedTiming(labelPlaceholderAnimated, {
                         toValue: 1,
                     });
@@ -317,7 +318,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
             error,
             filledValue,
             inputColorAnimated,
-            inputHeightAnimated,
+            inputContainerAnimated,
             labeAnimated,
             labelPlaceholderAnimated,
             processAnimatedTiming,
@@ -350,12 +351,12 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     }, [processAnimatedTiming, supportingTextShow, supportingTextColorOpacity]);
 
     useEffect(() => {
-        const focused = ['focused', 'pressIn', 'longPressIn'].includes(state);
+        const focused = ['focus', 'pressOut'].includes(eventName);
 
         processAnimated(focused ? 'focused' : state, {
             finished: () => finished(focused),
         });
-    }, [finished, processAnimated, state]);
+    }, [eventName, finished, processAnimated, state]);
 
     useEffect(() => {
         processAnimated(disabled ? 'disabled' : state);
@@ -370,10 +371,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         activeIndicatorHeight,
         backgroundColor,
         inputColor,
-        inputHeight,
+        inputContainerHeight,
         labelColor,
-        labelLineHeight,
         labelHeight,
+        labelLineHeight,
         labelLineLetterSpacing,
         labelSize,
         onAnimated: processAnimated,

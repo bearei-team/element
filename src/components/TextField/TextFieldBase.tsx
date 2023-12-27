@@ -23,6 +23,7 @@ export interface RenderProps extends TextFieldProps {
         ViewStyle & {
             activeIndicatorColor: AnimatedInterpolation;
             activeIndicatorHeight: AnimatedInterpolation;
+            inputContainerHeight: AnimatedInterpolation;
             labelColor: AnimatedInterpolation;
             labelHeight: AnimatedInterpolation;
             labelLeft?: AnimatedInterpolation;
@@ -74,6 +75,7 @@ const renderTextInput = (options: RenderTextInputOptions) => {
              */
             // @ts-ignore
             enableFocusRing={false}
+            textAlignVertical="center"
         />
     );
 };
@@ -93,7 +95,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         supportingText,
         trailingIcon,
         type = 'filled',
-        ...renderProps
+        ...textInputProps
     } = props;
 
     const [{headerLayout, labelTextLayout, value}, setState] =
@@ -105,10 +107,11 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
-    const {state, onBlur, onFocus, ...handleEvent} = useHandleEvent({
+    const {state, eventName, onBlur, onFocus, ...handleEvent} = useHandleEvent({
         ...props,
         disabled,
-        lockFocusEvent: true,
+        lockFocusState: true,
+        lockPressInState: true,
     });
 
     const processAnimatedFinished = useCallback(
@@ -118,9 +121,10 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         [inputRef],
     );
 
-    const {inputHeight, inputColor, ...animatedStyle} = useAnimated({
+    const {inputColor, ...animatedStyle} = useAnimated({
         disabled,
         error,
+        eventName,
         filled: !!value || !!placeholder,
         finished: processAnimatedFinished,
         labelTextWidth: labelTextLayout.width,
@@ -148,10 +152,11 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
 
     const handleChangeText = useCallback(
         (text: string) => {
-            onChangeText?.(text);
             setState(draft => {
                 draft.value = text;
             });
+
+            onChangeText?.(text);
         },
         [onChangeText, setState],
     );
@@ -159,14 +164,15 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     const children = useMemo(
         () =>
             renderTextInput({
-                placeholderTextColor,
+                ...textInputProps,
                 defaultValue,
-                onChangeText: handleChangeText,
                 onBlur,
+                onChangeText: handleChangeText,
                 onFocus,
                 placeholder,
+                placeholderTextColor,
                 ref: inputRef,
-                renderStyle: {height: inputHeight, color: inputColor},
+                renderStyle: {color: inputColor},
                 testID: `textfield__input--${id}`,
             }),
         [
@@ -174,24 +180,22 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
             handleChangeText,
             id,
             inputColor,
-            inputHeight,
             inputRef,
             onBlur,
             onFocus,
             placeholder,
             placeholderTextColor,
+            textInputProps,
         ],
     );
 
     return render({
-        ...renderProps,
         ...handleEvent,
         children,
         disabled,
         id,
         labelText,
         leadingIcon,
-        onFocus,
         onHeaderLayout: processHeaderLayout,
         onLabelTextLayout: processLabelTextLayout,
         renderStyle: {

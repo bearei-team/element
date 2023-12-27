@@ -12,3 +12,14 @@ export type State =
     | 'hovered'
     | 'longPressIn'
     | 'pressIn';
+
+export type EventName =
+    | 'none'
+    | 'pressIn'
+    | 'press'
+    | 'longPress'
+    | 'pressOut'
+    | 'hoverIn'
+    | 'hoverOut'
+    | 'focus'
+    | 'blur';
