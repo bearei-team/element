@@ -27,7 +27,10 @@ export const Inner = styled.Pressable`
     `}
 `;
 
-export const Header = styled.View``;
+export const Header = styled.View`
+    pointer-events: none;
+`;
+
 export const HeaderInner = styled(Shape)<HeaderInnerProps>`
     align-items: center;
     display: flex;
@@ -103,7 +106,7 @@ export const LabelText = styled.Text`
             theme.typography.body.small.lineHeight,
         )}px;
 
-        padding: ${theme.adaptSize(0)}px
+        padding: ${theme.adaptSize(theme.spacing.none)}px
             ${theme.adaptSize(theme.spacing.small)}px;
 
         top: ${theme.adaptSize(-theme.typography.body.small.lineHeight / 2)}px;

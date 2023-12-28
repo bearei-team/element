@@ -6,7 +6,9 @@ import {RenderProps} from './NavigationItemBase';
 export type IconInnerProps = Pick<RenderProps, 'pressPosition'>;
 export type LabelTextProps = Pick<RenderProps, 'active'>;
 
-export const Container = styled(View)`
+export const Container = styled(View)``;
+
+export const Inner = styled(View)`
     align-items: center;
     display: flex;
     flex-direction: column;

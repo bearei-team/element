@@ -11,10 +11,9 @@ export interface ProcessAnimatedTimingOptions {
     finished?: () => void;
 }
 
-export type ProcessAnimatedOptions = Pick<
-    ProcessAnimatedTimingOptions,
-    'finished'
->;
+export interface ProcessAnimatedOptions {
+    processFocus?: () => void;
+}
 
 export interface UseAnimatedOptions
     extends Required<
@@ -22,7 +21,7 @@ export interface UseAnimatedOptions
     > {
     eventName: EventName;
     filled: boolean;
-    finished: (focused: boolean) => void;
+    onFocus: (focused: boolean) => void;
     labelTextWidth: number;
     leadingIconShow: boolean;
     supportingTextShow: boolean;
@@ -34,7 +33,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         error,
         eventName,
         filled,
-        finished,
+        onFocus,
         labelTextWidth,
         leadingIconShow,
         state,
@@ -223,19 +222,24 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     duration: 'short3',
                     easing: 'standard',
                     toValue,
-                }).start(animatedFinished),
+                }).start(),
             );
+
+            animatedFinished?.();
         },
         [theme],
     );
 
     const processBorderAnimated = useCallback(
-        (toValue: number) =>
-            type === 'filled'
-                ? processAnimatedTiming(activeIndicatorHeightAnimated, {
-                      toValue,
-                  })
-                : processAnimatedTiming(borderAnimated, {toValue}),
+        (toValue: number) => {
+            if (type === 'filled') {
+                return processAnimatedTiming(activeIndicatorHeightAnimated, {
+                    toValue,
+                });
+            }
+
+            processAnimatedTiming(borderAnimated, {toValue});
+        },
         [
             activeIndicatorHeightAnimated,
             borderAnimated,
@@ -246,12 +250,13 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
     const processStateChangeAnimated = useCallback(
         (processStateAnimatedOptions = {} as ProcessAnimatedOptions) => {
-            const {finished: animatedFinished} = processStateAnimatedOptions;
+            const {processFocus} = processStateAnimatedOptions;
             const processErrorAnimated = () => {
                 processAnimatedTiming(colorAnimated, {toValue: 3});
                 processAnimatedTiming(supportingTextColorAnimated, {
                     toValue: 2,
                 });
+
                 processBorderAnimated(1);
             };
 
@@ -265,6 +270,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     processAnimatedTiming(supportingTextColorAnimated, {
                         toValue,
                     });
+
                     processBorderAnimated(toValue);
                 },
                 enabled: () => {
@@ -296,12 +302,13 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     processAnimatedTiming(inputContainerAnimated, {toValue: 1});
                     processAnimatedTiming(labeAnimated, {
                         toValue: 1,
-                        finished: animatedFinished,
                     });
 
                     processAnimatedTiming(labelPlaceholderAnimated, {
                         toValue: 1,
                     });
+
+                    processFocus?.();
 
                     if (error) {
                         return processErrorAnimated();
@@ -351,12 +358,12 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     }, [processAnimatedTiming, supportingTextShow, supportingTextColorOpacity]);
 
     useEffect(() => {
-        const focused = ['focus', 'pressOut'].includes(eventName);
+        const focused = ['focus', 'pressOut', 'press'].includes(eventName);
 
         processAnimated(focused ? 'focused' : state, {
-            finished: () => finished(focused),
+            processFocus: () => onFocus(focused),
         });
-    }, [eventName, finished, processAnimated, state]);
+    }, [eventName, onFocus, processAnimated, state]);
 
     useEffect(() => {
         processAnimated(disabled ? 'disabled' : state);
@@ -377,7 +384,6 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         labelLineHeight,
         labelLineLetterSpacing,
         labelSize,
-        onAnimated: processAnimated,
         supportingTextColor,
         supportingTextOpacity,
         ...(type === 'outlined' && {

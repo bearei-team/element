@@ -262,15 +262,16 @@ export const formStore = <T extends Store>(): FormStore<T> => {
         const processValidate = (entityName?: keyof T) => {
             if (entityName) {
                 const value = getFieldValue(entityName);
+                const entity = entities.find(
+                    ({props}) => props.name === entityName,
+                );
 
-                return entities
-                    .find(({props}) => props.name === entityName)
-                    ?.validate(value)
-                    .then(err => {
-                        setFieldError({[entityName]: err} as Error<T>);
+                return entity?.validate(value).then(err => {
+                    setFieldError({[entityName]: err} as Error<T>);
+                    err && entity.onStoreChange();
 
-                        return err;
-                    });
+                    return err;
+                });
             }
         };
 

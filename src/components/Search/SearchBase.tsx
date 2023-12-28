@@ -22,13 +22,13 @@ export interface RenderProps
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         innerHeight: AnimatedInterpolation;
     } & {
-        width: number;
         height: number;
         listBackgroundColor: string;
+        width: number;
     };
+    listVisible?: boolean;
     state: State;
     underlayColor: string;
-    listVisible?: boolean;
 }
 export interface SearchBaseProps extends SearchProps {
     render: (props: RenderProps) => React.JSX.Element;
@@ -47,17 +47,22 @@ const initialState = {
 };
 
 const renderTextInput = (options: RenderTextInputOptions) => (
-    <Input {...options} />
+    <Input
+        {...options}
+        // @ts-ignore
+        enableFocusRing={false}
+        textAlignVertical="center"
+    />
 );
 
 export const SearchBase: FC<SearchBaseProps> = props => {
     const {
-        render,
+        defaultValue,
         leadingIcon,
         onChangeText,
-        defaultValue,
         placeholder,
         ref,
+        render,
         ...renderProps
     } = props;
 

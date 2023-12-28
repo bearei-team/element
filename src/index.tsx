@@ -19,3 +19,5 @@ export * from './components/Tab/Tab';
 export * from './components/TextField/TextField';
 export * from './components/TouchableRipple/TouchableRipple';
 export * from './context/context';
+export * from './hooks/hook';
+export * from './utils/util';

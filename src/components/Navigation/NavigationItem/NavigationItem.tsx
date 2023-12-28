@@ -1,11 +1,5 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {
-    Animated,
-    Pressable,
-    PressableProps,
-    View,
-    ViewProps,
-} from 'react-native';
+import {Animated, PressableProps, View, ViewProps} from 'react-native';
 import {ShapeProps} from '../../Common/Common.styles';
 import {Hovered} from '../../Hovered/Hovered';
 import {
@@ -13,6 +7,7 @@ import {
     Header,
     Icon,
     IconBackground,
+    Inner,
     LabelText,
 } from './NavigationItem.styles';
 import {NavigationItemBase, RenderProps} from './NavigationItemBase';
@@ -50,7 +45,7 @@ const ForwardRefNavigationItem = forwardRef<View, NavigationItemProps>(
                 state,
                 style,
                 underlayColor,
-                ...containerProps
+                ...pressableProps
             } = renderProps;
 
             const {
@@ -63,13 +58,14 @@ const ForwardRefNavigationItem = forwardRef<View, NavigationItemProps>(
             } = renderStyle;
 
             return (
-                <Pressable {...containerProps} ref={ref}>
-                    <Container
-                        accessibilityLabel={labelText}
-                        accessibilityRole="tab"
-                        onLayout={onLayout}
-                        style={style}
-                        testID={`navigationItem--${id}`}>
+                <Container
+                    accessibilityLabel={labelText}
+                    accessibilityRole="tab"
+                    onLayout={onLayout}
+                    ref={ref}
+                    style={style}
+                    testID={`navigationItem--${id}`}>
+                    <Inner {...pressableProps}>
                         <Header
                             onLayout={onHeaderLayout}
                             pressPosition={pressPosition}
@@ -97,15 +93,14 @@ const ForwardRefNavigationItem = forwardRef<View, NavigationItemProps>(
                                 />
                             )}
                         </Header>
-
                         <AnimatedLabelText
                             style={{color: labelColor, height: labelHeight}}
                             testID={`navigationItem__labelText--${id}`}
                             active={active}>
                             {labelText}
                         </AnimatedLabelText>
-                    </Container>
-                </Pressable>
+                    </Inner>
+                </Container>
             );
         };
 

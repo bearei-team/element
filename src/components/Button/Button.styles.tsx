@@ -20,18 +20,14 @@ export type LabelTextProps = Omit<ContentProps, 'iconShow' | 'width' | 'block'>;
 export type IconProps = Pick<ContentProps, 'category' | 'size'>;
 
 export const Container = styled.View<ContainerProps>`
-    ${({height}) =>
-        css`
-            height: ${height}px;
-        `}
-
-    ${({block, width}) =>
+    ${({block, width = 0, height = 0}) =>
         block
             ? css`
                   width: 100%;
               `
             : css`
                   width: ${width}px;
+                  height: ${height}px;
               `}
 `;
 
@@ -171,7 +167,7 @@ export const Content = styled(Shape)<ContentProps>`
                 ${theme.adaptSize(theme.spacing.medium)}px;
         `}
         
-    ${({block, width}) =>
+    ${({block, width = 0}) =>
         block &&
         css`
             width: ${width}px;

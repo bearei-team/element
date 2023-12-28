@@ -114,7 +114,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         lockPressInState: true,
     });
 
-    const processAnimatedFinished = useCallback(
+    const processFocus = useCallback(
         (focused: boolean) => {
             focused && inputRef.current?.focus();
         },
@@ -126,7 +126,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         error,
         eventName,
         filled: !!value || !!placeholder,
-        finished: processAnimatedFinished,
+        onFocus: processFocus,
         labelTextWidth: labelTextLayout.width,
         leadingIconShow: !!leadingIcon,
         state,

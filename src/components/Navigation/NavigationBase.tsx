@@ -33,6 +33,10 @@ const renderItems = (options: RenderItemOptions) => {
     ));
 };
 
+const initialState = {
+    data: [] as Data[],
+};
+
 export const NavigationBase: FC<NavigationBaseProps> = props => {
     const {
         block = false,
@@ -43,7 +47,7 @@ export const NavigationBase: FC<NavigationBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [data, setData] = useImmer<Data[]>([]);
+    const [{data}, setData] = useImmer(initialState);
     const id = useId();
     const processFAB = () => {
         if (!fab) {
@@ -56,7 +60,7 @@ export const NavigationBase: FC<NavigationBaseProps> = props => {
     const handleActive = useCallback(
         (key: string) => {
             setData(draft => {
-                draft.forEach(datum => (datum.active = datum.key === key));
+                draft.data.forEach(datum => (datum.active = datum.key === key));
             });
 
             onChange?.(key);

@@ -118,16 +118,14 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     });
 
     const processChecked = useCallback(() => {
-        if (checkButton) {
-            setState(draft => {
-                const nextChecked = !draft.checked;
+        setState(draft => {
+            const nextChecked = !draft.checked;
 
-                draft.checked = nextChecked;
+            draft.checked = nextChecked;
 
-                onCheckedChange?.(nextChecked);
-            });
-        }
-    }, [checkButton, onCheckedChange, setState]);
+            onCheckedChange?.(nextChecked);
+        });
+    }, [onCheckedChange, setState]);
 
     const processElevation = useCallback(
         (nextState: State) => {
@@ -246,10 +244,11 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     }, [buttonType, category, disabled, elevationStyle, setState]);
 
     useEffect(() => {
-        setState(draft => {
-            draft.checked = checked;
-        });
-    }, [checked, setState]);
+        checked !== buttonChecked &&
+            setState(draft => {
+                draft.checked = checked;
+            });
+    }, [buttonChecked, checked, setState]);
 
     return render({
         ...renderProps,

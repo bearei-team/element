@@ -26,7 +26,7 @@ export const FormItemBase: FC<FormItemBaseProps> = props => {
         useFormContext();
 
     const errors = getFieldError(name)?.errors;
-    const errorMessage = errors?.[0].message;
+    const fieldValue = name ? getFieldValue(name) : name;
     const id = useId();
 
     const onValueChange = useCallback(
@@ -55,23 +55,14 @@ export const FormItemBase: FC<FormItemBaseProps> = props => {
     const children = useMemo(
         () =>
             renderControl?.({
-                errorMessage,
+                errorMessage: errors?.[0].message,
                 errors,
                 id,
                 labelText,
                 onValueChange: onValueChange,
-                value: name ? getFieldValue(name) : name,
+                value: fieldValue,
             }),
-        [
-            errorMessage,
-            errors,
-            getFieldValue,
-            id,
-            labelText,
-            name,
-            onValueChange,
-            renderControl,
-        ],
+        [errors, fieldValue, id, labelText, onValueChange, renderControl],
     );
 
     useEffect(() => {

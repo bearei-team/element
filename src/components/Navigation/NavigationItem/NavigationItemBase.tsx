@@ -24,8 +24,8 @@ export interface RenderProps extends NavigationItemProps {
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         headerHeight: number;
         headerWidth: number;
-        iconBackgroundWidth: AnimatedInterpolation;
         iconBackgroundColor: AnimatedInterpolation;
+        iconBackgroundWidth: AnimatedInterpolation;
         labelColor: AnimatedInterpolation;
         labelHeight: AnimatedInterpolation;
     };

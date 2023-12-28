@@ -25,9 +25,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const iconBackgroundWidth = stateChangeAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
-            theme.adaptSize(24),
+            theme.adaptSize(theme.spacing.large),
             theme.adaptSize(
-                24 + (theme.spacing.large - theme.spacing.extraSmall) * 2,
+                theme.spacing.large +
+                    (theme.spacing.large - theme.spacing.extraSmall) * 2,
             ),
         ],
     });
