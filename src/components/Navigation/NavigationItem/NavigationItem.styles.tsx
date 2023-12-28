@@ -8,7 +8,7 @@ export type LabelTextProps = Pick<RenderProps, 'active'>;
 
 export const Container = styled(View)``;
 
-export const Inner = styled(View)`
+export const Inner = styled.Pressable`
     align-items: center;
     display: flex;
     flex-direction: column;

@@ -70,13 +70,13 @@ export const NavigationBase: FC<NavigationBaseProps> = props => {
 
     useEffect(() => {
         dataSources &&
-            setData(() =>
-                dataSources.map((datum, index) => ({
+            setData(draft => {
+                draft.data = dataSources.map((datum, index) => ({
                     ...datum,
                     active: false,
                     key: datum.key ?? index,
-                })),
-            );
+                })) as Data[];
+            });
     }, [dataSources, setData]);
 
     return render({
