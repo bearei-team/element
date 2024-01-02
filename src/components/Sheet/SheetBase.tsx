@@ -57,11 +57,12 @@ export const SheetBase: FC<SheetBaseProps> = props => {
 
     const handleClose = useCallback(
         (event: GestureResponderEvent) => {
-            onClose?.(event);
-            onBack?.(event);
             setState(draft => {
                 draft.visible = false;
             });
+
+            onClose?.(event);
+            onBack?.(event);
         },
         [onBack, onClose, setState],
     );

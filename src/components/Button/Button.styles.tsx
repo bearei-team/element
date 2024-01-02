@@ -67,6 +67,11 @@ export const Content = styled(Shape)<ContentProps>`
                         theme.spacing.medium - theme.spacing.extraSmall,
                     )}px;
             `,
+            link: css`
+                height: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding: ${theme.adaptSize(theme.spacing.none)}px
+                    ${theme.adaptSize(theme.spacing.extraSmall)}px;
+            `,
             tonal: css`
                 min-width: ${theme.adaptSize(theme.spacing.small * 10 + 3)}px;
                 padding: ${theme.adaptSize(theme.spacing.small + 2)}px
@@ -92,6 +97,7 @@ export const Content = styled(Shape)<ContentProps>`
                 padding-left: ${theme.adaptSize(theme.spacing.medium - 4)}px;
                 padding-right: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
+            link: css``,
             tonal: css`
                 padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
             `,
@@ -167,8 +173,9 @@ export const Content = styled(Shape)<ContentProps>`
                 ${theme.adaptSize(theme.spacing.medium)}px;
         `}
         
-    ${({block, width = 0}) =>
+    ${({block, width = 0, type}) =>
         block &&
+        type !== 'link' &&
         css`
             width: ${width}px;
         `}
@@ -177,19 +184,42 @@ export const Content = styled(Shape)<ContentProps>`
 export const LabelText = styled.Text<LabelTextProps>`
     user-select: none;
 
-    ${({theme}) => css`
-        font-size: ${theme.adaptFontSize(theme.typography.label.large.size)}px;
-        font-style: ${theme.typography.label.large.style};
-        font-weight: ${theme.typography.label.large.weight};
-        height: ${theme.adaptSize(theme.typography.label.large.lineHeight)}px;
-        letter-spacing: ${theme.adaptSize(
-            theme.typography.label.large.letterSpacing,
-        )}px;
+    ${({theme, type}) =>
+        type === 'link'
+            ? css`
+                  font-size: ${theme.adaptFontSize(
+                      theme.typography.body.small.size,
+                  )}px;
+                  font-style: ${theme.typography.body.small.style};
+                  font-weight: ${theme.typography.body.small.weight};
+                  min-height: ${theme.adaptSize(
+                      theme.typography.body.small.lineHeight,
+                  )}px;
+                  letter-spacing: ${theme.adaptSize(
+                      theme.typography.body.small.letterSpacing,
+                  )}px;
 
-        line-height: ${theme.adaptSize(
-            theme.typography.label.large.lineHeight,
-        )}px;
-    `}
+                  line-height: ${theme.adaptSize(
+                      theme.typography.body.small.lineHeight,
+                  )}px;
+              `
+            : css`
+                  font-size: ${theme.adaptFontSize(
+                      theme.typography.label.large.size,
+                  )}px;
+                  font-style: ${theme.typography.label.large.style};
+                  font-weight: ${theme.typography.label.large.weight};
+                  height: ${theme.adaptSize(
+                      theme.typography.label.large.lineHeight,
+                  )}px;
+                  letter-spacing: ${theme.adaptSize(
+                      theme.typography.label.large.letterSpacing,
+                  )}px;
+
+                  line-height: ${theme.adaptSize(
+                      theme.typography.label.large.lineHeight,
+                  )}px;
+              `}
 `;
 
 export const Icon = styled.View<IconProps>`

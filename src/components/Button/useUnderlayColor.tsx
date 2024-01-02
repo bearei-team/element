@@ -19,6 +19,7 @@ export const useUnderlayColor = (options: UseUnderlayColorOptions) => {
             ? theme.palette.primary.primary
             : theme.palette.surface.onSurfaceVariant,
 
+        link: theme.palette.primary.primary,
         tonal: theme.palette.secondary.onSecondaryContainer,
     };
 

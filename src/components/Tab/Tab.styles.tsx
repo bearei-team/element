@@ -77,6 +77,7 @@ export const Content = styled.View`
 export const ContentInner = styled.View`
     display: flex;
     flex-direction: row;
+    height: 100%;
     position: absolute;
     top: 0;
 `;

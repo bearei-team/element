@@ -10,9 +10,9 @@ export type UseAnimatedOptions = Required<
 >;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {category, disabled, fabType, state, type} = options;
     const [borderAnimated] = useAnimatedValue(1);
     const [colorAnimated] = useAnimatedValue(1);
+    const {category, disabled, fabType, state, type} = options;
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
     const disabledBackgroundColor = theme.color.rgba(
@@ -48,6 +48,13 @@ export const useAnimated = (options: UseAnimatedOptions) => {
             ],
         },
         text: {
+            inputRange: [0, 1],
+            outputRange: [
+                theme.color.rgba(theme.palette.primary.primary, 0),
+                theme.color.rgba(theme.palette.primary.primary, 0),
+            ],
+        },
+        link: {
             inputRange: [0, 1],
             outputRange: [
                 theme.color.rgba(theme.palette.primary.primary, 0),
@@ -108,6 +115,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
             outputRange: [disabledColor, theme.palette.primary.primary],
         },
         text: {
+            inputRange: [0, 1],
+            outputRange: [disabledColor, theme.palette.primary.primary],
+        },
+        link: {
             inputRange: [0, 1],
             outputRange: [disabledColor, theme.palette.primary.primary],
         },

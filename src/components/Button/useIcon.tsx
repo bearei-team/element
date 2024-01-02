@@ -8,17 +8,17 @@ export interface UseIconOptions
     extends Required<
         Pick<
             RenderProps,
-            | 'disabled'
-            | 'type'
-            | 'fabType'
             | 'category'
-            | 'state'
+            | 'disabled'
+            | 'fabType'
             | 'indeterminate'
+            | 'state'
+            | 'type'
         >
     > {
+    checkButton: boolean;
     checked: boolean;
     icon?: React.JSX.Element;
-    checkButton: boolean;
 }
 
 export const processCheckedIcon = (

@@ -85,3 +85,10 @@ export const Radio: StoryObj<ButtonProps> = {
         checked: true,
     },
 };
+
+export const Link: StoryObj<ButtonProps> = {
+    args: {
+        type: 'link',
+        checked: true,
+    },
+};

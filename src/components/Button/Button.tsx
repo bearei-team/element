@@ -10,7 +10,14 @@ import {
 import {Container, Content, Icon, LabelText} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
-export type ButtonType = 'elevated' | 'filled' | 'outlined' | 'text' | 'tonal';
+export type ButtonType =
+    | 'elevated'
+    | 'filled'
+    | 'link'
+    | 'outlined'
+    | 'text'
+    | 'tonal';
+
 export type Category = 'common' | 'icon' | 'fab' | 'radio' | 'checkbox';
 export type FabType = 'surface' | 'primary' | 'secondary' | 'tertiary';
 
@@ -54,6 +61,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             id,
             labelText,
             labelTextShow,
+            onContentLayout,
             onLayout,
             renderStyle,
             shape,
@@ -62,16 +70,15 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             style,
             type,
             underlayColor,
-            onContentLayout,
             ...touchableRippleProps
         } = renderProps;
 
         const {
             color,
+            contentHeight,
+            contentWidth,
             height,
             width,
-            contentWidth,
-            contentHeight,
             ...contentStyle
         } = renderStyle;
 
@@ -108,7 +115,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                             testID={`button__content--${id}`}
                             type={type}
                             width={width}>
-                            {iconShow && (
+                            {iconShow && type !== 'link' && (
                                 <Icon
                                     category={category}
                                     testID={`button__icon--${id}`}>

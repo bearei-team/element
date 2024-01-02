@@ -26,14 +26,14 @@ export interface RenderProps
     iconShow: boolean;
     labelTextShow?: boolean;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
+        contentHeight: number;
+        contentWidth: number;
         height: number;
         width: number;
-        contentWidth: number;
-        contentHeight: number;
     };
+    onContentLayout: (event: LayoutChangeEvent) => void;
     state: State;
     underlayColor: TouchableRippleProps['underlayColor'];
-    onContentLayout: (event: LayoutChangeEvent) => void;
 }
 
 export interface ButtonBaseProps extends ButtonProps {
@@ -79,9 +79,9 @@ const processShape = (options: Pick<RenderProps, 'category'>) => {
 
 const initialState = {
     checked: false,
+    contentLayout: {} as LayoutRectangle,
     elevation: 0 as ElevationProps['level'],
     layout: {} as LayoutRectangle,
-    contentLayout: {} as LayoutRectangle,
     state: 'enabled' as State,
 };
 
@@ -227,8 +227,8 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         const fabElevation = disabled ? 0 : 3;
         const setCommonElevation = checkSetCommonElevation({
             category,
-            type: buttonType,
             elevation: elevationStyle,
+            type: buttonType,
         });
 
         if (setCommonElevation) {

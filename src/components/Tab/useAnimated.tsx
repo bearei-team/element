@@ -25,7 +25,8 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         itemLayout;
 
     const dataIndexes = Array.from({length: data.length}, (_, index) => index);
-    const defaultRange = dataIndexes.length === 0 ? [0, 1] : dataIndexes;
+    const defaultRange = dataIndexes.length <= 1;
+    const range = defaultRange ? [0, 1] : dataIndexes;
     const draftActiveIndicatorWidth =
         data.find(({active}) => active)?.labelTextLayout.width ?? 0;
 
@@ -44,19 +45,17 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     });
 
     const activeIndicatorLeft = activeAnimated.interpolate({
-        inputRange: defaultRange,
-        outputRange:
-            dataIndexes.length === 0
-                ? defaultRange
-                : dataIndexes.map(index => index * itemLayoutWidth),
+        inputRange: range,
+        outputRange: defaultRange
+            ? range
+            : dataIndexes.map(index => index * itemLayoutWidth),
     });
 
     const contentInnerLeft = activeAnimated.interpolate({
-        inputRange: defaultRange,
-        outputRange:
-            dataIndexes.length === 0
-                ? defaultRange
-                : dataIndexes.map(index => -(index * layoutWidth)),
+        inputRange: range,
+        outputRange: defaultRange
+            ? range
+            : dataIndexes.map(index => -(index * layoutWidth)),
     });
 
     const activeIndicatorWidth = activeIndicatorWidthAnimated.interpolate({
