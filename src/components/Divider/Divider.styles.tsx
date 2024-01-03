@@ -75,8 +75,6 @@ export const Content = styled.View`
 `;
 
 export const Subheader = styled.Text`
-    align-self: stretch;
-
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurfaceVariant};
         font-size: ${theme.adaptFontSize(theme.typography.title.small.size)}px;

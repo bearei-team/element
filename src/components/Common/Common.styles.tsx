@@ -43,12 +43,12 @@ export const Shape = styled(View)<ShapeProps>`
             width = theme.adaptSize(1),
         } = border;
 
-        const isAnimatedInterpolation =
+        const animatedInterpolation =
             typeof color !== 'string' || typeof width !== 'number';
 
         return (
             border &&
-            !isAnimatedInterpolation &&
+            !animatedInterpolation &&
             css`
                 border-color: ${color};
                 border-style: ${style};

@@ -9,12 +9,12 @@ export interface BadgeBaseProps extends BadgeProps {
 export const BadgeBase: FC<BadgeBaseProps> = props => {
     const {labelText = 0, render, size = 'medium', ...renderProps} = props;
     const id = useId();
-    const text = Number(labelText) > 999 ? '999+' : labelText;
+    const renderText = Number(labelText) > 999 ? '999+' : labelText;
 
     return render({
         ...renderProps,
         id,
-        labelText: size !== 'small' ? text : '',
+        labelText: renderText,
         size,
     });
 };
