@@ -22,6 +22,7 @@ export const Inner = styled(Shape)<InnerProps>`
     position: absolute;
     top: 0;
     z-index: 2048;
+    overflow: hidden;
 
     ${({theme, width}) =>
         css`
@@ -30,7 +31,7 @@ export const Inner = styled(Shape)<InnerProps>`
         `};
 `;
 
-export const Header = styled.View<InnerProps>`
+export const Header = styled.Pressable<InnerProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -79,6 +80,7 @@ export const Input = styled(TextInput)`
         font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
+        height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(
             theme.typography.body.large.letterSpacing,
         )}px;

@@ -1,7 +1,6 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {
     Animated,
-    Pressable,
     PressableProps,
     TextInput,
     TextInputProps,
@@ -73,49 +72,49 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
                         }}
                         testID={`search__inner--${id}`}
                         width={width}>
-                        <Pressable
+                        <Header
+                            accessibilityLabel={placeholder}
+                            accessibilityRole="keyboardkey"
+                            onFocus={onFocus}
                             onHoverIn={onHoverIn}
                             onHoverOut={onHoverOut}
-                            onFocus={onFocus}
-                            onPressIn={onPressIn}
                             onLongPress={onLongPress}
-                            testID={`search__pressable--${id}`}>
-                            <Header
-                                accessibilityLabel={placeholder}
-                                accessibilityRole="keyboardkey"
-                                testID={`search__header--${id}`}
-                                width={width}>
-                                <LeadingIcon
-                                    testID={`search__leadingIcon--${id}`}>
-                                    {leadingIcon}
-                                </LeadingIcon>
+                            onPressIn={onPressIn}
+                            testID={`search__header--${id}`}
+                            width={width}>
+                            <LeadingIcon testID={`search__leadingIcon--${id}`}>
+                                {leadingIcon}
+                            </LeadingIcon>
 
-                                <Content testID={`search__content--${id}`}>
-                                    {children}
-                                </Content>
+                            <Content testID={`search__content--${id}`}>
+                                {children}
+                            </Content>
 
-                                <TrailingIcon
-                                    testID={`search__trailingIcon--${id}`}>
-                                    {trailingIcon}
-                                </TrailingIcon>
+                            <TrailingIcon
+                                testID={`search__trailingIcon--${id}`}>
+                                {trailingIcon}
+                            </TrailingIcon>
 
-                                <Hovered
-                                    height={height}
-                                    opacities={[0.08, 0]}
-                                    shape={shape}
-                                    state={state}
-                                    underlayColor={underlayColor}
-                                    width={width}
-                                />
-                            </Header>
-                        </Pressable>
-
-                        <Divider size="large" width={width} />
-                        {listVisible && (
-                            <List
-                                data={data}
-                                style={{backgroundColor: listBackgroundColor}}
+                            <Hovered
+                                height={height}
+                                opacities={[0.08, 0]}
+                                shape={shape}
+                                state={state}
+                                underlayColor={underlayColor}
+                                width={width}
                             />
+                        </Header>
+
+                        {listVisible && (
+                            <>
+                                <Divider size="large" width={width} />
+                                <List
+                                    data={data}
+                                    style={{
+                                        backgroundColor: listBackgroundColor,
+                                    }}
+                                />
+                            </>
                         )}
                     </AnimatedInner>
                 )}

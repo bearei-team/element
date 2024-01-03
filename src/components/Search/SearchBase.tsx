@@ -1,4 +1,12 @@
-import {FC, RefObject, useCallback, useId, useMemo, useRef} from 'react';
+import {
+    FC,
+    RefObject,
+    useCallback,
+    useEffect,
+    useId,
+    useMemo,
+    useRef,
+} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
@@ -8,7 +16,7 @@ import {
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
-import {useHandleEvent} from '../../hooks/useHandleEvent';
+import {OnStateChangeOptions, useHandleEvent} from '../../hooks/useHandleEvent';
 import {ShapeProps} from '../Common/Common.styles';
 import {AnimatedInterpolation, State} from '../Common/interface';
 import {Icon} from '../Icon/Icon';
@@ -44,6 +52,7 @@ const initialState = {
     layout: {} as LayoutRectangle,
     underlayColor: undefined,
     value: '',
+    listVisible: false,
 };
 
 const renderTextInput = (options: RenderTextInputOptions) => (
@@ -56,6 +65,7 @@ const renderTextInput = (options: RenderTextInputOptions) => (
 );
 
 export const SearchBase: FC<SearchBaseProps> = props => {
+    const [{value, layout, listVisible}, setState] = useImmer(initialState);
     const {
         defaultValue,
         leadingIcon,
@@ -63,22 +73,22 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         placeholder,
         ref,
         render,
+        data,
         ...renderProps
     } = props;
 
-    const [{value, layout}, setState] = useImmer(initialState);
-    const {innerHeight} = useAnimated({value});
+    const {innerHeight} = useAnimated({listVisible});
     const id = useId();
-    const textFieldRef = useRef<TextInput>(null);
-    const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const theme = useTheme();
     const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
+    const textFieldRef = useRef<TextInput>(null);
+    const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const underlayColor = theme.palette.surface.onSurface;
-    const listVisible = !!value;
 
     const processStateChange = useCallback(
-        (nextState: State) => {
-            const focused = ['focus', 'pressOut'].includes(nextState);
+        (_nextState: State, options = {} as OnStateChangeOptions) => {
+            const {eventName} = options;
+            const focused = ['focus', 'pressOut', 'press'].includes(eventName);
 
             focused && inputRef.current?.focus();
         },
@@ -93,10 +103,11 @@ export const SearchBase: FC<SearchBaseProps> = props => {
 
     const handleChangeText = useCallback(
         (text: string) => {
-            onChangeText?.(text);
             setState(draft => {
                 draft.value = text;
             });
+
+            onChangeText?.(text);
         },
         [onChangeText, setState],
     );
@@ -135,10 +146,17 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         ],
     );
 
+    useEffect(() => {
+        setState(draft => {
+            draft.listVisible = data?.length !== 0;
+        });
+    }, [data, setState]);
+
     return render({
         ...renderProps,
         ...handleEvent,
         children,
+        data,
         id,
         listVisible,
         onFocus,

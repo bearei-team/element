@@ -5,11 +5,11 @@ import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 
 export interface UseAnimatedOptions {
-    value?: string;
+    listVisible?: boolean;
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {value} = options;
+    const {listVisible} = options;
     const [innerHeightAnimated] = useAnimatedValue(0);
     const theme = useTheme();
     const innerHeight = innerHeightAnimated.interpolate({
@@ -36,8 +36,8 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        processAnimatedTiming(innerHeightAnimated, value ? 1 : 0);
-    }, [innerHeightAnimated, processAnimatedTiming, value]);
+        processAnimatedTiming(innerHeightAnimated, listVisible ? 1 : 0);
+    }, [innerHeightAnimated, processAnimatedTiming, listVisible]);
 
     return {innerHeight};
 };

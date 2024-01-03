@@ -81,6 +81,9 @@ const renderTextInput = (options: RenderTextInputOptions) => {
 };
 
 export const TextFieldBase: FC<TextFieldBaseProps> = props => {
+    const [{headerLayout, labelTextLayout, value}, setState] =
+        useImmer(initialState);
+
     const {
         defaultValue,
         disabled = false,
@@ -97,9 +100,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         type = 'filled',
         ...textInputProps
     } = props;
-
-    const [{headerLayout, labelTextLayout, value}, setState] =
-        useImmer(initialState);
 
     const [underlayColor] = useUnderlayColor({type});
     const theme = useTheme();
