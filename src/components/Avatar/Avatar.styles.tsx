@@ -11,8 +11,8 @@ export const Container = styled(Shape)<ContainerProps>`
 
     ${({height, theme, width}) => css`
         background-color: ${theme.palette.primary.primaryContainer};
-        min-height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
-        min-width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
+        height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
+        width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
     `}
 `;
 
@@ -22,7 +22,7 @@ export const LabelText = styled.Text`
         font-size: ${theme.adaptFontSize(theme.typography.title.medium.size)}px;
         font-style: ${theme.typography.title.medium.style};
         font-weight: ${theme.typography.title.medium.weight};
-        height:${theme.adaptSize(theme.typography.title.medium.lineHeight)}px
+        height: ${theme.adaptSize(theme.typography.title.medium.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(
             theme.typography.title.medium.letterSpacing,
         )}px;

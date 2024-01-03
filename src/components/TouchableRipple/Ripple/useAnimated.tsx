@@ -58,8 +58,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
             );
         };
 
-        entryAnimated(() =>
-            onEntryAnimatedStart?.(sequence ?? 'undefined', exitAnimated),
+        entryAnimated(
+            () =>
+                !active &&
+                onEntryAnimatedStart?.(sequence ?? 'undefined', exitAnimated),
         );
     }, [
         active,

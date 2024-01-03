@@ -22,7 +22,9 @@ const ForwardRefAvatar = forwardRef<View, AvatarProps>((props, ref) => {
                 ref={ref}
                 shape="full"
                 testID={`avatar--${id}`}>
-                <LabelText testID={`avatar__labelText--${id}`}>
+                <LabelText
+                    testID={`avatar__labelText--${id}`}
+                    numberOfLines={1}>
                     {labelText}
                 </LabelText>
             </Container>

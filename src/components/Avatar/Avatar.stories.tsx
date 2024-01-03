@@ -11,9 +11,5 @@ export const NoneContentText: StoryObj<AvatarProps> = {
 };
 
 export const ContentText: StoryObj<AvatarProps> = {
-    args: {labelText: '3'},
-};
-
-export const MaxContentText: StoryObj<AvatarProps> = {
-    args: {labelText: '9999'},
+    args: {labelText: 'B'},
 };

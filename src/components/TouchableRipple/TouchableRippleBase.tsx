@@ -103,8 +103,10 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
             });
         };
 
-        Object.entries(rippleSequence).forEach(rippleExit);
-    }, [onRippleAnimatedEnd, rippleSequence, setState]);
+        setState(draft => {
+            Object.entries(draft.rippleSequence).forEach(rippleExit);
+        });
+    }, [onRippleAnimatedEnd, setState]);
 
     const processRippleEntryAnimatedStart = useCallback(
         (sequence: string, exitAnimated: (finished?: () => void) => void) => {
