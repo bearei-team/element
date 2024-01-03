@@ -1,5 +1,5 @@
 import {FC, ReactNode, RefAttributes, forwardRef, memo} from 'react';
-import {Pressable, PressableProps, View} from 'react-native';
+import {GestureResponderEvent, PressableProps, View} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
 import {RippleProps} from './Ripple/Ripple';
 import {Container, Content} from './TouchableRipple.styles';
@@ -11,8 +11,10 @@ export type TouchableProps = PressableProps &
     Pick<ShapeProps, 'shape'>;
 
 export interface TouchableRippleProps extends Omit<TouchableProps, 'children'> {
+    active?: boolean;
+    activeEvent?: GestureResponderEvent;
     children?: ReactNode;
-    disabled?: boolean;
+    onRippleAnimatedEnd?: () => void;
 }
 
 const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>(
@@ -21,18 +23,16 @@ const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>(
             const {id, children, shape, ...pressableProps} = renderProps;
 
             return (
-                <Pressable
+                <Container
                     {...pressableProps}
                     ref={ref}
-                    testID={`touchableRipple__pressable--${id}`}>
-                    <Container testID={`touchableRipple--${id}`}>
-                        <Content
-                            shape={shape}
-                            testID={`touchableRipple__content--${id}`}>
-                            {children}
-                        </Content>
-                    </Container>
-                </Pressable>
+                    testID={`touchableRipple--${id}`}>
+                    <Content
+                        shape={shape}
+                        testID={`touchableRipple__content--${id}`}>
+                        {children}
+                    </Content>
+                </Container>
             );
         };
 

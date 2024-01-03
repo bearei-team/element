@@ -44,6 +44,7 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
             onHoverIn,
             onHoverOut,
             onLayout,
+            onListChange,
             onLongPress,
             onPressIn,
             placeholder,
@@ -110,6 +111,8 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
                                 <Divider size="large" width={width} />
                                 <List
                                     data={data}
+                                    close={true}
+                                    onChange={onListChange}
                                     style={{
                                         backgroundColor: listBackgroundColor,
                                     }}

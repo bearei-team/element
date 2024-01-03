@@ -5,6 +5,7 @@ import {Shape} from '../Common/Common.styles';
 
 export type InnerProps = {width: number};
 export const Container = styled.View`
+    flex: 1;
     position: relative;
 
     ${({theme}) =>

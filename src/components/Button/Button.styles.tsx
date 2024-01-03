@@ -108,22 +108,19 @@ export const Content = styled(Shape)<ContentProps>`
         const contentCategory = {
             common: css``,
             icon: css`
-                height: ${theme.adaptSize(theme.spacing.small * 6)}px;
-                min-width: ${theme.adaptSize(theme.spacing.small * 6)}px;
+                max-height: ${theme.adaptSize(theme.spacing.small * 6)}px;
+                max-width: ${theme.adaptSize(theme.spacing.small * 6)}px;
                 padding: ${theme.adaptSize(theme.spacing.small)}px;
-                width: ${theme.adaptSize(theme.spacing.small * 6)}px;
             `,
             radio: css`
-                height: ${theme.adaptSize(theme.spacing.small * 6)}px;
-                min-width: ${theme.adaptSize(theme.spacing.small * 6)}px;
+                max-height: ${theme.adaptSize(theme.spacing.small * 6)}px;
+                max-width: ${theme.adaptSize(theme.spacing.small * 6)}px;
                 padding: ${theme.adaptSize(theme.spacing.small)}px;
-                width: ${theme.adaptSize(theme.spacing.small * 6)}px;
             `,
             checkbox: css`
-                height: ${theme.adaptSize(theme.spacing.small * 6)}px;
-                min-width: ${theme.adaptSize(theme.spacing.small * 6)}px;
+                max-height: ${theme.adaptSize(theme.spacing.small * 6)}px;
+                max-width: ${theme.adaptSize(theme.spacing.small * 6)}px;
                 padding: ${theme.adaptSize(theme.spacing.small)}px;
-                width: ${theme.adaptSize(theme.spacing.small * 6)}px;
             `,
             fab: css`
                 padding: ${theme.adaptSize(theme.spacing.small)}px;

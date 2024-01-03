@@ -7,12 +7,12 @@ export type ContainerProps = Omit<RenderProps, 'renderStyle'> & {
     width: number;
     x: number;
     y: number;
+    activeRipple: boolean;
 };
 
 export const Container = styled(Shape)<ContainerProps>`
     pointer-events: none;
     position: absolute;
-    z-index: 1024;
 
     ${({height, width, y, x}) => css`
         height: ${height}px;
@@ -21,9 +21,14 @@ export const Container = styled(Shape)<ContainerProps>`
         width: ${width}px;
     `}
 
-    ${({underlayColor, theme}) =>
+    ${({underlayColor}) =>
         underlayColor &&
         css`
-            background-color: ${theme.color.rgba(underlayColor, 0.12)};
+            background-color: ${underlayColor};
+        `};
+
+    ${({activeRipple}) =>
+        css`
+            z-index: ${activeRipple ? -1 : 2048};
         `};
 `;

@@ -1,4 +1,4 @@
-import {useCallback, useEffect} from 'react';
+import {useCallback} from 'react';
 import {
     GestureResponderEvent,
     MouseEvent,
@@ -11,53 +11,36 @@ import {useImmer} from 'use-immer';
 import {EventName, State} from '../components/Common/interface';
 import {UTIL} from '../utils/util';
 
+export type Event =
+    | GestureResponderEvent
+    | MouseEvent
+    | NativeSyntheticEvent<TargetedEvent>;
+
 export interface ProcessStateOptions {
     callback?: () => void;
-    draft?: typeof initialState;
-    event:
-        | GestureResponderEvent
-        | MouseEvent
-        | NativeSyntheticEvent<TargetedEvent>;
-    eventName:
-        | 'blur'
-        | 'focus'
-        | 'hoverIn'
-        | 'hoverOut'
-        | 'longPress'
-        | 'press'
-        | 'pressIn'
-        | 'pressOut';
+    event: Event;
+    eventName: EventName;
 }
 
 export type OnStateChangeOptions = Omit<ProcessStateOptions, 'callback'>;
 export type UseHandleEventOptions = PressableProps & {
     disabled?: boolean;
-    eventState?: State;
     omitEvents?: (keyof UseHandleEventOptions)[];
     onStateChange?: (state: State, options?: OnStateChangeOptions) => void;
-
-    /**
-     * Lock the focus state, e.g. a TextField should not change state after it gets focus until it loses focus
-     */
-    lockFocusState?: boolean;
-
-    /**
-     * Locks the start-press state, e.g. a TextField that enters the start-press state only needs to handle getting focus until it loses focus.
-     */
-    lockPressInState?: boolean;
 };
 
 const initialState = {
-    state: 'enabled' as State,
+    event: undefined as Event | undefined,
     eventName: 'none' as EventName,
+    state: 'enabled' as State,
 };
 
 export const useHandleEvent = (options: UseHandleEventOptions) => {
+    const [{state, eventName, event: currentEvent}, setState] =
+        useImmer(initialState);
+
     const {
         disabled = false,
-        eventState,
-        lockFocusState = false,
-        lockPressInState = false,
         omitEvents = [],
         onBlur,
         onFocus,
@@ -70,7 +53,6 @@ export const useHandleEvent = (options: UseHandleEventOptions) => {
         onStateChange,
     } = options;
 
-    const [{state, eventName}, setState] = useImmer(initialState);
     const theme = useTheme();
     const mobile = ['ios', 'android'].includes(theme.OS);
 
@@ -87,44 +69,19 @@ export const useHandleEvent = (options: UseHandleEventOptions) => {
             } = processStateOptions;
 
             setState(draft => {
-                const checkFocusEvent =
-                    lockFocusState &&
-                    [
-                        'hoverIn',
-                        'hoverOut',
-                        'longPressIn',
-                        'press',
-                        'pressIn',
-                        'pressOut',
-                    ].includes(processStateEventName);
-
-                const newState =
-                    checkFocusEvent &&
-                    draft.state === 'focused' &&
-                    processStateEventName !== 'blur'
-                        ? draft.state
-                        : nextState;
-
-                const updatedState =
-                    lockPressInState &&
-                    draft.state === 'pressIn' &&
-                    !['blur', 'focus'].includes(processStateEventName)
-                        ? draft.state
-                        : newState;
-
-                onStateChange?.(updatedState, {
-                    draft,
-                    event,
-                    eventName: processStateEventName,
-                });
-
-                draft.state = updatedState;
+                draft.state = nextState;
                 draft.eventName = processStateEventName;
+                draft.event = event;
+            });
+
+            onStateChange?.(nextState, {
+                event,
+                eventName: processStateEventName,
             });
 
             callback?.();
         },
-        [disabled, lockFocusState, lockPressInState, onStateChange, setState],
+        [disabled, onStateChange, setState],
     );
 
     const handlePressIn = useCallback(
@@ -209,7 +166,8 @@ export const useHandleEvent = (options: UseHandleEventOptions) => {
         [onBlur, processState],
     );
 
-    const event = {
+    const result = {
+        event: currentEvent,
         eventName,
         mobile,
         onBlur: handleBlur,
@@ -223,9 +181,5 @@ export const useHandleEvent = (options: UseHandleEventOptions) => {
         state,
     };
 
-    useEffect(() => {
-        eventState && setState(() => eventState);
-    }, [eventState, setState]);
-
-    return UTIL.omit(event, omitEvents as (keyof typeof event)[]);
+    return UTIL.omit(result, omitEvents as (keyof typeof result)[]);
 };

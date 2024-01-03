@@ -34,7 +34,8 @@ export interface RenderProps
         listBackgroundColor: string;
         width: number;
     };
-    listVisible?: boolean;
+    listVisible: boolean;
+    onListChange: (key: string) => void;
     state: State;
     underlayColor: string;
 }
@@ -112,6 +113,15 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         [onChangeText, setState],
     );
 
+    const handleListChange = (key: string) => {
+        const nextValue = data?.find(datum => datum.key === key)?.headline;
+
+        nextValue &&
+            setState(draft => {
+                draft.value = nextValue;
+            });
+    };
+
     const processLayout = (event: LayoutChangeEvent) => {
         const nativeEventLayout = event.nativeEvent.layout;
 
@@ -161,6 +171,7 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         listVisible,
         onFocus,
         onLayout: processLayout,
+        onListChange: handleListChange,
         placeholder,
         shape: listVisible ? 'extraLargeTop' : 'extraLarge',
         state,

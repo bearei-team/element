@@ -2,55 +2,68 @@ import {useCallback, useEffect} from 'react';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {UTIL} from '../../../utils/util';
-import {RippleProps} from './Ripple';
+import {RenderProps} from './RippleBase';
 
 export interface UseAnimatedOptions
-    extends Pick<RippleProps, 'onAnimatedEnd' | 'sequence'> {
+    extends Pick<RenderProps, 'onEntryAnimatedStart' | 'sequence' | 'active'> {
     minDuration: number;
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const [opacityAnimated] = useAnimatedValue(0);
+    const [opacityAnimated] = useAnimatedValue(1);
     const [scaleAnimated] = useAnimatedValue(0);
-    const {minDuration, onAnimatedEnd, sequence} = options;
+    const {onEntryAnimatedStart, sequence, active} = options;
     const theme = useTheme();
     const opacity = opacityAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [1, 0],
+        outputRange: [0, 1],
     });
 
     const scale = scaleAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [0.1, 1],
+        outputRange: [0, 1],
     });
 
     const processAnimatedTiming = useCallback(() => {
         const animatedTiming = UTIL.animatedTiming(theme);
-        const animatedIn = (finished?: () => void) =>
+        const useNativeDriver = true;
+
+        const exitAnimated = (finished?: () => void) => {
+            requestAnimationFrame(() => {
+                typeof active === 'boolean' &&
+                    animatedTiming(scaleAnimated, {
+                        duration: 'short3',
+                        easing: 'emphasizedAccelerate',
+                        toValue: 0,
+                        useNativeDriver,
+                    }).start();
+
+                animatedTiming(opacityAnimated, {
+                    duration: 'short3',
+                    easing: 'emphasizedAccelerate',
+                    toValue: 0,
+                    useNativeDriver,
+                }).start(finished);
+            });
+        };
+
+        const entryAnimated = (finished?: () => void) => {
             requestAnimationFrame(() =>
                 animatedTiming(scaleAnimated, {
-                    duration: Math.min(minDuration, 250),
-                    easing: 'standard',
+                    duration: 'medium3',
+                    easing: 'emphasizedDecelerate',
                     toValue: 1,
+                    useNativeDriver,
                 }).start(finished),
             );
+        };
 
-        const animatedOut = (finished?: () => void) =>
-            requestAnimationFrame(() =>
-                animatedTiming(opacityAnimated, {
-                    duration: 'medium0',
-                    easing: 'standard',
-                    toValue: 1,
-                }).start(finished),
-            );
-
-        const finished = () =>
-            onAnimatedEnd?.(sequence ?? 'undefined', animatedOut);
-
-        animatedIn(finished);
+        entryAnimated(() =>
+            onEntryAnimatedStart?.(sequence ?? 'undefined', exitAnimated),
+        );
     }, [
-        minDuration,
-        onAnimatedEnd,
+        active,
+        onEntryAnimatedStart,
         opacityAnimated,
         scaleAnimated,
         sequence,

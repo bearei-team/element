@@ -1,14 +1,16 @@
 import {FC, useId} from 'react';
-import {Animated, ViewStyle} from 'react-native';
+import {Animated, NativeTouchEvent, ViewStyle} from 'react-native';
 import {RippleProps} from './Ripple';
 import {useAnimated} from './useAnimated';
 export interface RenderProps extends Partial<RippleProps> {
     renderStyle: Animated.WithAnimatedObject<
         ViewStyle & {height: number; width: number}
     >;
+
     underlayColor: RippleProps['underlayColor'];
     x: number;
     y: number;
+    activeRipple: boolean;
 }
 
 export interface RippleBaseProps extends RippleProps {
@@ -17,9 +19,10 @@ export interface RippleBaseProps extends RippleProps {
 
 export const RippleBase: FC<RippleBaseProps> = props => {
     const {
+        active,
         centered = false,
-        location,
-        onAnimatedEnd,
+        location = {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
+        onEntryAnimatedStart,
         render,
         sequence,
         touchableLayout,
@@ -30,7 +33,8 @@ export const RippleBase: FC<RippleBaseProps> = props => {
     const {width, height} = touchableLayout;
     const centerX = width / 2;
     const centerY = height / 2;
-    const {locationX, locationY} = centered
+    const id = useId();
+    const {locationX = 0, locationY = 0} = centered
         ? {locationX: centerX, locationY: centerY}
         : location;
 
@@ -42,16 +46,16 @@ export const RippleBase: FC<RippleBaseProps> = props => {
 
     const diameter = radius * 2;
     const {opacity, scale} = useAnimated({
+        active,
         minDuration: diameter,
-        onAnimatedEnd,
+        onEntryAnimatedStart,
         sequence,
     });
-
-    const id = useId();
 
     return render({
         ...renderProps,
         id,
+        activeRipple: typeof active === 'boolean',
         renderStyle: {
             height: diameter,
             opacity,

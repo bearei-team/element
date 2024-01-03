@@ -1,38 +1,48 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 
+export interface ContentProps {
+    supportingTextShow?: boolean;
+}
+
 export const Container = styled(View)`
     overflow: hidden;
 `;
 
 export const Inner = styled.View`
+    align-items: center;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.medium)}px;
         padding: ${theme.adaptSize(theme.spacing.small)}px
             ${theme.adaptSize(theme.spacing.medium)}px;
 
-        min-height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+        min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
     `};
 `;
 
 export const Leading = styled.View`
     ${({theme}) => css`
-        max-width: ${theme.adaptSize(theme.spacing.small * 5)}px;
-        max-height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+        width: ${theme.adaptSize(theme.spacing.small * 5)}px;
+        height: ${theme.adaptSize(theme.spacing.small * 5)}px;
     `}
 `;
 
-export const Content = styled.View`
+export const Content = styled.View<ContentProps>`
     display: flex;
     flex-direction: column;
     flex: 1;
     justify-content: center;
     pointer-events: none;
+
+    ${({supportingTextShow, theme}) =>
+        supportingTextShow &&
+        css`
+            min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+        `}
 `;
 
 export const Trailing = styled(Leading)``;

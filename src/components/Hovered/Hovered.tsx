@@ -1,7 +1,7 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, View, ViewProps} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
-import {State} from '../Common/interface';
+import {EventName} from '../Common/interface';
 import {Container} from './Hovered.styles';
 import {HoveredBase, RenderProps} from './HoveredBase';
 
@@ -12,8 +12,8 @@ export interface HoveredProps
             Pick<ShapeProps, 'shape'>
     > {
     height?: number;
-    opacities?: [number, number];
-    state?: State;
+    opacities?: [number, number, number];
+    eventName?: EventName;
     underlayColor?: string;
     width?: number;
 }

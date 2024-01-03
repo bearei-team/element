@@ -1,4 +1,4 @@
-import {useCallback, useEffect} from 'react';
+import {useCallback, useEffect, useMemo} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
@@ -11,6 +11,7 @@ export interface UseAnimatedOptions {
     state: State;
     trailingState: State;
     touchableRippleHeight: number;
+    rippleAnimatedEnd: boolean;
 }
 
 export interface ProcessAnimatedTimingOptions {
@@ -22,27 +23,23 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const {active, close, state, touchableRippleHeight, trailingState} =
         options;
 
-    const [backgroundColorAnimated] = useAnimatedValue(0);
     const [trailingOpacityAnimated] = useAnimatedValue(0);
     const [closedAnimated] = useAnimatedValue(1);
     const theme = useTheme();
-    const backgroundColor = backgroundColorAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [
-            theme.color.rgba(theme.palette.secondary.secondaryContainer, 0),
-            theme.palette.secondary.secondaryContainer,
-        ],
-    });
 
     const trailingOpacity = trailingOpacityAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [close ? 0 : 1, 1],
     });
 
-    const height = closedAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, touchableRippleHeight],
-    });
+    const height = useMemo(
+        () =>
+            closedAnimated.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, touchableRippleHeight],
+            }),
+        [closedAnimated, touchableRippleHeight],
+    );
 
     const processAnimatedTiming = useCallback(
         (
@@ -74,14 +71,9 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        processAnimatedTiming(backgroundColorAnimated, {
-            toValue: active ? 1 : 0,
-        });
-    }, [active, processAnimatedTiming, backgroundColorAnimated]);
-
-    useEffect(() => {
+        const closeOut = state !== 'enabled' ? 1 : 0;
         const closeToValue =
-            state === 'hovered' || trailingState === 'hovered' ? 1 : 0;
+            state === 'hovered' || trailingState === 'hovered' ? 1 : closeOut;
 
         const toValue = trailingState === 'hovered' ? 1 : 0;
 
@@ -97,7 +89,6 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     ]);
 
     return {
-        backgroundColor,
         height,
         onCloseAnimated: processCloseAnimated,
         trailingOpacity,

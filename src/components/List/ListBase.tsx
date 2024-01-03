@@ -31,7 +31,7 @@ const renderItem = (options: RenderItemOptions) => {
             })}
             close={close}
             key={item.key}
-            onPress={() => onActive(item.key!)}
+            onPressOut={() => onActive(item.key!)}
         />
     );
 };
@@ -93,25 +93,27 @@ export const ListBase: FC<ListBaseProps> = props => {
             });
     }, [dataSources, defaultActiveKey, setState]);
 
-    useEffect(() => {
-        status === 'succeeded' &&
-            activeKey &&
-            setState(draft => {
-                if (draft.data.length === 0) {
-                    draft.data = dataSources.map((datum, index) => ({
-                        ...datum,
-                        active: datum.key === activeKey,
-                        key: `${datum.key ?? index}`,
-                    }));
+    // useEffect(() => {
+    //     status === 'succeeded' &&
+    //         activeKey &&
+    //         setState(draft => {
+    //             if (draft.data.length === 0) {
+    //                 draft.data = dataSources.map((datum, index) => ({
+    //                     ...datum,
+    //                     active: datum.key === activeKey,
+    //                     key: `${datum.key ?? index}`,
+    //                 }));
 
-                    return;
-                }
+    //                 return;
+    //             }
 
-                draft.data.forEach(datum => {
-                    datum.active = datum.key === activeKey;
-                });
-            });
-    }, [activeKey, dataSources, setState, status]);
+    //             draft.data.forEach(datum => {
+    //                 datum.active = datum.key === activeKey;
+    //             });
+    //         });
+    // }, [activeKey, dataSources, setState, status]);
+
+    console.info(data);
 
     return render({
         ...renderProps,

@@ -32,33 +32,42 @@ const AnimatedTrailing = Animated.createAnimatedComponent(Trailing);
 const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
+            active,
+            activeColor,
+            eventName,
             headline,
             id,
             leading,
             onLayout,
             renderStyle,
-            state,
             style,
             supportingText,
             supportingTextNumberOfLines,
+            supportingTextShow,
             trailing,
             underlayColor,
+            activeEvent,
             ...touchableRippleProps
         } = renderProps;
 
         const {
-            backgroundColor,
             height,
             touchableRippleHeight,
             touchableRippleWidth,
             trailingOpacity,
         } = renderStyle;
 
+        console.info(headline);
+
         return (
             <TouchableRipple
                 {...touchableRippleProps}
+                active={active}
+                activeEvent={activeEvent}
+                activeRipple={true}
+                disabled={active}
                 ref={ref}
-                underlayColor={underlayColor}>
+                underlayColor={activeColor}>
                 <AnimatedContainer
                     accessibilityLabel={headline}
                     accessibilityRole="list"
@@ -68,7 +77,6 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
                         onLayout={onLayout}
                         style={{
                             ...(typeof style === 'object' && style),
-                            backgroundColor,
                         }}
                         testID={`listItem__inner--${id}`}>
                         {leading && (
@@ -77,7 +85,9 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
                             </Leading>
                         )}
 
-                        <Content>
+                        <Content
+                            supportingTextShow={supportingTextShow}
+                            testID={`listItem__content--${id}`}>
                             <Headline
                                 ellipsizeMode="tail"
                                 numberOfLines={1}
@@ -112,7 +122,7 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
                 {typeof touchableRippleWidth === 'number' && (
                     <Hovered
                         height={touchableRippleHeight}
-                        state={state}
+                        eventName={eventName}
                         underlayColor={underlayColor}
                         width={touchableRippleWidth}
                     />

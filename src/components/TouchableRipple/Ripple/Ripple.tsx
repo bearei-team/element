@@ -9,14 +9,18 @@ import {
 import {Container} from './Ripple.styles';
 import {RenderProps, RippleBase} from './RippleBase';
 
-export type RippleAnimatedOut = (finished?: () => void) => number;
 export interface RippleProps
     extends Partial<ViewProps & React.RefAttributes<View>> {
+    active?: boolean;
     centered?: boolean;
-    location: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
-    onAnimatedEnd: (sequence: string, animatedOut: RippleAnimatedOut) => void;
+    location?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
+    onEntryAnimatedStart?: (
+        sequence: string,
+        exitAnimated: (finished?: () => void) => void,
+    ) => void;
+
     sequence?: string;
-    touchableLayout: Pick<LayoutRectangle, 'width' | 'height'>;
+    touchableLayout: LayoutRectangle;
     underlayColor?: string;
 }
 
