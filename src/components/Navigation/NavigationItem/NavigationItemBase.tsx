@@ -60,10 +60,7 @@ export const NavigationItemBase: FC<NavigationItemBaseProps> = props => {
     const id = useId();
     const theme = useTheme();
     const {iconBackgroundColor, labelColor, iconBackgroundWidth, labelHeight} =
-        useAnimated({
-            active,
-            block,
-        });
+        useAnimated({active, block});
 
     const underlayColor = active
         ? theme.palette.secondary.onSecondaryContainer
@@ -71,8 +68,9 @@ export const NavigationItemBase: FC<NavigationItemBaseProps> = props => {
 
     const processStateChange = useCallback(
         (nextState: State, options?: OnStateChangeOptions) => {
+            const {event} = options ?? {};
+
             if (nextState === 'pressIn') {
-                const {event} = options ?? {};
                 const {locationX} =
                     (event as GestureResponderEvent)?.nativeEvent ?? 0;
 

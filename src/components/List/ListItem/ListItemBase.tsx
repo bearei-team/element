@@ -29,8 +29,8 @@ export interface ListItemBaseProps extends ListItemProps {
 }
 
 const initialState = {
-    trailingState: 'enabled' as State,
     touchableRippleLayout: {} as LayoutRectangle,
+    trailingState: 'enabled' as State,
 };
 
 export const ListItemBase: FC<ListItemBaseProps> = props => {

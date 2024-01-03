@@ -20,8 +20,10 @@ export interface ListProps
     extends Partial<
         FlatListProps<ListDataSource> & RefAttributes<FlatList<ListDataSource>>
     > {
+    activeKey?: string;
     close?: boolean;
     data?: ListDataSource[];
+    defaultActiveKey?: string;
     onChange?: (key: string) => void;
     supportingTextNumberOfLines?: ListDataSource['supportingTextNumberOfLines'];
 }

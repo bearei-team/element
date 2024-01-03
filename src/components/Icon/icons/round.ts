@@ -12,6 +12,7 @@ import RadioButtonUnchecked from '@material-design-icons/svg/round/radio_button_
 import Remove from '@material-design-icons/svg/round/remove.svg';
 import Search from '@material-design-icons/svg/round/search.svg';
 import Settings from '@material-design-icons/svg/round/settings.svg';
+import SpaceDashboard from '@material-design-icons/svg/round/space_dashboard.svg';
 
 export const round = {
     image: {
@@ -29,5 +30,6 @@ export const round = {
         remove: Remove,
         search: Search,
         settings: Settings,
+        spaceDashboard: SpaceDashboard,
     },
 };

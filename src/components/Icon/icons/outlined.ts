@@ -12,6 +12,7 @@ import RadioButtonUnchecked from '@material-design-icons/svg/outlined/radio_butt
 import Remove from '@material-design-icons/svg/outlined/remove.svg';
 import Search from '@material-design-icons/svg/outlined/search.svg';
 import Settings from '@material-design-icons/svg/outlined/settings.svg';
+import SpaceDashboard from '@material-design-icons/svg/outlined/space_dashboard.svg';
 
 export const outlined = {
     image: {
@@ -29,5 +30,6 @@ export const outlined = {
         remove: Remove,
         search: Search,
         settings: Settings,
+        spaceDashboard: SpaceDashboard,
     },
 };

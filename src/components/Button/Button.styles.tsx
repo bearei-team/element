@@ -61,7 +61,7 @@ export const Content = styled(Shape)<ContentProps>`
                     ${theme.adaptSize(theme.spacing.large)}px;
             `,
             text: css`
-                min-width: ${theme.adaptSize(theme.spacing.small * 7 + 3)}px;
+                min-width: ${theme.adaptSize(theme.spacing.small * 6)}px;
                 padding: ${theme.adaptSize(theme.spacing.small + 2)}px
                     ${theme.adaptSize(
                         theme.spacing.medium - theme.spacing.extraSmall,
@@ -69,8 +69,6 @@ export const Content = styled(Shape)<ContentProps>`
             `,
             link: css`
                 height: ${theme.adaptSize(theme.spacing.medium)}px;
-                padding: ${theme.adaptSize(theme.spacing.none)}px
-                    ${theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
             tonal: css`
                 min-width: ${theme.adaptSize(theme.spacing.small * 10 + 3)}px;
@@ -183,6 +181,7 @@ export const Content = styled(Shape)<ContentProps>`
 
 export const LabelText = styled.Text<LabelTextProps>`
     user-select: none;
+    text-align: center;
 
     ${({theme, type}) =>
         type === 'link'
@@ -192,9 +191,10 @@ export const LabelText = styled.Text<LabelTextProps>`
                   )}px;
                   font-style: ${theme.typography.body.small.style};
                   font-weight: ${theme.typography.body.small.weight};
-                  min-height: ${theme.adaptSize(
+                  height: ${theme.adaptSize(
                       theme.typography.body.small.lineHeight,
                   )}px;
+
                   letter-spacing: ${theme.adaptSize(
                       theme.typography.body.small.letterSpacing,
                   )}px;
@@ -207,11 +207,13 @@ export const LabelText = styled.Text<LabelTextProps>`
                   font-size: ${theme.adaptFontSize(
                       theme.typography.label.large.size,
                   )}px;
+
                   font-style: ${theme.typography.label.large.style};
                   font-weight: ${theme.typography.label.large.weight};
                   height: ${theme.adaptSize(
                       theme.typography.label.large.lineHeight,
                   )}px;
+
                   letter-spacing: ${theme.adaptSize(
                       theme.typography.label.large.letterSpacing,
                   )}px;

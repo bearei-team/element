@@ -11,8 +11,10 @@ export interface NavigationDataSource extends NavigationItemProps {
 export type NavigationType = 'bar' | 'drawer' | 'rail';
 export interface NavigationProps
     extends Partial<ViewProps & RefAttributes<View>> {
+    activeKey?: string;
     block?: boolean;
     data?: NavigationDataSource[];
+    defaultActiveKey?: string;
     fab?: React.JSX.Element;
     onChange?: (key: string) => void;
     type?: NavigationType;

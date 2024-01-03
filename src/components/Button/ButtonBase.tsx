@@ -71,10 +71,11 @@ const processDefaultLabelText = (
     return labelText ?? (category === 'common' ? 'Label' : labelText);
 };
 
-const processShape = (options: Pick<RenderProps, 'category'>) => {
-    const {category} = options;
+const processShape = (options: Pick<RenderProps, 'category' | 'type'>) => {
+    const {category, type} = options;
+    const categoryShape = category === 'fab' ? 'large' : 'full';
 
-    return category === 'fab' ? 'large' : 'full';
+    return type === 'link' ? 'none' : categoryShape;
 };
 
 const initialState = {
@@ -193,7 +194,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         type: buttonType,
     });
 
-    const border = useBorder({borderColor});
+    const border = useBorder({borderColor, type});
     const processLayout = useCallback(
         (event: LayoutChangeEvent) => {
             const nativeEventLayout = event.nativeEvent.layout;
@@ -273,7 +274,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
             height: layout.height,
             width: layout.width,
         },
-        shape: processShape({category}),
+        shape: processShape({category, type}),
         state,
         type: buttonType,
         underlayColor,

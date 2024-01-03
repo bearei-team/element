@@ -179,7 +179,9 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         inputRange: borderInputRange,
         outputRange: [
             disabledBackgroundColor,
-            theme.palette.outline.outline,
+            type === 'link'
+                ? theme.color.rgba(theme.palette.outline.outline, 0)
+                : theme.palette.outline.outline,
             theme.palette.primary.primary,
         ],
     });
@@ -200,12 +202,17 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        if (type === 'outlined') {
+        if (['outlined', 'link'].includes(type)) {
             const value = disabled
                 ? 0
                 : borderInputRange[borderInputRange.length - 2];
 
-            const toValue = state === 'focused' ? borderInputRange[2] : value;
+            const responseEvent =
+                type === 'link'
+                    ? ['focused', 'pressIn', 'hovered'].includes(state)
+                    : state === 'focused';
+
+            const toValue = responseEvent ? borderInputRange[2] : value;
 
             processAnimatedTiming(borderAnimated, toValue);
         }
@@ -222,8 +229,8 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     ]);
 
     return {
-        ...(type !== 'text' && {backgroundColor}),
-        ...(type === 'outlined' && {borderColor}),
+        ...(!['text', 'link'].includes(type) && {backgroundColor}),
+        ...(['outlined', 'link'].includes(type) && {borderColor}),
         color,
     };
 };

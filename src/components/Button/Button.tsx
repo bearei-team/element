@@ -82,6 +82,10 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             ...contentStyle
         } = renderStyle;
 
+        const renderHovered =
+            [typeof contentWidth, typeof width].includes('number') &&
+            type !== 'link';
+
         return (
             <Container
                 accessibilityLabel={labelText}
@@ -135,9 +139,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                             )}
                         </AnimatedContent>
 
-                        {[typeof contentWidth, typeof width].includes(
-                            'number',
-                        ) && (
+                        {renderHovered && (
                             <Hovered
                                 height={block ? height : contentHeight}
                                 shape={shape}

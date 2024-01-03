@@ -12,6 +12,7 @@ import RadioButtonUnchecked from '@material-design-icons/svg/filled/radio_button
 import Remove from '@material-design-icons/svg/filled/remove.svg';
 import Search from '@material-design-icons/svg/filled/search.svg';
 import Settings from '@material-design-icons/svg/filled/settings.svg';
+import SpaceDashboard from '@material-design-icons/svg/filled/space_dashboard.svg';
 
 export const filled = {
     image: {
@@ -29,5 +30,6 @@ export const filled = {
         remove: Remove,
         search: Search,
         settings: Settings,
+        spaceDashboard: SpaceDashboard,
     },
 };

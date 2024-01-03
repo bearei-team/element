@@ -12,6 +12,7 @@ import RadioButtonUnchecked from '@material-design-icons/svg/sharp/radio_button_
 import Remove from '@material-design-icons/svg/sharp/remove.svg';
 import Search from '@material-design-icons/svg/sharp/search.svg';
 import Settings from '@material-design-icons/svg/sharp/settings.svg';
+import SpaceDashboard from '@material-design-icons/svg/sharp/space_dashboard.svg';
 
 export const sharp = {
     image: {
@@ -29,5 +30,6 @@ export const sharp = {
         remove: Remove,
         search: Search,
         settings: Settings,
+        spaceDashboard: SpaceDashboard,
     },
 };

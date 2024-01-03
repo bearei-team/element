@@ -12,6 +12,7 @@ import RadioButtonUnchecked from '@material-design-icons/svg/two-tone/radio_butt
 import Remove from '@material-design-icons/svg/two-tone/remove.svg';
 import Search from '@material-design-icons/svg/two-tone/search.svg';
 import Settings from '@material-design-icons/svg/two-tone/settings.svg';
+import SpaceDashboard from '@material-design-icons/svg/two-tone/space_dashboard.svg';
 
 export const twoTone = {
     image: {
@@ -29,5 +30,6 @@ export const twoTone = {
         remove: Remove,
         search: Search,
         settings: Settings,
+        spaceDashboard: SpaceDashboard,
     },
 };

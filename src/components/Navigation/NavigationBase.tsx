@@ -35,19 +35,22 @@ const renderItems = (options: RenderItemOptions) => {
 
 const initialState = {
     data: [] as Data[],
+    status: 'idle' as 'idle' | 'loading' | 'failed' | 'succeeded',
 };
 
 export const NavigationBase: FC<NavigationBaseProps> = props => {
     const {
+        activeKey,
         block = false,
-        data: dataSources,
+        data: dataSources = [],
         fab,
         onChange,
         render,
+        defaultActiveKey,
         ...renderProps
     } = props;
 
-    const [{data}, setData] = useImmer(initialState);
+    const [{data, status}, setState] = useImmer(initialState);
     const id = useId();
     const processFAB = () => {
         if (!fab) {
@@ -59,25 +62,49 @@ export const NavigationBase: FC<NavigationBaseProps> = props => {
 
     const handleActive = useCallback(
         (key: string) => {
-            setData(draft => {
+            setState(draft => {
                 draft.data.forEach(datum => (datum.active = datum.key === key));
             });
 
             onChange?.(key);
         },
-        [onChange, setData],
+        [onChange, setState],
     );
 
     useEffect(() => {
         dataSources &&
-            setData(draft => {
+            setState(draft => {
                 draft.data = dataSources.map((datum, index) => ({
                     ...datum,
-                    active: false,
-                    key: datum.key ?? index,
-                })) as Data[];
+                    active: defaultActiveKey
+                        ? datum.key === defaultActiveKey
+                        : false,
+                    key: `${datum.key ?? index}`,
+                }));
+
+                draft.status = 'succeeded';
             });
-    }, [dataSources, setData]);
+    }, [dataSources, defaultActiveKey, setState]);
+
+    useEffect(() => {
+        status === 'succeeded' &&
+            activeKey &&
+            setState(draft => {
+                if (draft.data.length === 0) {
+                    draft.data = dataSources.map((datum, index) => ({
+                        ...datum,
+                        active: datum.key === activeKey,
+                        key: `${datum.key ?? index}`,
+                    }));
+
+                    return;
+                }
+
+                draft.data.forEach(datum => {
+                    datum.active = datum.key === activeKey;
+                });
+            });
+    }, [activeKey, dataSources, setState, status]);
 
     return render({
         ...renderProps,
