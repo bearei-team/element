@@ -7,6 +7,7 @@ export type ContainerProps = Pick<RenderProps, 'size'>;
 export const Container = styled(Shape)<ContainerProps>`
     align-items: center;
     display: inline-flex;
+    flex-direction: row;
     justify-content: center;
     pointer-events: none;
 
@@ -24,13 +25,14 @@ export const Container = styled(Shape)<ContainerProps>`
 
             medium: css`
                 min-width: ${theme.adaptSize(theme.spacing.medium)}px;
-                padding: ${theme.adaptSize(theme.spacing.extraSmall)}px
-                    ${theme.adaptSize(theme.spacing.none)}px;
+                padding: ${theme.adaptSize(theme.spacing.none)}px
+                    ${theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
 
             small: css`
-                padding: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px
-                    ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
+                width: ${theme.adaptSize(theme.spacing.small - 2)}px;
+                height: ${theme.adaptSize(theme.spacing.small - 2)}px;
+                padding: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
             `,
         };
 
@@ -52,7 +54,5 @@ export const LabelText = styled.Text`
         line-height: ${theme.adaptSize(
             theme.typography.label.small.lineHeight,
         )}px;
-
-        min-width: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
     `}
 `;
