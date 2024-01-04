@@ -19,11 +19,11 @@ export interface IconBaseProps extends IconProps {
 export const IconBase: FC<IconBaseProps> = props => {
     const {
         category = 'svg',
+        eventName = 'none',
         fill,
         height,
         name = 'circle',
         render,
-        eventName = 'none',
         type = 'outlined',
         width,
         ...renderProps

@@ -12,6 +12,7 @@ export const Container = styled(Shape)<ContainerProps>`
     pointer-events: none;
     position: absolute;
     top: 0;
+    z-index: -1;
 
     ${({underlayColor, width, height}) =>
         underlayColor &&

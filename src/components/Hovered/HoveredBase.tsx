@@ -15,10 +15,10 @@ export interface HoveredBaseProps extends HoveredProps {
 
 export const HoveredBase: FC<HoveredBaseProps> = props => {
     const {
+        eventName = 'none',
         height,
         opacities = [0, 0.08, 0.12],
         render,
-        eventName = 'none',
         width,
         ...renderProps
     } = props;

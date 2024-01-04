@@ -11,9 +11,9 @@ export interface HoveredProps
             RefAttributes<Animated.LegacyRef<View>> &
             Pick<ShapeProps, 'shape'>
     > {
+    eventName?: EventName;
     height?: number;
     opacities?: [number, number, number];
-    eventName?: EventName;
     underlayColor?: string;
     width?: number;
 }
