@@ -2,15 +2,15 @@ import {FC, useId} from 'react';
 import {Animated, NativeTouchEvent, ViewStyle} from 'react-native';
 import {RippleProps} from './Ripple';
 import {useAnimated} from './useAnimated';
-export interface RenderProps extends Partial<RippleProps> {
+export interface RenderProps extends RippleProps {
+    activeRipple: boolean;
+    underlayColor: RippleProps['underlayColor'];
     renderStyle: Animated.WithAnimatedObject<
         ViewStyle & {height: number; width: number}
     >;
 
-    underlayColor: RippleProps['underlayColor'];
     x: number;
     y: number;
-    activeRipple: boolean;
 }
 
 export interface RippleBaseProps extends RippleProps {
@@ -30,7 +30,7 @@ export const RippleBase: FC<RippleBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const {width, height} = touchableLayout;
+    const {width = 0, height = 0} = touchableLayout ?? {};
     const centerX = width / 2;
     const centerY = height / 2;
     const id = useId();

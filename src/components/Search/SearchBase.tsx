@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
-import {OnStateChangeOptions, useHandleEvent} from '../../hooks/useHandleEvent';
+import {OnStateChangeOptions, useHandleEvent} from '../../hooks/useOnEvent';
 import {ShapeProps} from '../Common/Common.styles';
 import {AnimatedInterpolation, State} from '../Common/interface';
 import {Icon} from '../Icon/Icon';

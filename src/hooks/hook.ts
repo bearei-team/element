@@ -1,3 +1,9 @@
-export * from './useAnimatedValue';
-export * from './useHandleEvent';
-export * from './useLazyRef';
+import {useAnimatedValue} from './useAnimatedValue';
+import {useLazyRef} from './useLazyRef';
+import {useOnEvent} from './useOnEvent';
+
+export const HOOK = {
+    useAnimatedValue,
+    useLazyRef,
+    useOnEvent,
+};

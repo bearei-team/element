@@ -7,7 +7,7 @@ import {
     ViewStyle,
 } from 'react-native';
 import {useImmer} from 'use-immer';
-import {OnStateChangeOptions, useHandleEvent} from '../../hooks/useHandleEvent';
+import {OnStateChangeOptions, useHandleEvent} from '../../hooks/useOnEvent';
 import {ShapeProps} from '../Common/Common.styles';
 import {State} from '../Common/interface';
 import {ElevationProps} from '../Elevation/Elevation';

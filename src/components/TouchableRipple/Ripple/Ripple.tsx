@@ -20,7 +20,7 @@ export interface RippleProps
     ) => void;
 
     sequence?: string;
-    touchableLayout: LayoutRectangle;
+    touchableLayout?: LayoutRectangle;
     underlayColor?: string;
 }
 

@@ -50,7 +50,7 @@ const initialState = {
     state: 'enabled' as State,
 };
 
-export const useHandleEvent = (options: UseHandleEventOptions) => {
+export const useOnEvent = (options: UseHandleEventOptions) => {
     const {
         disabled = false,
         omitEvents = [],

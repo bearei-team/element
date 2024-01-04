@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
-import {useHandleEvent} from '../../../hooks/useHandleEvent';
+import {useHandleEvent} from '../../../hooks/useOnEvent';
 import {State} from '../../Common/interface';
 import {ItemProps} from './Item';
 import {useAnimated} from './useAnimated';

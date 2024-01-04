@@ -1,11 +1,8 @@
 import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {GestureResponderEvent} from 'react-native';
 import {useImmer} from 'use-immer';
-import {
-    OnEvent,
-    OnStateChangeOptions,
-    useHandleEvent,
-} from '../../hooks/useHandleEvent';
+import {HOOK} from '../../hooks/hook';
+import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
 import {State} from '../Common/interface';
 import {Ripple, RippleProps} from './Ripple/Ripple';
 import {TouchableRippleProps} from './TouchableRipple';
@@ -77,7 +74,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         [active, processAddRipple],
     );
 
-    const {layout, ...onEvent} = useHandleEvent({
+    const {layout, ...onEvent} = HOOK.useOnEvent({
         ...props,
         disabled: false,
         onStateChange: processStateChange,

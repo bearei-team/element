@@ -3,11 +3,11 @@ import {Shape} from '../../Common/Common.styles';
 import {RenderProps} from './RippleBase';
 
 export type ContainerProps = Omit<RenderProps, 'renderStyle'> & {
+    activeRipple: boolean;
     height: number;
     width: number;
     x: number;
     y: number;
-    activeRipple: boolean;
 };
 
 export const Container = styled(Shape)<ContainerProps>`
