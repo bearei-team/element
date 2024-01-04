@@ -30,5 +30,9 @@ export const LabelText = styled.Text`
         line-height: ${theme.adaptSize(
             theme.typography.title.medium.lineHeight,
         )}px;
+
+        max-width: ${theme.adaptSize(
+            theme.spacing.small + theme.spacing.extraSmall,
+        )}px;
     `}
 `;
