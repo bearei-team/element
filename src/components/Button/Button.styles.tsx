@@ -13,9 +13,9 @@ export const Container = styled(View)<ContainerProps>`
     ${({block}) =>
         block &&
         css`
-            width: 100%;
-            flex: 1;
             align-self: stretch;
+            flex: 1;
+            width: 100%;
         `}
 `;
 
