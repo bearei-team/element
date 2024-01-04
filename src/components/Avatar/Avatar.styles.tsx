@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components/native';
-import {Shape} from '../Common/Common.styles';
+import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './AvatarBase';
 
 export type ContainerProps = Pick<RenderProps, 'width' | 'height'>;
@@ -16,21 +16,9 @@ export const Container = styled(Shape)<ContainerProps>`
     `}
 `;
 
-export const LabelText = styled.Text`
+export const LabelText = styled(Typography)`
     ${({theme}) => css`
         color: ${theme.palette.primary.onPrimaryContainer};
-        font-size: ${theme.adaptFontSize(theme.typography.title.medium.size)}px;
-        font-style: ${theme.typography.title.medium.style};
-        font-weight: ${theme.typography.title.medium.weight};
-        height: ${theme.adaptSize(theme.typography.title.medium.lineHeight)}px;
-        letter-spacing: ${theme.adaptSize(
-            theme.typography.title.medium.letterSpacing,
-        )}px;
-
-        line-height: ${theme.adaptSize(
-            theme.typography.title.medium.lineHeight,
-        )}px;
-
         max-width: ${theme.adaptSize(
             theme.spacing.small + theme.spacing.extraSmall,
         )}px;

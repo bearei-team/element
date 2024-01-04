@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components/native';
-import {Shape} from '../Common/Common.styles';
+import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './BadgeBase';
 
 export type ContainerProps = Pick<RenderProps, 'size'>;
@@ -40,19 +40,8 @@ export const Container = styled(Shape)<ContainerProps>`
     }}
 `;
 
-export const LabelText = styled.Text`
+export const LabelText = styled(Typography)`
     ${({theme}) => css`
         color: ${theme.palette.error.onError};
-        font-size: ${theme.adaptFontSize(theme.typography.label.small.size)}px;
-        font-style: ${theme.typography.label.small.style};
-        font-weight: ${theme.typography.label.small.weight};
-        height: ${theme.adaptSize(theme.typography.label.small.lineHeight)}px;
-        letter-spacing: ${theme.adaptSize(
-            theme.typography.label.small.letterSpacing,
-        )}px;
-
-        line-height: ${theme.adaptSize(
-            theme.typography.label.small.lineHeight,
-        )}px;
     `}
 `;

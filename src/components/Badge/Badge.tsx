@@ -21,7 +21,10 @@ const ForwardRefBadge = forwardRef<View, BadgeProps>((props, ref) => {
                 testID={`badge--${id}`}
                 size={size}>
                 {size !== 'small' && (
-                    <LabelText testID={`badge__labelText--${id}`}>
+                    <LabelText
+                        size="small"
+                        testID={`badge__labelText--${id}`}
+                        type="label">
                         {labelText}
                     </LabelText>
                 )}

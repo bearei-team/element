@@ -1,5 +1,6 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
+import {Typography} from '../Common/Common.styles';
 import {RenderProps} from './DividerBase';
 
 export type ContainerProps = Pick<
@@ -76,19 +77,8 @@ export const Content = styled.View`
     `}
 `;
 
-export const Subheader = styled.Text`
+export const Subheader = styled(Typography)`
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurfaceVariant};
-        font-size: ${theme.adaptFontSize(theme.typography.title.small.size)}px;
-        font-style: ${theme.typography.title.small.style};
-        font-weight: ${theme.typography.title.small.weight};
-        height: ${theme.adaptSize(theme.typography.title.small.lineHeight)}px;
-        letter-spacing: ${theme.adaptSize(
-            theme.typography.title.small.letterSpacing,
-        )}px;
-
-        line-height: ${theme.adaptSize(
-            theme.typography.title.small.lineHeight,
-        )}px;
     `}
 `;

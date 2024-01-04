@@ -1,7 +1,7 @@
-import {Shape as ThemeShape} from '@bearei/theme';
+import {Typography as ITypography, Shape as ThemeShape} from '@bearei/theme';
 import {View, ViewStyle} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {AnimatedInterpolation} from './interface';
+import {AnimatedInterpolation, Size} from './interface';
 
 export interface ShapeProps {
     border?: {
@@ -10,6 +10,11 @@ export interface ShapeProps {
         width?: number | AnimatedInterpolation;
     };
     shape?: keyof ThemeShape;
+}
+
+export interface TypographyProps {
+    type: keyof ITypography;
+    size: Size;
 }
 
 export interface DisabledProps {
@@ -55,5 +60,98 @@ export const Shape = styled(View)<ShapeProps>`
                 border-width: ${width}px;
             `
         );
+    }}
+`;
+
+export const Typography = styled.Text<TypographyProps>`
+    ${({theme, type = 'title', size = 'medium'}) => {
+        const typography = {
+            title: {
+                medium: css`
+                    color: ${theme.palette.primary.onPrimaryContainer};
+                    font-size: ${theme.adaptFontSize(
+                        theme.typography.title.medium.size,
+                    )}px;
+
+                    font-style: ${theme.typography.title.medium.style};
+                    font-weight: ${theme.typography.title.medium.weight};
+                    height: ${theme.adaptSize(
+                        theme.typography.title.medium.lineHeight,
+                    )}px;
+
+                    letter-spacing: ${theme.adaptSize(
+                        theme.typography.title.medium.letterSpacing,
+                    )}px;
+
+                    line-height: ${theme.adaptSize(
+                        theme.typography.title.medium.lineHeight,
+                    )}px;
+
+                    max-width: ${theme.adaptSize(
+                        theme.spacing.small + theme.spacing.extraSmall,
+                    )}px;
+                `,
+                large: css``,
+                small: css`
+                    font-size: ${theme.adaptFontSize(
+                        theme.typography.title.small.size,
+                    )}px;
+
+                    font-style: ${theme.typography.title.small.style};
+                    font-weight: ${theme.typography.title.small.weight};
+                    height: ${theme.adaptSize(
+                        theme.typography.title.small.lineHeight,
+                    )}px;
+
+                    letter-spacing: ${theme.adaptSize(
+                        theme.typography.title.small.letterSpacing,
+                    )}px;
+
+                    line-height: ${theme.adaptSize(
+                        theme.typography.title.small.lineHeight,
+                    )}px;
+                `,
+            },
+            label: {
+                medium: css``,
+                large: css``,
+                small: css`
+                    font-size: ${theme.adaptFontSize(
+                        theme.typography.label.small.size,
+                    )}px;
+
+                    font-style: ${theme.typography.label.small.style};
+                    font-weight: ${theme.typography.label.small.weight};
+                    height: ${theme.adaptSize(
+                        theme.typography.label.small.lineHeight,
+                    )}px;
+
+                    letter-spacing: ${theme.adaptSize(
+                        theme.typography.label.small.letterSpacing,
+                    )}px;
+
+                    line-height: ${theme.adaptSize(
+                        theme.typography.label.small.lineHeight,
+                    )}px;
+                `,
+            },
+            display: {
+                medium: css``,
+                large: css``,
+                small: css``,
+            },
+            headline: {
+                medium: css``,
+                large: css``,
+                small: css``,
+            },
+            body: {
+                medium: css``,
+                large: css``,
+                small: css``,
+            },
+        };
+
+        return typography[type][size];
     }}
 `;

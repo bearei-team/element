@@ -27,7 +27,10 @@ const ForwardRefDivider = forwardRef<View, DividerProps>((props, ref) => {
                 <Content style={style} testID={`divider__content--${id}`} />
 
                 {subheader && (
-                    <Subheader testID={`divider__subheader--${id}`}>
+                    <Subheader
+                        size="small"
+                        testID={`divider__subheader--${id}`}
+                        type="title">
                         {subheader}
                     </Subheader>
                 )}
