@@ -26,6 +26,7 @@ const validateRule = (options: ValidateOptions) => {
 
 export const validate = async (options: ValidateOptions) => {
     const {name, rules, value} = options;
+
     const processErrors = (
         errors: ValidateError[] | null,
         fields: ValidateFieldsError | Values,

@@ -1,13 +1,13 @@
 import React, {FC, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, View, ViewProps} from 'react-native';
 import {SvgProps} from 'react-native-svg';
-import {State} from '../Common/interface';
+import {EventName} from '../Common/interface';
 import {Container} from './Icon.styles';
 import {IconBase, RenderProps} from './IconBase';
 import {filled} from './icons/filled';
 
-export type IconCategory = 'image';
-export type IconName = keyof (typeof filled)['image'];
+export type IconCategory = 'svg';
+export type IconName = keyof (typeof filled)['svg'];
 export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
 
 export interface IconProps
@@ -15,9 +15,9 @@ export interface IconProps
         Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps
     > {
     category?: IconCategory;
+    eventName?: EventName;
     height?: number;
     name?: IconName;
-    state?: State;
     type?: IconType;
     width?: number;
 }

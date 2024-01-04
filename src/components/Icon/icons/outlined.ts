@@ -15,7 +15,7 @@ import Settings from '@material-design-icons/svg/outlined/settings.svg';
 import SpaceDashboard from '@material-design-icons/svg/outlined/space_dashboard.svg';
 
 export const outlined = {
-    image: {
+    svg: {
         addHome: AddHome,
         arrowBack: ArrowBack,
         checkBox: CheckBox,

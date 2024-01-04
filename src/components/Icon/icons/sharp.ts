@@ -15,7 +15,7 @@ import Settings from '@material-design-icons/svg/sharp/settings.svg';
 import SpaceDashboard from '@material-design-icons/svg/sharp/space_dashboard.svg';
 
 export const sharp = {
-    image: {
+    svg: {
         addHome: AddHome,
         arrowBack: ArrowBack,
         checkBox: CheckBox,

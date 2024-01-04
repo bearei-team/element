@@ -15,7 +15,7 @@ import Settings from '@material-design-icons/svg/filled/settings.svg';
 import SpaceDashboard from '@material-design-icons/svg/filled/space_dashboard.svg';
 
 export const filled = {
-    image: {
+    svg: {
         addHome: AddHome,
         arrowBack: ArrowBack,
         checkBox: CheckBox,

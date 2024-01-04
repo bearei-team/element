@@ -10,9 +10,9 @@ export interface UseAnimatedOptions
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
+    const {onEntryAnimatedStart, sequence, active} = options;
     const [opacityAnimated] = useAnimatedValue(1);
     const [scaleAnimated] = useAnimatedValue(0);
-    const {onEntryAnimatedStart, sequence, active} = options;
     const theme = useTheme();
     const opacity = opacityAnimated.interpolate({
         inputRange: [0, 1],

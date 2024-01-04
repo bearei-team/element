@@ -3,21 +3,18 @@ import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
-import {State} from '../Common/interface';
+import {RenderProps} from './IconBase';
 
-export interface UseAnimatedOptions {
-    state: State;
-}
+export type UseAnimatedOptions = Required<Pick<RenderProps, 'eventName'>>;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {state} = options;
     const [scaleAnimated] = useAnimatedValue(1);
+    const {eventName} = options;
+    const theme = useTheme();
     const scale = scaleAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [0.97, 1, 1.03],
     });
-
-    const theme = useTheme();
 
     const processAnimatedTiming = useCallback(
         (animation: Animated.Value, toValue: number) => {
@@ -28,6 +25,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     duration: 'short3',
                     easing: 'standard',
                     toValue,
+                    useNativeDriver: true,
                 }).start(),
             );
         },
@@ -35,13 +33,13 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        const pressValue = ['pressIn', 'longPressIn'].includes(state) ? 0 : 1;
+        const toValue = ['pressIn', 'longPress'].includes(eventName) ? 0 : 1;
 
         processAnimatedTiming(
             scaleAnimated,
-            state === 'hovered' ? 2 : pressValue,
+            eventName === 'hoverIn' ? 2 : toValue,
         );
-    }, [processAnimatedTiming, state, scaleAnimated]);
+    }, [processAnimatedTiming, eventName, scaleAnimated]);
 
     return {scale};
 };

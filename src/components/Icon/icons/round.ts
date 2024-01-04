@@ -15,7 +15,7 @@ import Settings from '@material-design-icons/svg/round/settings.svg';
 import SpaceDashboard from '@material-design-icons/svg/round/space_dashboard.svg';
 
 export const round = {
-    image: {
+    svg: {
         addHome: AddHome,
         arrowBack: ArrowBack,
         checkBox: CheckBox,

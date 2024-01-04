@@ -1,4 +1,4 @@
-import {FC, ReactNode, RefAttributes, forwardRef, memo} from 'react';
+import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {GestureResponderEvent, PressableProps, View} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
 import {RippleProps} from './Ripple/Ripple';
@@ -13,18 +13,20 @@ export type TouchableProps = PressableProps &
 export interface TouchableRippleProps extends Omit<TouchableProps, 'children'> {
     active?: boolean;
     activeEvent?: GestureResponderEvent;
-    children?: ReactNode;
+    children?: React.JSX.Element;
     onRippleAnimatedEnd?: () => void;
 }
 
 const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>(
     (props, ref) => {
         const render = (renderProps: RenderProps) => {
-            const {id, children, shape, ...pressableProps} = renderProps;
+            const {id, children, shape, onEvent, ...pressableProps} =
+                renderProps;
 
             return (
                 <Container
                     {...pressableProps}
+                    {...onEvent}
                     ref={ref}
                     testID={`touchableRipple--${id}`}>
                     <Content

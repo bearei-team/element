@@ -15,7 +15,7 @@ import Settings from '@material-design-icons/svg/two-tone/settings.svg';
 import SpaceDashboard from '@material-design-icons/svg/two-tone/space_dashboard.svg';
 
 export const twoTone = {
-    image: {
+    svg: {
         addHome: AddHome,
         arrowBack: ArrowBack,
         checkBox: CheckBox,

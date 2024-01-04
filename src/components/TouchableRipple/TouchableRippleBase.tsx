@@ -1,19 +1,23 @@
 import {FC, useCallback, useEffect, useId, useMemo} from 'react';
-import {
-    GestureResponderEvent,
-    LayoutChangeEvent,
-    LayoutRectangle,
-} from 'react-native';
+import {GestureResponderEvent} from 'react-native';
 import {useImmer} from 'use-immer';
-import {OnStateChangeOptions, useHandleEvent} from '../../hooks/useHandleEvent';
+import {
+    OnEvent,
+    OnStateChangeOptions,
+    useHandleEvent,
+} from '../../hooks/useHandleEvent';
 import {State} from '../Common/interface';
 import {Ripple, RippleProps} from './Ripple/Ripple';
 import {TouchableRippleProps} from './TouchableRipple';
 
-export type RenderProps = Omit<TouchableRippleProps, 'centered'>;
+export interface RenderProps extends Omit<TouchableRippleProps, 'centered'> {
+    onEvent: OnEvent;
+}
+
 export interface TouchableRippleBaseProps extends TouchableRippleProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
+
 export interface Ripple extends Pick<RippleProps, 'location'> {
     exitAnimated?: (finished?: () => void) => void;
 }
@@ -31,24 +35,23 @@ const renderRipples = (rippleSequence: RippleSequence, options: RippleProps) =>
     ));
 
 const initialState = {
-    layout: {} as LayoutRectangle,
     rippleSequence: {} as RippleSequence,
 };
 
 export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
-    const [{layout, rippleSequence}, setState] = useImmer(initialState);
     const {
         active,
+        activeEvent,
         children,
-        onLayout,
         onRippleAnimatedEnd,
         render,
-        activeEvent,
         underlayColor,
         ...renderProps
     } = props;
 
+    const [{rippleSequence}, setState] = useImmer(initialState);
     const id = useId();
+
     const processAddRipple = useCallback(
         (event: GestureResponderEvent) => {
             const {locationX, locationY} = event.nativeEvent;
@@ -74,21 +77,11 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         [active, processAddRipple],
     );
 
-    const {...handleEvent} = useHandleEvent({
+    const {layout, ...onEvent} = useHandleEvent({
         ...props,
         disabled: false,
         onStateChange: processStateChange,
     });
-
-    const processLayout = (event: LayoutChangeEvent) => {
-        const nativeEventLayout = event.nativeEvent.layout;
-
-        setState(draft => {
-            draft.layout = nativeEventLayout;
-        });
-
-        onLayout?.(event);
-    };
 
     const processRippleExit = useCallback(() => {
         const rippleExit = (options: [string, Ripple]) => {
@@ -148,16 +141,15 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
     );
 
     useEffect(() => {
-        active
+        typeof active === 'boolean' && active
             ? activeEvent && processAddRipple(activeEvent)
             : processRippleExit();
     }, [active, activeEvent, processAddRipple, processRippleExit]);
 
     return render({
         ...renderProps,
-        ...handleEvent,
         children: childrenElement,
         id,
-        onLayout: processLayout,
+        onEvent,
     });
 };

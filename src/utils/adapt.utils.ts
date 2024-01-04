@@ -1,9 +1,9 @@
 import {Dimensions, PixelRatio, Platform} from 'react-native';
 
 export interface AdaptOptions {
-    designWidth?: number;
-    designHeight?: number;
     designDensity?: number;
+    designHeight?: number;
+    designWidth?: number;
 }
 
 export const adapt = (options = {} as AdaptOptions) => {

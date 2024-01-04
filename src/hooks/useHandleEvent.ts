@@ -1,6 +1,8 @@
 import {useCallback} from 'react';
 import {
     GestureResponderEvent,
+    LayoutChangeEvent,
+    LayoutRectangle,
     MouseEvent,
     NativeSyntheticEvent,
     PressableProps,
@@ -15,6 +17,18 @@ export type Event =
     | GestureResponderEvent
     | MouseEvent
     | NativeSyntheticEvent<TargetedEvent>;
+
+export interface OnEvent {
+    onBlur: (event: NativeSyntheticEvent<TargetedEvent>) => void;
+    onFocus: (event: NativeSyntheticEvent<TargetedEvent>) => void;
+    onHoverIn: (event: MouseEvent) => void;
+    onHoverOut: (event: MouseEvent) => void;
+    onLongPress: (event: GestureResponderEvent) => void;
+    onPress: (event: GestureResponderEvent) => void;
+    onPressIn: (event: GestureResponderEvent) => void;
+    onPressOut: (event: GestureResponderEvent) => void;
+    onLayout: (event: LayoutChangeEvent) => void;
+}
 
 export interface ProcessStateOptions {
     callback?: () => void;
@@ -32,13 +46,11 @@ export type UseHandleEventOptions = PressableProps & {
 const initialState = {
     event: undefined as Event | undefined,
     eventName: 'none' as EventName,
+    layout: {} as LayoutRectangle,
     state: 'enabled' as State,
 };
 
 export const useHandleEvent = (options: UseHandleEventOptions) => {
-    const [{state, eventName, event: currentEvent}, setState] =
-        useImmer(initialState);
-
     const {
         disabled = false,
         omitEvents = [],
@@ -46,12 +58,16 @@ export const useHandleEvent = (options: UseHandleEventOptions) => {
         onFocus,
         onHoverIn,
         onHoverOut,
+        onLayout,
         onLongPress,
         onPress,
         onPressIn,
         onPressOut,
         onStateChange,
     } = options;
+
+    const [{state, eventName, event: currentEvent, layout}, setState] =
+        useImmer(initialState);
 
     const theme = useTheme();
     const mobile = ['ios', 'android'].includes(theme.OS);
@@ -69,9 +85,9 @@ export const useHandleEvent = (options: UseHandleEventOptions) => {
             } = processStateOptions;
 
             setState(draft => {
-                draft.state = nextState;
-                draft.eventName = processStateEventName;
                 draft.event = event;
+                draft.eventName = processStateEventName;
+                draft.state = nextState;
             });
 
             onStateChange?.(nextState, {
@@ -166,14 +182,26 @@ export const useHandleEvent = (options: UseHandleEventOptions) => {
         [onBlur, processState],
     );
 
+    const processLayout = (event: LayoutChangeEvent) => {
+        const nativeEventLayout = event.nativeEvent.layout;
+
+        setState(draft => {
+            draft.layout = nativeEventLayout;
+        });
+
+        onLayout?.(event);
+    };
+
     const result = {
         event: currentEvent,
         eventName,
+        layout,
         mobile,
         onBlur: handleBlur,
         onFocus: handleFocus,
         onHoverIn: handleHoverIn,
         onHoverOut: handleHoverOut,
+        onLayout: processLayout,
         onLongPress: handleLongPress,
         onPress: handlePress,
         onPressIn: handlePressIn,
