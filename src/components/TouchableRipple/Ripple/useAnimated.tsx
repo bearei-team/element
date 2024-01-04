@@ -10,7 +10,7 @@ export interface UseAnimatedOptions
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {onEntryAnimatedStart, sequence, active} = options;
+    const {onEntryAnimatedStart, sequence, active, minDuration} = options;
     const [opacityAnimated] = useAnimatedValue(1);
     const [scaleAnimated] = useAnimatedValue(0);
     const theme = useTheme();
@@ -27,7 +27,6 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const processAnimatedTiming = useCallback(() => {
         const animatedTiming = UTIL.animatedTiming(theme);
         const useNativeDriver = true;
-
         const exitAnimated = (finished?: () => void) => {
             requestAnimationFrame(() => {
                 typeof active === 'boolean' &&
@@ -50,7 +49,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         const entryAnimated = (finished?: () => void) => {
             requestAnimationFrame(() =>
                 animatedTiming(scaleAnimated, {
-                    duration: 'medium3',
+                    duration: Math.min(minDuration, 400),
                     easing: 'emphasizedDecelerate',
                     toValue: 1,
                     useNativeDriver,
@@ -65,6 +64,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         );
     }, [
         active,
+        minDuration,
         onEntryAnimatedStart,
         opacityAnimated,
         scaleAnimated,

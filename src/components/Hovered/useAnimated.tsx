@@ -4,11 +4,11 @@ import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 import {EventName} from '../Common/interface';
+import {RenderProps} from './HoveredBase';
 
-export interface UseAnimatedOptions {
-    eventName: EventName;
-    opacities: [number, number, number];
-}
+export type UseAnimatedOptions = Required<
+    Pick<RenderProps, 'eventName' | 'opacities'>
+>;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {eventName, opacities} = options;

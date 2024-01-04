@@ -5,10 +5,10 @@ import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 import {RenderProps} from './IconBase';
 
-export type UseAnimatedOptions = Pick<RenderProps, 'eventName'>;
+export type UseAnimatedOptions = Required<Pick<RenderProps, 'eventName'>>;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {eventName = 'none'} = options;
+    const {eventName} = options;
     const [scaleAnimated] = useAnimatedValue(1);
     const theme = useTheme();
     const scale = scaleAnimated.interpolate({

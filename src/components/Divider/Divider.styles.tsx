@@ -9,15 +9,17 @@ export type ContainerProps = Pick<
 
 export const Container = styled(View)<ContainerProps>`
     align-items: flex-start;
+    align-self: stretch;
     display: flex;
     flex-direction: column;
+    flex: 1;
     justify-content: center;
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
     `}
 
-    ${({layout = 'horizontal', theme, width, height}) => {
+    ${({layout = 'horizontal', theme, width = 0, height = 0}) => {
         const containerLayout = {
             horizontal: css`
                 min-width: ${theme.adaptSize(theme.spacing.small * 40)}px;
