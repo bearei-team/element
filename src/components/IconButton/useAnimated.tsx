@@ -3,7 +3,7 @@ import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
-import {RenderProps} from './ButtonBase';
+import {RenderProps} from './IconButtonBase';
 
 export type UseAnimatedOptions = Required<
     Pick<RenderProps, 'disabled' | 'type' | 'eventName'>
@@ -20,19 +20,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         0.12,
     );
 
-    const disabledColor = theme.color.rgba(
-        theme.palette.surface.onSurface,
-        0.38,
-    );
-
     const backgroundColorConfig = {
-        elevated: {
-            inputRange: [0, 1],
-            outputRange: [
-                disabledBackgroundColor,
-                theme.palette.surface.surfaceContainerLow,
-            ],
-        },
         filled: {
             inputRange: [0, 1],
             outputRange: [
@@ -47,20 +35,14 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 theme.color.rgba(theme.palette.primary.primary, 0),
             ],
         },
-        text: {
+        standard: {
             inputRange: [0, 1],
             outputRange: [
                 theme.color.rgba(theme.palette.primary.primary, 0),
                 theme.color.rgba(theme.palette.primary.primary, 0),
             ],
         },
-        link: {
-            inputRange: [0, 1],
-            outputRange: [
-                theme.color.rgba(theme.palette.primary.primary, 0),
-                theme.color.rgba(theme.palette.primary.primary, 0),
-            ],
-        },
+
         tonal: {
             inputRange: [0, 1],
             outputRange: [
@@ -70,48 +52,15 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         },
     };
 
-    const colorConfig = {
-        elevated: {
-            inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.primary.primary],
-        },
-        filled: {
-            inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.primary.onPrimary],
-        },
-        outlined: {
-            inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.primary.primary],
-        },
-        text: {
-            inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.primary.primary],
-        },
-        link: {
-            inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.primary.primary],
-        },
-        tonal: {
-            inputRange: [0, 1],
-            outputRange: [
-                disabledColor,
-                theme.palette.secondary.onSecondaryContainer,
-            ],
-        },
-    };
-
     const backgroundColor = colorAnimated.interpolate(
         backgroundColorConfig[type],
     );
 
-    const color = colorAnimated.interpolate(colorConfig[type]);
     const borderColor = borderAnimated.interpolate({
         inputRange: borderInputRange,
         outputRange: [
             disabledBackgroundColor,
-            type === 'link'
-                ? theme.color.rgba(theme.palette.outline.outline, 0)
-                : theme.palette.outline.outline,
+            theme.palette.outline.outline,
             theme.palette.primary.primary,
         ],
     });
@@ -133,24 +82,24 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        if (['outlined', 'link'].includes(type)) {
+        if (type === 'outlined') {
             const value = disabled
                 ? 0
                 : borderInputRange[borderInputRange.length - 2];
 
-            const responseEvent =
-                type === 'link'
-                    ? [
-                          'focus',
-                          'hoverIn',
-                          'longPress',
-                          'press',
-                          'pressIn',
-                          'pressOut',
-                      ].includes(eventName)
-                    : eventName === 'focus';
+            // const responseEvent =
+            //     type === 'link'
+            //         ? [
+            //               'focus',
+            //               'hoverIn',
+            //               'longPress',
+            //               'press',
+            //               'pressIn',
+            //               'pressOut',
+            //           ].includes(eventName)
+            //         : eventName === 'focus';
 
-            const toValue = responseEvent ? borderInputRange[2] : value;
+            const toValue = eventName === 'focus' ? borderInputRange[2] : value;
 
             processAnimatedTiming(borderAnimated, toValue);
         }
@@ -167,8 +116,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     ]);
 
     return {
-        ...(!['text', 'link'].includes(type) && {backgroundColor}),
-        ...(['outlined', 'link'].includes(type) && {borderColor}),
-        color,
+        ...(type !== 'standard' && {backgroundColor}),
+        ...(type === 'outlined' && {borderColor}),
     };
 };

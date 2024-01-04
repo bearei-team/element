@@ -42,6 +42,13 @@ export const Elevated: StoryObj<ButtonProps> = {
     },
 };
 
+export const Link: StoryObj<ButtonProps> = {
+    args: {
+        labelText: 'Label',
+        type: 'link',
+    },
+};
+
 export const Icon: StoryObj<ButtonProps> = {
     args: {
         labelText: 'Label',

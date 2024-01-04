@@ -1,5 +1,10 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {GestureResponderEvent, PressableProps, View} from 'react-native';
+import {
+    GestureResponderEvent,
+    PressableProps,
+    View,
+    ViewProps,
+} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
 import {RippleProps} from './Ripple/Ripple';
 import {Container, Content} from './TouchableRipple.styles';
@@ -8,15 +13,16 @@ import {RenderProps, TouchableRippleBase} from './TouchableRippleBase';
 export type TouchableProps = PressableProps &
     Pick<RippleProps, 'underlayColor' | 'centered'> &
     RefAttributes<View> &
+    ViewProps &
     Pick<ShapeProps, 'shape'>;
 
 export interface TouchableRippleProps
-    extends Omit<TouchableProps, 'children' | 'disabled'> {
+    extends Omit<TouchableProps, 'children' | 'disabled' | 'hitSlop'> {
     active?: boolean;
     activeEvent?: GestureResponderEvent;
     children?: React.JSX.Element;
-    onRippleAnimatedEnd?: () => void;
     disabled?: boolean;
+    onRippleAnimatedEnd?: () => void;
 }
 
 const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>(

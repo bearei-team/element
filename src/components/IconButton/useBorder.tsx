@@ -1,18 +1,14 @@
 import {Animated, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {RenderProps} from './ButtonBase';
 
-export interface UseBorderOptions extends Required<Pick<RenderProps, 'type'>> {
+export interface UseBorderOptions {
     borderColor?: Animated.AnimatedInterpolation<string | number>;
 }
 
 export const useBorder = (options: UseBorderOptions) => {
     const theme = useTheme();
-    const {borderColor, type} = options;
-    const borderPosition =
-        type === 'link'
-            ? {borderBottomWidth: theme.adaptSize(1)}
-            : {borderWidth: theme.adaptSize(1)};
+    const {borderColor} = options;
+    const borderPosition = {borderWidth: theme.adaptSize(1)};
 
     return (
         borderColor && {

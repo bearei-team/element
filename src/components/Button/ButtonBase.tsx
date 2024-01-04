@@ -40,9 +40,9 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     const {
         block = false,
         disabled = false,
+        icon,
         render,
         type = 'filled',
-        icon,
         ...renderProps
     } = props;
 
@@ -62,9 +62,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
                 pressIn: 0,
             };
 
-            const correctionCoefficient = processCorrectionCoefficient({
-                type,
-            });
+            const correctionCoefficient = processCorrectionCoefficient({type});
 
             setState(draft => {
                 draft.elevationLevel = (level[nextState] +
@@ -94,6 +92,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     const {backgroundColor, borderColor, color} = useAnimated({
         disabled,
         type,
+        eventName,
     });
 
     const {icon: iconElement} = useIcon({eventName, type, icon, disabled});
@@ -110,15 +109,14 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
 
     return render({
         ...renderProps,
-        eventName,
         block,
+        elevationLevel,
+        eventName,
+        icon: iconElement,
         id,
         onEvent,
         type,
-        shape: 'full',
         underlayColor,
-        icon: iconElement,
-        elevationLevel,
         renderStyle: {
             ...border,
             backgroundColor,

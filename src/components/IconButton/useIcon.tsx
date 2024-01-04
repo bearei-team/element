@@ -1,6 +1,7 @@
 import React, {cloneElement} from 'react';
 import {useTheme} from 'styled-components/native';
-import {RenderProps} from './ButtonBase';
+import {Icon} from '../Icon/Icon';
+import {RenderProps} from './IconButtonBase';
 
 export interface UseIconOptions
     extends Required<Pick<RenderProps, 'disabled' | 'type' | 'eventName'>> {
@@ -13,15 +14,12 @@ export const useIcon = (options: UseIconOptions) => {
     const fillType = {
         filled: theme.palette.primary.onPrimary,
         outlined: theme.palette.surface.onSurfaceVariant,
+        standard: theme.palette.surface.onSurfaceVariant,
         tonal: theme.palette.secondary.onSecondaryContainer,
     };
 
-    if (!icon) {
-        return {icon};
-    }
-
     return {
-        icon: cloneElement(icon, {
+        icon: cloneElement(icon ? icon : <Icon />, {
             eventName,
             fill: disabled
                 ? theme.color.rgba(theme.palette.surface.onSurface, 0.38)
