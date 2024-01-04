@@ -58,7 +58,7 @@ export const Shadow = styled(Shape)<ShadowProps>`
         `;
     }};
 
-    ${({width, height}) =>
+    ${({width = 0, height = 0}) =>
         css`
             width: ${width}px;
             height: ${height}px;

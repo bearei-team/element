@@ -12,9 +12,9 @@ export const Container = styled(Shape)<ContainerProps>`
     pointer-events: none;
     position: absolute;
     top: 0;
-    z-index: -1;
+    z-index: 2048;
 
-    ${({underlayColor, width, height}) =>
+    ${({underlayColor, width = 0, height = 0}) =>
         underlayColor &&
         css`
             background-color: ${underlayColor};

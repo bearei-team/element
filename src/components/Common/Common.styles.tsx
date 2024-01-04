@@ -1,4 +1,4 @@
-import {Typography as ITypography, Shape as ThemeShape} from '@bearei/theme';
+import {Typography as EITypography, Shape as ThemeShape} from '@bearei/theme';
 import {View, ViewStyle} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {AnimatedInterpolation, Size} from './interface';
@@ -13,13 +13,8 @@ export interface ShapeProps {
 }
 
 export interface TypographyProps {
-    type: keyof ITypography;
-    size: Size;
-}
-
-export interface DisabledProps {
-    height: number;
-    width: number;
+    size?: Size;
+    type?: keyof EITypography;
 }
 
 export const Shape = styled(View)<ShapeProps>`

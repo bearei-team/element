@@ -44,6 +44,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     duration: 'short3',
                     easing: 'standard',
                     toValue,
+                    useNativeDriver: true,
                 }).start(),
             );
         },

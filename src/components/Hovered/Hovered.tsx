@@ -22,25 +22,27 @@ const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const ForwardRefHovered = forwardRef<Animated.LegacyRef<View>, HoveredProps>(
     (props, ref) => {
         const render = (renderProps: RenderProps) => {
-            const {id, renderStyle, style, ...containerProps} = renderProps;
+            const {id, renderStyle, style, underlayColor, ...containerProps} =
+                renderProps;
+
             const {width, height, ...containerStyle} = renderStyle;
 
             return (
                 <AnimatedContainer
                     {...containerProps}
                     height={height}
-                    ref={ref}
                     style={{
                         ...(typeof style === 'object' && style),
                         ...containerStyle,
                     }}
                     testID={`hovered--${id}`}
                     width={width}
+                    underlayColor={underlayColor}
                 />
             );
         };
 
-        return <HoveredBase {...props} render={render} />;
+        return <HoveredBase {...props} render={render} ref={ref} />;
     },
 );
 

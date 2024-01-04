@@ -6,7 +6,6 @@ import {Container} from './Icon.styles';
 import {IconBase, RenderProps} from './IconBase';
 import {filled} from './icons/filled';
 
-export type IconCategory = 'svg';
 export type IconName = keyof (typeof filled)['svg'];
 export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
 
@@ -14,7 +13,6 @@ export interface IconProps
     extends Partial<
         Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps
     > {
-    category?: IconCategory;
     eventName?: EventName;
     height?: number;
     name?: IconName;
@@ -35,7 +33,6 @@ const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => {
                 {...containerProps}
                 accessibilityRole="image"
                 height={height}
-                ref={ref}
                 style={{
                     ...(typeof style === 'object' && style),
                     ...containerStyle,
@@ -47,7 +44,7 @@ const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => {
         );
     };
 
-    return <IconBase {...props} render={render} />;
+    return <IconBase {...props} render={render} ref={ref} />;
 });
 
 export const Icon: FC<IconProps> = memo(ForwardRefIcon);

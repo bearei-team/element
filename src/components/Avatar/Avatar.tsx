@@ -19,7 +19,6 @@ const ForwardRefAvatar = forwardRef<View, AvatarProps>((props, ref) => {
         return (
             <Container
                 {...containerProps}
-                ref={ref}
                 shape="full"
                 testID={`avatar--${id}`}>
                 <LabelText
@@ -34,7 +33,7 @@ const ForwardRefAvatar = forwardRef<View, AvatarProps>((props, ref) => {
         );
     };
 
-    return <AvatarBase {...props} render={render} />;
+    return <AvatarBase {...props} render={render} ref={ref} />;
 });
 
 export const Avatar: FC<AvatarProps> = memo(ForwardRefAvatar);

@@ -6,13 +6,13 @@ import {UTIL} from '../../utils/util';
 import {RenderProps} from './ButtonBase';
 
 export type UseAnimatedOptions = Required<
-    Pick<RenderProps, 'disabled' | 'type'>
+    Pick<RenderProps, 'disabled' | 'state' | 'type' | 'fabType' | 'category'>
 >;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const [borderAnimated] = useAnimatedValue(1);
     const [colorAnimated] = useAnimatedValue(1);
-    const {disabled, type} = options;
+    const {category, disabled, fabType, state, type} = options;
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
     const disabledBackgroundColor = theme.color.rgba(
@@ -25,7 +25,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         0.38,
     );
 
-    const backgroundColorConfig = {
+    const commonBackgroundColorConfig = {
         elevated: {
             inputRange: [0, 1],
             outputRange: [
@@ -70,7 +70,38 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         },
     };
 
-    const colorConfig = {
+    const fabBackgroundColorConfig = {
+        surface: {
+            inputRange: [0, 1],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.surface.surfaceContainerHigh,
+            ],
+        },
+        primary: {
+            inputRange: [0, 1],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.primary.primaryContainer,
+            ],
+        },
+        secondary: {
+            inputRange: [0, 1],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.secondary.secondaryContainer,
+            ],
+        },
+        tertiary: {
+            inputRange: [0, 1],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.tertiary.tertiaryContainer,
+            ],
+        },
+    };
+
+    const commonColorConfig = {
         elevated: {
             inputRange: [0, 1],
             outputRange: [disabledColor, theme.palette.primary.primary],
@@ -100,11 +131,50 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         },
     };
 
-    const backgroundColor = colorAnimated.interpolate(
-        backgroundColorConfig[type],
-    );
+    const fabColorConfig = {
+        surface: {
+            inputRange: [0, 1],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.primary.primary,
+            ],
+        },
+        primary: {
+            inputRange: [0, 1],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.primary.onPrimaryContainer,
+            ],
+        },
+        secondary: {
+            inputRange: [0, 1],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.secondary.onSecondaryContainer,
+            ],
+        },
+        tertiary: {
+            inputRange: [0, 1],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.palette.tertiary.onTertiaryContainer,
+            ],
+        },
+    };
 
-    const color = colorAnimated.interpolate(colorConfig[type]);
+    const {backgroundColorConfig, colorConfig} =
+        category === 'fab'
+            ? {
+                  backgroundColorConfig: fabBackgroundColorConfig[fabType],
+                  colorConfig: fabColorConfig[fabType],
+              }
+            : {
+                  backgroundColorConfig: commonBackgroundColorConfig[type],
+                  colorConfig: commonColorConfig[type],
+              };
+
+    const backgroundColor = colorAnimated.interpolate(backgroundColorConfig);
+    const color = colorAnimated.interpolate(colorConfig);
     const borderColor = borderAnimated.interpolate({
         inputRange: borderInputRange,
         outputRange: [
@@ -125,7 +195,6 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     duration: 'short3',
                     easing: 'standard',
                     toValue,
-                    useNativeDriver: true,
                 }).start(),
             );
         },
@@ -133,23 +202,31 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        // if (['outlined', 'link'].includes(type)) {
-        //     const value = disabled
-        //         ? 0
-        //         : borderInputRange[borderInputRange.length - 2];
+        if (['outlined', 'link'].includes(type)) {
+            const value = disabled
+                ? 0
+                : borderInputRange[borderInputRange.length - 2];
 
-        //     const responseEvent =
-        //         type === 'link'
-        //             ? ['focused', 'pressIn', 'hovered'].includes(state)
-        //             : state === 'focused';
+            const responseEvent =
+                type === 'link'
+                    ? ['focused', 'pressIn', 'hovered'].includes(state)
+                    : state === 'focused';
 
-        //     const toValue = responseEvent ? borderInputRange[2] : value;
+            const toValue = responseEvent ? borderInputRange[2] : value;
 
-        //     processAnimatedTiming(borderAnimated, toValue);
-        // }
+            processAnimatedTiming(borderAnimated, toValue);
+        }
 
         processAnimatedTiming(colorAnimated, disabled ? 0 : 1);
-    }, [colorAnimated, disabled, processAnimatedTiming]);
+    }, [
+        borderAnimated,
+        borderInputRange,
+        colorAnimated,
+        disabled,
+        processAnimatedTiming,
+        state,
+        type,
+    ]);
 
     return {
         ...(!['text', 'link'].includes(type) && {backgroundColor}),

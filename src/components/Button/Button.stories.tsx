@@ -1,5 +1,5 @@
 import {Meta, StoryObj} from '@storybook/react';
-// import {Icon} from '../Icon/Icon';
+import {Icon as EIIcon} from '../Icon/Icon';
 import {Button, ButtonProps} from './Button';
 
 export default {
@@ -11,5 +11,40 @@ export default {
 export const Filled: StoryObj<ButtonProps> = {
     args: {
         labelText: 'Label',
+    },
+};
+
+export const Outlined: StoryObj<ButtonProps> = {
+    args: {
+        labelText: 'Label',
+        type: 'outlined',
+    },
+};
+
+export const Text: StoryObj<ButtonProps> = {
+    args: {
+        labelText: 'Label',
+        type: 'text',
+    },
+};
+
+export const Tonal: StoryObj<ButtonProps> = {
+    args: {
+        labelText: 'Label',
+        type: 'tonal',
+    },
+};
+
+export const Elevated: StoryObj<ButtonProps> = {
+    args: {
+        labelText: 'Label',
+        type: 'elevated',
+    },
+};
+
+export const Icon: StoryObj<ButtonProps> = {
+    args: {
+        labelText: 'Label',
+        icon: <EIIcon />,
     },
 };

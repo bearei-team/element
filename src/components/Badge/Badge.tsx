@@ -16,7 +16,6 @@ const ForwardRefBadge = forwardRef<View, BadgeProps>((props, ref) => {
         return (
             <Container
                 {...containerProps}
-                ref={ref}
                 shape="full"
                 testID={`badge--${id}`}
                 size={size}>
@@ -32,7 +31,7 @@ const ForwardRefBadge = forwardRef<View, BadgeProps>((props, ref) => {
         );
     };
 
-    return <BadgeBase {...props} render={render} />;
+    return <BadgeBase {...props} render={render} ref={ref} />;
 });
 
 export const Badge: FC<BadgeProps> = memo(ForwardRefBadge);

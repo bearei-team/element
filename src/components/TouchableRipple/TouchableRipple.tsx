@@ -10,11 +10,13 @@ export type TouchableProps = PressableProps &
     RefAttributes<View> &
     Pick<ShapeProps, 'shape'>;
 
-export interface TouchableRippleProps extends Omit<TouchableProps, 'children'> {
+export interface TouchableRippleProps
+    extends Omit<TouchableProps, 'children' | 'disabled'> {
     active?: boolean;
     activeEvent?: GestureResponderEvent;
     children?: React.JSX.Element;
     onRippleAnimatedEnd?: () => void;
+    disabled?: boolean;
 }
 
 const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>(
@@ -27,7 +29,6 @@ const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>(
                 <Container
                     {...pressableProps}
                     {...onEvent}
-                    ref={ref}
                     testID={`touchableRipple--${id}`}>
                     <Content
                         shape={shape}
@@ -38,7 +39,7 @@ const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>(
             );
         };
 
-        return <TouchableRippleBase {...props} render={render} />;
+        return <TouchableRippleBase {...props} render={render} ref={ref} />;
     },
 );
 

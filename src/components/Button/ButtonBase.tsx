@@ -1,132 +1,54 @@
 import {FC, useCallback, useEffect, useId} from 'react';
-import {
-    Animated,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    TextStyle,
-    ViewStyle,
-} from 'react-native';
+import {Animated, TextStyle, ViewStyle} from 'react-native';
 import {useImmer} from 'use-immer';
-import {OnStateChangeOptions, useHandleEvent} from '../../hooks/useOnEvent';
-import {ShapeProps} from '../Common/Common.styles';
-import {State} from '../Common/interface';
-import {ElevationProps} from '../Elevation/Elevation';
-import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
+import {HOOK} from '../../hooks/hook';
+import {OnEvent} from '../../hooks/useOnEvent';
+import {EventName, State} from '../Common/interface';
+import {ElevationLevel} from '../Elevation/Elevation';
 import {ButtonProps} from './Button';
 import {useAnimated} from './useAnimated';
 import {useBorder} from './useBorder';
 import {useIcon} from './useIcon';
 import {useUnderlayColor} from './useUnderlayColor';
 
-export interface RenderProps
-    extends Partial<
-        Pick<ShapeProps, 'shape'> & Omit<ButtonProps, 'elevation'>
-    > {
-    elevation: ElevationProps['level'];
-    iconShow: boolean;
-    labelTextShow?: boolean;
+export interface RenderProps extends ButtonProps {
+    onEvent: OnEvent;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        contentHeight: number;
-        contentWidth: number;
         height: number;
         width: number;
     };
-    onContentLayout: (event: LayoutChangeEvent) => void;
-    state: State;
-    underlayColor: TouchableRippleProps['underlayColor'];
+    eventName: EventName;
+    elevationLevel: ElevationLevel;
 }
 
 export interface ButtonBaseProps extends ButtonProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-const checkSetCommonElevation = (
-    options: Pick<ButtonProps, 'category' | 'type' | 'elevation'>,
-) => {
-    const {category, type, elevation} = options;
-
-    return category === 'common' && type === 'elevated' && elevation;
-};
-
-const checkSetFabElevation = (options: Omit<ButtonProps, 'type'>) => {
-    const {category, elevation} = options;
-
-    return category === 'fab' && elevation;
-};
-
-const processCorrectionCoefficient = (
-    options: Pick<RenderProps, 'category' | 'type'>,
-) => {
-    const {category, type} = options;
+const processCorrectionCoefficient = (options: Pick<RenderProps, 'type'>) => {
+    const {type} = options;
     const nextElevation = type === 'elevated' ? 1 : 0;
 
-    return category === 'fab' ? 3 : nextElevation;
-};
-
-const processDefaultLabelText = (
-    options: Pick<RenderProps, 'labelText' | 'category'>,
-) => {
-    const {labelText, category} = options;
-
-    return labelText ?? (category === 'common' ? 'Label' : labelText);
-};
-
-const processShape = (options: Pick<RenderProps, 'category' | 'type'>) => {
-    const {category, type} = options;
-    const categoryShape = category === 'fab' ? 'large' : 'full';
-
-    return type === 'link' ? 'none' : categoryShape;
+    return nextElevation;
 };
 
 const initialState = {
-    checked: false,
-    contentLayout: {} as LayoutRectangle,
-    elevation: 0 as ElevationProps['level'],
-    layout: {} as LayoutRectangle,
-    state: 'enabled' as State,
+    elevationLevel: 0 as ElevationLevel,
 };
 
 export const ButtonBase: FC<ButtonBaseProps> = props => {
     const {
         block = false,
-        category = 'common',
-        checked = false,
         disabled = false,
-        elevation: elevationStyle = true,
-        fabType = 'primary',
-        icon,
-        indeterminate = false,
-        labelText,
-        onCheckedChange,
-        onLayout,
         render,
         type = 'filled',
+        icon,
         ...renderProps
     } = props;
 
-    const checkButton = ['radio', 'checkbox'].includes(category);
-    const buttonType = checkButton ? 'text' : type;
+    const [{elevationLevel}, setState] = useImmer(initialState);
     const id = useId();
-    const [
-        {checked: buttonChecked, elevation, layout, contentLayout},
-        setState,
-    ] = useImmer(initialState);
-
-    const [underlayColor] = useUnderlayColor({
-        type: buttonType,
-        category,
-        fabType,
-    });
-
-    const processChecked = useCallback(() => {
-        setState(draft => {
-            const nextChecked = !draft.checked;
-
-            draft.checked = nextChecked;
-
-            onCheckedChange?.(nextChecked);
-        });
-    }, [onCheckedChange, setState]);
+    const [underlayColor] = useUnderlayColor({type});
 
     const processElevation = useCallback(
         (nextState: State) => {
@@ -141,142 +63,68 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
             };
 
             const correctionCoefficient = processCorrectionCoefficient({
-                type: buttonType,
-                category,
+                type,
             });
 
-            category !== 'icon' &&
-                elevationStyle &&
-                setState(draft => {
-                    draft.elevation = (level[nextState] +
-                        correctionCoefficient) as ElevationProps['level'];
-                });
+            setState(draft => {
+                draft.elevationLevel = (level[nextState] +
+                    correctionCoefficient) as ElevationLevel;
+            });
         },
-        [buttonType, category, elevationStyle, setState],
+        [setState, type],
     );
 
     const processStateChange = useCallback(
-        (nextState: State, options = {} as OnStateChangeOptions) => {
-            const {eventName} = options;
+        (nextState: State) => {
             const elevationType = ['elevated', 'filled', 'tonal'].includes(
-                buttonType,
+                type,
             );
 
             elevationType && processElevation(nextState);
-            eventName === 'pressOut' && processChecked();
         },
-        [buttonType, processChecked, processElevation],
+        [type, processElevation],
     );
 
-    const {state, ...handleEvent} = useHandleEvent({
+    const {layout, eventName, ...onEvent} = HOOK.useOnEvent({
         ...props,
         disabled,
         onStateChange: processStateChange,
     });
 
-    const iconElement = useIcon({
-        category,
-        checkButton,
-        checked: buttonChecked,
-        disabled,
-        fabType,
-        icon,
-        indeterminate,
-        state,
-        type: buttonType,
-    });
-
     const {backgroundColor, borderColor, color} = useAnimated({
-        category,
         disabled,
-        fabType,
-        state,
-        type: buttonType,
+        type,
     });
 
-    const border = useBorder({borderColor, type});
-    const processLayout = useCallback(
-        (event: LayoutChangeEvent) => {
-            const nativeEventLayout = event.nativeEvent.layout;
-
-            block &&
-                setState(draft => {
-                    draft.layout = nativeEventLayout;
-                });
-
-            onLayout?.(event);
-        },
-        [block, onLayout, setState],
-    );
-
-    const processContentLayout = useCallback(
-        (event: LayoutChangeEvent) => {
-            const nativeEventLayout = event.nativeEvent.layout;
-
-            !block &&
-                setState(draft => {
-                    draft.contentLayout = nativeEventLayout;
-                });
-
-            onLayout?.(event);
-        },
-        [block, onLayout, setState],
-    );
+    const {icon: iconElement} = useIcon({eventName, type, icon, disabled});
+    const border = useBorder({type, borderColor});
 
     useEffect(() => {
-        const commonElevation = disabled ? 0 : 1;
-        const fabElevation = disabled ? 0 : 3;
-        const setCommonElevation = checkSetCommonElevation({
-            category,
-            elevation: elevationStyle,
-            type: buttonType,
-        });
+        const elevation = disabled ? 0 : 1;
 
-        if (setCommonElevation) {
-            return setState(draft => {
-                draft.elevation = commonElevation;
-            });
-        }
-
-        checkSetFabElevation({category, elevation: elevationStyle}) &&
+        type === 'elevated' &&
             setState(draft => {
-                draft.elevation = fabElevation;
+                draft.elevationLevel = elevation;
             });
-    }, [buttonType, category, disabled, elevationStyle, setState]);
-
-    useEffect(() => {
-        checked !== buttonChecked &&
-            setState(draft => {
-                draft.checked = checked;
-            });
-    }, [buttonChecked, checked, setState]);
+    }, [disabled, setState, type]);
 
     return render({
         ...renderProps,
-        ...handleEvent,
+        eventName,
         block,
-        category,
-        disabled,
-        elevation,
-        icon: iconElement,
-        iconShow: !!iconElement,
         id,
-        labelText: processDefaultLabelText({labelText, category}),
-        labelTextShow: !!labelText,
-        onContentLayout: processContentLayout,
-        onLayout: processLayout,
+        onEvent,
+        type,
+        shape: 'full',
+        underlayColor,
+        icon: iconElement,
+        elevationLevel,
         renderStyle: {
             ...border,
             backgroundColor,
             color,
-            contentHeight: contentLayout.height,
-            contentWidth: contentLayout.width,
             height: layout.height,
             width: layout.width,
         },
-        shape: processShape({category, type}),
-        state,
-        type: buttonType,
-        underlayColor,
     });
 };

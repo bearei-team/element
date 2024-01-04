@@ -18,7 +18,6 @@ export interface IconBaseProps extends IconProps {
 
 export const IconBase: FC<IconBaseProps> = props => {
     const {
-        category = 'svg',
         eventName = 'none',
         fill,
         height,
@@ -29,10 +28,10 @@ export const IconBase: FC<IconBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const {scale} = useAnimated({eventName});
     const id = useId();
-    const SvgIcon = icon?.[type]?.[category]?.[name];
+    const SvgIcon = icon?.[type]?.svg?.[name];
     const theme = useTheme();
+    const {scale} = useAnimated({eventName});
 
     return render({
         ...renderProps,

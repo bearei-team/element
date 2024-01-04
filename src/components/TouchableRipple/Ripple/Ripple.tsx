@@ -27,14 +27,16 @@ export interface RippleProps
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {id, renderStyle, style, x, y, ...containerProps} = renderProps;
+        const {id, renderStyle, style, x, y, active, ...containerProps} =
+            renderProps;
+
         const {height, width, ...containerStyle} = renderStyle;
 
         return (
             <AnimatedContainer
                 {...containerProps}
+                activeRipple={typeof active === 'boolean'}
                 height={height}
-                ref={ref}
                 shape="full"
                 style={{
                     ...(typeof style === 'object' && style),
@@ -48,7 +50,7 @@ const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => {
         );
     };
 
-    return <RippleBase {...props} render={render} />;
+    return <RippleBase {...props} render={render} ref={ref} />;
 });
 
 export const Ripple: FC<RippleProps> = memo(ForwardRefRipple);

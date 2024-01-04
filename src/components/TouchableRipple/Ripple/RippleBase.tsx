@@ -3,8 +3,6 @@ import {Animated, NativeTouchEvent, ViewStyle} from 'react-native';
 import {RippleProps} from './Ripple';
 import {useAnimated} from './useAnimated';
 export interface RenderProps extends RippleProps {
-    activeRipple: boolean;
-    underlayColor: RippleProps['underlayColor'];
     renderStyle: Animated.WithAnimatedObject<
         ViewStyle & {height: number; width: number}
     >;
@@ -54,14 +52,15 @@ export const RippleBase: FC<RippleBaseProps> = props => {
 
     return render({
         ...renderProps,
+        active,
         id,
-        activeRipple: typeof active === 'boolean',
         renderStyle: {
             height: diameter,
             opacity,
             transform: [{translateY: -radius}, {translateX: -radius}, {scale}],
             width: diameter,
         },
+
         underlayColor,
         x: locationX,
         y: locationY,

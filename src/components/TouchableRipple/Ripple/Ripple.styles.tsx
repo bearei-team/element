@@ -2,13 +2,13 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../../Common/Common.styles';
 import {RenderProps} from './RippleBase';
 
-export type ContainerProps = Omit<RenderProps, 'renderStyle'> & {
-    activeRipple: boolean;
+export interface ContainerProps extends Pick<RenderProps, 'underlayColor'> {
     height: number;
     width: number;
     x: number;
     y: number;
-};
+    activeRipple: boolean;
+}
 
 export const Container = styled(Shape)<ContainerProps>`
     pointer-events: none;
@@ -21,10 +21,14 @@ export const Container = styled(Shape)<ContainerProps>`
         width: ${width}px;
     `}
 
-    ${({underlayColor}) =>
-        underlayColor &&
+    ${({underlayColor, theme, activeRipple}) =>
         css`
-            background-color: ${underlayColor};
+            background-color: ${activeRipple
+                ? underlayColor
+                : theme.color.rgba(
+                      underlayColor ?? theme.palette.surface.surface,
+                      0.12,
+                  )};
         `};
 
     ${({activeRipple}) =>

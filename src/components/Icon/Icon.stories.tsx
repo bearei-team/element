@@ -9,7 +9,6 @@ export default {
 export const Filled: StoryObj<IconProps> = {
     args: {
         type: 'filled',
-        category: 'svg',
         name: 'lens',
     },
 };
@@ -17,7 +16,6 @@ export const Filled: StoryObj<IconProps> = {
 export const Outlined: StoryObj<IconProps> = {
     args: {
         type: 'outlined',
-        category: 'svg',
         name: 'lens',
     },
 };

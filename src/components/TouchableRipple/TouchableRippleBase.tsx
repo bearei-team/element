@@ -21,10 +21,10 @@ export interface Ripple extends Pick<RippleProps, 'location'> {
 
 export type RippleSequence = Record<string, Ripple>;
 
-const renderRipples = (rippleSequence: RippleSequence, options: RippleProps) =>
+const renderRipples = (rippleSequence: RippleSequence, props: RippleProps) =>
     Object.entries(rippleSequence).map(([sequence, {location}]) => (
         <Ripple
-            {...options}
+            {...props}
             key={sequence}
             location={location}
             sequence={sequence}
@@ -113,6 +113,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         () => (
             <>
                 {typeof layout.width === 'number' &&
+                    layout.width !== 0 &&
                     renderRipples(rippleSequence, {
                         onEntryAnimatedStart: processRippleEntryAnimatedStart,
                         touchableLayout: layout,
@@ -138,9 +139,11 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
     );
 
     useEffect(() => {
-        typeof active === 'boolean' && active
-            ? activeEvent && processAddRipple(activeEvent)
-            : processRippleExit();
+        if (typeof active === 'boolean') {
+            active
+                ? activeEvent && processAddRipple(activeEvent)
+                : processRippleExit();
+        }
     }, [active, activeEvent, processAddRipple, processRippleExit]);
 
     return render({
