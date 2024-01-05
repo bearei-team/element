@@ -11,8 +11,10 @@ export const useIcon = (options: UseIconOptions) => {
     const {disabled, icon, type, eventName} = options;
     const theme = useTheme();
     const fillType = {
+        elevated: theme.palette.primary.primary,
         filled: theme.palette.primary.onPrimary,
-        outlined: theme.palette.surface.onSurfaceVariant,
+        outlined: theme.palette.primary.primary,
+        text: theme.palette.primary.primary,
         tonal: theme.palette.secondary.onSecondaryContainer,
     };
 

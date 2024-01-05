@@ -43,12 +43,13 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         icon,
         render,
         type = 'filled',
+        labelText = 'Label',
         ...renderProps
     } = props;
 
     const [{elevationLevel}, setState] = useImmer(initialState);
     const id = useId();
-    const [underlayColor] = useUnderlayColor({type});
+    const {underlayColor} = useUnderlayColor({type});
 
     const processElevation = useCallback(
         (nextState: State) => {
@@ -114,6 +115,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         eventName,
         icon: iconElement,
         id,
+        labelText,
         onEvent,
         type,
         underlayColor,

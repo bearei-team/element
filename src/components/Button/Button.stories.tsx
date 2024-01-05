@@ -28,6 +28,14 @@ export const Text: StoryObj<ButtonProps> = {
     },
 };
 
+export const TextIcon: StoryObj<ButtonProps> = {
+    args: {
+        labelText: 'Label',
+        icon: <EIIcon />,
+        type: 'text',
+    },
+};
+
 export const Tonal: StoryObj<ButtonProps> = {
     args: {
         labelText: 'Label',
@@ -53,5 +61,11 @@ export const Icon: StoryObj<ButtonProps> = {
     args: {
         labelText: 'Label',
         icon: <EIIcon />,
+    },
+};
+
+export const block: StoryObj<ButtonProps> = {
+    args: {
+        block: true,
     },
 };

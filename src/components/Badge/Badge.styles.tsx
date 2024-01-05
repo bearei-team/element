@@ -18,12 +18,14 @@ export const Container = styled(Shape)<ContainerProps>`
     ${({theme, size = 'medium'}) => {
         const containerSize = {
             large: css`
+                height: ${theme.adaptSize(theme.spacing.medium)}px;
                 min-width: ${theme.adaptSize(theme.spacing.medium)}px;
                 padding: ${theme.adaptSize(theme.spacing.none)}px
                     ${theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
 
             medium: css`
+                height: ${theme.adaptSize(theme.spacing.medium)}px;
                 min-width: ${theme.adaptSize(theme.spacing.medium)}px;
                 padding: ${theme.adaptSize(theme.spacing.none)}px
                     ${theme.adaptSize(theme.spacing.extraSmall)}px;

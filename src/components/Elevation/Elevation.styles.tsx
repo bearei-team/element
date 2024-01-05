@@ -30,9 +30,11 @@ export const Content = styled(Shape)`
 
 export const Shadow = styled(Shape)<ShadowProps>`
     position: absolute;
+    top: 0;
+    left: 0;
 
     ${({theme}) => css`
-        background-color: ${theme.palette.primary.onPrimary};
+        background-color: ${theme.palette.surface.surface};
     `};
 
     ${({theme, level = 0, shadow = 0}) => {

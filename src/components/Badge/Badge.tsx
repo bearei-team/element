@@ -17,8 +17,8 @@ const ForwardRefBadge = forwardRef<View, BadgeProps>((props, ref) => {
             <Container
                 {...containerProps}
                 shape="full"
-                testID={`badge--${id}`}
-                size={size}>
+                size={size}
+                testID={`badge--${id}`}>
                 {size !== 'small' && (
                     <LabelText
                         size="small"

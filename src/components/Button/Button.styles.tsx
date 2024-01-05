@@ -7,6 +7,7 @@ export interface ContainerProps extends Pick<RenderProps, 'block'> {}
 
 export interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
     iconShow: boolean;
+    width?: number;
 }
 
 export const Container = styled(View)<ContainerProps>`
@@ -50,7 +51,7 @@ export const Content = styled(Shape)<ContentProps>`
                     ${theme.adaptSize(theme.spacing.large)}px;
             `,
             text: css`
-                min-width: ${theme.adaptSize(theme.spacing.small * 6)}px;
+                min-width: ${theme.adaptSize(theme.spacing.small * 7 + 3)}px;
                 padding: ${theme.adaptSize(theme.spacing.small + 2)}px
                     ${theme.adaptSize(
                         theme.spacing.medium - theme.spacing.extraSmall,
@@ -92,6 +93,14 @@ export const Content = styled(Shape)<ContentProps>`
 
         return iconShow && contentType[type];
     }}
+
+
+
+${({block, width = 0}) =>
+        block &&
+        css`
+            width: ${width}px;
+        `}
 `;
 
 export const LabelText = styled(Typography)`
