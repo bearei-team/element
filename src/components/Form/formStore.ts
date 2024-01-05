@@ -17,7 +17,7 @@ export interface Callback<T extends Store> {
 }
 
 export interface FieldEntity<T extends Store> {
-    onStoreChange: (name?: keyof T) => void;
+    onFormStoreChange: (name?: keyof T) => void;
     props: FormItemProps;
     touched: boolean;
     validate: (value?: unknown) => Promise<FieldError | undefined>;
@@ -52,7 +52,7 @@ export interface FormStore<T extends Store> {
     setFieldTouched: (name?: keyof T, touched?: boolean) => void;
     setFieldValue: (value?: T, options?: SetFieldValueOptions) => void;
     setInitialValue: (value?: T, init?: boolean) => void;
-    signInField: (entity: FieldEntity<T>) => {signOut: () => void};
+    signInField: (entity: FieldEntity<T>) => {signOut: () => void} | undefined;
     signOutField: (name?: NamePath<T>) => void;
     submit: (skipValidate?: boolean) => void;
     validateField: {
@@ -89,16 +89,18 @@ export const formStore = <T extends Store>(): FormStore<T> => {
     const signInField = (entity: FieldEntity<T>) => {
         const {name} = entity.props;
 
-        if (name) {
-            const entities = getFieldEntities(true);
-            const exist = entities.find(({props}) => props.name === name);
+        if (!name) {
+            return;
+        }
 
-            if (!exist) {
-                fieldEntities = [...entities, entity];
+        const entities = getFieldEntities(true);
+        const exist = entities.find(({props}) => props.name === name);
 
-                setFieldValue({[name]: undefined} as T, {response: false});
-                setFieldError({[name]: undefined} as Error<T>);
-            }
+        if (!exist) {
+            fieldEntities = [...entities, entity];
+
+            setFieldValue({[name]: undefined} as T, {response: false});
+            setFieldError({[name]: undefined} as Error<T>);
         }
 
         return {
@@ -110,26 +112,28 @@ export const formStore = <T extends Store>(): FormStore<T> => {
         const names = UTIL.namePath(name);
 
         const processSignOut = (signOutName?: keyof T) => {
-            if (signOutName) {
-                const entities = getFieldEntities(true);
-                const fieldEntity = entities.find(
-                    ({props}) => props.name === signOutName,
+            if (!signOutName) {
+                return;
+            }
+
+            const entities = getFieldEntities(true);
+            const fieldEntity = entities.find(
+                ({props}) => props.name === signOutName,
+            );
+
+            if (fieldEntity) {
+                const nextError = {...error};
+                const nextFormStore = {...store};
+
+                delete nextError[signOutName];
+                delete nextFormStore[signOutName];
+
+                fieldEntities = entities.filter(
+                    ({props}) => props.name !== signOutName,
                 );
 
-                if (fieldEntity) {
-                    const nextError = {...error};
-                    const nextStore = {...store};
-
-                    delete nextError[signOutName];
-                    delete nextStore[signOutName];
-
-                    fieldEntities = entities.filter(
-                        ({props}) => props.name !== signOutName,
-                    );
-
-                    setFieldValue(nextStore, {response: false});
-                    setFieldError(nextError);
-                }
+                setFieldValue(nextFormStore, {response: false});
+                setFieldError(nextError);
             }
         };
 
@@ -152,7 +156,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
                     setFieldError({[name]: err} as Error<T>);
                     setFieldTouched(name, true);
 
-                    entity.onStoreChange(name);
+                    entity.onFormStoreChange(name);
                 };
 
                 skipValidate
@@ -163,10 +167,11 @@ export const formStore = <T extends Store>(): FormStore<T> => {
             }
         };
 
-        response &&
+        if (response) {
             Promise.all(Object.keys(value).map(processResponse)).then(() =>
                 onValueChange?.(value, store),
             );
+        }
 
         Object.assign(store, value);
     };
@@ -230,14 +235,15 @@ export const formStore = <T extends Store>(): FormStore<T> => {
         Object.assign(callback, callbackValue);
 
     const setFieldTouched = (name?: keyof T, touched = false) => {
-        name &&
-            (fieldEntities = [
+        if (name) {
+            fieldEntities = [
                 ...getFieldEntities().map(fieldEntity =>
                     fieldEntity.props.name === name
                         ? {...fieldEntity, touched}
                         : fieldEntity,
                 ),
-            ]);
+            ];
+        }
     };
 
     const isFieldTouched = (name?: NamePath<T>) => {
@@ -268,7 +274,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
 
                 return entity?.validate(value).then(err => {
                     setFieldError({[entityName]: err} as Error<T>);
-                    err && entity.onStoreChange();
+                    err && entity.onFormStoreChange();
 
                     return err;
                 });

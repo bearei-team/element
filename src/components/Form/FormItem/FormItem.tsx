@@ -32,13 +32,13 @@ const ForwardRefFormItem = forwardRef<View, FormItemProps>((props, ref) => {
         const {id, children, ...containerProps} = renderProps;
 
         return (
-            <Container {...containerProps} ref={ref} testID={`formItem--${id}`}>
+            <Container {...containerProps} testID={`formItem--${id}`}>
                 {children}
             </Container>
         );
     };
 
-    return <FormItemBase {...props} render={render} />;
+    return <FormItemBase {...props} ref={ref} render={render} />;
 });
 
 export const FormItem: FC<FormItemProps> = memo(ForwardRefFormItem);

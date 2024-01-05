@@ -91,7 +91,7 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
         );
     };
 
-    return <FABBase {...props} render={render} ref={ref} />;
+    return <FABBase {...props} ref={ref} render={render} />;
 });
 
 export const FAB: FC<FABProps> = memo(ForwardRefFAB);

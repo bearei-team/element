@@ -1,5 +1,6 @@
 import {useCallback, useEffect, useId, useMemo} from 'react';
 import {useImmer} from 'use-immer';
+import {ComponentStatus} from '../Common/interface';
 import {FormProps} from './Form';
 import {FormItem} from './FormItem/FormItem';
 import {FormStore, Store} from './formStore';
@@ -11,11 +12,15 @@ export interface FormBaseProps<T extends Store> extends FormProps<T> {
     render: (props: RenderProps<T>) => React.JSX.Element;
 }
 
+const initialState = {
+    status: 'idle' as ComponentStatus,
+};
+
 export const FormBase = <T extends Store = Store>(props: FormBaseProps<T>) => {
     const {
-        items,
         form,
         initialValue,
+        items,
         onFinish,
         onFinishFailed,
         onValueChange,
@@ -23,8 +28,8 @@ export const FormBase = <T extends Store = Store>(props: FormBaseProps<T>) => {
         ...renderProps
     } = props;
 
-    const [formStore] = useForm<T>(form);
-    const [status, setStatus] = useImmer('idle');
+    const [{status}, setState] = useImmer(initialState);
+    const {form: formStore} = useForm<T>(form);
     const {setCallback, setInitialValue} = formStore;
     const id = useId();
 
@@ -45,9 +50,11 @@ export const FormBase = <T extends Store = Store>(props: FormBaseProps<T>) => {
     useEffect(() => {
         if (status === 'idle') {
             setInitialValue(initialValue, status !== 'idle');
-            setStatus(() => 'succeeded');
+            setState(draft => {
+                draft.status = 'succeeded';
+            });
         }
-    }, [initialValue, setInitialValue, setStatus, status]);
+    }, [initialValue, setInitialValue, setState, status]);
 
     return render({
         ...renderProps,

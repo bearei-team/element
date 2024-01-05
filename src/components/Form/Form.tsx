@@ -10,6 +10,9 @@ export type FormComponent = typeof MemoForm & {
     useForm: typeof useForm;
 };
 
+/**
+ * TODO: vertical
+ */
 export interface FormProps<T extends Store = Store>
     extends Partial<ViewProps & RefAttributes<View> & Callback<T>> {
     form?: FormStore<T>;
@@ -26,13 +29,13 @@ const FormInner = <T extends Store>(
         const {id, children, ...containerProps} = renderProps;
 
         return (
-            <Container {...containerProps} ref={ref} testID={`form--${id}`}>
+            <Container {...containerProps} testID={`form--${id}`}>
                 {children}
             </Container>
         );
     };
 
-    return <FormBase {...props} render={render} />;
+    return <FormBase {...props} ref={ref} render={render} />;
 };
 
 const MemoForm = memo(forwardRef(FormInner)) as typeof FormInner;

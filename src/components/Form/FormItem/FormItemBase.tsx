@@ -10,6 +10,8 @@ export interface FormItemBaseProps extends FormItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+const initialState = {};
+
 export const FormItemBase: FC<FormItemBaseProps> = props => {
     const {
         labelText,
@@ -21,7 +23,7 @@ export const FormItemBase: FC<FormItemBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [, forceUpdate] = useImmer({});
+    const [, setState] = useImmer(initialState);
     const {getFieldError, getFieldValue, setFieldValue, signInField} =
         useFormContext();
 
@@ -31,7 +33,9 @@ export const FormItemBase: FC<FormItemBaseProps> = props => {
 
     const onValueChange = useCallback(
         (value?: unknown) => {
-            name && setFieldValue({[name]: value});
+            if (name) {
+                setFieldValue({[name]: value});
+            }
         },
         [name, setFieldValue],
     );
@@ -67,12 +71,14 @@ export const FormItemBase: FC<FormItemBaseProps> = props => {
 
     useEffect(() => {
         signInField({
-            onStoreChange: () => forceUpdate({}),
+            onFormStoreChange: () => {
+                setState({});
+            },
             props: {name, rules, validateFirst},
             touched: false,
             validate: processValidate(rules),
         });
-    }, [forceUpdate, name, processValidate, rules, signInField, validateFirst]);
+    }, [name, processValidate, rules, setState, signInField, validateFirst]);
 
     return render({
         ...renderProps,

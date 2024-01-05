@@ -119,7 +119,7 @@ export const FABBase: FC<FABBaseProps> = props => {
                 draft.status = 'succeeded';
             });
         }
-    }, [setState, status, type]);
+    }, [setState, status]);
 
     useEffect(() => {
         const setElevationLevel =
@@ -130,7 +130,7 @@ export const FABBase: FC<FABBaseProps> = props => {
                 draft.elevationLevel = disabled ? 0 : 3;
             });
         }
-    }, [disabled, setState, status, type]);
+    }, [disabled, setState, status]);
 
     if (status === 'idle') {
         return <></>;
