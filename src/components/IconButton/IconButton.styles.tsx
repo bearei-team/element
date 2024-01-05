@@ -23,11 +23,11 @@ export const Content = styled(Shape)<ContentProps>`
 `;
 
 export const Icon = styled.View`
-    align-items: center;
+    overflow: hidden;
     display: flex;
     flex-direction: row;
     justify-content: center;
-    overflow: hidden;
+    align-items: center;
 
     ${({theme}) => css`
         height: ${theme.adaptSize(theme.spacing.small * 5)}px;

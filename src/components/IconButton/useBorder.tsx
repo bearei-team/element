@@ -10,11 +10,11 @@ export const useBorder = (options: UseBorderOptions) => {
     const {borderColor} = options;
     const borderPosition = {borderWidth: theme.adaptSize(1)};
 
-    return (
+    return [
         borderColor && {
             borderColor,
             borderStyle: 'solid' as ViewStyle['borderStyle'],
             ...borderPosition,
-        }
-    );
+        },
+    ];
 };

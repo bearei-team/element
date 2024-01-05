@@ -40,7 +40,7 @@ const ForwardRefButton = forwardRef<View, IconButtonProps>((props, ref) => {
             <Container
                 {...containerProps}
                 accessibilityRole="button"
-                testID={`button--${id}`}>
+                testID={`iconButton--${id}`}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
                     shape={shape}
@@ -50,9 +50,9 @@ const ForwardRefButton = forwardRef<View, IconButtonProps>((props, ref) => {
                         onLayout={onLayout}
                         shape={shape}
                         style={{backgroundColor, ...border}}
-                        testID={`button__content--${id}`}
+                        testID={`iconButton__content--${id}`}
                         type={type}>
-                        <Icon testID={`button__icon--${id}`}>{icon}</Icon>
+                        <Icon testID={`iconButton__icon--${id}`}>{icon}</Icon>
 
                         <Hovered
                             eventName={eventName}
@@ -67,7 +67,7 @@ const ForwardRefButton = forwardRef<View, IconButtonProps>((props, ref) => {
         );
     };
 
-    return <IconButtonBase {...props} render={render} ref={ref} />;
+    return <IconButtonBase {...props} ref={ref} render={render} />;
 });
 
 export const IconButton: FC<IconButtonProps> = memo(ForwardRefButton);

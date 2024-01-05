@@ -1,8 +1,15 @@
-import {FC, useId} from 'react';
-import {Animated, TextStyle, ViewStyle} from 'react-native';
+import {FC, useCallback, useId} from 'react';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    TextStyle,
+    ViewStyle,
+} from 'react-native';
+import {useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
-import {OnEvent} from '../../hooks/useOnEvent';
-import {EventName} from '../Common/interface';
+import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
+import {EventName, State} from '../Common/interface';
 import {IconButtonProps} from './IconButton';
 import {useAnimated} from './useAnimated';
 import {useBorder} from './useBorder';
@@ -22,6 +29,11 @@ export interface IconButtonBaseProps extends IconButtonProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+const initialState = {
+    eventName: 'none' as EventName,
+    layout: {} as LayoutRectangle,
+};
+
 export const IconButtonBase: FC<IconButtonBaseProps> = props => {
     const {
         disabled = false,
@@ -31,21 +43,38 @@ export const IconButtonBase: FC<IconButtonBaseProps> = props => {
         ...renderProps
     } = props;
 
+    const [{eventName, layout}, setState] = useImmer(initialState);
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
-    const {layout, eventName, ...onEvent} = HOOK.useOnEvent({
+
+    const processStateChange = useCallback(
+        (_nextState: State, options = {} as OnStateChangeOptions) => {
+            const {event, eventName: nextEventName} = options;
+
+            if (nextEventName === 'layout') {
+                const nativeEventLayout = (event as LayoutChangeEvent)
+                    .nativeEvent.layout;
+
+                setState(draft => {
+                    draft.layout = nativeEventLayout;
+                });
+            }
+
+            setState(draft => {
+                draft.eventName = nextEventName;
+            });
+        },
+        [setState],
+    );
+    const [onEvent] = HOOK.useOnEvent({
         ...props,
         disabled,
+        onStateChange: processStateChange,
     });
 
-    const {backgroundColor, borderColor} = useAnimated({
-        disabled,
-        type,
-        eventName,
-    });
-
-    const {icon: iconElement} = useIcon({eventName, type, icon, disabled});
-    const border = useBorder({borderColor});
+    const [{backgroundColor, borderColor}] = useAnimated({disabled, type});
+    const [iconElement] = useIcon({eventName, type, icon, disabled});
+    const [border] = useBorder({borderColor});
 
     return render({
         ...renderProps,
@@ -58,8 +87,8 @@ export const IconButtonBase: FC<IconButtonBaseProps> = props => {
         renderStyle: {
             ...border,
             backgroundColor,
-            height: layout.height,
-            width: layout.width,
+            height: layout?.height,
+            width: layout?.width,
         },
     });
 };

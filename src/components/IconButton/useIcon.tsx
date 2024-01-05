@@ -18,12 +18,12 @@ export const useIcon = (options: UseIconOptions) => {
         tonal: theme.palette.secondary.onSecondaryContainer,
     };
 
-    return {
-        icon: cloneElement(icon ? icon : <Icon />, {
+    return [
+        cloneElement(icon ? icon : <Icon />, {
             eventName,
             fill: disabled
                 ? theme.color.rgba(theme.palette.surface.onSurface, 0.38)
                 : fillType[type as keyof typeof fillType],
         }),
-    };
+    ];
 };
