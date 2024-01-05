@@ -34,6 +34,7 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
             renderStyle,
             type,
             underlayColor,
+            defaultElevationLevel,
             ...containerProps
         } = renderProps;
 
@@ -47,7 +48,10 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
                 accessibilityLabel={labelText}
                 accessibilityRole="button"
                 testID={`fab--${id}`}>
-                <Elevation level={elevationLevel} shape={shape}>
+                <Elevation
+                    level={elevationLevel}
+                    shape={shape}
+                    defaultLevel={defaultElevationLevel}>
                     <TouchableRipple
                         {...onTouchableRippleEvent}
                         shape={shape}

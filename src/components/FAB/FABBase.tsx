@@ -1,9 +1,15 @@
 import {FC, useCallback, useEffect, useId} from 'react';
-import {Animated, TextStyle, ViewStyle} from 'react-native';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    TextStyle,
+    ViewStyle,
+} from 'react-native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
-import {OnEvent} from '../../hooks/useOnEvent';
-import {EventName, State} from '../Common/interface';
+import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
+import {ComponentStatus, EventName, State} from '../Common/interface';
 import {ElevationLevel} from '../Elevation/Elevation';
 import {FABProps} from './FAB';
 import {useAnimated} from './useAnimated';
@@ -16,8 +22,9 @@ export interface RenderProps extends FABProps {
         height: number;
         width: number;
     };
-    eventName: EventName;
+    defaultElevationLevel: ElevationLevel;
     elevationLevel: ElevationLevel;
+    eventName: EventName;
 }
 
 export interface FABBaseProps extends FABProps {
@@ -25,7 +32,11 @@ export interface FABBaseProps extends FABProps {
 }
 
 const initialState = {
-    elevationLevel: 3 as ElevationLevel,
+    defaultElevationLevel: 0 as ElevationLevel,
+    elevationLevel: undefined as ElevationLevel,
+    eventName: 'none' as EventName,
+    layout: {} as LayoutRectangle,
+    status: 'idle' as ComponentStatus,
 };
 
 export const FABBase: FC<FABBaseProps> = props => {
@@ -37,7 +48,11 @@ export const FABBase: FC<FABBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{elevationLevel}, setState] = useImmer(initialState);
+    const [
+        {elevationLevel, defaultElevationLevel, status, layout, eventName},
+        setState,
+    ] = useImmer(initialState);
+
     const [underlayColor] = useUnderlayColor({type});
     const id = useId();
 
@@ -61,17 +76,30 @@ export const FABBase: FC<FABBaseProps> = props => {
     );
 
     const processStateChange = useCallback(
-        (nextState: State) => {
-            const elevationType = ['elevated', 'filled', 'tonal'].includes(
-                type,
-            );
+        (nextState: State, options = {} as OnStateChangeOptions) => {
+            const {event, eventName: nextEventName} = options;
 
-            elevationType && processElevation(nextState);
+            if (nextEventName === 'layout') {
+                const nativeEventLayout = (event as LayoutChangeEvent)
+                    .nativeEvent.layout;
+
+                setState(draft => {
+                    draft.layout = nativeEventLayout;
+                });
+            }
+
+            if (nextEventName !== 'layout') {
+                processElevation(nextState);
+            }
+
+            setState(draft => {
+                draft.eventName = nextEventName;
+            });
         },
-        [type, processElevation],
+        [processElevation, setState],
     );
 
-    const {layout, eventName, ...onEvent} = HOOK.useOnEvent({
+    const onEvent = HOOK.useOnEvent({
         ...props,
         disabled,
         onStateChange: processStateChange,
@@ -85,15 +113,32 @@ export const FABBase: FC<FABBaseProps> = props => {
     const {icon: iconElement} = useIcon({eventName, type, icon, disabled});
 
     useEffect(() => {
-        const elevation = disabled ? 0 : 1;
+        if (status === 'idle') {
+            setState(draft => {
+                draft.defaultElevationLevel = 3;
+                draft.status = 'succeeded';
+            });
+        }
+    }, [setState, status, type]);
 
-        setState(draft => {
-            draft.elevationLevel = elevation;
-        });
-    }, [disabled, setState, type]);
+    useEffect(() => {
+        const setElevationLevel =
+            typeof disabled === 'boolean' && status === 'succeeded';
+
+        if (setElevationLevel) {
+            setState(draft => {
+                draft.elevationLevel = disabled ? 0 : 3;
+            });
+        }
+    }, [disabled, setState, status, type]);
+
+    if (status === 'idle') {
+        return <></>;
+    }
 
     return render({
         ...renderProps,
+        defaultElevationLevel,
         elevationLevel,
         eventName,
         icon: iconElement,
@@ -104,8 +149,8 @@ export const FABBase: FC<FABBaseProps> = props => {
         renderStyle: {
             backgroundColor,
             color,
-            height: layout.height,
-            width: layout.width,
+            height: layout?.height,
+            width: layout?.width,
         },
     });
 };

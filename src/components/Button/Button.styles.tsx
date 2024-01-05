@@ -94,9 +94,7 @@ export const Content = styled(Shape)<ContentProps>`
         return iconShow && contentType[type];
     }}
 
-
-
-${({block, width = 0}) =>
+    ${({block, width = 0}) =>
         block &&
         css`
             width: ${width}px;

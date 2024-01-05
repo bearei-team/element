@@ -11,6 +11,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const {level, defaultLevel = 0} = options;
     const [shadowAnimated] = useAnimatedValue(defaultLevel);
     const theme = useTheme();
+    const animatedTiming = UTIL.animatedTiming(theme);
 
     const shadow0Opacity = shadowAnimated.interpolate({
         inputRange: [0, 1, 2, 3, 4, 5],
@@ -41,8 +42,6 @@ export const useAnimated = (options: UseAnimatedOptions) => {
             animation: Animated.Value,
             toValue: UseAnimatedOptions['level'] = 0,
         ) => {
-            const animatedTiming = UTIL.animatedTiming(theme);
-
             requestAnimationFrame(() =>
                 animatedTiming(animation, {
                     duration: 'short3',
@@ -52,7 +51,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 }).start(),
             );
         },
-        [theme],
+        [animatedTiming],
     );
 
     useEffect(() => {

@@ -49,8 +49,8 @@ export const Content = styled(Shape)<ContentProps>`
     ${({theme, labelTextShow}) =>
         labelTextShow &&
         css`
-            min-width: ${theme.adaptSize(theme.spacing.small * 7)}px;
             height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+            min-width: ${theme.adaptSize(theme.spacing.small * 7)}px;
             padding: ${theme.adaptSize(theme.spacing.medium)}px
                 ${theme.adaptSize(
                     theme.spacing.large - theme.spacing.extraSmall,
