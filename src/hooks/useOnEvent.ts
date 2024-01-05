@@ -187,5 +187,5 @@ export const useOnEvent = (options: UseHandleEventOptions) => {
         onPressOut: handlePressOut,
     };
 
-    return UTIL.omit(result, omitEvents as (keyof typeof result)[]);
+    return [UTIL.omit(result, omitEvents as (keyof typeof result)[])];
 };

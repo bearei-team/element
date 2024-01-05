@@ -15,5 +15,5 @@ export const useUnderlayColor = (options: UseUnderlayColorOptions) => {
         tonal: theme.palette.secondary.onSecondaryContainer,
     };
 
-    return {underlayColor: underlay[type]};
+    return [underlay[type]];
 };

@@ -29,7 +29,7 @@ export const FormBase = <T extends Store = Store>(props: FormBaseProps<T>) => {
     } = props;
 
     const [{status}, setState] = useImmer(initialState);
-    const {form: formStore} = useForm<T>(form);
+    const [formStore] = useForm<T>(form);
     const {setCallback, setInitialValue} = formStore;
     const id = useId();
 

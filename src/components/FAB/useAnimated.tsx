@@ -108,8 +108,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         processAnimatedTiming(colorAnimated, disabled ? 0 : 1);
     }, [colorAnimated, disabled, processAnimatedTiming]);
 
-    return {
-        backgroundColor,
-        color,
-    };
+    return [
+        {
+            backgroundColor,
+            color,
+        },
+    ];
 };

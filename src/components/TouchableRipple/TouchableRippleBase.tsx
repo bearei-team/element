@@ -99,7 +99,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         [activeRipple, processAddRipple, setState],
     );
 
-    const onEvent = HOOK.useOnEvent({
+    const [onEvent] = HOOK.useOnEvent({
         ...props,
         disabled: false,
         onStateChange: processStateChange,

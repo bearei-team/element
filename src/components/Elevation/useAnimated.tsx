@@ -59,5 +59,5 @@ export const useAnimated = (options: UseAnimatedOptions) => {
             processAnimatedTiming(shadowAnimated, level);
     }, [level, processAnimatedTiming, shadowAnimated]);
 
-    return {shadow0Opacity, shadow1Opacity};
+    return [{shadow0Opacity, shadow1Opacity}];
 };

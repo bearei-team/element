@@ -37,7 +37,7 @@ const initialState = {
 export const ElevationBase: FC<ElevationBaseProps> = props => {
     const {level, render, defaultLevel, ...renderProps} = props;
     const [{layout}, setState] = useImmer(initialState);
-    const {shadow0Opacity, shadow1Opacity} = useAnimated({
+    const [{shadow0Opacity, shadow1Opacity}] = useAnimated({
         defaultLevel,
         level,
     });
@@ -59,7 +59,7 @@ export const ElevationBase: FC<ElevationBaseProps> = props => {
         [setState],
     );
 
-    const onEvent = HOOK.useOnEvent({
+    const [onEvent] = HOOK.useOnEvent({
         ...props,
         onStateChange: processStateChange,
     });

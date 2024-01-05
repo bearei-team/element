@@ -18,15 +18,15 @@ export const useIcon = (options: UseIconOptions) => {
     };
 
     if (!icon) {
-        return {icon};
+        return [icon];
     }
 
-    return {
-        icon: cloneElement(icon, {
+    return [
+        cloneElement(icon, {
             eventName,
             fill: disabled
                 ? theme.color.rgba(theme.palette.surface.onSurface, 0.38)
                 : fillType[type as keyof typeof fillType],
         }),
-    };
+    ];
 };

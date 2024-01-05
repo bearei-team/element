@@ -99,18 +99,18 @@ export const FABBase: FC<FABBaseProps> = props => {
         [processElevation, setState],
     );
 
-    const onEvent = HOOK.useOnEvent({
+    const [onEvent] = HOOK.useOnEvent({
         ...props,
         disabled,
         onStateChange: processStateChange,
     });
 
-    const {backgroundColor, color} = useAnimated({
+    const [{backgroundColor, color}] = useAnimated({
         disabled,
         type,
     });
 
-    const {icon: iconElement} = useIcon({eventName, type, icon, disabled});
+    const [iconElement] = useIcon({eventName, type, icon, disabled});
 
     useEffect(() => {
         if (status === 'idle') {

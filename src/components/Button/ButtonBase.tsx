@@ -64,7 +64,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     ] = useImmer(initialState);
 
     const id = useId();
-    const {underlayColor} = useUnderlayColor({type});
+    const [underlayColor] = useUnderlayColor({type});
     const processElevation = useCallback(
         (nextState: State) => {
             const level = {
@@ -114,20 +114,20 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         [type, processElevation, setState],
     );
 
-    const onEvent = HOOK.useOnEvent({
+    const [onEvent] = HOOK.useOnEvent({
         ...props,
         disabled,
         onStateChange: processStateChange,
     });
 
-    const {backgroundColor, borderColor, color} = useAnimated({
+    const [{backgroundColor, borderColor, color}] = useAnimated({
         disabled,
         type,
         eventName,
     });
 
-    const {icon: iconElement} = useIcon({eventName, type, icon, disabled});
-    const border = useBorder({type, borderColor});
+    const [iconElement] = useIcon({eventName, type, icon, disabled});
+    const [border] = useBorder({type, borderColor});
 
     useEffect(() => {
         if (status === 'idle') {

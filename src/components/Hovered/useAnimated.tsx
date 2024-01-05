@@ -6,12 +6,10 @@ import {UTIL} from '../../utils/util';
 import {EventName} from '../Common/interface';
 import {RenderProps} from './HoveredBase';
 
-export type UseAnimatedOptions = Required<
-    Pick<RenderProps, 'eventName' | 'opacities'>
->;
+export type UseAnimatedOptions = Pick<RenderProps, 'eventName' | 'opacities'>;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {eventName, opacities} = options;
+    const {eventName = 'none', opacities = [0, 0.08, 0.12]} = options;
     const [opacityAnimated] = useAnimatedValue(0);
     const theme = useTheme();
     const opacity = opacityAnimated.interpolate({

@@ -166,9 +166,11 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         type,
     ]);
 
-    return {
-        ...(!['text', 'link'].includes(type) && {backgroundColor}),
-        ...(['outlined', 'link'].includes(type) && {borderColor}),
-        color,
-    };
+    return [
+        {
+            ...(!['text', 'link'].includes(type) && {backgroundColor}),
+            ...(['outlined', 'link'].includes(type) && {borderColor}),
+            color,
+        },
+    ];
 };
