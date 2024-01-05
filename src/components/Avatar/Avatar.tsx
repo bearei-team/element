@@ -33,7 +33,7 @@ const ForwardRefAvatar = forwardRef<View, AvatarProps>((props, ref) => {
         );
     };
 
-    return <AvatarBase {...props} render={render} ref={ref} />;
+    return <AvatarBase {...props} ref={ref} render={render} />;
 });
 
 export const Avatar: FC<AvatarProps> = memo(ForwardRefAvatar);

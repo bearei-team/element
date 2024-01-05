@@ -5,12 +5,13 @@ import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 import {ElevationProps} from './Elevation';
 
-export type UseAnimatedOptions = Required<Pick<ElevationProps, 'level'>>;
+export type UseAnimatedOptions = Pick<ElevationProps, 'level' | 'defaultLevel'>;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {level} = options;
-    const [shadowAnimated] = useAnimatedValue(0);
+    const {level, defaultLevel = 0} = options;
+    const [shadowAnimated] = useAnimatedValue(defaultLevel);
     const theme = useTheme();
+
     const shadow0Opacity = shadowAnimated.interpolate({
         inputRange: [0, 1, 2, 3, 4, 5],
         outputRange: [
@@ -36,7 +37,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     });
 
     const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, toValue: UseAnimatedOptions['level']) => {
+        (
+            animation: Animated.Value,
+            toValue: UseAnimatedOptions['level'] = 0,
+        ) => {
             const animatedTiming = UTIL.animatedTiming(theme);
 
             requestAnimationFrame(() =>
@@ -52,7 +56,8 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        processAnimatedTiming(shadowAnimated, level);
+        typeof level === 'number' &&
+            processAnimatedTiming(shadowAnimated, level);
     }, [level, processAnimatedTiming, shadowAnimated]);
 
     return {shadow0Opacity, shadow1Opacity};

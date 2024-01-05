@@ -40,6 +40,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             renderStyle,
             type,
             underlayColor,
+            defaultElevationLevel,
             ...containerProps
         } = renderProps;
 
@@ -56,7 +57,10 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                 block={block}
                 testID={`button--${id}`}
                 onLayout={onLayout}>
-                <Elevation level={elevationLevel} shape={shape}>
+                <Elevation
+                    defaultLevel={defaultElevationLevel}
+                    level={elevationLevel}
+                    shape={shape}>
                     <TouchableRipple
                         {...onTouchableRippleEvent}
                         shape={shape}
@@ -78,6 +82,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                             <AnimatedLabelText
                                 size={link ? 'small' : 'large'}
                                 style={{color}}
+                                testID={`button__labelText--${id}`}
                                 type={link ? 'body' : 'label'}>
                                 {labelText}
                             </AnimatedLabelText>
@@ -96,7 +101,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
         );
     };
 
-    return <ButtonBase {...props} render={render} ref={ref} />;
+    return <ButtonBase {...props} ref={ref} render={render} />;
 });
 
 export const Button: FC<ButtonProps> = memo(ForwardRefButton);

@@ -19,8 +19,9 @@ export const RippleBase: FC<RippleBaseProps> = props => {
     const {
         active,
         centered = false,
+        defaultActive,
         location = {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
-        onEntryAnimatedStart,
+        onEntryAnimatedEnd,
         render,
         sequence,
         touchableLayout,
@@ -45,14 +46,16 @@ export const RippleBase: FC<RippleBaseProps> = props => {
     const diameter = radius * 2;
     const {opacity, scale} = useAnimated({
         active,
+        defaultActive,
         minDuration: diameter,
-        onEntryAnimatedStart,
+        onEntryAnimatedEnd,
         sequence,
     });
 
     return render({
         ...renderProps,
         active,
+        defaultActive,
         id,
         renderStyle: {
             height: diameter,

@@ -5,15 +5,31 @@ import {UTIL} from '../../../utils/util';
 import {RenderProps} from './RippleBase';
 
 export interface UseAnimatedOptions
-    extends Pick<RenderProps, 'onEntryAnimatedStart' | 'sequence' | 'active'> {
+    extends Pick<
+        RenderProps,
+        'onEntryAnimatedEnd' | 'sequence' | 'active' | 'defaultActive'
+    > {
     minDuration: number;
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {onEntryAnimatedStart, sequence, active, minDuration} = options;
+    const {
+        active,
+        defaultActive,
+        minDuration,
+        onEntryAnimatedEnd,
+        sequence = 'undefined',
+    } = options;
+
     const [opacityAnimated] = useAnimatedValue(1);
-    const [scaleAnimated] = useAnimatedValue(0);
+    const [scaleAnimated] = useAnimatedValue(defaultActive ? 1 : 0);
     const theme = useTheme();
+    const animatedTiming = UTIL.animatedTiming(theme);
+    const useNativeDriver = true;
+    const activeRipple = [typeof defaultActive, typeof active].includes(
+        'boolean',
+    );
+
     const opacity = opacityAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 1],
@@ -24,12 +40,24 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         outputRange: [0, 1],
     });
 
-    const processAnimatedTiming = useCallback(() => {
-        const animatedTiming = UTIL.animatedTiming(theme);
-        const useNativeDriver = true;
-        const exitAnimated = (finished?: () => void) => {
+    const entryAnimated = useCallback(
+        (finished?: () => void) => {
+            requestAnimationFrame(() =>
+                animatedTiming(scaleAnimated, {
+                    duration: Math.min(minDuration, 400),
+                    easing: 'emphasizedDecelerate',
+                    toValue: 1,
+                    useNativeDriver,
+                }).start(finished),
+            );
+        },
+        [animatedTiming, minDuration, scaleAnimated, useNativeDriver],
+    );
+
+    const exitAnimated = useCallback(
+        (finished?: () => void) => {
             requestAnimationFrame(() => {
-                typeof active === 'boolean' &&
+                activeRipple &&
                     animatedTiming(scaleAnimated, {
                         duration: 'short3',
                         easing: 'emphasizedAccelerate',
@@ -44,37 +72,33 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     useNativeDriver,
                 }).start(finished);
             });
-        };
+        },
+        [
+            activeRipple,
+            animatedTiming,
+            opacityAnimated,
+            scaleAnimated,
+            useNativeDriver,
+        ],
+    );
 
-        const entryAnimated = (finished?: () => void) => {
-            requestAnimationFrame(() =>
-                animatedTiming(scaleAnimated, {
-                    duration: Math.min(minDuration, 400),
-                    easing: 'emphasizedDecelerate',
-                    toValue: 1,
-                    useNativeDriver,
-                }).start(finished),
-            );
-        };
-
-        entryAnimated(
-            () =>
-                !active &&
-                onEntryAnimatedStart?.(sequence ?? 'undefined', exitAnimated),
-        );
-    }, [
-        active,
-        minDuration,
-        onEntryAnimatedStart,
-        opacityAnimated,
-        scaleAnimated,
-        sequence,
-        theme,
-    ]);
+    const processAnimatedTiming = useCallback(() => {
+        entryAnimated(() => onEntryAnimatedEnd?.(sequence, exitAnimated));
+    }, [entryAnimated, exitAnimated, onEntryAnimatedEnd, sequence]);
 
     useEffect(() => {
-        processAnimatedTiming();
-    }, [processAnimatedTiming]);
+        if (defaultActive) {
+            onEntryAnimatedEnd?.(sequence, exitAnimated);
+        }
+    }, [defaultActive, exitAnimated, onEntryAnimatedEnd, sequence]);
+
+    useEffect(() => {
+        const runAnimated = !activeRipple || active;
+
+        if (runAnimated) {
+            processAnimatedTiming();
+        }
+    }, [active, activeRipple, processAnimatedTiming]);
 
     return {opacity, scale};
 };

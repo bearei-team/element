@@ -18,8 +18,8 @@ export const Container = styled(Shape)<ContainerProps>`
 
     ${({width = 0, height = 0}) =>
         css`
-            width: ${width}px;
             height: ${height}px;
+            width: ${width}px;
         `}
 `;
 
@@ -29,9 +29,9 @@ export const Content = styled(Shape)`
 `;
 
 export const Shadow = styled(Shape)<ShadowProps>`
+    left: 0;
     position: absolute;
     top: 0;
-    left: 0;
 
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surface};
@@ -62,7 +62,7 @@ export const Shadow = styled(Shape)<ShadowProps>`
 
     ${({width = 0, height = 0}) =>
         css`
-            width: ${width}px;
             height: ${height}px;
+            width: ${width}px;
         `}
 `;

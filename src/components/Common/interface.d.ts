@@ -22,4 +22,7 @@ export type EventName =
     | 'hoverIn'
     | 'hoverOut'
     | 'focus'
-    | 'blur';
+    | 'blur'
+    | 'layout';
+
+export type ComponentStatus = 'idle' | 'loading' | 'failed' | 'succeeded';

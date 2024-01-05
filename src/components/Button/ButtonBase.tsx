@@ -3,7 +3,7 @@ import {Animated, TextStyle, ViewStyle} from 'react-native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
 import {OnEvent} from '../../hooks/useOnEvent';
-import {EventName, State} from '../Common/interface';
+import {ComponentStatus, EventName, State} from '../Common/interface';
 import {ElevationLevel} from '../Elevation/Elevation';
 import {ButtonProps} from './Button';
 import {useAnimated} from './useAnimated';
@@ -19,6 +19,7 @@ export interface RenderProps extends ButtonProps {
     };
     eventName: EventName;
     elevationLevel: ElevationLevel;
+    defaultElevationLevel: ElevationLevel;
 }
 
 export interface ButtonBaseProps extends ButtonProps {
@@ -33,7 +34,9 @@ const processCorrectionCoefficient = (options: Pick<RenderProps, 'type'>) => {
 };
 
 const initialState = {
-    elevationLevel: 0 as ElevationLevel,
+    elevationLevel: undefined as ElevationLevel,
+    defaultElevationLevel: 0 as ElevationLevel,
+    status: 'idle' as ComponentStatus,
 };
 
 export const ButtonBase: FC<ButtonBaseProps> = props => {
@@ -47,7 +50,9 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{elevationLevel}, setState] = useImmer(initialState);
+    const [{elevationLevel, defaultElevationLevel, status}, setState] =
+        useImmer(initialState);
+
     const id = useId();
     const {underlayColor} = useUnderlayColor({type});
 
@@ -100,13 +105,30 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     const border = useBorder({type, borderColor});
 
     useEffect(() => {
-        const elevation = disabled ? 0 : 1;
-
-        type === 'elevated' &&
+        if (status === 'idle') {
             setState(draft => {
-                draft.elevationLevel = elevation;
+                type === 'elevated' && (draft.defaultElevationLevel = 1);
+                draft.status = 'succeeded';
             });
-    }, [disabled, setState, type]);
+        }
+    }, [setState, status, type]);
+
+    useEffect(() => {
+        const setElevationLevel =
+            typeof disabled === 'boolean' &&
+            status === 'succeeded' &&
+            type === 'elevated';
+
+        if (setElevationLevel) {
+            setState(draft => {
+                draft.elevationLevel = disabled ? 0 : 1;
+            });
+        }
+    }, [disabled, setState, status, type]);
+
+    if (status === 'idle') {
+        return <></>;
+    }
 
     return render({
         ...renderProps,
@@ -114,6 +136,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         elevationLevel,
         eventName,
         icon: iconElement,
+        defaultElevationLevel,
         id,
         labelText,
         onEvent,

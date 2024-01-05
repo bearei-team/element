@@ -1,9 +1,13 @@
 import {FC, useCallback, useEffect, useId, useMemo} from 'react';
-import {GestureResponderEvent} from 'react-native';
+import {
+    GestureResponderEvent,
+    LayoutChangeEvent,
+    LayoutRectangle,
+} from 'react-native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
-import {State} from '../Common/interface';
+import {ComponentStatus, State} from '../Common/interface';
 import {Ripple, RippleProps} from './Ripple/Ripple';
 import {TouchableRippleProps} from './TouchableRipple';
 
@@ -21,6 +25,11 @@ export interface Ripple extends Pick<RippleProps, 'location'> {
 
 export type RippleSequence = Record<string, Ripple>;
 
+export interface ProcessAddRippleOptions {
+    locationX: number;
+    locationY: number;
+}
+
 const renderRipples = (rippleSequence: RippleSequence, props: RippleProps) =>
     Object.entries(rippleSequence).map(([sequence, {location}]) => (
         <Ripple
@@ -32,7 +41,9 @@ const renderRipples = (rippleSequence: RippleSequence, props: RippleProps) =>
     ));
 
 const initialState = {
+    layout: {} as LayoutRectangle,
     rippleSequence: {} as RippleSequence,
+    status: 'idle' as ComponentStatus,
 };
 
 export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
@@ -40,18 +51,21 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         active,
         activeEvent,
         children,
+        defaultActive,
         onRippleAnimatedEnd,
         render,
         underlayColor,
         ...renderProps
     } = props;
 
-    const [{rippleSequence}, setState] = useImmer(initialState);
+    const [{rippleSequence, status, layout}, setState] = useImmer(initialState);
     const id = useId();
+    const touchableRippleActive = active ?? defaultActive;
+    const activeRipple = typeof touchableRippleActive === 'boolean';
 
     const processAddRipple = useCallback(
-        (event: GestureResponderEvent) => {
-            const {locationX, locationY} = event.nativeEvent;
+        (options: ProcessAddRippleOptions) => {
+            const {locationX, locationY} = options;
 
             setState(draft => {
                 draft.rippleSequence[`${Date.now()}`] = {
@@ -66,15 +80,26 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
     const processStateChange = useCallback(
         (_nextState: State, options = {} as OnStateChangeOptions) => {
             const {event, eventName} = options;
-            const addRipple =
-                typeof active !== 'boolean' && eventName === 'pressOut';
 
-            addRipple && processAddRipple(event as GestureResponderEvent);
+            if (eventName === 'layout') {
+                const nativeEventLayout = (event as LayoutChangeEvent)
+                    .nativeEvent.layout;
+
+                setState(draft => {
+                    draft.layout = nativeEventLayout;
+                });
+            }
+
+            const addRipple = !activeRipple && eventName === 'pressOut';
+
+            if (addRipple) {
+                processAddRipple((event as GestureResponderEvent).nativeEvent);
+            }
         },
-        [active, processAddRipple],
+        [activeRipple, processAddRipple, setState],
     );
 
-    const {layout, ...onEvent} = HOOK.useOnEvent({
+    const onEvent = HOOK.useOnEvent({
         ...props,
         disabled: false,
         onStateChange: processStateChange,
@@ -98,38 +123,47 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         });
     }, [onRippleAnimatedEnd, setState]);
 
-    const processRippleEntryAnimatedStart = useCallback(
+    const processRippleEntryAnimatedEnd = useCallback(
         (sequence: string, exitAnimated: (finished?: () => void) => void) => {
+            if (activeRipple) {
+                return setState(draft => {
+                    draft.rippleSequence[sequence].exitAnimated = exitAnimated;
+                    draft.status === 'idle' && (draft.status = 'succeeded');
+                });
+            }
+
             exitAnimated(() => {
                 setState(draft => {
                     delete draft.rippleSequence[sequence];
                 });
             });
         },
-        [setState],
+        [activeRipple, setState],
     );
 
-    const ripples = useMemo(
-        () => (
-            <>
-                {typeof layout.width === 'number' &&
-                    layout.width !== 0 &&
-                    renderRipples(rippleSequence, {
-                        onEntryAnimatedStart: processRippleEntryAnimatedStart,
-                        touchableLayout: layout,
-                        underlayColor,
-                        active,
-                    })}
-            </>
-        ),
-        [
-            active,
-            layout,
-            processRippleEntryAnimatedStart,
-            rippleSequence,
+    const ripples = useMemo(() => {
+        const renderRipple =
+            typeof layout.width === 'number' && layout.width !== 0;
+
+        if (!renderRipple) {
+            return <></>;
+        }
+
+        return renderRipples(rippleSequence, {
+            active: touchableRippleActive,
+            defaultActive,
+            onEntryAnimatedEnd: processRippleEntryAnimatedEnd,
+            touchableLayout: layout,
             underlayColor,
-        ],
-    );
+        });
+    }, [
+        defaultActive,
+        layout,
+        processRippleEntryAnimatedEnd,
+        rippleSequence,
+        touchableRippleActive,
+        underlayColor,
+    ]);
 
     const childrenElement = (
         <>
@@ -139,12 +173,47 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
     );
 
     useEffect(() => {
-        if (typeof active === 'boolean') {
-            active
-                ? activeEvent && processAddRipple(activeEvent)
-                : processRippleExit();
+        if (status === 'idle') {
+            const addRipple = activeRipple && touchableRippleActive;
+
+            if (addRipple) {
+                return processAddRipple({locationX: 0, locationY: 0});
+            }
+
+            setState(draft => {
+                draft.status = 'succeeded';
+            });
         }
-    }, [active, activeEvent, processAddRipple, processRippleExit]);
+    }, [
+        activeRipple,
+        processAddRipple,
+        setState,
+        status,
+        touchableRippleActive,
+    ]);
+
+    useEffect(() => {
+        const processRipple = activeRipple;
+
+        if (!processRipple) {
+            return;
+        }
+
+        setState(draft => {
+            if (draft.status === 'succeeded') {
+                touchableRippleActive
+                    ? activeEvent && processAddRipple(activeEvent.nativeEvent)
+                    : processRippleExit();
+            }
+        });
+    }, [
+        activeEvent,
+        activeRipple,
+        processAddRipple,
+        processRippleExit,
+        setState,
+        touchableRippleActive,
+    ]);
 
     return render({
         ...renderProps,

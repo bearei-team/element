@@ -46,7 +46,7 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
                 {...containerProps}
                 accessibilityLabel={labelText}
                 accessibilityRole="button"
-                testID={`fba--${id}`}>
+                testID={`fab--${id}`}>
                 <Elevation level={elevationLevel} shape={shape}>
                     <TouchableRipple
                         {...onTouchableRippleEvent}
@@ -57,16 +57,17 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
                             onLayout={onLayout}
                             shape={shape}
                             style={{backgroundColor}}
-                            testID={`fba__content--${id}`}
+                            testID={`fab__content--${id}`}
                             type={type}>
                             {icon && (
-                                <Icon testID={`fba__icon--${id}`}>{icon}</Icon>
+                                <Icon testID={`fab__icon--${id}`}>{icon}</Icon>
                             )}
 
                             {labelText && (
                                 <AnimatedLabelText
                                     size="large"
                                     style={{color}}
+                                    testID={`fab__labelText--${id}`}
                                     type="label">
                                     {labelText}
                                 </AnimatedLabelText>

@@ -38,8 +38,8 @@ export const FABBase: FC<FABBaseProps> = props => {
     } = props;
 
     const [{elevationLevel}, setState] = useImmer(initialState);
-    const id = useId();
     const [underlayColor] = useUnderlayColor({type});
+    const id = useId();
 
     const processElevation = useCallback(
         (nextState: State) => {

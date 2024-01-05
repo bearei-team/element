@@ -13,8 +13,9 @@ export interface RippleProps
     extends Partial<ViewProps & React.RefAttributes<View>> {
     active?: boolean;
     centered?: boolean;
+    defaultActive?: boolean;
     location?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
-    onEntryAnimatedStart?: (
+    onEntryAnimatedEnd?: (
         sequence: string,
         exitAnimated: (finished?: () => void) => void,
     ) => void;
@@ -27,15 +28,26 @@ export interface RippleProps
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {id, renderStyle, style, x, y, active, ...containerProps} =
-            renderProps;
+        const {
+            active,
+            defaultActive,
+            id,
+            renderStyle,
+            style,
+            x,
+            y,
+            ...containerProps
+        } = renderProps;
 
         const {height, width, ...containerStyle} = renderStyle;
+        const activeRipple = [typeof active, typeof defaultActive].includes(
+            'boolean',
+        );
 
         return (
             <AnimatedContainer
                 {...containerProps}
-                activeRipple={typeof active === 'boolean'}
+                activeRipple={activeRipple}
                 height={height}
                 shape="full"
                 style={{

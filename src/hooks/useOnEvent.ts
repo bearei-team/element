@@ -2,32 +2,31 @@ import {useCallback} from 'react';
 import {
     GestureResponderEvent,
     LayoutChangeEvent,
-    LayoutRectangle,
     MouseEvent,
     NativeSyntheticEvent,
     PressableProps,
     TargetedEvent,
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {useImmer} from 'use-immer';
 import {EventName, State} from '../components/Common/interface';
 import {UTIL} from '../utils/util';
 
 export type Event =
     | GestureResponderEvent
     | MouseEvent
-    | NativeSyntheticEvent<TargetedEvent>;
+    | NativeSyntheticEvent<TargetedEvent>
+    | LayoutChangeEvent;
 
 export interface OnEvent {
     onBlur: (event: NativeSyntheticEvent<TargetedEvent>) => void;
     onFocus: (event: NativeSyntheticEvent<TargetedEvent>) => void;
     onHoverIn: (event: MouseEvent) => void;
     onHoverOut: (event: MouseEvent) => void;
+    onLayout: (event: LayoutChangeEvent) => void;
     onLongPress: (event: GestureResponderEvent) => void;
     onPress: (event: GestureResponderEvent) => void;
     onPressIn: (event: GestureResponderEvent) => void;
     onPressOut: (event: GestureResponderEvent) => void;
-    onLayout: (event: LayoutChangeEvent) => void;
 }
 
 export interface ProcessStateOptions {
@@ -41,13 +40,6 @@ export type UseHandleEventOptions = PressableProps & {
     disabled?: boolean;
     omitEvents?: (keyof UseHandleEventOptions)[];
     onStateChange?: (state: State, options?: OnStateChangeOptions) => void;
-};
-
-const initialState = {
-    event: undefined as Event | undefined,
-    eventName: 'none' as EventName,
-    layout: {} as LayoutRectangle,
-    state: 'enabled' as State,
 };
 
 export const useOnEvent = (options: UseHandleEventOptions) => {
@@ -66,12 +58,8 @@ export const useOnEvent = (options: UseHandleEventOptions) => {
         onStateChange,
     } = options;
 
-    const [{state, eventName, event: currentEvent, layout}, setState] =
-        useImmer(initialState);
-
     const theme = useTheme();
     const mobile = ['ios', 'android'].includes(theme.OS);
-
     const processState = useCallback(
         (nextState: State, processStateOptions = {} as ProcessStateOptions) => {
             if (disabled) {
@@ -84,12 +72,6 @@ export const useOnEvent = (options: UseHandleEventOptions) => {
                 eventName: processStateEventName,
             } = processStateOptions;
 
-            setState(draft => {
-                draft.event = event;
-                draft.eventName = processStateEventName;
-                draft.state = nextState;
-            });
-
             onStateChange?.(nextState, {
                 event,
                 eventName: processStateEventName,
@@ -97,7 +79,7 @@ export const useOnEvent = (options: UseHandleEventOptions) => {
 
             callback?.();
         },
-        [disabled, onStateChange, setState],
+        [disabled, onStateChange],
     );
 
     const handlePressIn = useCallback(
@@ -182,20 +164,17 @@ export const useOnEvent = (options: UseHandleEventOptions) => {
         [onBlur, processState],
     );
 
-    const processLayout = (event: LayoutChangeEvent) => {
-        const nativeEventLayout = event.nativeEvent.layout;
-
-        setState(draft => {
-            draft.layout = nativeEventLayout;
-        });
-
-        onLayout?.(event);
-    };
+    const processLayout = useCallback(
+        (event: LayoutChangeEvent) =>
+            processState('enabled', {
+                callback: () => onLayout?.(event),
+                event,
+                eventName: 'layout',
+            }),
+        [onLayout, processState],
+    );
 
     const result = {
-        event: currentEvent,
-        eventName,
-        layout,
         mobile,
         onBlur: handleBlur,
         onFocus: handleFocus,
@@ -206,7 +185,6 @@ export const useOnEvent = (options: UseHandleEventOptions) => {
         onPress: handlePress,
         onPressIn: handlePressIn,
         onPressOut: handlePressOut,
-        state,
     };
 
     return UTIL.omit(result, omitEvents as (keyof typeof result)[]);

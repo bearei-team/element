@@ -25,7 +25,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         0.38,
     );
 
-    const backgroundColorConfig = {
+    const backgroundColorType = {
         elevated: {
             inputRange: [0, 1],
             outputRange: [
@@ -70,7 +70,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         },
     };
 
-    const colorConfig = {
+    const colorType = {
         elevated: {
             inputRange: [0, 1],
             outputRange: [disabledColor, theme.palette.primary.primary],
@@ -101,10 +101,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     };
 
     const backgroundColor = colorAnimated.interpolate(
-        backgroundColorConfig[type],
+        backgroundColorType[type],
     );
 
-    const color = colorAnimated.interpolate(colorConfig[type]);
+    const color = colorAnimated.interpolate(colorType[type]);
     const borderColor = borderAnimated.interpolate({
         inputRange: borderInputRange,
         outputRange: [

@@ -25,8 +25,12 @@ export interface ElevationBaseProps extends ElevationProps {
 }
 
 export const ElevationBase: FC<ElevationBaseProps> = props => {
-    const {level = 0, render, ...renderProps} = props;
-    const {shadow0Opacity, shadow1Opacity} = useAnimated({level});
+    const {level, render, defaultLevel, ...renderProps} = props;
+    const {shadow0Opacity, shadow1Opacity} = useAnimated({
+        defaultLevel,
+        level,
+    });
+
     const id = useId();
     const {layout, ...onEvent} = HOOK.useOnEvent({
         ...props,
@@ -35,7 +39,7 @@ export const ElevationBase: FC<ElevationBaseProps> = props => {
     return render({
         ...renderProps,
         id,
-        level,
+        level: level ?? defaultLevel,
         onEvent,
         renderStyle: {
             height: layout.height,

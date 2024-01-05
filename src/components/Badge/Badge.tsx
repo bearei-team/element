@@ -31,7 +31,7 @@ const ForwardRefBadge = forwardRef<View, BadgeProps>((props, ref) => {
         );
     };
 
-    return <BadgeBase {...props} render={render} ref={ref} />;
+    return <BadgeBase {...props} ref={ref} render={render} />;
 });
 
 export const Badge: FC<BadgeProps> = memo(ForwardRefBadge);

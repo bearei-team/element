@@ -11,14 +11,16 @@ import {Container, Content} from './TouchableRipple.styles';
 import {RenderProps, TouchableRippleBase} from './TouchableRippleBase';
 
 export type TouchableProps = PressableProps &
-    Pick<RippleProps, 'underlayColor' | 'centered'> &
+    Pick<
+        RippleProps,
+        'underlayColor' | 'centered' | 'active' | 'defaultActive'
+    > &
     RefAttributes<View> &
     ViewProps &
     Pick<ShapeProps, 'shape'>;
 
 export interface TouchableRippleProps
     extends Omit<TouchableProps, 'children' | 'disabled' | 'hitSlop'> {
-    active?: boolean;
     activeEvent?: GestureResponderEvent;
     children?: React.JSX.Element;
     disabled?: boolean;

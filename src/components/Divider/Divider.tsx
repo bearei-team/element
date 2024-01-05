@@ -37,7 +37,7 @@ const ForwardRefDivider = forwardRef<View, DividerProps>((props, ref) => {
         );
     };
 
-    return <DividerBase {...props} render={render} ref={ref} />;
+    return <DividerBase {...props} ref={ref} render={render} />;
 });
 
 export const Divider: FC<DividerProps> = memo(ForwardRefDivider);
