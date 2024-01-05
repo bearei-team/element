@@ -5,12 +5,13 @@ import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 import {RenderProps} from './IconBase';
 
-export type UseAnimatedOptions = Required<Pick<RenderProps, 'eventName'>>;
+export type UseAnimatedOptions = Pick<RenderProps, 'eventName'>;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {eventName} = options;
+    const {eventName = 'none'} = options;
     const [scaleAnimated] = useAnimatedValue(1);
     const theme = useTheme();
+    const animatedTiming = UTIL.animatedTiming(theme);
     const scale = scaleAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [0.97, 1, 1.03],
@@ -18,8 +19,6 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
     const processAnimatedTiming = useCallback(
         (animation: Animated.Value, toValue: number) => {
-            const animatedTiming = UTIL.animatedTiming(theme);
-
             requestAnimationFrame(() =>
                 animatedTiming(animation, {
                     duration: 'short3',
@@ -29,7 +28,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 }).start(),
             );
         },
-        [theme],
+        [animatedTiming],
     );
 
     useEffect(() => {
@@ -41,5 +40,5 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         );
     }, [processAnimatedTiming, eventName, scaleAnimated]);
 
-    return {scale};
+    return [{scale}];
 };

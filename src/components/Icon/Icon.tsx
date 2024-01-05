@@ -44,7 +44,7 @@ const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => {
         );
     };
 
-    return <IconBase {...props} render={render} ref={ref} />;
+    return <IconBase {...props} ref={ref} render={render} />;
 });
 
 export const Icon: FC<IconProps> = memo(ForwardRefIcon);
