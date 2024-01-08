@@ -2,12 +2,21 @@ import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Typography} from '../../Common/Common.styles';
 
+export interface ContainerProps {
+    visible?: boolean;
+}
+
 export interface ContentProps {
     supportingTextShow?: boolean;
 }
 
-export const Container = styled(View)`
+export const Container = styled(View)<ContainerProps>`
     overflow: hidden;
+    ${({visible}) =>
+        !visible &&
+        css`
+            height: ${0}px;
+        `};
 `;
 
 export const Inner = styled.View`
@@ -15,6 +24,7 @@ export const Inner = styled.View`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    position: relative;
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.medium)}px;
@@ -37,7 +47,6 @@ export const Content = styled.View<ContentProps>`
     flex-direction: column;
     flex: 1;
     justify-content: center;
-    pointer-events: none;
 
     ${({supportingTextShow, theme}) =>
         supportingTextShow &&

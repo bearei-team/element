@@ -1,10 +1,5 @@
 import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {
-    GestureResponderEvent,
-    PressableProps,
-    View,
-    ViewProps,
-} from 'react-native';
+import {NativeTouchEvent, PressableProps, View, ViewProps} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
 import {RippleProps} from './Ripple/Ripple';
 import {Container, Content} from './TouchableRipple.styles';
@@ -21,7 +16,7 @@ export type TouchableProps = PressableProps &
 
 export interface TouchableRippleProps
     extends Omit<TouchableProps, 'children' | 'disabled' | 'hitSlop'> {
-    activeEvent?: GestureResponderEvent;
+    activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     children?: React.JSX.Element;
     disabled?: boolean;
     onRippleAnimatedEnd?: () => void;

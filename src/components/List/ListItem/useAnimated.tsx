@@ -3,11 +3,12 @@ import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {UTIL} from '../../../utils/util';
-import {EventName} from '../../Common/interface';
+import {EventName, State} from '../../Common/interface';
 import {RenderProps} from './ListItemBase';
 
 export interface UseAnimatedOptions extends Pick<RenderProps, 'close'> {
     eventName: EventName;
+    state: State;
     trailingEventName: EventName;
 }
 
@@ -17,7 +18,7 @@ export interface ProcessAnimatedTimingOptions {
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {close, eventName, trailingEventName} = options;
+    const {close, eventName, trailingEventName, state} = options;
     const [closedAnimated] = useAnimatedValue(1);
     const [trailingOpacityAnimated] = useAnimatedValue(close ? 0 : 1);
     const theme = useTheme();
@@ -62,9 +63,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
+        const closeValue = state !== 'enabled' ? 1 : 0;
         const closeToValue = [eventName, trailingEventName].includes('hoverIn')
             ? 1
-            : 0;
+            : closeValue;
 
         processAnimatedTiming(trailingOpacityAnimated, {
             toValue: close ? closeToValue : 1,
@@ -73,6 +75,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         close,
         eventName,
         processAnimatedTiming,
+        state,
         trailingEventName,
         trailingOpacityAnimated,
     ]);

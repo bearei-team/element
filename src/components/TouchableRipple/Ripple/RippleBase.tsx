@@ -33,9 +33,10 @@ export const RippleBase: FC<RippleBaseProps> = props => {
     const centerX = width / 2;
     const centerY = height / 2;
     const id = useId();
-    const {locationX = 0, locationY = 0} = centered
-        ? {locationX: centerX, locationY: centerY}
-        : location;
+    const {locationX = 0, locationY = 0} =
+        centered || defaultActive
+            ? {locationX: centerX, locationY: centerY}
+            : location;
 
     const offsetX = Math.abs(centerX - locationX);
     const offsetY = Math.abs(centerY - locationY);

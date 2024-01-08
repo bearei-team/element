@@ -24,6 +24,8 @@ export interface ListItemProps extends TouchableRippleProps {
     supportingText?: string;
     supportingTextNumberOfLines?: number;
     trailing?: React.JSX.Element;
+    indexKey?: string;
+    onClose?: (key?: string) => void;
 }
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
@@ -45,11 +47,15 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
             trailing,
             underlayColor,
             activeColor,
+            active,
+            activeLocation,
+            defaultActive,
+            visible,
             ...containerProps
         } = renderProps;
 
         const {onLayout, ...onTouchableRippleEvent} = onEvent;
-        const {trailingOpacity, transform} = renderStyle;
+        const {trailingOpacity, width, height, transform} = renderStyle;
 
         return (
             <AnimatedContainer
@@ -62,9 +68,13 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
                     ...(typeof style === 'object' && style),
                     ...{transform},
                 }}
-                testID={`listItem--${id}`}>
+                testID={`listItem--${id}`}
+                visible={visible}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
+                    active={active}
+                    activeLocation={activeLocation}
+                    defaultActive={defaultActive}
                     underlayColor={activeColor}>
                     <AnimatedInner>
                         {leading && (
@@ -107,9 +117,9 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
 
                         <Hovered
                             eventName={eventName}
-                            height={0}
+                            height={height}
                             underlayColor={underlayColor}
-                            width={0}
+                            width={width}
                         />
                     </AnimatedInner>
                 </TouchableRipple>

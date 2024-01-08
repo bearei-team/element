@@ -24,7 +24,7 @@ export interface ListProps
     close?: boolean;
     data?: ListDataSource[];
     defaultActiveKey?: string;
-    onChange?: (key: string) => void;
+    onActive?: (key?: string) => void;
     supportingTextNumberOfLines?: ListDataSource['supportingTextNumberOfLines'];
 }
 

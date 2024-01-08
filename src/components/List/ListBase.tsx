@@ -1,6 +1,7 @@
 import {FC, useCallback, useEffect, useId} from 'react';
 import {ListRenderItemInfo} from 'react-native';
 import {useImmer} from 'use-immer';
+import {ComponentStatus} from '../Common/interface';
 import {ListDataSource, ListProps} from './List';
 import {ListItem} from './ListItem/ListItem';
 
@@ -12,7 +13,8 @@ export interface ListBaseProps extends ListProps {
 export interface RenderItemOptions extends ListRenderItemInfo<ListDataSource> {
     active?: boolean;
     close?: boolean;
-    onActive: (key: string) => void;
+    onActive: (key?: string) => void;
+    onClose?: (key?: string) => void;
     supportingTextNumberOfLines?: ListDataSource['supportingTextNumberOfLines'];
 }
 
@@ -21,7 +23,8 @@ export interface Data extends ListDataSource {
 }
 
 const renderItem = (options: RenderItemOptions) => {
-    const {item, onActive, supportingTextNumberOfLines, close} = options;
+    const {item, onActive, supportingTextNumberOfLines, close, onClose} =
+        options;
 
     return (
         <ListItem
@@ -30,15 +33,17 @@ const renderItem = (options: RenderItemOptions) => {
                 supportingTextNumberOfLines,
             })}
             close={close}
+            indexKey={item.key}
             key={item.key}
-            onPressOut={() => onActive(item.key!)}
+            onClose={onClose}
+            onPressOut={() => onActive(item.key)}
         />
     );
 };
 
 const initialState = {
     data: [] as Data[],
-    status: 'idle' as 'idle' | 'loading' | 'failed' | 'succeeded',
+    status: 'idle' as ComponentStatus,
 };
 
 export const ListBase: FC<ListBaseProps> = props => {
@@ -47,7 +52,7 @@ export const ListBase: FC<ListBaseProps> = props => {
         close,
         data: dataSources = [],
         defaultActiveKey,
-        onChange,
+        onActive,
         render,
         supportingTextNumberOfLines,
         ...renderProps
@@ -57,14 +62,24 @@ export const ListBase: FC<ListBaseProps> = props => {
     const id = useId();
 
     const handleActive = useCallback(
-        (key: string) => {
+        (key?: string) => {
             setState(draft => {
                 draft.data.forEach(datum => (datum.active = datum.key === key));
             });
 
-            onChange?.(key);
+            onActive?.(key);
         },
-        [onChange, setState],
+        [onActive, setState],
+    );
+
+    const handleClose = useCallback(
+        (key?: string) => {
+            setState(draft => {
+                console.info(draft.data.filter(datum => datum.key !== key));
+                draft.data = draft.data.filter(datum => datum.key !== key);
+            });
+        },
+        [setState],
     );
 
     const processRenderItem = useCallback(
@@ -73,9 +88,10 @@ export const ListBase: FC<ListBaseProps> = props => {
                 ...options,
                 close,
                 onActive: handleActive,
+                onClose: handleClose,
                 supportingTextNumberOfLines,
             }),
-        [close, handleActive, supportingTextNumberOfLines],
+        [close, handleActive, handleClose, supportingTextNumberOfLines],
     );
 
     useEffect(() => {

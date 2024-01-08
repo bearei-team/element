@@ -49,7 +49,7 @@ const initialState = {
 export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
     const {
         active,
-        activeEvent,
+        activeLocation,
         children,
         defaultActive,
         onRippleAnimatedEnd,
@@ -199,19 +199,18 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
             return;
         }
 
-        setState(draft => {
-            if (draft.status === 'succeeded') {
-                touchableRippleActive
-                    ? activeEvent && processAddRipple(activeEvent.nativeEvent)
-                    : processRippleExit();
-            }
-        });
+        if (status === 'succeeded') {
+            touchableRippleActive
+                ? activeLocation && processAddRipple(activeLocation)
+                : processRippleExit();
+        }
     }, [
-        activeEvent,
+        activeLocation,
         activeRipple,
         processAddRipple,
         processRippleExit,
         setState,
+        status,
         touchableRippleActive,
     ]);
 

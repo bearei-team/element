@@ -3,11 +3,19 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './IconButtonBase';
 
+export type ContainerProps = Pick<RenderProps, 'width' | 'height'>;
+
 export interface ContentProps extends Pick<RenderProps, 'type'> {
     iconShow: boolean;
 }
 
-export const Container = styled(View)``;
+export const Container = styled(View)<ContainerProps>`
+    ${({width, height, theme}) => css`
+        max-height: ${height ?? theme.adaptSize(theme.spacing.small * 6)}px;
+        max-width: ${width ?? theme.adaptSize(theme.spacing.small * 6)}px;
+    `}
+`;
+
 export const Content = styled(Shape)<ContentProps>`
     align-items: center;
     display: flex;
@@ -15,11 +23,6 @@ export const Content = styled(Shape)<ContentProps>`
     justify-content: center;
     pointer-events: none;
     position: relative;
-
-    ${({theme}) => css`
-        height: ${theme.adaptSize(theme.spacing.small * 6)}px;
-        width: ${theme.adaptSize(theme.spacing.small * 6)}px;
-    `}
 `;
 
 export const Icon = styled.View`
