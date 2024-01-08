@@ -79,7 +79,7 @@ export const ListBase: FC<ListBaseProps> = props => {
     );
 
     useEffect(() => {
-        dataSources &&
+        if (status === 'idle') {
             setState(draft => {
                 draft.data = dataSources.map((datum, index) => ({
                     ...datum,
@@ -91,29 +91,32 @@ export const ListBase: FC<ListBaseProps> = props => {
 
                 draft.status = 'succeeded';
             });
-    }, [dataSources, defaultActiveKey, setState]);
+        }
+    }, [dataSources, defaultActiveKey, setState, status]);
 
-    // useEffect(() => {
-    //     status === 'succeeded' &&
-    //         activeKey &&
-    //         setState(draft => {
-    //             if (draft.data.length === 0) {
-    //                 draft.data = dataSources.map((datum, index) => ({
-    //                     ...datum,
-    //                     active: datum.key === activeKey,
-    //                     key: `${datum.key ?? index}`,
-    //                 }));
+    useEffect(() => {
+        if (status === 'succeeded' && activeKey) {
+            setState(draft => {
+                if (draft.data.length === 0) {
+                    draft.data = dataSources.map((datum, index) => ({
+                        ...datum,
+                        active: datum.key === activeKey,
+                        key: `${datum.key ?? index}`,
+                    }));
 
-    //                 return;
-    //             }
+                    return;
+                }
 
-    //             draft.data.forEach(datum => {
-    //                 datum.active = datum.key === activeKey;
-    //             });
-    //         });
-    // }, [activeKey, dataSources, setState, status]);
+                draft.data.forEach(datum => {
+                    datum.active = datum.key === activeKey;
+                });
+            });
+        }
+    }, [activeKey, dataSources, setState, status]);
 
-    console.info(data);
+    if (status === 'idle') {
+        return <></>;
+    }
 
     return render({
         ...renderProps,

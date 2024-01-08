@@ -9,7 +9,6 @@ export const Container = styled(View)<ContainerProps>`
     align-self: stretch;
     display: flex;
     flex-direction: row;
-    flex: 1;
     justify-content: center;
 
     ${({width, height, theme}) => css`

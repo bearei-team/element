@@ -9,8 +9,8 @@ export interface ListDataSource
     extends Pick<
         ListItemProps,
         | 'headline'
-        | 'supportingText'
         | 'leading'
+        | 'supportingText'
         | 'supportingTextNumberOfLines'
     > {
     key?: string;

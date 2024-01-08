@@ -32,53 +32,41 @@ const AnimatedTrailing = Animated.createAnimatedComponent(Trailing);
 const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
-            active,
-            activeColor,
             eventName,
             headline,
             id,
             leading,
-            onLayout,
+            onEvent,
+            ref: containerRef,
             renderStyle,
             style,
             supportingText,
             supportingTextNumberOfLines,
-            supportingTextShow,
             trailing,
             underlayColor,
-            activeEvent,
-            ...touchableRippleProps
+            activeColor,
+            ...containerProps
         } = renderProps;
 
-        const {
-            height,
-            touchableRippleHeight,
-            touchableRippleWidth,
-            trailingOpacity,
-        } = renderStyle;
-
-        console.info(headline);
+        const {onLayout, ...onTouchableRippleEvent} = onEvent;
+        const {trailingOpacity, transform} = renderStyle;
 
         return (
-            <TouchableRipple
-                {...touchableRippleProps}
-                active={active}
-                activeEvent={activeEvent}
-                activeRipple={true}
-                disabled={active}
-                ref={ref}
-                underlayColor={activeColor}>
-                <AnimatedContainer
-                    accessibilityLabel={headline}
-                    accessibilityRole="list"
-                    style={{height}}
-                    testID={`listItem--${id}`}>
-                    <AnimatedInner
-                        onLayout={onLayout}
-                        style={{
-                            ...(typeof style === 'object' && style),
-                        }}
-                        testID={`listItem__inner--${id}`}>
+            <AnimatedContainer
+                {...containerProps}
+                accessibilityLabel={headline}
+                accessibilityRole="list"
+                onLayout={onLayout}
+                ref={containerRef}
+                style={{
+                    ...(typeof style === 'object' && style),
+                    ...{transform},
+                }}
+                testID={`listItem--${id}`}>
+                <TouchableRipple
+                    {...onTouchableRippleEvent}
+                    underlayColor={activeColor}>
+                    <AnimatedInner>
                         {leading && (
                             <Leading testID={`listItem__leading--${id}`}>
                                 {leading}
@@ -86,24 +74,24 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
                         )}
 
                         <Content
-                            supportingTextShow={supportingTextShow}
+                            supportingTextShow={!!supportingText}
                             testID={`listItem__content--${id}`}>
                             <Headline
                                 ellipsizeMode="tail"
                                 numberOfLines={1}
-                                testID={`listItem__headline--${id}`}>
+                                size="large"
+                                testID={`listItem__headline--${id}`}
+                                type="body">
                                 {headline}
                             </Headline>
 
                             {supportingText && (
                                 <SupportingText
-                                    {...(typeof supportingTextNumberOfLines ===
-                                        'number' && {
-                                        ellipsizeMode: 'tail',
-                                        numberOfLines:
-                                            supportingTextNumberOfLines,
-                                    })}
-                                    testID={`listItem__supportingText--${id}`}>
+                                    ellipsizeMode="tail"
+                                    numberOfLines={supportingTextNumberOfLines}
+                                    size="medium"
+                                    testID={`listItem__supportingText--${id}`}
+                                    type="body">
                                     {supportingText}
                                 </SupportingText>
                             )}
@@ -116,22 +104,20 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
                                 {trailing}
                             </AnimatedTrailing>
                         )}
-                    </AnimatedInner>
-                </AnimatedContainer>
 
-                {typeof touchableRippleWidth === 'number' && (
-                    <Hovered
-                        height={touchableRippleHeight}
-                        eventName={eventName}
-                        underlayColor={underlayColor}
-                        width={touchableRippleWidth}
-                    />
-                )}
-            </TouchableRipple>
+                        <Hovered
+                            eventName={eventName}
+                            height={0}
+                            underlayColor={underlayColor}
+                            width={0}
+                        />
+                    </AnimatedInner>
+                </TouchableRipple>
+            </AnimatedContainer>
         );
     };
 
-    return <ListItemBase {...props} render={render} />;
+    return <ListItemBase {...props} ref={ref} render={render} />;
 });
 
 export const ListItem: FC<ListItemProps> = memo(ForwardRefListItem);

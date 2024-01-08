@@ -8,17 +8,19 @@ import {
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
-import {useHandleEvent} from '../../../hooks/useOnEvent';
-import {Button} from '../../Button/reButton';
+import {HOOK} from '../../../hooks/hook';
+import {OnEvent, OnStateChangeOptions} from '../../../hooks/useOnEvent';
 import {AnimatedInterpolation, EventName, State} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
+import {IconButton} from '../../IconButton/IconButton';
 import {ListItemProps} from './ListItem';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends ListItemProps {
+    onEvent: OnEvent;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
-        touchableRippleHeight: number;
-        touchableRippleWidth: number;
+        height: number;
+        width: number;
         trailingOpacity: AnimatedInterpolation;
     };
     underlayColor: string;
@@ -34,63 +36,64 @@ export interface ListItemBaseProps extends ListItemProps {
 }
 
 const initialState = {
-    touchableRippleLayout: {} as LayoutRectangle,
-    trailingState: 'enabled' as State,
-    rippleAnimatedEnd: false,
+    eventName: 'none' as EventName,
+    layout: {} as LayoutRectangle,
+    trailingEventName: 'none' as EventName,
 };
 
 export const ListItemBase: FC<ListItemBaseProps> = props => {
     const {
         active = false,
         close = false,
-        onLayout,
         render,
-        trailing,
         supportingText,
+        trailing,
         ...renderProps
     } = props;
 
-    const [
-        {touchableRippleLayout, rippleAnimatedEnd, trailingState},
-        setState,
-    ] = useImmer(initialState);
+    const [{eventName, trailingEventName, layout}, setState] =
+        useImmer(initialState);
 
-    const id = useId();
     const theme = useTheme();
-    const underlayColor = theme.palette.surface.onSurface;
     const activeColor = theme.palette.secondary.secondaryContainer;
+    const id = useId();
+    const underlayColor = theme.palette.surface.onSurface;
 
-    const {state, eventName, event, ...handleEvent} = useHandleEvent({
-        ...props,
-    });
+    const processStateChange = useCallback(
+        (_nextState: State, options = {} as OnStateChangeOptions) => {
+            const {event, eventName: nextEventName} = options;
 
-    const {
-        height: animatedHeight,
-        onCloseAnimated,
-        trailingOpacity,
-    } = useAnimated({
-        active,
-        close,
-        state,
-        touchableRippleHeight: touchableRippleLayout.height ?? 0,
-        trailingState,
-        rippleAnimatedEnd,
-    });
+            if (nextEventName === 'layout') {
+                const nativeEventLayout = (event as LayoutChangeEvent)
+                    .nativeEvent.layout;
 
-    const processLayout = (event: LayoutChangeEvent) => {
-        const nativeEventLayout = event.nativeEvent.layout;
+                setState(draft => {
+                    draft.layout = nativeEventLayout;
+                });
+            }
 
-        setState(draft => {
-            draft.touchableRippleLayout = nativeEventLayout;
-        });
-
-        onLayout?.(event);
-    };
-
-    const processTrailingState = useCallback(
-        (nextState: State, callback?: () => void) => {
             setState(draft => {
-                draft.trailingState = nextState;
+                draft.eventName = nextEventName;
+            });
+        },
+        [setState],
+    );
+
+    const [onEvent] = HOOK.useOnEvent({
+        ...props,
+        onStateChange: processStateChange,
+    });
+
+    const {scale, onCloseAnimated, trailingOpacity} = useAnimated({
+        close,
+        eventName,
+        trailingEventName,
+    });
+
+    const processTrailingEvent = useCallback(
+        (nextEventName: EventName, callback?: () => void) => {
+            setState(draft => {
+                draft.trailingEventName = nextEventName;
             });
 
             callback?.();
@@ -99,13 +102,13 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
     );
 
     const handleTrailingHoverIn = useCallback(
-        () => processTrailingState('hovered'),
-        [processTrailingState],
+        () => processTrailingEvent('hoverIn'),
+        [processTrailingEvent],
     );
 
     const handleTrailingHoverOut = useCallback(
-        () => processTrailingState('enabled'),
-        [processTrailingState],
+        () => processTrailingEvent('hoverOut'),
+        [processTrailingEvent],
     );
 
     const handleTrailingPress = useCallback(() => {
@@ -115,18 +118,16 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
     const trailingElement = useMemo(
         () =>
             close ? (
-                <Button
-                    category="icon"
+                <IconButton
                     icon={
                         <Icon
-                            type="filled"
                             name={active ? 'remove' : 'close'}
+                            type="filled"
                         />
                     }
                     onHoverIn={handleTrailingHoverIn}
                     onHoverOut={handleTrailingHoverOut}
-                    onPress={handleTrailingPress}
-                    type="text"
+                    onPressOut={handleTrailingPress}
                 />
             ) : (
                 trailing
@@ -143,21 +144,17 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
 
     return render({
         ...renderProps,
-        ...handleEvent,
-        ...(eventName === 'pressOut' && {
-            activeEvent: event as GestureResponderEvent,
-        }),
-        activeColor,
-        id,
-        onLayout: processLayout,
-        renderStyle: {
-            height: animatedHeight,
-            touchableRippleHeight: touchableRippleLayout.height,
-            touchableRippleWidth: touchableRippleLayout.width,
-            trailingOpacity,
-        },
         active,
+        activeColor,
         eventName,
+        id,
+        onEvent,
+        renderStyle: {
+            height: layout?.height,
+            trailingOpacity,
+            transform: [{scaleY: scale}],
+            width: layout?.width,
+        },
         supportingText,
         supportingTextShow: !!supportingText,
         trailing: trailingElement,

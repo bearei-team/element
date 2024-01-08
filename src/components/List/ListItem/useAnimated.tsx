@@ -1,17 +1,14 @@
-import {useCallback, useEffect, useMemo} from 'react';
+import {useCallback, useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {UTIL} from '../../../utils/util';
-import {State} from '../../Common/interface';
+import {EventName} from '../../Common/interface';
+import {RenderProps} from './ListItemBase';
 
-export interface UseAnimatedOptions {
-    active: boolean;
-    close: boolean;
-    state: State;
-    trailingState: State;
-    touchableRippleHeight: number;
-    rippleAnimatedEnd: boolean;
+export interface UseAnimatedOptions extends Pick<RenderProps, 'close'> {
+    eventName: EventName;
+    trailingEventName: EventName;
 }
 
 export interface ProcessAnimatedTimingOptions {
@@ -20,26 +17,20 @@ export interface ProcessAnimatedTimingOptions {
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {active, close, state, touchableRippleHeight, trailingState} =
-        options;
-
-    const [trailingOpacityAnimated] = useAnimatedValue(0);
+    const {close, eventName, trailingEventName} = options;
     const [closedAnimated] = useAnimatedValue(1);
+    const [trailingOpacityAnimated] = useAnimatedValue(close ? 0 : 1);
     const theme = useTheme();
-
+    const animatedTiming = UTIL.animatedTiming(theme);
     const trailingOpacity = trailingOpacityAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [close ? 0 : 1, 1],
+        outputRange: [0, 1],
     });
 
-    const height = useMemo(
-        () =>
-            closedAnimated.interpolate({
-                inputRange: [0, 1],
-                outputRange: [0, touchableRippleHeight],
-            }),
-        [closedAnimated, touchableRippleHeight],
-    );
+    const scale = closedAnimated.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 1],
+    });
 
     const processAnimatedTiming = useCallback(
         (
@@ -47,17 +38,17 @@ export const useAnimated = (options: UseAnimatedOptions) => {
             processAnimatedTimingOptions: ProcessAnimatedTimingOptions,
         ) => {
             const {toValue, finished} = processAnimatedTimingOptions;
-            const animatedTiming = UTIL.animatedTiming(theme);
 
             requestAnimationFrame(() =>
                 animatedTiming(animation, {
                     duration: 'short3',
                     easing: 'standard',
                     toValue,
+                    useNativeDriver: true,
                 }).start(finished),
             );
         },
-        [theme],
+        [animatedTiming],
     );
 
     const processCloseAnimated = useCallback(
@@ -71,26 +62,24 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     );
 
     useEffect(() => {
-        const closeOut = state !== 'enabled' ? 1 : 0;
-        const closeToValue =
-            state === 'hovered' || trailingState === 'hovered' ? 1 : closeOut;
-
-        const toValue = trailingState === 'hovered' ? 1 : 0;
+        const closeToValue = [eventName, trailingEventName].includes('hoverIn')
+            ? 1
+            : 0;
 
         processAnimatedTiming(trailingOpacityAnimated, {
-            toValue: close ? closeToValue : toValue,
+            toValue: close ? closeToValue : 1,
         });
     }, [
         close,
+        eventName,
         processAnimatedTiming,
-        state,
+        trailingEventName,
         trailingOpacityAnimated,
-        trailingState,
     ]);
 
     return {
-        height,
         onCloseAnimated: processCloseAnimated,
+        scale,
         trailingOpacity,
     };
 };
