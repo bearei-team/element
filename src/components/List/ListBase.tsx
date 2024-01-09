@@ -11,24 +11,23 @@ export interface ListBaseProps extends ListProps {
 }
 
 export interface RenderItemOptions extends ListRenderItemInfo<ListDataSource> {
-    active?: boolean;
+    activeKey?: string;
     close?: boolean;
+    defaultActiveKey?: string;
     onActive: (key?: string) => void;
     onClose?: (key?: string) => void;
     supportingTextNumberOfLines?: ListDataSource['supportingTextNumberOfLines'];
-    activeKey?: string;
-    defaultActiveKey?: string;
 }
 
 const renderItem = (options: RenderItemOptions) => {
     const {
+        activeKey,
+        close,
+        defaultActiveKey,
         item,
         onActive,
-        supportingTextNumberOfLines,
-        close,
         onClose,
-        activeKey,
-        defaultActiveKey,
+        supportingTextNumberOfLines,
     } = options;
 
     return (
@@ -37,21 +36,21 @@ const renderItem = (options: RenderItemOptions) => {
             {...(typeof item.supportingTextNumberOfLines !== 'number' && {
                 supportingTextNumberOfLines,
             })}
-            defaultActiveKey={defaultActiveKey}
             activeKey={activeKey}
             close={close}
+            defaultActiveKey={defaultActiveKey}
             indexKey={item.key}
             key={item.key}
-            onClose={onClose}
             onActive={onActive}
+            onClose={onClose}
         />
     );
 };
 
 const initialState = {
+    activeKey: undefined as string | undefined,
     data: [] as ListDataSource[],
     status: 'idle' as ComponentStatus,
-    activeKey: undefined as string | undefined,
 };
 
 export const ListBase: FC<ListBaseProps> = props => {
@@ -96,10 +95,10 @@ export const ListBase: FC<ListBaseProps> = props => {
                 ...options,
                 activeKey,
                 close,
+                defaultActiveKey,
                 onActive: handleActive,
                 onClose: handleClose,
                 supportingTextNumberOfLines,
-                defaultActiveKey,
             }),
         [
             activeKey,

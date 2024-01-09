@@ -4,6 +4,7 @@
         "Immer",
         "keyboardkey",
         "Pressable",
-        "textalignvertical"
+        "textalignvertical",
+        "uncenter"
     ]
 }

@@ -37,12 +37,11 @@ const initialState = {
 export const ElevationBase: FC<ElevationBaseProps> = props => {
     const {level, render, defaultLevel, ...renderProps} = props;
     const [{layout}, setState] = useImmer(initialState);
+    const id = useId();
     const [{shadow0Opacity, shadow1Opacity}] = useAnimated({
         defaultLevel,
         level,
     });
-
-    const id = useId();
 
     const processLayout = useCallback(
         (event: LayoutChangeEvent) => {
@@ -78,9 +77,9 @@ export const ElevationBase: FC<ElevationBaseProps> = props => {
         onEvent,
         renderStyle: {
             height: layout?.height,
-            width: layout?.width,
             opacity0: shadow0Opacity,
             opacity1: shadow1Opacity,
+            width: layout?.width,
         },
     });
 };

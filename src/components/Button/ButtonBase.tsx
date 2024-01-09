@@ -18,14 +18,14 @@ import {useIcon} from './useIcon';
 import {useUnderlayColor} from './useUnderlayColor';
 
 export interface RenderProps extends ButtonProps {
+    defaultElevation: ElevationLevel;
+    elevation: ElevationLevel;
+    eventName: EventName;
     onEvent: OnEvent;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
         width: number;
     };
-    eventName: EventName;
-    elevation: ElevationLevel;
-    defaultElevation: ElevationLevel;
 }
 
 export interface ButtonBaseProps extends ButtonProps {
@@ -58,7 +58,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{elevation, defaultElevation, status, layout, eventName}, setState] =
+    const [{defaultElevation, elevation, eventName, layout, status}, setState] =
         useImmer(initialState);
 
     const id = useId();
@@ -129,8 +129,8 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
 
     const [{backgroundColor, borderColor, color}] = useAnimated({
         disabled,
-        type,
         eventName,
+        type,
     });
 
     const [iconElement] = useIcon({eventName, type, icon, disabled});
@@ -163,10 +163,10 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     return render({
         ...renderProps,
         block,
+        defaultElevation,
         elevation,
         eventName,
         icon: iconElement,
-        defaultElevation,
         id,
         labelText,
         onEvent,

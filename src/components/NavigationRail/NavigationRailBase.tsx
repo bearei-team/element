@@ -20,14 +20,14 @@ export interface RenderItemOptions {
 }
 
 const renderItems = (options: RenderItemOptions) => {
-    const {onActive, block, data, activeKey, defaultActiveKey} = options;
+    const {activeKey, block, data, defaultActiveKey, onActive} = options;
 
     return data.map(({key, ...props}) => (
         <NavigationRailItem
             {...props}
-            defaultActiveKey={defaultActiveKey}
             activeKey={activeKey}
             block={block}
+            defaultActiveKey={defaultActiveKey}
             indexKey={key}
             key={key}
             onActive={onActive}
@@ -36,9 +36,9 @@ const renderItems = (options: RenderItemOptions) => {
 };
 
 const initialState = {
+    activeKey: undefined as string | undefined,
     data: [] as ListDataSource[],
     status: 'idle' as ComponentStatus,
-    activeKey: undefined as string | undefined,
 };
 
 export const NavigationRailBase: FC<NavigationBaseProps> = props => {
@@ -52,7 +52,7 @@ export const NavigationRailBase: FC<NavigationBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{data, status, activeKey}, setState] = useImmer(initialState);
+    const [{activeKey, data, status}, setState] = useImmer(initialState);
     const id = useId();
     const processFAB = () => {
         if (!fab) {

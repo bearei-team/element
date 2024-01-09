@@ -27,6 +27,7 @@ const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
+            defaultElevation,
             elevation,
             eventName,
             icon,
@@ -36,7 +37,6 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
             renderStyle,
             type,
             underlayColor,
-            defaultElevation,
             ...containerProps
         } = renderProps;
 

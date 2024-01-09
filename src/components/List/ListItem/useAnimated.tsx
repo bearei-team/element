@@ -7,14 +7,9 @@ import {RenderProps} from './ListItemBase';
 
 export interface UseAnimatedOptions extends Pick<RenderProps, 'close'> {
     eventName: EventName;
+    layoutHeight?: number;
     state: State;
     trailingEventName: EventName;
-    layoutHeight?: number;
-}
-
-export interface ProcessAnimatedTimingOptions {
-    toValue: number;
-    finished?: () => void;
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
@@ -25,6 +20,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         state,
         trailingEventName,
     } = options;
+
     const [heightAnimated] = useAnimatedValue(1);
     const [trailingOpacityAnimated] = useAnimatedValue(close ? 0 : 1);
     const theme = useTheme();

@@ -124,8 +124,8 @@ export const FABBase: FC<FABBaseProps> = props => {
 
     return render({
         ...renderProps,
-        elevation,
         defaultElevation,
+        elevation,
         eventName,
         icon: iconElement,
         id,

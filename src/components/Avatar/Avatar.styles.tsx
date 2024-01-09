@@ -5,7 +5,7 @@ import {RenderProps} from './AvatarBase';
 export type ContainerProps = Pick<RenderProps, 'width' | 'height'>;
 export const Container = styled(Shape)<ContainerProps>`
     align-items: center;
-    display: inline-flex;
+    display: flex;
     justify-content: center;
     pointer-events: none;
 

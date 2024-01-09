@@ -15,8 +15,8 @@ export interface NavigationRailItemProps
     > {
     activeIcon?: React.JSX.Element;
     activeKey?: string;
-    defaultActiveKey?: string;
     block?: boolean;
+    defaultActiveKey?: string;
     icon?: React.JSX.Element;
     indexKey?: string;
     labelText?: string;
@@ -33,15 +33,15 @@ const ForwardRefNavigationRailItem = forwardRef<View, NavigationRailItemProps>(
                 activeIcon,
                 activeLocation,
                 defaultActive,
+                eventName,
                 icon,
                 id,
                 labelText,
                 onEvent,
                 renderStyle,
+                rippleCentered,
                 style,
                 underlayColor,
-                eventName,
-                rippleCentered,
                 ...containerProps
             } = renderProps;
 

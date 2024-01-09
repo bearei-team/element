@@ -114,9 +114,7 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
                 setState(draft => {
                     draft.activeLocation = {locationX, locationY};
                 });
-            }
 
-            if (responseActive) {
                 onActive?.(indexKey);
             }
         },
@@ -172,10 +170,11 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
     );
 
     const handleTrailingPress = useCallback(() => {
-        close &&
+        if (close) {
             onCloseAnimated(() => {
                 onClose?.(indexKey);
             });
+        }
     }, [close, indexKey, onClose, onCloseAnimated]);
 
     const trailingElement = useMemo(
@@ -238,7 +237,7 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
         active,
         activeColor,
         activeLocation,
-        defaultActive: defaultActiveKey === indexKey,
+        defaultActive,
         eventName,
         id,
         onEvent,

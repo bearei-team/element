@@ -23,9 +23,11 @@ import {NavigationRailItemProps} from './NavigationRailItem';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends NavigationRailItemProps {
+    active?: boolean;
     activeColor: string;
-    defaultActive?: boolean;
     activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
+    defaultActive?: boolean;
+    eventName: EventName;
     onEvent: OnEvent;
     rippleCentered?: boolean;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
@@ -34,8 +36,6 @@ export interface RenderProps extends NavigationRailItemProps {
         labelHeight: AnimatedInterpolation;
     };
     underlayColor: string;
-    eventName: EventName;
-    active?: boolean;
 }
 
 export interface NavigationRailItemBaseProps extends NavigationRailItemProps {
@@ -66,7 +66,7 @@ export const NavigationRailItemBase: FC<
     } = props;
 
     const [
-        {layout, eventName, activeLocation, rippleCentered, status},
+        {activeLocation, eventName, layout, rippleCentered, status},
         setState,
     ] = useImmer(initialState);
 
@@ -86,8 +86,7 @@ export const NavigationRailItemBase: FC<
 
     const processLayout = useCallback(
         (event: LayoutChangeEvent) => {
-            const nativeEventLayout = (event as LayoutChangeEvent).nativeEvent
-                .layout;
+            const nativeEventLayout = event.nativeEvent.layout;
 
             setState(draft => {
                 draft.layout = nativeEventLayout;
@@ -101,19 +100,11 @@ export const NavigationRailItemBase: FC<
             const responseActive = activeKey !== indexKey;
             const {locationX = 0, locationY = 0} = event.nativeEvent;
 
-            setState(draft => {
-                if (responseActive) {
-                    draft.activeLocation = {locationX, locationY};
-                }
-            });
-
             if (responseActive) {
                 setState(draft => {
                     draft.activeLocation = {locationX, locationY};
                 });
-            }
 
-            if (responseActive) {
                 onActive?.(indexKey);
             }
         },
@@ -185,7 +176,6 @@ export const NavigationRailItemBase: FC<
 
     return render({
         ...renderProps,
-        rippleCentered,
         active,
         activeColor,
         activeIcon: activeIconElement,
@@ -195,6 +185,7 @@ export const NavigationRailItemBase: FC<
         icon: iconElement,
         id,
         onEvent,
+        rippleCentered,
         renderStyle: {
             color,
             height: layout?.height,

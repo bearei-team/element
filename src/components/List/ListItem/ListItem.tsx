@@ -56,7 +56,7 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
         } = renderProps;
 
         const {onLayout, ...onTouchableRippleEvent} = onEvent;
-        const {trailingOpacity, width, height, containerHeight} = renderStyle;
+        const {containerHeight, height, trailingOpacity, width} = renderStyle;
 
         return (
             <AnimatedContainer
@@ -72,9 +72,9 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
                     {...onTouchableRippleEvent}
                     active={active}
                     activeLocation={activeLocation}
+                    centered={rippleCentered}
                     defaultActive={defaultActive}
-                    underlayColor={activeColor}
-                    centered={rippleCentered}>
+                    underlayColor={activeColor}>
                     <AnimatedInner onLayout={onLayout}>
                         {leading && (
                             <Leading testID={`listItem__leading--${id}`}>
