@@ -3,7 +3,7 @@ import {useTheme} from 'styled-components/native';
 import {RenderProps} from './FABBase';
 
 export interface UseIconOptions
-    extends Required<Pick<RenderProps, 'disabled' | 'type' | 'eventName'>> {
+    extends Pick<RenderProps, 'disabled' | 'type' | 'eventName'> {
     icon?: React.JSX.Element;
 }
 

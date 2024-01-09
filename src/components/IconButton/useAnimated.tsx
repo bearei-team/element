@@ -1,4 +1,4 @@
-import {useCallback, useEffect} from 'react';
+import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
@@ -60,29 +60,20 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         outputRange: [disabledBackgroundColor, theme.palette.outline.outline],
     });
 
-    const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, toValue: number) => {
-            requestAnimationFrame(() =>
-                animatedTiming(animation, {
-                    duration: 'short3',
-                    easing: 'standard',
-                    toValue,
-                    useNativeDriver: true,
-                }).start(),
-            );
-        },
-        [animatedTiming],
-    );
-
     useEffect(() => {
-        if (type === 'outlined') {
-            const value = disabled ? 0 : 1;
+        const toValue = disabled ? 0 : 1;
 
-            processAnimatedTiming(borderAnimated, value);
-        }
+        requestAnimationFrame(() => {
+            if (type === 'outlined') {
+                return Animated.parallel([
+                    animatedTiming(borderAnimated, {toValue}),
+                    animatedTiming(colorAnimated, {toValue}),
+                ]).start();
+            }
 
-        processAnimatedTiming(colorAnimated, disabled ? 0 : 1);
-    }, [borderAnimated, colorAnimated, disabled, processAnimatedTiming, type]);
+            animatedTiming(colorAnimated, {toValue}).start();
+        });
+    }, [animatedTiming, borderAnimated, colorAnimated, disabled, type]);
 
     return [
         {

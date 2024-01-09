@@ -12,11 +12,6 @@ export interface ContentProps {
 
 export const Container = styled(View)<ContainerProps>`
     overflow: hidden;
-    ${({visible}) =>
-        !visible &&
-        css`
-            height: ${0}px;
-        `};
 `;
 
 export const Inner = styled.View`
@@ -65,5 +60,6 @@ export const Headline = styled(Typography)`
 export const SupportingText = styled(Typography)`
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurfaceVariant};
+        height: auto;
     `}
 `;

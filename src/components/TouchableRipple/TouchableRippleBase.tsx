@@ -123,6 +123,11 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         });
     }, [onRippleAnimatedEnd, setState]);
 
+    /**
+     * Handle the event after the ripple entry animation is finished, if it is an active ripple,
+     * then the ripple exit animation should be added to the ripple sequence to be used.
+     * Otherwise, execute the ripple exit animation directly.
+     */
     const processRippleEntryAnimatedEnd = useCallback(
         (sequence: string, exitAnimated: (finished?: () => void) => void) => {
             if (activeRipple) {
@@ -136,9 +141,11 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
                 setState(draft => {
                     delete draft.rippleSequence[sequence];
                 });
+
+                onRippleAnimatedEnd?.();
             });
         },
-        [activeRipple, setState],
+        [activeRipple, onRippleAnimatedEnd, setState],
     );
 
     const ripples = useMemo(() => {

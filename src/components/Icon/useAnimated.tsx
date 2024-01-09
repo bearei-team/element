@@ -1,5 +1,4 @@
-import {useCallback, useEffect} from 'react';
-import {Animated} from 'react-native';
+import {useEffect} from 'react';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
@@ -17,28 +16,15 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         outputRange: [0.97, 1, 1.03],
     });
 
-    const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, toValue: number) => {
-            requestAnimationFrame(() =>
-                animatedTiming(animation, {
-                    duration: 'short3',
-                    easing: 'standard',
-                    toValue,
-                    useNativeDriver: true,
-                }).start(),
-            );
-        },
-        [animatedTiming],
-    );
-
     useEffect(() => {
         const toValue = ['pressIn', 'longPress'].includes(eventName) ? 0 : 1;
 
-        processAnimatedTiming(
-            scaleAnimated,
-            eventName === 'hoverIn' ? 2 : toValue,
-        );
-    }, [processAnimatedTiming, eventName, scaleAnimated]);
+        requestAnimationFrame(() => {
+            animatedTiming(scaleAnimated, {
+                toValue: eventName === 'hoverIn' ? 2 : toValue,
+            }).start();
+        });
+    }, [animatedTiming, eventName, scaleAnimated]);
 
     return [{scale}];
 };

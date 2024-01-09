@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, useCallback, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -11,12 +11,7 @@ import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../../hooks/useOnEvent';
-import {
-    AnimatedInterpolation,
-    ComponentStatus,
-    EventName,
-    State,
-} from '../../Common/interface';
+import {AnimatedInterpolation, EventName, State} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
 import {IconButton} from '../../IconButton/IconButton';
 import {ListItemProps} from './ListItem';
@@ -31,10 +26,10 @@ export interface RenderProps extends ListItemProps {
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         height: number;
         trailingOpacity: AnimatedInterpolation;
+
         width: number;
     };
     underlayColor: string;
-    visible: boolean;
 }
 
 export interface ListItemBaseProps extends ListItemProps {
@@ -43,38 +38,27 @@ export interface ListItemBaseProps extends ListItemProps {
 
 const initialState = {
     activeLocation: {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
-    defaultActive: undefined as boolean | undefined,
     eventName: 'none' as EventName,
     layout: {} as LayoutRectangle,
     state: 'enabled' as State,
-    status: 'idle' as ComponentStatus,
     trailingEventName: 'none' as EventName,
-    visible: true,
 };
 
 export const ListItemBase: FC<ListItemBaseProps> = props => {
     const {
         active,
         close = false,
+        defaultActive,
+        indexKey,
+        onClose,
         render,
         supportingText,
         trailing,
-        onClose,
-        indexKey,
         ...renderProps
     } = props;
 
     const [
-        {
-            activeLocation,
-            defaultActive,
-            eventName,
-            layout,
-            state,
-            status,
-            trailingEventName,
-            visible,
-        },
+        {activeLocation, eventName, layout, state, trailingEventName},
         setState,
     ] = useImmer(initialState);
 
@@ -116,9 +100,10 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
         onStateChange: processStateChange,
     });
 
-    const {scale, onCloseAnimated, trailingOpacity} = useAnimated({
+    const {minHeight, onCloseAnimated, trailingOpacity} = useAnimated({
         close,
         eventName,
+        layoutHeight: layout?.height,
         state,
         trailingEventName,
     });
@@ -179,36 +164,19 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
         ],
     );
 
-    useEffect(() => {
-        if (status === 'idle') {
-            setState(draft => {
-                if (typeof active === 'boolean') {
-                    draft.defaultActive = active;
-                }
-
-                draft.status = 'succeeded';
-            });
-        }
-    }, [active, setState, status]);
-
-    if (status === 'idle') {
-        return <></>;
-    }
-
     return render({
         ...renderProps,
         active,
-        visible,
-        defaultActive,
         activeColor,
+        activeLocation,
+        defaultActive,
         eventName,
         id,
         onEvent,
-        activeLocation,
         renderStyle: {
             height: layout?.height,
+            minHeight: minHeight,
             trailingOpacity,
-            transform: [{scaleY: scale}],
             width: layout?.width,
         },
         supportingText,

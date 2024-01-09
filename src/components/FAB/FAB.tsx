@@ -1,7 +1,7 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Size} from '../Common/interface';
-import {Elevation} from '../Elevation/Elevation';
+import {Elevation, ElevationLevel} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
 import {
     TouchableRipple,
@@ -13,7 +13,9 @@ import {FABBase, RenderProps} from './FABBase';
 export type FABType = 'surface' | 'primary' | 'secondary' | 'tertiary';
 
 export interface FABProps extends TouchableRippleProps {
-    elevation?: boolean;
+    defaultElevation?: ElevationLevel;
+    disabled?: boolean;
+    disabledElevation?: boolean;
     icon?: React.JSX.Element;
     labelText?: string;
     size?: Size;
@@ -25,7 +27,7 @@ const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
-            elevationLevel,
+            elevation,
             eventName,
             icon,
             id,
@@ -34,7 +36,7 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
             renderStyle,
             type,
             underlayColor,
-            defaultElevationLevel,
+            defaultElevation,
             ...containerProps
         } = renderProps;
 
@@ -49,9 +51,9 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
                 accessibilityRole="button"
                 testID={`fab--${id}`}>
                 <Elevation
-                    level={elevationLevel}
+                    level={elevation}
                     shape={shape}
-                    defaultLevel={defaultElevationLevel}>
+                    defaultLevel={defaultElevation}>
                     <TouchableRipple
                         {...onTouchableRippleEvent}
                         shape={shape}

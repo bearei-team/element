@@ -9,7 +9,7 @@ import {
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
-import {ComponentStatus, EventName, State} from '../Common/interface';
+import {EventName, State} from '../Common/interface';
 import {ElevationLevel} from '../Elevation/Elevation';
 import {FABProps} from './FAB';
 import {useAnimated} from './useAnimated';
@@ -22,8 +22,8 @@ export interface RenderProps extends FABProps {
         height: number;
         width: number;
     };
-    defaultElevationLevel: ElevationLevel;
-    elevationLevel: ElevationLevel;
+    defaultElevation?: ElevationLevel;
+    elevation?: ElevationLevel;
     eventName: EventName;
 }
 
@@ -32,27 +32,23 @@ export interface FABBaseProps extends FABProps {
 }
 
 const initialState = {
-    defaultElevationLevel: 0 as ElevationLevel,
-    elevationLevel: undefined as ElevationLevel,
+    elevation: undefined as ElevationLevel,
     eventName: 'none' as EventName,
     layout: {} as LayoutRectangle,
-    status: 'idle' as ComponentStatus,
 };
 
 export const FABBase: FC<FABBaseProps> = props => {
     const {
-        disabled = false,
+        defaultElevation = 3,
+        disabled,
+        disabledElevation = false,
         icon,
         render,
         type = 'primary',
         ...renderProps
     } = props;
 
-    const [
-        {elevationLevel, defaultElevationLevel, status, layout, eventName},
-        setState,
-    ] = useImmer(initialState);
-
+    const [{elevation, layout, eventName}, setState] = useImmer(initialState);
     const [underlayColor] = useUnderlayColor({type});
     const id = useId();
 
@@ -69,7 +65,7 @@ export const FABBase: FC<FABBaseProps> = props => {
             };
 
             setState(draft => {
-                draft.elevationLevel = (level[nextState] + 3) as ElevationLevel;
+                draft.elevation = (level[nextState] + 3) as ElevationLevel;
             });
         },
         [setState],
@@ -89,14 +85,14 @@ export const FABBase: FC<FABBaseProps> = props => {
             }
 
             if (nextEventName !== 'layout') {
-                processElevation(nextState);
+                !disabledElevation && processElevation(nextState);
             }
 
             setState(draft => {
                 draft.eventName = nextEventName;
             });
         },
-        [processElevation, setState],
+        [disabledElevation, processElevation, setState],
     );
 
     const [onEvent] = HOOK.useOnEvent({
@@ -113,33 +109,17 @@ export const FABBase: FC<FABBaseProps> = props => {
     const [iconElement] = useIcon({eventName, type, icon, disabled});
 
     useEffect(() => {
-        if (status === 'idle') {
+        if (typeof disabled === 'boolean' && !disabledElevation) {
             setState(draft => {
-                draft.defaultElevationLevel = 3;
-                draft.status = 'succeeded';
+                draft.elevation = disabled ? 0 : 3;
             });
         }
-    }, [setState, status]);
-
-    useEffect(() => {
-        const setElevationLevel =
-            typeof disabled === 'boolean' && status === 'succeeded';
-
-        if (setElevationLevel) {
-            setState(draft => {
-                draft.elevationLevel = disabled ? 0 : 3;
-            });
-        }
-    }, [disabled, setState, status]);
-
-    if (status === 'idle') {
-        return <></>;
-    }
+    }, [disabled, disabledElevation, setState]);
 
     return render({
         ...renderProps,
-        defaultElevationLevel,
-        elevationLevel,
+        elevation,
+        defaultElevation,
         eventName,
         icon: iconElement,
         id,

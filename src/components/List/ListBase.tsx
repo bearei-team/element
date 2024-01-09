@@ -19,7 +19,8 @@ export interface RenderItemOptions extends ListRenderItemInfo<ListDataSource> {
 }
 
 export interface Data extends ListDataSource {
-    active: boolean;
+    active?: boolean;
+    defaultActive?: boolean;
 }
 
 const renderItem = (options: RenderItemOptions) => {
@@ -48,7 +49,6 @@ const initialState = {
 
 export const ListBase: FC<ListBaseProps> = props => {
     const {
-        activeKey,
         close,
         data: dataSources = [],
         defaultActiveKey,
@@ -99,7 +99,7 @@ export const ListBase: FC<ListBaseProps> = props => {
             setState(draft => {
                 draft.data = dataSources.map((datum, index) => ({
                     ...datum,
-                    active: defaultActiveKey
+                    defaultActive: defaultActiveKey
                         ? datum.key === defaultActiveKey
                         : false,
                     key: `${datum.key ?? index}`,
@@ -109,26 +109,6 @@ export const ListBase: FC<ListBaseProps> = props => {
             });
         }
     }, [dataSources, defaultActiveKey, setState, status]);
-
-    useEffect(() => {
-        if (status === 'succeeded' && activeKey) {
-            setState(draft => {
-                if (draft.data.length === 0) {
-                    draft.data = dataSources.map((datum, index) => ({
-                        ...datum,
-                        active: datum.key === activeKey,
-                        key: `${datum.key ?? index}`,
-                    }));
-
-                    return;
-                }
-
-                draft.data.forEach(datum => {
-                    datum.active = datum.key === activeKey;
-                });
-            });
-        }
-    }, [activeKey, dataSources, setState, status]);
 
     if (status === 'idle') {
         return <></>;

@@ -1,11 +1,12 @@
-import {FC, cloneElement, useCallback, useEffect, useId} from 'react';
+import {FC, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
 import {useImmer} from 'use-immer';
+import {ComponentStatus} from '../Common/interface';
 import {ListDataSource} from '../List/List';
-import {NavigationProps} from './Navigation';
-import {NavigationItem} from './NavigationItem/NavigationItem';
+import {NavigationRailProps} from './NavigationRail';
+import {NavigationRailItem} from './NavigationRailItem/NavigationRailItem';
 
-export type RenderProps = NavigationProps;
-export interface NavigationBaseProps extends NavigationProps {
+export type RenderProps = NavigationRailProps;
+export interface NavigationBaseProps extends NavigationRailProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
@@ -13,38 +14,38 @@ export interface RenderItemOptions {
     active?: boolean;
     block: boolean;
     data: ListDataSource[];
-    onActive: (key: string) => void;
+    onActive: (key?: string) => void;
 }
 
 export interface Data extends ListDataSource {
-    active: boolean;
+    active?: boolean;
+    defaultActive?: boolean;
 }
 
 const renderItems = (options: RenderItemOptions) => {
     const {onActive, block, data} = options;
 
     return data.map(({key, ...props}) => (
-        <NavigationItem
+        <NavigationRailItem
             {...props}
             block={block}
             key={key}
-            onPress={() => onActive(key!)}
+            onPressOut={() => onActive(key)}
         />
     ));
 };
 
 const initialState = {
     data: [] as Data[],
-    status: 'idle' as 'idle' | 'loading' | 'failed' | 'succeeded',
+    status: 'idle' as ComponentStatus,
 };
 
-export const NavigationBase: FC<NavigationBaseProps> = props => {
+export const NavigationRailBase: FC<NavigationBaseProps> = props => {
     const {
-        activeKey,
         block = false,
         data: dataSources = [],
         fab,
-        onChange,
+        onActive,
         render,
         defaultActiveKey,
         ...renderProps
@@ -57,18 +58,23 @@ export const NavigationBase: FC<NavigationBaseProps> = props => {
             return fab;
         }
 
-        return cloneElement(fab, {elevation: false, size: 'medium'});
+        return cloneElement(fab, {disabledElevation: true, size: 'medium'});
     };
 
     const handleActive = useCallback(
-        (key: string) => {
+        (key?: string) => {
             setState(draft => {
                 draft.data.forEach(datum => (datum.active = datum.key === key));
             });
 
-            onChange?.(key);
+            onActive?.(key);
         },
-        [onChange, setState],
+        [onActive, setState],
+    );
+
+    const children = useMemo(
+        () => renderItems({data, block, onActive: handleActive}),
+        [block, data, handleActive],
     );
 
     useEffect(() => {
@@ -76,7 +82,7 @@ export const NavigationBase: FC<NavigationBaseProps> = props => {
             setState(draft => {
                 draft.data = dataSources.map((datum, index) => ({
                     ...datum,
-                    active: defaultActiveKey
+                    defaultActive: defaultActiveKey
                         ? datum.key === defaultActiveKey
                         : false,
                     key: `${datum.key ?? index}`,
@@ -86,29 +92,13 @@ export const NavigationBase: FC<NavigationBaseProps> = props => {
             });
     }, [dataSources, defaultActiveKey, setState]);
 
-    useEffect(() => {
-        status === 'succeeded' &&
-            activeKey &&
-            setState(draft => {
-                if (draft.data.length === 0) {
-                    draft.data = dataSources.map((datum, index) => ({
-                        ...datum,
-                        active: datum.key === activeKey,
-                        key: `${datum.key ?? index}`,
-                    }));
-
-                    return;
-                }
-
-                draft.data.forEach(datum => {
-                    datum.active = datum.key === activeKey;
-                });
-            });
-    }, [activeKey, dataSources, setState, status]);
+    if (status === 'idle') {
+        return <></>;
+    }
 
     return render({
         ...renderProps,
-        children: renderItems({data, block, onActive: handleActive}),
+        children,
         fab: processFAB(),
         id,
     });

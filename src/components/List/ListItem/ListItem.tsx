@@ -19,13 +19,14 @@ import {ListItemBase, RenderProps} from './ListItemBase';
 export interface ListItemProps extends TouchableRippleProps {
     active?: boolean;
     close?: boolean;
+    defaultActive?: boolean;
     headline?: string;
+    indexKey?: string;
     leading?: React.JSX.Element;
+    onClose?: (key?: string) => void;
     supportingText?: string;
     supportingTextNumberOfLines?: number;
     trailing?: React.JSX.Element;
-    indexKey?: string;
-    onClose?: (key?: string) => void;
 }
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
@@ -34,49 +35,44 @@ const AnimatedTrailing = Animated.createAnimatedComponent(Trailing);
 const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
+            active,
+            activeColor,
+            activeLocation,
+            defaultActive,
             eventName,
             headline,
             id,
             leading,
             onEvent,
-            ref: containerRef,
             renderStyle,
             style,
             supportingText,
             supportingTextNumberOfLines,
             trailing,
             underlayColor,
-            activeColor,
-            active,
-            activeLocation,
-            defaultActive,
-            visible,
             ...containerProps
         } = renderProps;
 
         const {onLayout, ...onTouchableRippleEvent} = onEvent;
-        const {trailingOpacity, width, height, transform} = renderStyle;
+        const {trailingOpacity, width, height, minHeight} = renderStyle;
 
         return (
             <AnimatedContainer
                 {...containerProps}
                 accessibilityLabel={headline}
                 accessibilityRole="list"
-                onLayout={onLayout}
-                ref={containerRef}
                 style={{
                     ...(typeof style === 'object' && style),
-                    ...{transform},
+                    ...{height: minHeight},
                 }}
-                testID={`listItem--${id}`}
-                visible={visible}>
+                testID={`listItem--${id}`}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
                     active={active}
                     activeLocation={activeLocation}
                     defaultActive={defaultActive}
                     underlayColor={activeColor}>
-                    <AnimatedInner>
+                    <AnimatedInner onLayout={onLayout}>
                         {leading && (
                             <Leading testID={`listItem__leading--${id}`}>
                                 {leading}

@@ -1,5 +1,4 @@
-import {useCallback, useEffect} from 'react';
-import {Animated} from 'react-native';
+import {useEffect} from 'react';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
@@ -9,11 +8,10 @@ export type UseAnimatedOptions = Pick<ElevationProps, 'level' | 'defaultLevel'>;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {level, defaultLevel = 0} = options;
-    const [shadowAnimated] = useAnimatedValue(defaultLevel);
+    const [opacityAnimated] = useAnimatedValue(defaultLevel);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
-
-    const shadow0Opacity = shadowAnimated.interpolate({
+    const shadow0Opacity = opacityAnimated.interpolate({
         inputRange: [0, 1, 2, 3, 4, 5],
         outputRange: [
             theme.elevation.level0.shadow0.opacity,
@@ -25,7 +23,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const shadow1Opacity = shadowAnimated.interpolate({
+    const shadow1Opacity = opacityAnimated.interpolate({
         inputRange: [0, 1, 2, 3, 4, 5],
         outputRange: [
             theme.elevation.level0.shadow1.opacity,
@@ -37,27 +35,13 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const processAnimatedTiming = useCallback(
-        (
-            animation: Animated.Value,
-            toValue: UseAnimatedOptions['level'] = 0,
-        ) => {
-            requestAnimationFrame(() =>
-                animatedTiming(animation, {
-                    duration: 'short3',
-                    easing: 'standard',
-                    toValue,
-                    useNativeDriver: true,
-                }).start(),
-            );
-        },
-        [animatedTiming],
-    );
-
     useEffect(() => {
-        typeof level === 'number' &&
-            processAnimatedTiming(shadowAnimated, level);
-    }, [level, processAnimatedTiming, shadowAnimated]);
+        if (typeof level === 'number') {
+            requestAnimationFrame(() => {
+                animatedTiming(opacityAnimated, {toValue: level}).start();
+            });
+        }
+    }, [level, animatedTiming, opacityAnimated]);
 
     return [{shadow0Opacity, shadow1Opacity}];
 };

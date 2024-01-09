@@ -1,18 +1,16 @@
-import {useCallback, useEffect} from 'react';
-import {Animated} from 'react-native';
+import {useEffect} from 'react';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {UTIL} from '../../utils/util';
 import {RenderProps} from './FABBase';
 
-export type UseAnimatedOptions = Required<
-    Pick<RenderProps, 'disabled' | 'type'>
->;
+export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type'>;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {disabled, type} = options;
+    const {disabled, type = 'primary'} = options;
     const [colorAnimated] = useAnimatedValue(1);
     const theme = useTheme();
+    const animatedTiming = UTIL.animatedTiming(theme);
     const disabledBackgroundColor = theme.color.rgba(
         theme.palette.surface.onSurface,
         0.12,
@@ -88,25 +86,11 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
     const color = colorAnimated.interpolate(colorConfig[type]);
 
-    const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, toValue: number) => {
-            const animatedTiming = UTIL.animatedTiming(theme);
-
-            requestAnimationFrame(() =>
-                animatedTiming(animation, {
-                    duration: 'short3',
-                    easing: 'standard',
-                    toValue,
-                    useNativeDriver: true,
-                }).start(),
-            );
-        },
-        [theme],
-    );
-
     useEffect(() => {
-        processAnimatedTiming(colorAnimated, disabled ? 0 : 1);
-    }, [colorAnimated, disabled, processAnimatedTiming]);
+        requestAnimationFrame(() => {
+            animatedTiming(colorAnimated, {toValue: disabled ? 0 : 1}).start();
+        });
+    }, [animatedTiming, colorAnimated, disabled]);
 
     return [
         {

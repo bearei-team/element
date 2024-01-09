@@ -13,10 +13,10 @@ export const animatedTiming =
     (theme: Theme) =>
     (animation: Animated.Value, options: AnimatedTimingOptions) => {
         const {
-            duration,
-            easing,
+            duration = 'short3',
+            easing = 'standard',
             toValue,
-            useNativeDriver = false,
+            useNativeDriver = true,
             ...animatedConfig
         } = options;
 

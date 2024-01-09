@@ -19,7 +19,6 @@ export type ButtonType =
 
 export interface ButtonProps extends TouchableRippleProps {
     block?: boolean;
-    elevation?: boolean;
     icon?: React.JSX.Element;
     labelText?: string;
     type?: ButtonType;
@@ -31,7 +30,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
             block,
-            elevationLevel,
+            elevation,
             eventName,
             icon,
             id,
@@ -40,7 +39,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             renderStyle,
             type,
             underlayColor,
-            defaultElevationLevel,
+            defaultElevation,
             ...containerProps
         } = renderProps;
 
@@ -58,8 +57,8 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                 testID={`button--${id}`}
                 onLayout={onLayout}>
                 <Elevation
-                    defaultLevel={defaultElevationLevel}
-                    level={elevationLevel}
+                    defaultLevel={defaultElevation}
+                    level={elevation}
                     shape={shape}>
                     <TouchableRipple
                         {...onTouchableRippleEvent}

@@ -15,6 +15,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const [colorAnimated] = useAnimatedValue(1);
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
+    const animatedTiming = UTIL.animatedTiming(theme);
     const disabledBackgroundColor = theme.color.rgba(
         theme.palette.surface.onSurface,
         0.12,
@@ -116,53 +117,53 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, toValue: number) => {
-            const animatedTiming = UTIL.animatedTiming(theme);
+    const processOutlinedAndLinkAnimatedTiming = useCallback(() => {
+        const value = disabled
+            ? 0
+            : borderInputRange[borderInputRange.length - 2];
 
-            requestAnimationFrame(() =>
-                animatedTiming(animation, {
-                    duration: 'short3',
-                    easing: 'standard',
-                    toValue,
-                    useNativeDriver: true,
-                }).start(),
-            );
-        },
-        [theme],
-    );
+        const responseEvent =
+            type === 'link'
+                ? [
+                      'focus',
+                      'hoverIn',
+                      'longPress',
+                      'press',
+                      'pressIn',
+                      'pressOut',
+                  ].includes(eventName)
+                : eventName === 'focus';
 
-    useEffect(() => {
-        if (['outlined', 'link'].includes(type)) {
-            const value = disabled
-                ? 0
-                : borderInputRange[borderInputRange.length - 2];
+        const toValue = responseEvent ? borderInputRange[2] : value;
 
-            const responseEvent =
-                type === 'link'
-                    ? [
-                          'focus',
-                          'hoverIn',
-                          'longPress',
-                          'press',
-                          'pressIn',
-                          'pressOut',
-                      ].includes(eventName)
-                    : eventName === 'focus';
-
-            const toValue = responseEvent ? borderInputRange[2] : value;
-
-            processAnimatedTiming(borderAnimated, toValue);
-        }
-
-        processAnimatedTiming(colorAnimated, disabled ? 0 : 1);
+        return animatedTiming(borderAnimated, {toValue});
     }, [
+        animatedTiming,
         borderAnimated,
         borderInputRange,
-        colorAnimated,
         disabled,
         eventName,
-        processAnimatedTiming,
+        type,
+    ]);
+
+    useEffect(() => {
+        const toValue = disabled ? 0 : 1;
+
+        requestAnimationFrame(() => {
+            if (['link', 'outlined'].includes(type)) {
+                return Animated.parallel([
+                    processOutlinedAndLinkAnimatedTiming(),
+                    animatedTiming(colorAnimated, {toValue}),
+                ]).start();
+            }
+
+            animatedTiming(colorAnimated, {toValue}).start();
+        });
+    }, [
+        animatedTiming,
+        colorAnimated,
+        disabled,
+        processOutlinedAndLinkAnimatedTiming,
         type,
     ]);
 
