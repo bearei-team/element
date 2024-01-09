@@ -12,46 +12,47 @@ export interface NavigationBaseProps extends NavigationRailProps {
 
 export interface RenderItemOptions {
     active?: boolean;
+    activeKey?: string;
     block: boolean;
     data: ListDataSource[];
+    defaultActiveKey?: string;
     onActive: (key?: string) => void;
 }
 
-export interface Data extends ListDataSource {
-    active?: boolean;
-    defaultActive?: boolean;
-}
-
 const renderItems = (options: RenderItemOptions) => {
-    const {onActive, block, data} = options;
+    const {onActive, block, data, activeKey, defaultActiveKey} = options;
 
     return data.map(({key, ...props}) => (
         <NavigationRailItem
             {...props}
+            defaultActiveKey={defaultActiveKey}
+            activeKey={activeKey}
             block={block}
+            indexKey={key}
             key={key}
-            onPressOut={() => onActive(key)}
+            onActive={onActive}
         />
     ));
 };
 
 const initialState = {
-    data: [] as Data[],
+    data: [] as ListDataSource[],
     status: 'idle' as ComponentStatus,
+    activeKey: undefined as string | undefined,
 };
 
 export const NavigationRailBase: FC<NavigationBaseProps> = props => {
     const {
         block = false,
-        data: dataSources = [],
+        data: dataSources,
+        defaultActiveKey,
         fab,
         onActive,
         render,
-        defaultActiveKey,
         ...renderProps
     } = props;
 
-    const [{data, status}, setState] = useImmer(initialState);
+    const [{data, status, activeKey}, setState] = useImmer(initialState);
     const id = useId();
     const processFAB = () => {
         if (!fab) {
@@ -64,7 +65,9 @@ export const NavigationRailBase: FC<NavigationBaseProps> = props => {
     const handleActive = useCallback(
         (key?: string) => {
             setState(draft => {
-                draft.data.forEach(datum => (datum.active = datum.key === key));
+                if (draft.activeKey !== key) {
+                    draft.activeKey = key;
+                }
             });
 
             onActive?.(key);
@@ -73,24 +76,25 @@ export const NavigationRailBase: FC<NavigationBaseProps> = props => {
     );
 
     const children = useMemo(
-        () => renderItems({data, block, onActive: handleActive}),
-        [block, data, handleActive],
+        () =>
+            renderItems({
+                activeKey,
+                block,
+                data,
+                defaultActiveKey,
+                onActive: handleActive,
+            }),
+        [activeKey, block, data, defaultActiveKey, handleActive],
     );
 
     useEffect(() => {
-        dataSources &&
+        if (dataSources && status === 'idle') {
             setState(draft => {
-                draft.data = dataSources.map((datum, index) => ({
-                    ...datum,
-                    defaultActive: defaultActiveKey
-                        ? datum.key === defaultActiveKey
-                        : false,
-                    key: `${datum.key ?? index}`,
-                }));
-
+                draft.data = dataSources;
                 draft.status = 'succeeded';
             });
-    }, [dataSources, defaultActiveKey, setState]);
+        }
+    }, [dataSources, setState, status]);
 
     if (status === 'idle') {
         return <></>;

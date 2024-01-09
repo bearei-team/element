@@ -20,7 +20,7 @@ export interface RippleProps
         exitAnimated: (finished?: () => void) => void,
     ) => void;
 
-    sequence?: string;
+    sequence: string;
     touchableLayout?: LayoutRectangle;
     underlayColor?: string;
 }

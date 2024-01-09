@@ -21,9 +21,9 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const {
         close,
         eventName,
-        trailingEventName,
-        state,
         layoutHeight = 0,
+        state,
+        trailingEventName,
     } = options;
     const [heightAnimated] = useAnimatedValue(1);
     const [trailingOpacityAnimated] = useAnimatedValue(close ? 0 : 1);
@@ -34,7 +34,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         outputRange: [0, 1],
     });
 
-    const minHeight = heightAnimated.interpolate({
+    const height = heightAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [0, layoutHeight],
     });
@@ -42,7 +42,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const processCloseAnimated = useCallback(
         (finished?: () => void) => {
             requestAnimationFrame(() =>
-                animatedTiming(heightAnimated, {toValue: 0}).start(finished),
+                animatedTiming(heightAnimated, {
+                    toValue: 0,
+                    useNativeDriver: false,
+                }).start(finished),
             );
         },
         [heightAnimated, animatedTiming],
@@ -59,7 +62,6 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         requestAnimationFrame(() => {
             animatedTiming(trailingOpacityAnimated, {
                 toValue: close ? closeIconToValue : 1,
-                useNativeDriver: false,
             }).start();
         });
     }, [
@@ -72,7 +74,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     ]);
 
     return {
-        minHeight,
+        height,
         onCloseAnimated: processCloseAnimated,
         trailingOpacity,
     };

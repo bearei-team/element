@@ -1,8 +1,7 @@
-import {FC, cloneElement, useCallback, useId, useMemo, useState} from 'react';
+import {FC, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
-    LayoutAnimation,
     LayoutChangeEvent,
     LayoutRectangle,
     NativeTouchEvent,
@@ -13,7 +12,12 @@ import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../../hooks/useOnEvent';
-import {EventName, State} from '../../Common/interface';
+import {
+    AnimatedInterpolation,
+    ComponentStatus,
+    EventName,
+    State,
+} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
 import {NavigationRailItemProps} from './NavigationRailItem';
 import {useAnimated} from './useAnimated';
@@ -23,12 +27,15 @@ export interface RenderProps extends NavigationRailItemProps {
     defaultActive?: boolean;
     activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     onEvent: OnEvent;
+    rippleCentered?: boolean;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
         width: number;
+        labelHeight: AnimatedInterpolation;
     };
     underlayColor: string;
     eventName: EventName;
+    active?: boolean;
 }
 
 export interface NavigationRailItemBaseProps extends NavigationRailItemProps {
@@ -39,74 +46,98 @@ const initialState = {
     activeLocation: {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
     eventName: 'none' as EventName,
     layout: {} as LayoutRectangle,
+    rippleCentered: false,
+    status: 'idle' as ComponentStatus,
 };
 
 export const NavigationRailItemBase: FC<
     NavigationRailItemBaseProps
 > = props => {
     const {
-        active,
-        defaultActive,
         activeIcon = <Icon type="filled" name="circle" />,
+        activeKey,
         block = false,
+        defaultActiveKey,
         icon = <Icon type="outlined" name="circle" />,
+        indexKey,
+        onActive,
         render,
         ...renderProps
     } = props;
 
-    const [{layout, eventName, activeLocation}, setState] =
-        useImmer(initialState);
+    const [
+        {layout, eventName, activeLocation, rippleCentered, status},
+        setState,
+    ] = useImmer(initialState);
 
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
     const id = useId();
     const underlayColor = theme.palette.surface.onSurface;
-    const {scale, color} = useAnimated({active, block, defaultActive});
+    const active =
+        typeof activeKey === 'string' ? activeKey === indexKey : undefined;
 
-    /**
-     * TODO: 使用高度非原生动画处理.
-     */
-    const [labheight, setHeight] = useState(24);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const toggleHeight = () => {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-        console.info(7777);
+    const defaultActive = defaultActiveKey === indexKey;
+    const {height, color} = useAnimated({
+        active,
+        block,
+        defaultActive,
+    });
 
-        setHeight(labheight === 24 ? 0 : 24);
-    };
+    const processLayout = useCallback(
+        (event: LayoutChangeEvent) => {
+            const nativeEventLayout = (event as LayoutChangeEvent).nativeEvent
+                .layout;
 
-    const processStateChange = useCallback(
-        (_nextState: State, options = {} as OnStateChangeOptions) => {
-            const {event, eventName: nextEventName} = options;
-            const {locationX = 0, locationY = 0} =
-                nextEventName === 'pressOut'
-                    ? (event as GestureResponderEvent).nativeEvent
-                    : {};
+            setState(draft => {
+                draft.layout = nativeEventLayout;
+            });
+        },
+        [setState],
+    );
 
-            if (nextEventName === 'layout') {
-                const nativeEventLayout = (event as LayoutChangeEvent)
-                    .nativeEvent.layout;
-
-                setState(draft => {
-                    draft.layout = nativeEventLayout;
-                });
-            }
-
-            if (nextEventName === 'pressOut') {
-                toggleHeight();
-            }
+    const processPressOut = useCallback(
+        (
+            event: GestureResponderEvent,
+            processPressOutOptions: Pick<OnStateChangeOptions, 'eventName'>,
+        ) => {
+            const {eventName: nextEventName} = processPressOutOptions;
+            const responseActive = activeKey !== indexKey;
+            const {locationX = 0, locationY = 0} = event.nativeEvent;
 
             setState(draft => {
                 draft.eventName = nextEventName;
 
-                if (nextEventName === 'pressOut') {
+                if (responseActive) {
                     draft.activeLocation = {locationX, locationY};
                 }
             });
+
+            if (responseActive) {
+                onActive?.(indexKey);
+            }
         },
-        [setState, toggleHeight],
+        [activeKey, indexKey, onActive, setState],
     );
 
+    const processStateChange = useCallback(
+        (_nextState: State, options = {} as OnStateChangeOptions) => {
+            const {event, eventName: nextEventName} = options;
+            const nextEvent = {
+                layout: () => {
+                    processLayout(event as LayoutChangeEvent);
+                },
+                pressOut: () => {
+                    processPressOut(event as GestureResponderEvent, {
+                        eventName: nextEventName,
+                    });
+                },
+            };
+
+            nextEvent[nextEventName as keyof typeof nextEvent]?.();
+        },
+        [processLayout, processPressOut],
+    );
     const [onEvent] = HOOK.useOnEvent({
         ...props,
         disabled: false,
@@ -123,8 +154,32 @@ export const NavigationRailItemBase: FC<
         [eventName, icon],
     );
 
+    useEffect(() => {
+        if (status === 'idle') {
+            setState(draft => {
+                draft.rippleCentered = !!defaultActive;
+                draft.status = 'succeeded';
+            });
+        }
+    }, [defaultActive, setState, status]);
+
+    useEffect(() => {
+        setState(draft => {
+            const uncenter =
+                draft.status === 'succeeded' &&
+                typeof active === 'boolean' &&
+                active &&
+                defaultActive;
+
+            if (uncenter) {
+                draft.rippleCentered = false;
+            }
+        });
+    }, [active, defaultActive, setState]);
+
     return render({
         ...renderProps,
+        rippleCentered,
         active,
         activeColor,
         activeIcon: activeIconElement,
@@ -135,11 +190,10 @@ export const NavigationRailItemBase: FC<
         id,
         onEvent,
         renderStyle: {
-            height: layout?.height,
-            transform: [{scaleY: scale}],
-            width: layout?.width,
             color,
-            labheight,
+            height: layout?.height,
+            labelHeight: height,
+            width: layout?.width,
         },
         underlayColor,
     });

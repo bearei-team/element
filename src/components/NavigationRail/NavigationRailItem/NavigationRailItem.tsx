@@ -13,12 +13,14 @@ export interface NavigationRailItemProps
             Pick<ShapeProps, 'shape'> &
             PressableProps
     > {
-    active?: boolean;
     activeIcon?: React.JSX.Element;
+    activeKey?: string;
+    defaultActiveKey?: string;
     block?: boolean;
-    defaultActive?: boolean;
     icon?: React.JSX.Element;
+    indexKey?: string;
     labelText?: string;
+    onActive?: (key?: string) => void;
 }
 
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
@@ -39,11 +41,12 @@ const ForwardRefNavigationRailItem = forwardRef<View, NavigationRailItemProps>(
                 style,
                 underlayColor,
                 eventName,
+                rippleCentered,
                 ...containerProps
             } = renderProps;
 
             const {onLayout, ...onTouchableRippleEvent} = onEvent;
-            const {transform, width, height, color, labheight} = renderStyle;
+            const {width, height, color, labelHeight} = renderStyle;
             const shape = 'large';
 
             return (
@@ -52,11 +55,13 @@ const ForwardRefNavigationRailItem = forwardRef<View, NavigationRailItemProps>(
                     accessibilityLabel={labelText}
                     accessibilityRole="tab"
                     style={style}
+                    active={active ?? defaultActive}
                     testID={`navigationRailItem--${id}`}>
                     <TouchableRipple
                         {...onTouchableRippleEvent}
                         active={active}
                         activeLocation={activeLocation}
+                        centered={rippleCentered}
                         defaultActive={defaultActive}
                         onLayout={onLayout}
                         shape={shape}
@@ -79,7 +84,7 @@ const ForwardRefNavigationRailItem = forwardRef<View, NavigationRailItemProps>(
                     <AnimatedLabelText
                         active={active || defaultActive}
                         size="medium"
-                        style={{color, height: labheight}}
+                        style={{color, height: labelHeight}}
                         testID={`navigationRailItem__labelText--${id}`}
                         type="label">
                         {labelText}

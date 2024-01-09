@@ -2,11 +2,10 @@ import {FC, useId} from 'react';
 import {Animated, NativeTouchEvent, ViewStyle} from 'react-native';
 import {RippleProps} from './Ripple';
 import {useAnimated} from './useAnimated';
-export interface RenderProps extends RippleProps {
+export interface RenderProps extends Omit<RippleProps, 'sequence'> {
     renderStyle: Animated.WithAnimatedObject<
         ViewStyle & {height: number; width: number}
     >;
-
     x: number;
     y: number;
 }
@@ -33,10 +32,9 @@ export const RippleBase: FC<RippleBaseProps> = props => {
     const centerX = width / 2;
     const centerY = height / 2;
     const id = useId();
-    const {locationX = 0, locationY = 0} =
-        centered || defaultActive
-            ? {locationX: centerX, locationY: centerY}
-            : location;
+    const {locationX = 0, locationY = 0} = centered
+        ? {locationX: centerX, locationY: centerY}
+        : location;
 
     const offsetX = Math.abs(centerX - locationX);
     const offsetY = Math.abs(centerY - locationY);

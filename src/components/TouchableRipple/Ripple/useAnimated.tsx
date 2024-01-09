@@ -1,31 +1,28 @@
 import {useCallback, useEffect} from 'react';
+import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
+import {AnimatedTimingOptions} from '../../../utils/animatedTiming.utils';
 import {UTIL} from '../../../utils/util';
 import {RenderProps} from './RippleBase';
 
 export interface UseAnimatedOptions
     extends Pick<
         RenderProps,
-        'onEntryAnimatedEnd' | 'sequence' | 'active' | 'defaultActive'
+        'onEntryAnimatedEnd' | 'active' | 'defaultActive'
     > {
     minDuration: number;
+    sequence: string;
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {
-        active,
-        defaultActive,
-        minDuration,
-        onEntryAnimatedEnd,
-        sequence = 'undefined',
-    } = options;
+    const {active, defaultActive, minDuration, onEntryAnimatedEnd, sequence} =
+        options;
 
     const [opacityAnimated] = useAnimatedValue(1);
     const [scaleAnimated] = useAnimatedValue(defaultActive ? 1 : 0);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
-    const useNativeDriver = true;
     const activeRipple = [typeof defaultActive, typeof active].includes(
         'boolean',
     );
@@ -47,39 +44,34 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     duration: Math.min(minDuration, 400),
                     easing: 'emphasizedDecelerate',
                     toValue: 1,
-                    useNativeDriver,
                 }).start(finished),
             );
         },
-        [animatedTiming, minDuration, scaleAnimated, useNativeDriver],
+        [animatedTiming, minDuration, scaleAnimated],
     );
 
     const exitAnimated = useCallback(
         (finished?: () => void) => {
-            requestAnimationFrame(() => {
-                activeRipple &&
-                    animatedTiming(scaleAnimated, {
-                        duration: 'short3',
-                        easing: 'emphasizedAccelerate',
-                        toValue: 0,
-                        useNativeDriver,
-                    }).start();
+            const animatedTimingOptions = {
+                duration: 'short3',
+                easing: 'emphasizedAccelerate',
+                toValue: 0,
+            } as AnimatedTimingOptions;
 
-                animatedTiming(opacityAnimated, {
-                    duration: 'short3',
-                    easing: 'emphasizedAccelerate',
-                    toValue: 0,
-                    useNativeDriver,
-                }).start(finished);
+            requestAnimationFrame(() => {
+                if (activeRipple) {
+                    return Animated.parallel([
+                        animatedTiming(scaleAnimated, animatedTimingOptions),
+                        animatedTiming(opacityAnimated, animatedTimingOptions),
+                    ]).start(finished);
+                }
+
+                animatedTiming(opacityAnimated, animatedTimingOptions).start(
+                    finished,
+                );
             });
         },
-        [
-            activeRipple,
-            animatedTiming,
-            opacityAnimated,
-            scaleAnimated,
-            useNativeDriver,
-        ],
+        [activeRipple, animatedTiming, opacityAnimated, scaleAnimated],
     );
 
     const processAnimatedTiming = useCallback(() => {

@@ -1,5 +1,4 @@
-import {useCallback, useEffect} from 'react';
-import {Animated} from 'react-native';
+import {useEffect} from 'react';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {UTIL} from '../../../utils/util';
@@ -15,9 +14,9 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const [labelAnimated] = useAnimatedValue(block || defaultActive ? 1 : 0);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
-    const scale = labelAnimated.interpolate({
+    const height = labelAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, 1],
+        outputRange: [0, theme.typography.label.medium.lineHeight],
     });
 
     const color = labelAnimated.interpolate({
@@ -28,25 +27,15 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, toValue: number) => {
-            requestAnimationFrame(() =>
-                animatedTiming(animation, {
-                    duration: 'short3',
-                    easing: 'standard',
-                    toValue,
-                }).start(),
-            );
-        },
-        [animatedTiming],
-    );
-
     useEffect(() => {
         if (!block && typeof active === 'boolean') {
-            const toValue = active ? 1 : 0;
-            processAnimatedTiming(labelAnimated, toValue);
+            requestAnimationFrame(() => {
+                animatedTiming(labelAnimated, {
+                    toValue: active ? 1 : 0,
+                }).start();
+            });
         }
-    }, [active, block, labelAnimated, processAnimatedTiming]);
+    }, [active, animatedTiming, block, labelAnimated]);
 
-    return {scale, color};
+    return {height, color};
 };

@@ -17,16 +17,17 @@ import {
 import {ListItemBase, RenderProps} from './ListItemBase';
 
 export interface ListItemProps extends TouchableRippleProps {
-    active?: boolean;
+    activeKey?: string;
     close?: boolean;
-    defaultActive?: boolean;
     headline?: string;
     indexKey?: string;
     leading?: React.JSX.Element;
+    onActive?: (key?: string) => void;
     onClose?: (key?: string) => void;
     supportingText?: string;
     supportingTextNumberOfLines?: number;
     trailing?: React.JSX.Element;
+    defaultActiveKey?: string;
 }
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
@@ -45,6 +46,7 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
             leading,
             onEvent,
             renderStyle,
+            rippleCentered,
             style,
             supportingText,
             supportingTextNumberOfLines,
@@ -54,7 +56,7 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
         } = renderProps;
 
         const {onLayout, ...onTouchableRippleEvent} = onEvent;
-        const {trailingOpacity, width, height, minHeight} = renderStyle;
+        const {trailingOpacity, width, height, containerHeight} = renderStyle;
 
         return (
             <AnimatedContainer
@@ -63,7 +65,7 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
                 accessibilityRole="list"
                 style={{
                     ...(typeof style === 'object' && style),
-                    ...{height: minHeight},
+                    ...{height: containerHeight},
                 }}
                 testID={`listItem--${id}`}>
                 <TouchableRipple
@@ -71,7 +73,8 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
                     active={active}
                     activeLocation={activeLocation}
                     defaultActive={defaultActive}
-                    underlayColor={activeColor}>
+                    underlayColor={activeColor}
+                    centered={rippleCentered}>
                     <AnimatedInner onLayout={onLayout}>
                         {leading && (
                             <Leading testID={`listItem__leading--${id}`}>
