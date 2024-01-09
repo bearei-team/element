@@ -47,24 +47,30 @@ export const IconButtonBase: FC<IconButtonBaseProps> = props => {
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
 
+    const processLayout = useCallback(
+        (event: LayoutChangeEvent) => {
+            const nativeEventLayout = event.nativeEvent.layout;
+
+            setState(draft => {
+                draft.layout = nativeEventLayout;
+            });
+        },
+        [setState],
+    );
+
     const processStateChange = useCallback(
         (_nextState: State, options = {} as OnStateChangeOptions) => {
             const {event, eventName: nextEventName} = options;
 
             if (nextEventName === 'layout') {
-                const nativeEventLayout = (event as LayoutChangeEvent)
-                    .nativeEvent.layout;
-
-                setState(draft => {
-                    draft.layout = nativeEventLayout;
-                });
+                processLayout(event as LayoutChangeEvent);
             }
 
             setState(draft => {
                 draft.eventName = nextEventName;
             });
         },
-        [setState],
+        [processLayout, setState],
     );
     const [onEvent] = HOOK.useOnEvent({
         ...props,

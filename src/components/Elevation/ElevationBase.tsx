@@ -43,20 +43,27 @@ export const ElevationBase: FC<ElevationBaseProps> = props => {
     });
 
     const id = useId();
+
+    const processLayout = useCallback(
+        (event: LayoutChangeEvent) => {
+            const nativeEventLayout = event.nativeEvent.layout;
+
+            setState(draft => {
+                draft.layout = nativeEventLayout;
+            });
+        },
+        [setState],
+    );
+
     const processStateChange = useCallback(
         (_nextState: State, options = {} as OnStateChangeOptions) => {
             const {event, eventName} = options;
 
             if (eventName === 'layout') {
-                const nativeEventLayout = (event as LayoutChangeEvent)
-                    .nativeEvent.layout;
-
-                setState(draft => {
-                    draft.layout = nativeEventLayout;
-                });
+                processLayout(event as LayoutChangeEvent);
             }
         },
-        [setState],
+        [processLayout],
     );
 
     const [onEvent] = HOOK.useOnEvent({

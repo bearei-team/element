@@ -97,21 +97,21 @@ export const NavigationRailItemBase: FC<
     );
 
     const processPressOut = useCallback(
-        (
-            event: GestureResponderEvent,
-            processPressOutOptions: Pick<OnStateChangeOptions, 'eventName'>,
-        ) => {
-            const {eventName: nextEventName} = processPressOutOptions;
+        (event: GestureResponderEvent) => {
             const responseActive = activeKey !== indexKey;
             const {locationX = 0, locationY = 0} = event.nativeEvent;
 
             setState(draft => {
-                draft.eventName = nextEventName;
-
                 if (responseActive) {
                     draft.activeLocation = {locationX, locationY};
                 }
             });
+
+            if (responseActive) {
+                setState(draft => {
+                    draft.activeLocation = {locationX, locationY};
+                });
+            }
 
             if (responseActive) {
                 onActive?.(indexKey);
@@ -128,15 +128,17 @@ export const NavigationRailItemBase: FC<
                     processLayout(event as LayoutChangeEvent);
                 },
                 pressOut: () => {
-                    processPressOut(event as GestureResponderEvent, {
-                        eventName: nextEventName,
-                    });
+                    processPressOut(event as GestureResponderEvent);
                 },
             };
 
             nextEvent[nextEventName as keyof typeof nextEvent]?.();
+
+            setState(draft => {
+                draft.eventName = nextEventName;
+            });
         },
-        [processLayout, processPressOut],
+        [processLayout, processPressOut, setState],
     );
     const [onEvent] = HOOK.useOnEvent({
         ...props,
@@ -176,6 +178,10 @@ export const NavigationRailItemBase: FC<
             }
         });
     }, [active, defaultActive, setState]);
+
+    if (status === 'idle') {
+        return <></>;
+    }
 
     return render({
         ...renderProps,

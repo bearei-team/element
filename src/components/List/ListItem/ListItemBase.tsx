@@ -1,4 +1,4 @@
-import {FC, useCallback, useId, useMemo} from 'react';
+import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -11,7 +11,12 @@ import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../../hooks/useOnEvent';
-import {AnimatedInterpolation, EventName, State} from '../../Common/interface';
+import {
+    AnimatedInterpolation,
+    ComponentStatus,
+    EventName,
+    State,
+} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
 import {IconButton} from '../../IconButton/IconButton';
 import {ListItemProps} from './ListItem';
@@ -42,7 +47,9 @@ const initialState = {
     activeLocation: {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
     eventName: 'none' as EventName,
     layout: {} as LayoutRectangle,
+    rippleCentered: false,
     state: 'enabled' as State,
+    status: 'idle' as ComponentStatus,
     trailingEventName: 'none' as EventName,
 };
 
@@ -61,7 +68,7 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
     } = props;
 
     const [
-        {activeLocation, eventName, layout, state, trailingEventName},
+        {activeLocation, eventName, layout, state, status, trailingEventName},
         setState,
     ] = useImmer(initialState);
 
@@ -72,10 +79,18 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
     const active =
         typeof activeKey === 'string' ? activeKey === indexKey : undefined;
 
+    const defaultActive = defaultActiveKey === indexKey;
+    const {height, onCloseAnimated, trailingOpacity} = useAnimated({
+        close,
+        eventName,
+        layoutHeight: layout?.height,
+        state,
+        trailingEventName,
+    });
+
     const processLayout = useCallback(
         (event: LayoutChangeEvent) => {
-            const nativeEventLayout = (event as LayoutChangeEvent).nativeEvent
-                .layout;
+            const nativeEventLayout = event.nativeEvent.layout;
 
             setState(draft => {
                 draft.layout = nativeEventLayout;
@@ -85,26 +100,21 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
     );
 
     const processPressOut = useCallback(
-        (
-            event: GestureResponderEvent,
-            processPressOutOptions: Pick<OnStateChangeOptions, 'eventName'> & {
-                nextState: State;
-            },
-        ) => {
-            const {eventName: nextEventName, nextState} =
-                processPressOutOptions;
-
+        (event: GestureResponderEvent) => {
             const responseActive = activeKey !== indexKey;
             const {locationX = 0, locationY = 0} = event.nativeEvent;
 
             setState(draft => {
-                draft.eventName = nextEventName;
-                draft.state = nextState;
-
                 if (responseActive) {
                     draft.activeLocation = {locationX, locationY};
                 }
             });
+
+            if (responseActive) {
+                setState(draft => {
+                    draft.activeLocation = {locationX, locationY};
+                });
+            }
 
             if (responseActive) {
                 onActive?.(indexKey);
@@ -121,29 +131,23 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
                     processLayout(event as LayoutChangeEvent);
                 },
                 pressOut: () => {
-                    processPressOut(event as GestureResponderEvent, {
-                        eventName: nextEventName,
-                        nextState,
-                    });
+                    processPressOut(event as GestureResponderEvent);
                 },
             };
 
             nextEvent[nextEventName as keyof typeof nextEvent]?.();
+
+            setState(draft => {
+                draft.eventName = nextEventName;
+                draft.state = nextState;
+            });
         },
-        [processLayout, processPressOut],
+        [processLayout, processPressOut, setState],
     );
 
     const [onEvent] = HOOK.useOnEvent({
         ...props,
         onStateChange: processStateChange,
-    });
-
-    const {height, onCloseAnimated, trailingOpacity} = useAnimated({
-        close,
-        eventName,
-        layoutHeight: layout?.height,
-        state,
-        trailingEventName,
     });
 
     const processTrailingEvent = useCallback(
@@ -201,6 +205,33 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
             trailing,
         ],
     );
+
+    useEffect(() => {
+        if (status === 'idle') {
+            setState(draft => {
+                draft.rippleCentered = !!defaultActive;
+                draft.status = 'succeeded';
+            });
+        }
+    }, [defaultActive, setState, status]);
+
+    useEffect(() => {
+        setState(draft => {
+            const uncenter =
+                draft.status === 'succeeded' &&
+                typeof active === 'boolean' &&
+                active &&
+                defaultActive;
+
+            if (uncenter) {
+                draft.rippleCentered = false;
+            }
+        });
+    }, [active, defaultActive, setState]);
+
+    if (status === 'idle') {
+        return <></>;
+    }
 
     return render({
         ...renderProps,

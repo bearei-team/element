@@ -65,51 +65,60 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     const [underlayColor] = useUnderlayColor({type});
     const processElevation = useCallback(
         (nextState: State) => {
-            const level = {
-                disabled: 0,
-                enabled: 0,
-                error: 0,
-                focused: 0,
-                hovered: 1,
-                longPressIn: 0,
-                pressIn: 0,
-            };
+            const elevationType = ['elevated', 'filled', 'tonal'].includes(
+                type,
+            );
 
-            const correctionCoefficient = processCorrectionCoefficient({type});
+            if (elevationType) {
+                const level = {
+                    disabled: 0,
+                    enabled: 0,
+                    error: 0,
+                    focused: 0,
+                    hovered: 1,
+                    longPressIn: 0,
+                    pressIn: 0,
+                };
 
-            setState(draft => {
-                draft.elevation = (level[nextState] +
-                    correctionCoefficient) as ElevationLevel;
-            });
+                const correctionCoefficient = processCorrectionCoefficient({
+                    type,
+                });
+
+                setState(draft => {
+                    draft.elevation = (level[nextState] +
+                        correctionCoefficient) as ElevationLevel;
+                });
+            }
         },
         [setState, type],
+    );
+
+    const processLayout = useCallback(
+        (event: LayoutChangeEvent) => {
+            const nativeEventLayout = event.nativeEvent.layout;
+
+            setState(draft => {
+                draft.layout = nativeEventLayout;
+            });
+        },
+        [setState],
     );
 
     const processStateChange = useCallback(
         (nextState: State, options = {} as OnStateChangeOptions) => {
             const {event, eventName: nextEventName} = options;
-            const elevationType = ['elevated', 'filled', 'tonal'].includes(
-                type,
-            );
 
             if (nextEventName === 'layout') {
-                const nativeEventLayout = (event as LayoutChangeEvent)
-                    .nativeEvent.layout;
-
-                setState(draft => {
-                    draft.layout = nativeEventLayout;
-                });
+                processLayout(event as LayoutChangeEvent);
             }
 
-            if (elevationType) {
-                processElevation(nextState);
-            }
+            processElevation(nextState);
 
             setState(draft => {
                 draft.eventName = nextEventName;
             });
         },
-        [type, processElevation, setState],
+        [setState, processLayout, processElevation],
     );
 
     const [onEvent] = HOOK.useOnEvent({

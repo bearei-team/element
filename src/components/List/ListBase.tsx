@@ -118,7 +118,7 @@ export const ListBase: FC<ListBaseProps> = props => {
                 draft.status = 'succeeded';
             });
         }
-    }, [dataSources, defaultActiveKey, setState, status]);
+    }, [dataSources, setState, status]);
 
     if (status === 'idle') {
         return <></>;

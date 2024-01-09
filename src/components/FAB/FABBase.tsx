@@ -71,17 +71,23 @@ export const FABBase: FC<FABBaseProps> = props => {
         [setState],
     );
 
+    const processLayout = useCallback(
+        (event: LayoutChangeEvent) => {
+            const nativeEventLayout = event.nativeEvent.layout;
+
+            setState(draft => {
+                draft.layout = nativeEventLayout;
+            });
+        },
+        [setState],
+    );
+
     const processStateChange = useCallback(
         (nextState: State, options = {} as OnStateChangeOptions) => {
             const {event, eventName: nextEventName} = options;
 
             if (nextEventName === 'layout') {
-                const nativeEventLayout = (event as LayoutChangeEvent)
-                    .nativeEvent.layout;
-
-                setState(draft => {
-                    draft.layout = nativeEventLayout;
-                });
+                processLayout(event as LayoutChangeEvent);
             }
 
             if (nextEventName !== 'layout') {
@@ -92,7 +98,7 @@ export const FABBase: FC<FABBaseProps> = props => {
                 draft.eventName = nextEventName;
             });
         },
-        [disabledElevation, processElevation, setState],
+        [disabledElevation, processElevation, processLayout, setState],
     );
 
     const [onEvent] = HOOK.useOnEvent({
