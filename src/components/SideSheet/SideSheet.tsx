@@ -20,11 +20,11 @@ import {
     Modal,
     PrimaryButton,
     SecondaryButton,
-} from './Sheet.styles';
-import {RenderProps, SheetBase} from './SheetBase';
-export type SheetType = 'side' | 'bottom';
+} from './SideSheet.styles';
+import {RenderProps, SideSheetBase} from './SideSheetBase';
+export type SideSheetType = 'side' | 'bottom';
 
-export interface SheetProps
+export interface SideSheetProps
     extends Partial<
         ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & ModalProps
     > {
@@ -37,28 +37,18 @@ export interface SheetProps
     onClose?: (event: GestureResponderEvent) => void;
     onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
     onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
+    position?: 'horizontalStart' | 'horizontalEnd';
     primaryButton?: React.JSX.Element;
     primaryButtonLabelText?: string;
     secondaryButton?: React.JSX.Element;
     secondaryButtonLabelText?: string;
-    type?: SheetType;
+    type?: SideSheetType;
     visible?: boolean;
-
-    /**
-     * horizontalStart' | 'horizontalEnd' only takes effect when the type is 'side', and 'verticalEnd' only takes effect when the type is 'bottom'.
-     */
-    position?: 'horizontalStart' | 'horizontalEnd' | 'verticalEnd';
 }
-
-/**
- * TODO: "bottom"
- *
- * Compatible with macOS, does not use iOS native modal for now. Needs to be implemented in javascript runtime.
- */
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedInner = Animated.createAnimatedComponent(Inner);
-const ForwardRefSheet = forwardRef<View, SheetProps>((props, ref) => {
+const ForwardRefSideSheet = forwardRef<View, SideSheetProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
             back,
@@ -69,62 +59,71 @@ const ForwardRefSheet = forwardRef<View, SheetProps>((props, ref) => {
             headlineText,
             id,
             onShow,
+            position,
             primaryButton,
             renderStyle,
             secondaryButton,
-            shape,
             visible,
-            ...containerProps
+            style,
+            ...innerProps
         } = renderProps;
 
         const {backgroundColor, innerTranslateX} = renderStyle;
+        const shape =
+            position === 'horizontalStart' ? 'largeEnd' : 'largeStart';
 
         return (
             <>
                 {visible && (
-                    <Modal onLayout={onShow} testID={`sheet__modal--${id}`}>
+                    <Modal onLayout={onShow} testID={`sideSheet__modal--${id}`}>
                         <AnimatedContainer
-                            {...containerProps}
-                            ref={ref}
                             style={{backgroundColor}}
-                            testID={`sheet--${id}`}>
+                            testID={`sideSheet--${id}`}>
                             <AnimatedInner
+                                {...innerProps}
                                 shape={shape}
                                 style={{
+                                    ...(typeof style === 'object' && style),
                                     transform: [{translateX: innerTranslateX}],
                                 }}
-                                testID={`sheet__inner--${id}`}
+                                testID={`sideSheet__inner--${id}`}
                                 accessibilityRole="alert">
-                                <Header testID={`sheet__header--${id}`}>
+                                <Header testID={`sideSheet__header--${id}`}>
                                     {back && (
                                         <BackAffordance
-                                            testID={`sheet__backAffordance--${id}`}>
+                                            testID={`sideSheet__backAffordance--${id}`}>
                                             {backIcon}
                                         </BackAffordance>
                                     )}
 
-                                    <HeadlineText>{headlineText}</HeadlineText>
+                                    <HeadlineText size="large" type="title">
+                                        {headlineText}
+                                    </HeadlineText>
+
                                     <CloseAffordance
-                                        testID={`sheet__closeAffordance--${id}`}>
+                                        testID={`sideSheet__closeAffordance--${id}`}>
                                         {closeIcon}
                                     </CloseAffordance>
                                 </Header>
 
-                                <Content testID={`sheet__content--${id}`}>
+                                <Content
+                                    testID={`sideSheet__content--${id}`}
+                                    showsVerticalScrollIndicator={false}>
                                     {children}
                                 </Content>
 
                                 {footer && (
                                     <>
                                         <Divider size="large" />
-                                        <Footer testID={`sheet__footer--${id}`}>
+                                        <Footer
+                                            testID={`sideSheet__footer--${id}`}>
                                             <PrimaryButton
-                                                testID={`sheet__primaryButton--${id}`}>
+                                                testID={`sideSheet__primaryButton--${id}`}>
                                                 {primaryButton}
                                             </PrimaryButton>
 
                                             <SecondaryButton
-                                                testID={`sheet__secondaryButton--${id}`}>
+                                                testID={`sideSheet__secondaryButton--${id}`}>
                                                 {secondaryButton}
                                             </SecondaryButton>
                                         </Footer>
@@ -138,7 +137,7 @@ const ForwardRefSheet = forwardRef<View, SheetProps>((props, ref) => {
         );
     };
 
-    return <SheetBase {...props} render={render} />;
+    return <SideSheetBase {...props} ref={ref} render={render} />;
 });
 
-export const Sheet: FC<SheetProps> = memo(ForwardRefSheet);
+export const SideSheet: FC<SideSheetProps> = memo(ForwardRefSideSheet);

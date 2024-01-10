@@ -24,7 +24,7 @@ export const Shape = styled(View)<ShapeProps>`
         )}px;
 
         border-bottom-right-radius: ${theme.adaptSize(
-            theme.shape[shape].bottomLeft,
+            theme.shape[shape].bottomRight,
         )}px;
 
         border-top-left-radius: ${theme.adaptSize(

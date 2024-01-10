@@ -2,17 +2,19 @@ import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {Animated, GestureResponderEvent, ViewStyle} from 'react-native';
 import {useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
-import {Button} from '../Button/reButton';
+
+import {Button} from '../Button/Button';
 import {Icon} from '../Icon/Icon';
-import {SheetProps} from './Sheet';
+import {IconButton} from '../IconButton/IconButton';
+import {SideSheetProps} from './SideSheet';
 import {useAnimated} from './useAnimated';
 
-export interface RenderProps extends SheetProps {
+export interface RenderProps extends SideSheetProps {
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         innerTranslateX: Animated.AnimatedInterpolation<string | number>;
     };
 }
-export interface SheetBaseProps extends SheetProps {
+export interface SideSheetBaseProps extends SideSheetProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
@@ -21,7 +23,7 @@ const initialState = {
     visible: false,
 };
 
-export const SheetBase: FC<SheetBaseProps> = props => {
+export const SideSheetBase: FC<SideSheetBaseProps> = props => {
     const {
         backIcon,
         closeIcon,
@@ -45,7 +47,9 @@ export const SheetBase: FC<SheetBaseProps> = props => {
 
     const processAnimatedFinished = useCallback(() => {
         setState(draft => {
-            !draft.modalVisible && (draft.modalVisible = false);
+            if (!draft.modalVisible) {
+                draft.modalVisible = false;
+            }
         });
     }, [setState]);
 
@@ -78,19 +82,17 @@ export const SheetBase: FC<SheetBaseProps> = props => {
             render({
                 ...renderProps,
                 backIcon: backIcon ?? (
-                    <Button
-                        category="icon"
+                    <IconButton
                         icon={<Icon type="filled" name="arrowBack" />}
-                        onPress={handleClose}
-                        type="text"
+                        onPressOut={handleClose}
+                        type="standard"
                     />
                 ),
                 closeIcon: closeIcon ?? (
-                    <Button
-                        category="icon"
+                    <IconButton
                         icon={<Icon type="filled" name="close" />}
-                        onPress={handleClose}
-                        type="text"
+                        onPressOut={handleClose}
+                        type="standard"
                     />
                 ),
                 headlineText,
@@ -102,7 +104,6 @@ export const SheetBase: FC<SheetBaseProps> = props => {
                         type="filled"
                     />
                 ),
-                shape: 'large',
                 secondaryButton: secondaryButton ?? (
                     <Button
                         labelText={secondaryButtonLabelText}

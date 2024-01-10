@@ -30,6 +30,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
             block,
+            defaultElevation,
             elevation,
             eventName,
             icon,
@@ -37,10 +38,10 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             labelText,
             onEvent,
             renderStyle,
+            style,
             type,
             underlayColor,
-            defaultElevation,
-            ...containerProps
+            ...contentProps
         } = renderProps;
 
         const {backgroundColor, color, height, width, ...border} = renderStyle;
@@ -50,7 +51,6 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
 
         return (
             <Container
-                {...containerProps}
                 accessibilityLabel={labelText}
                 accessibilityRole="button"
                 block={block}
@@ -65,9 +65,14 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                         shape={shape}
                         underlayColor={underlayColor}>
                         <AnimatedContent
+                            {...contentProps}
                             iconShow={!!icon}
                             shape={shape}
-                            style={{backgroundColor, ...border}}
+                            style={{
+                                ...(typeof style === 'object' && style),
+                                ...border,
+                                backgroundColor,
+                            }}
                             testID={`button__content--${id}`}
                             type={type}
                             block={block}

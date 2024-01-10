@@ -12,11 +12,12 @@ export const ModalProvider: FC<unknown> = () => {
         children: <></>,
     });
 
-    emitter.on('sheet', sheet =>
+    emitter.on('sheet', sheet => {
+        console.info(sheet);
         setSheet(draft => {
             draft.children = sheet;
-        }),
-    );
+        });
+    });
 
     return <>{children}</>;
 };

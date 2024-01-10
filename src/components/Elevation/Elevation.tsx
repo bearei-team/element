@@ -25,7 +25,7 @@ const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
             renderStyle,
             shape,
             style,
-            ...containerProps
+            ...contentProps
         } = renderProps;
 
         const {onLayout} = onEvent;
@@ -33,11 +33,11 @@ const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
 
         return (
             <Container
-                {...containerProps}
                 height={height}
                 testID={`elevation--${id}`}
                 width={width}>
                 <Content
+                    {...contentProps}
                     onLayout={onLayout}
                     shape={shape}
                     style={style}

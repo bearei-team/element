@@ -29,9 +29,10 @@ const ForwardRefButton = forwardRef<View, IconButtonProps>((props, ref) => {
             id,
             onEvent,
             renderStyle,
+            style,
             type,
             underlayColor,
-            ...containerProps
+            ...contentProps
         } = renderProps;
 
         const {backgroundColor, height, width, ...border} = renderStyle;
@@ -39,19 +40,21 @@ const ForwardRefButton = forwardRef<View, IconButtonProps>((props, ref) => {
         const shape = 'full';
 
         return (
-            <Container
-                {...containerProps}
-                accessibilityRole="button"
-                testID={`iconButton--${id}`}>
+            <Container accessibilityRole="button" testID={`iconButton--${id}`}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
                     shape={shape}
                     underlayColor={underlayColor}>
                     <AnimatedContent
+                        {...contentProps}
                         iconShow={!!icon}
                         onLayout={onLayout}
                         shape={shape}
-                        style={{backgroundColor, ...border}}
+                        style={{
+                            ...(typeof style === 'object' && style),
+                            ...border,
+                            backgroundColor,
+                        }}
                         testID={`iconButton__content--${id}`}
                         type={type}>
                         <Icon testID={`iconButton__icon--${id}`}>{icon}</Icon>

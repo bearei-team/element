@@ -30,7 +30,7 @@ export interface ListProps
 const ForwardRefList = forwardRef<FlatList<ListDataSource>, ListProps>(
     (props, ref) => {
         const render = (renderProps: RenderProps) => {
-            const {id, style, ...containerProps} = renderProps;
+            const {id, style, ...contentProps} = renderProps;
 
             return (
                 <Container
@@ -39,7 +39,7 @@ const ForwardRefList = forwardRef<FlatList<ListDataSource>, ListProps>(
                     style={style}
                     testID={`list--${id}`}>
                     <Content<NativeTarget>
-                        {...containerProps}
+                        {...contentProps}
                         showsVerticalScrollIndicator={false}
                         testID={`list__content--${id}`}
                     />

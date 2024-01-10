@@ -47,12 +47,11 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
             onEvent,
             renderStyle,
             rippleCentered,
-            style,
             supportingText,
             supportingTextNumberOfLines,
             trailing,
             underlayColor,
-            ...containerProps
+            ...innerProps
         } = renderProps;
 
         const {onLayout, ...onTouchableRippleEvent} = onEvent;
@@ -60,13 +59,9 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
 
         return (
             <AnimatedContainer
-                {...containerProps}
                 accessibilityLabel={headline}
                 accessibilityRole="list"
-                style={{
-                    ...(typeof style === 'object' && style),
-                    ...{height: containerHeight},
-                }}
+                style={{height: containerHeight}}
                 testID={`listItem--${id}`}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
@@ -75,7 +70,7 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
                     centered={rippleCentered}
                     defaultActive={defaultActive}
                     underlayColor={activeColor}>
-                    <AnimatedInner onLayout={onLayout}>
+                    <AnimatedInner {...innerProps} onLayout={onLayout}>
                         {leading && (
                             <Leading testID={`listItem__leading--${id}`}>
                                 {leading}

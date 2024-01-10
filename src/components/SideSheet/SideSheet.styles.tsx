@@ -1,7 +1,7 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {Shape} from '../Common/Common.styles';
-import {RenderProps} from './SheetBase';
+import {Shape, Typography} from '../Common/Common.styles';
+import {RenderProps} from './SideSheetBase';
 
 export type InnerProps = Pick<RenderProps, 'position'>;
 export type HeaderProps = Pick<RenderProps, 'back'>;
@@ -40,10 +40,6 @@ export const Inner = styled(Shape)<InnerProps>`
                 right: ${theme.adaptSize(theme.spacing.none)}px;
                 top: ${theme.adaptSize(theme.spacing.none)}px;
             `,
-            verticalEnd: css`
-                bottom: ${theme.adaptSize(theme.spacing.none)}px;
-                left: ${theme.adaptSize(theme.spacing.none)}px;
-            `,
         };
 
         return innerPosition[position];
@@ -77,22 +73,11 @@ export const Header = styled.View<HeaderProps>`
         `}
 `;
 
-export const HeadlineText = styled.Text`
+export const HeadlineText = styled(Typography)`
     flex: 1;
 
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurfaceVariant};
-        font-size: ${theme.adaptFontSize(theme.typography.title.large.size)}px;
-        font-style: ${theme.typography.title.large.style};
-        font-weight: ${theme.typography.title.large.weight};
-        height: ${theme.adaptSize(theme.typography.title.large.lineHeight)}px;
-        letter-spacing: ${theme.adaptSize(
-            theme.typography.title.large.letterSpacing,
-        )}px;
-
-        line-height: ${theme.adaptSize(
-            theme.typography.title.large.lineHeight,
-        )}px;
     `}
 `;
 

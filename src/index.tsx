@@ -1,6 +1,5 @@
 export * from './components/Avatar/Avatar';
 export * from './components/Badge/Badge';
-export * from './components/Button/reButton';
 export * from './components/Common/Common.styles';
 export * from './components/Divider/Divider';
 export * from './components/Elevation/Elevation';
@@ -14,7 +13,7 @@ export * from './components/List/ListItem/ListItem';
 export * from './components/NavigationRail/NavigationRail';
 export * from './components/NavigationRail/NavigationRailItem/NavigationRailItem';
 export * from './components/Search/Search';
-export * from './components/Sheet/Sheet';
+export * from './components/SideSheet/SideSheet';
 export * from './components/Tab/Tab';
 export * from './components/TextField/TextField';
 export * from './components/TouchableRipple/TouchableRipple';

@@ -31,10 +31,11 @@ export const Inner = styled(Shape)<InnerProps>`
 
 export const Header = styled.Pressable`
     align-items: center;
+    align-self: stretch;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-self: stretch;
+    position: relative;
 
     ${({theme}) =>
         css`

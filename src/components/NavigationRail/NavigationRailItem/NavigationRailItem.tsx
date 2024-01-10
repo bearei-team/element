@@ -40,7 +40,6 @@ const ForwardRefNavigationRailItem = forwardRef<View, NavigationRailItemProps>(
                 onEvent,
                 renderStyle,
                 rippleCentered,
-                style,
                 underlayColor,
                 ...containerProps
             } = renderProps;
@@ -54,7 +53,6 @@ const ForwardRefNavigationRailItem = forwardRef<View, NavigationRailItemProps>(
                     {...containerProps}
                     accessibilityLabel={labelText}
                     accessibilityRole="tab"
-                    style={style}
                     active={active ?? defaultActive}
                     testID={`navigationRailItem--${id}`}>
                     <TouchableRipple

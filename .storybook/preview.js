@@ -1,5 +1,6 @@
 import {addDecorator} from '@storybook/react';
 import React from 'react';
+import {ModalProvider} from '../src/context/ModalProvider';
 import {ThemeProvider} from '../src/context/ThemeProvider';
 
 export const parameters = {
@@ -12,4 +13,9 @@ export const parameters = {
     },
 };
 
-addDecorator(story => <ThemeProvider>{story()}</ThemeProvider>);
+addDecorator(story => (
+    <ThemeProvider>
+        {story()}
+        <ModalProvider />
+    </ThemeProvider>
+));

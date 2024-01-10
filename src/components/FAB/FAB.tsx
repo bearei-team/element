@@ -36,9 +36,10 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
             labelText,
             onEvent,
             renderStyle,
+            style,
             type,
             underlayColor,
-            ...containerProps
+            ...contentProps
         } = renderProps;
 
         const {backgroundColor, color, height, width} = renderStyle;
@@ -47,7 +48,6 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
 
         return (
             <Container
-                {...containerProps}
                 accessibilityLabel={labelText ?? accessibilityLabel}
                 accessibilityRole="button"
                 testID={`fab--${id}`}>
@@ -60,10 +60,14 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
                         shape={shape}
                         underlayColor={underlayColor}>
                         <AnimatedContent
+                            {...contentProps}
                             labelTextShow={!!labelText}
                             onLayout={onLayout}
                             shape={shape}
-                            style={{backgroundColor}}
+                            style={{
+                                ...(typeof style === 'object' && style),
+                                backgroundColor,
+                            }}
                             testID={`fab__content--${id}`}
                             type={type}>
                             {icon && (
