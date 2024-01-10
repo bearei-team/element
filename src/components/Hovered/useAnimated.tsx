@@ -1,6 +1,6 @@
 import {useEffect, useMemo} from 'react';
 import {useTheme} from 'styled-components/native';
-import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {HOOK} from '../../hooks/hook';
 import {UTIL} from '../../utils/util';
 import {EventName} from '../Common/interface';
 import {RenderProps} from './HoveredBase';
@@ -9,27 +9,28 @@ export type UseAnimatedOptions = Pick<RenderProps, 'eventName' | 'opacities'>;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {eventName = 'none', opacities = [0, 0.08, 0.12]} = options;
-    const [opacityAnimated] = useAnimatedValue(0);
+    const [opacityAnimated] = HOOK.useAnimatedValue(0);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
+    const activeValue = opacities.length === 3 ? opacities.length - 1 : 0;
     const event = useMemo(
         () =>
             ({
                 blur: 0,
-                focus: 2,
+                focus: activeValue,
                 hoverIn: 1,
                 hoverOut: 0,
-                longPress: 2,
+                longPress: activeValue,
                 none: 0,
                 press: 1,
-                pressIn: 2,
+                pressIn: activeValue,
                 pressOut: 1,
             } as Record<EventName, number>),
-        [],
+        [activeValue],
     );
 
     const opacity = opacityAnimated.interpolate({
-        inputRange: [0, 1, 2],
+        inputRange: Array.from({length: opacities.length}, (_, index) => index),
         outputRange: opacities,
     });
 

@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 import {useTheme} from 'styled-components/native';
-import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {HOOK} from '../../hooks/hook';
 import {UTIL} from '../../utils/util';
 import {ElevationProps} from './Elevation';
 
@@ -8,7 +8,7 @@ export type UseAnimatedOptions = Pick<ElevationProps, 'level' | 'defaultLevel'>;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {level, defaultLevel = 0} = options;
-    const [opacityAnimated] = useAnimatedValue(defaultLevel);
+    const [opacityAnimated] = HOOK.useAnimatedValue(defaultLevel);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
     const shadow0Opacity = opacityAnimated.interpolate({

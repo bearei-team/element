@@ -40,14 +40,14 @@ const ForwardRefList = forwardRef<FlatList<ListDataSource>, ListProps>(
                     testID={`list--${id}`}>
                     <Content<NativeTarget>
                         {...containerProps}
-                        ref={ref}
+                        showsVerticalScrollIndicator={false}
                         testID={`list__content--${id}`}
                     />
                 </Container>
             );
         };
 
-        return <ListBase {...props} render={render} />;
+        return <ListBase {...props} ref={ref} render={render} />;
     },
 );
 

@@ -90,26 +90,41 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         [activeRipple, setState],
     );
 
+    const processLayout = useCallback(
+        (event: LayoutChangeEvent) => {
+            const nativeEventLayout = event.nativeEvent.layout;
+
+            setState(draft => {
+                draft.layout = nativeEventLayout;
+            });
+        },
+        [setState],
+    );
+
+    const processPressOut = useCallback(
+        (event: GestureResponderEvent) => {
+            if (!activeRipple) {
+                processAddRipple(event.nativeEvent);
+            }
+        },
+        [activeRipple, processAddRipple],
+    );
+
     const processStateChange = useCallback(
         (_nextState: State, options = {} as OnStateChangeOptions) => {
             const {event, eventName} = options;
+            const nextEvent = {
+                layout: () => {
+                    processLayout(event as LayoutChangeEvent);
+                },
+                pressOut: () => {
+                    processPressOut(event as GestureResponderEvent);
+                },
+            };
 
-            if (eventName === 'layout') {
-                const nativeEventLayout = (event as LayoutChangeEvent)
-                    .nativeEvent.layout;
-
-                setState(draft => {
-                    draft.layout = nativeEventLayout;
-                });
-            }
-
-            const addRipple = !activeRipple && eventName === 'pressOut';
-
-            if (addRipple) {
-                processAddRipple((event as GestureResponderEvent).nativeEvent);
-            }
+            nextEvent[eventName as keyof typeof nextEvent]?.();
         },
-        [activeRipple, processAddRipple, setState],
+        [processLayout, processPressOut],
     );
 
     const [onEvent] = HOOK.useOnEvent({

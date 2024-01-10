@@ -9,35 +9,38 @@ import {
 } from 'react';
 import {
     Animated,
-    LayoutChangeEvent,
     LayoutRectangle,
     TextInput,
+    View,
     ViewStyle,
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
-import {OnStateChangeOptions, useHandleEvent} from '../../hooks/useOnEvent';
-import {ShapeProps} from '../Common/Common.styles';
-import {AnimatedInterpolation, State} from '../Common/interface';
+import {HOOK} from '../../hooks/hook';
+import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
+import {AnimatedInterpolation, EventName, State} from '../Common/interface';
 import {Icon} from '../Icon/Icon';
 import {ListDataSource} from '../List/List';
 import {SearchProps} from './Search';
 import {Input} from './Search.styles';
 import {useAnimated} from './useAnimated';
 
-export interface RenderProps
-    extends Partial<Pick<ShapeProps, 'shape'> & SearchProps> {
+export interface RenderProps extends SearchProps {
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         innerHeight: AnimatedInterpolation;
     } & {
         height: number;
         listBackgroundColor: string;
+        pageX: number;
+        pageY: number;
         width: number;
     };
+    eventName: EventName;
     listVisible: boolean;
-    onListChange: (key: string) => void;
-    state: State;
+    onEvent: OnEvent;
+    onListActive?: (key?: string) => void;
     underlayColor: string;
+    containerRef: RefObject<View>;
 }
 export interface SearchBaseProps extends SearchProps {
     render: (props: RenderProps) => React.JSX.Element;
@@ -50,10 +53,11 @@ export interface Data extends ListDataSource {
 export type RenderTextInputOptions = SearchProps;
 
 const initialState = {
-    layout: {} as LayoutRectangle,
-    underlayColor: undefined,
-    value: '',
+    eventName: 'none' as EventName,
+    layout: {} as LayoutRectangle & {pageX: number; pageY: number},
     listVisible: false,
+    state: 'enabled' as State,
+    value: '',
 };
 
 const renderTextInput = (options: RenderTextInputOptions) => (
@@ -66,39 +70,77 @@ const renderTextInput = (options: RenderTextInputOptions) => (
 );
 
 export const SearchBase: FC<SearchBaseProps> = props => {
-    const [{value, layout, listVisible}, setState] = useImmer(initialState);
     const {
+        data,
         defaultValue,
         leadingIcon,
         onChangeText,
         placeholder,
         ref,
         render,
-        data,
         ...renderProps
     } = props;
 
+    const [{value, layout, listVisible, eventName, state}, setState] =
+        useImmer(initialState);
+
     const {innerHeight} = useAnimated({listVisible});
+    const containerRef = useRef<View>(null);
     const id = useId();
     const theme = useTheme();
-    const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
+    const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
     const underlayColor = theme.palette.surface.onSurface;
+    const processFocus = useCallback(() => {
+        inputRef.current?.focus();
+    }, [inputRef]);
 
-    const processStateChange = useCallback(
-        (_nextState: State, options = {} as OnStateChangeOptions) => {
-            const {eventName} = options;
-            const focused = ['focus', 'pressOut', 'press'].includes(eventName);
+    const processState = useCallback(
+        (
+            nextState: State,
+            options: Pick<OnStateChangeOptions, 'eventName'>,
+        ) => {
+            const {eventName: nextEventName} = options;
 
-            focused && inputRef.current?.focus();
+            setState(draft => {
+                if (draft.state === 'focused') {
+                    if (nextEventName === 'blur') {
+                        draft.eventName = nextEventName;
+                        draft.state = nextState;
+                    }
+
+                    return;
+                }
+
+                draft.eventName = nextEventName;
+                draft.state = nextState;
+            });
         },
-        [inputRef],
+        [setState],
     );
 
-    const {state, onBlur, onFocus, ...handleEvent} = useHandleEvent({
+    const processStateChange = useCallback(
+        (nextState: State, options = {} as OnStateChangeOptions) => {
+            const {eventName: nextEventName} = options;
+            const nextEvent = {
+                pressOut: () => {
+                    processFocus();
+                },
+                focus: () => {
+                    processFocus();
+                },
+            };
+
+            nextEvent[nextEventName as keyof typeof nextEvent]?.();
+
+            processState(nextState, {eventName: nextEventName});
+        },
+        [processFocus, processState],
+    );
+
+    const [{onBlur, onFocus, ...onEvent}] = HOOK.useOnEvent({
         ...props,
-        lockFocusState: true,
         onStateChange: processStateChange,
     });
 
@@ -113,22 +155,18 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         [onChangeText, setState],
     );
 
-    const handleListChange = (key: string) => {
-        const nextValue = data?.find(datum => datum.key === key)?.headline;
+    const handleListActive = useCallback(
+        (key?: string) => {
+            const nextValue = data?.find(datum => datum.key === key)?.headline;
 
-        nextValue &&
-            setState(draft => {
-                draft.value = nextValue;
-            });
-    };
-
-    const processLayout = (event: LayoutChangeEvent) => {
-        const nativeEventLayout = event.nativeEvent.layout;
-
-        setState(draft => {
-            draft.layout = nativeEventLayout;
-        });
-    };
+            if (nextValue) {
+                setState(draft => {
+                    draft.value = nextValue;
+                });
+            }
+        },
+        [data, setState],
+    );
 
     const children = useMemo(
         () =>
@@ -158,27 +196,39 @@ export const SearchBase: FC<SearchBaseProps> = props => {
 
     useEffect(() => {
         setState(draft => {
-            draft.listVisible = data?.length !== 0;
+            draft.listVisible = data?.length !== 0 && state === 'focused';
         });
-    }, [data, setState]);
+    }, [data, setState, state]);
+
+    useEffect(() => {
+        if (containerRef.current) {
+            containerRef.current.measure(
+                (x, y, width, height, pageX, pageY) => {
+                    setState(draft => {
+                        draft.layout = {x, y, width, height, pageX, pageY};
+                    });
+                },
+            );
+        }
+    }, [setState]);
 
     return render({
         ...renderProps,
-        ...handleEvent,
         children,
+        containerRef,
         data,
+        eventName,
         id,
         listVisible,
-        onFocus,
-        onLayout: processLayout,
-        onListChange: handleListChange,
+        onEvent: {...onEvent, onBlur, onFocus},
+        onListActive: handleListActive,
         placeholder,
-        shape: listVisible ? 'extraLargeTop' : 'extraLarge',
-        state,
         underlayColor,
         renderStyle: {
             height: layout.height,
             innerHeight,
+            pageX: layout.pageX,
+            pageY: layout.pageY,
             width: layout.width,
             listBackgroundColor: theme.color.rgba(
                 theme.palette.surface.surface,

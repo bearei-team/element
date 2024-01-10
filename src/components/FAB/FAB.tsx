@@ -27,6 +27,7 @@ const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
+            accessibilityLabel,
             defaultElevation,
             elevation,
             eventName,
@@ -47,7 +48,7 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
         return (
             <Container
                 {...containerProps}
-                accessibilityLabel={labelText}
+                accessibilityLabel={labelText ?? accessibilityLabel}
                 accessibilityRole="button"
                 testID={`fab--${id}`}>
                 <Elevation

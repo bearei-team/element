@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 import {useTheme} from 'styled-components/native';
-import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {HOOK} from '../../hooks/hook';
 import {UTIL} from '../../utils/util';
 import {RenderProps} from './IconBase';
 
@@ -8,7 +8,7 @@ export type UseAnimatedOptions = Pick<RenderProps, 'eventName'>;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {eventName = 'none'} = options;
-    const [scaleAnimated] = useAnimatedValue(1);
+    const [scaleAnimated] = HOOK.useAnimatedValue(1);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
     const scale = scaleAnimated.interpolate({

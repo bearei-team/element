@@ -13,7 +13,7 @@ export interface HoveredProps
     > {
     eventName?: EventName;
     height?: number;
-    opacities?: [number, number, number];
+    opacities?: [number, number, number] | [number, number];
     underlayColor?: string;
     width?: number;
 }

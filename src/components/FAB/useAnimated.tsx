@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 import {useTheme} from 'styled-components/native';
-import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {HOOK} from '../../hooks/hook';
 import {UTIL} from '../../utils/util';
 import {RenderProps} from './FABBase';
 
@@ -8,7 +8,7 @@ export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type'>;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {disabled, type = 'primary'} = options;
-    const [colorAnimated] = useAnimatedValue(1);
+    const [colorAnimated] = HOOK.useAnimatedValue(1);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
     const disabledBackgroundColor = theme.color.rgba(

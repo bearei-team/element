@@ -5,8 +5,8 @@ import {RenderProps} from './RippleBase';
 export interface ContainerProps extends Pick<RenderProps, 'underlayColor'> {
     height: number;
     width: number;
-    x: number;
-    y: number;
+    locationX: number;
+    locationY: number;
     activeRipple: boolean;
 }
 
@@ -14,10 +14,10 @@ export const Container = styled(Shape)<ContainerProps>`
     pointer-events: none;
     position: absolute;
 
-    ${({height, width, y, x}) => css`
+    ${({height, width, locationY, locationX}) => css`
         height: ${height}px;
-        left: ${x}px;
-        top: ${y}px;
+        left: ${locationX}px;
+        top: ${locationY}px;
         width: ${width}px;
     `}
 

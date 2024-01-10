@@ -1,13 +1,10 @@
-import {TextInput} from 'react-native';
+import {TextInput, View} from 'react-native';
 import {css} from 'styled-components';
 import styled from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 
-export type InnerProps = {width: number};
-export const Container = styled.View`
-    flex: 1;
-    position: relative;
-
+export type InnerProps = {width: number; pageX: number; pageY: number};
+export const Container = styled(View)`
     ${({theme}) =>
         css`
             height: ${theme.adaptSize(theme.spacing.small * 7)}px;
@@ -19,31 +16,30 @@ export const Inner = styled(Shape)<InnerProps>`
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    left: 0;
-    position: absolute;
-    top: 0;
+    position: fixed;
     z-index: 2048;
     overflow: hidden;
 
-    ${({theme, width}) =>
+    ${({theme, width = 0, pageX = 0, pageY = 0}) =>
         css`
             background-color: ${theme.palette.surface.surfaceContainerHigh};
+            left: ${pageX}px;
+            top: ${pageY}px;
             width: ${width}px;
         `};
 `;
 
-export const Header = styled.Pressable<InnerProps>`
+export const Header = styled.Pressable`
     align-items: center;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    position: relative;
+    align-self: stretch;
 
-    ${({theme, width}) =>
+    ${({theme}) =>
         css`
             gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
             padding: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-            width: ${width}px;
         `};
 `;
 
@@ -55,9 +51,9 @@ export const LeadingIcon = styled.View`
 
     ${({theme}) =>
         css`
-            height: ${theme.adaptSize(theme.spacing.small * 6)}px;
+            height: ${theme.adaptSize(theme.spacing.small * 5)}px;
             padding: ${theme.adaptSize(theme.spacing.small)}px;
-            width: ${theme.adaptSize(theme.spacing.small * 6)}px;
+            width: ${theme.adaptSize(theme.spacing.small * 5)}px;
         `};
 `;
 
@@ -69,7 +65,7 @@ export const Content = styled.View`
 
     ${({theme}) =>
         css`
-            height: ${theme.adaptSize(theme.spacing.large)}px;
+            height: ${theme.adaptSize(theme.spacing.small * 6)}px;
         `};
 `;
 

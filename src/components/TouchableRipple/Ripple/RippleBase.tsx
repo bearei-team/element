@@ -6,8 +6,8 @@ export interface RenderProps extends Omit<RippleProps, 'sequence'> {
     renderStyle: Animated.WithAnimatedObject<
         ViewStyle & {height: number; width: number}
     >;
-    x: number;
-    y: number;
+    locationX: number;
+    locationY: number;
 }
 
 export interface RippleBaseProps extends RippleProps {
@@ -64,7 +64,7 @@ export const RippleBase: FC<RippleBaseProps> = props => {
         },
 
         underlayColor,
-        x: locationX,
-        y: locationY,
+        locationX,
+        locationY,
     });
 };

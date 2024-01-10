@@ -40,87 +40,70 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
             id,
             leadingIcon,
             listVisible,
-            onFocus,
-            onHoverIn,
-            onHoverOut,
-            onLayout,
-            onListChange,
-            onLongPress,
-            onPressIn,
+            eventName,
             placeholder,
             renderStyle,
-            shape,
-            state,
-            style,
+            onEvent,
             trailingIcon,
             underlayColor,
+            containerRef,
+            onListActive,
             ...containerProps
         } = renderProps;
 
-        const {height, innerHeight, width, listBackgroundColor} = renderStyle;
+        const {onLayout, ...onHeaderEvent} = onEvent;
+        const {height, innerHeight, width, listBackgroundColor, pageX, pageY} =
+            renderStyle;
+
+        const shape = 'extraLarge';
 
         return (
             <Container
                 {...containerProps}
+                testID={`search--${id}`}
                 onLayout={onLayout}
-                testID={`search--${id}`}>
-                {typeof width === 'number' && (
-                    <AnimatedInner
-                        shape={'extraLarge'}
-                        style={{
-                            ...(typeof style === 'object' && style),
-                            height: innerHeight,
-                        }}
-                        testID={`search__inner--${id}`}
-                        width={width}>
-                        <Header
-                            accessibilityLabel={placeholder}
-                            accessibilityRole="keyboardkey"
-                            onFocus={onFocus}
-                            onHoverIn={onHoverIn}
-                            onHoverOut={onHoverOut}
-                            onLongPress={onLongPress}
-                            onPressIn={onPressIn}
-                            testID={`search__header--${id}`}
-                            width={width}>
-                            <LeadingIcon testID={`search__leadingIcon--${id}`}>
-                                {leadingIcon}
-                            </LeadingIcon>
+                ref={containerRef}>
+                <AnimatedInner
+                    shape={shape}
+                    width={width}
+                    style={{height: innerHeight}}
+                    testID={`search__inner--${id}`}
+                    pageX={pageX}
+                    pageY={pageY}>
+                    <Header
+                        {...onHeaderEvent}
+                        accessibilityLabel={placeholder}
+                        accessibilityRole="keyboardkey"
+                        testID={`search__header--${id}`}>
+                        <LeadingIcon testID={`search__leadingIcon--${id}`}>
+                            {leadingIcon}
+                        </LeadingIcon>
 
-                            <Content testID={`search__content--${id}`}>
-                                {children}
-                            </Content>
+                        <Content testID={`search__content--${id}`}>
+                            {children}
+                        </Content>
 
-                            <TrailingIcon
-                                testID={`search__trailingIcon--${id}`}>
-                                {trailingIcon}
-                            </TrailingIcon>
+                        <TrailingIcon testID={`search__trailingIcon--${id}`}>
+                            {trailingIcon}
+                        </TrailingIcon>
 
-                            <Hovered
-                                height={height}
-                                opacities={[0.08, 0]}
-                                shape={shape}
-                                state={state}
-                                underlayColor={underlayColor}
-                                width={width}
-                            />
-                        </Header>
+                        <Hovered
+                            eventName={eventName}
+                            height={height}
+                            opacities={[0, 0.08]}
+                            shape={listVisible ? 'extraLargeTop' : shape}
+                            underlayColor={underlayColor}
+                            width={width}
+                        />
+                    </Header>
 
-                        {listVisible && (
-                            <>
-                                <Divider size="large" width={width} />
-                                <List
-                                    data={data}
-                                    close={true}
-                                    onChange={onListChange}
-                                    style={{
-                                        backgroundColor: listBackgroundColor,
-                                    }}
-                                />
-                            </>
-                        )}
-                    </AnimatedInner>
-                )}
+                    <Divider size="large" width={width} />
+                    <List
+                        onActive={onListActive}
+                        data={data}
+                        style={{backgroundColor: listBackgroundColor}}
+                    />
+                </AnimatedInner>
             </Container>
         );
     };

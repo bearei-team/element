@@ -1,6 +1,6 @@
 import {useCallback, useEffect} from 'react';
 import {useTheme} from 'styled-components/native';
-import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
+import {HOOK} from '../../../hooks/hook';
 import {UTIL} from '../../../utils/util';
 import {EventName, State} from '../../Common/interface';
 import {RenderProps} from './ListItemBase';
@@ -21,8 +21,8 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         trailingEventName,
     } = options;
 
-    const [heightAnimated] = useAnimatedValue(1);
-    const [trailingOpacityAnimated] = useAnimatedValue(close ? 0 : 1);
+    const [heightAnimated] = HOOK.useAnimatedValue(1);
+    const [trailingOpacityAnimated] = HOOK.useAnimatedValue(close ? 0 : 1);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
     const trailingOpacity = trailingOpacityAnimated.interpolate({

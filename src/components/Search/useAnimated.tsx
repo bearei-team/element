@@ -1,7 +1,6 @@
-import {useCallback, useEffect} from 'react';
-import {Animated} from 'react-native';
+import {useEffect} from 'react';
 import {useTheme} from 'styled-components/native';
-import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {HOOK} from '../../hooks/hook';
 import {UTIL} from '../../utils/util';
 
 export interface UseAnimatedOptions {
@@ -10,34 +9,25 @@ export interface UseAnimatedOptions {
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {listVisible} = options;
-    const [innerHeightAnimated] = useAnimatedValue(0);
+    const [innerHeightAnimated] = HOOK.useAnimatedValue(0);
     const theme = useTheme();
+    const animatedTiming = UTIL.animatedTiming(theme);
     const innerHeight = innerHeightAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
             theme.adaptSize(theme.spacing.small * 7),
-            theme.adaptSize(theme.spacing.small * 27),
+            theme.adaptSize(theme.spacing.small * 40),
         ],
     });
 
-    const processAnimatedTiming = useCallback(
-        (animation: Animated.Value, toValue: number) => {
-            const animatedTiming = UTIL.animatedTiming(theme);
-
-            requestAnimationFrame(() =>
-                animatedTiming(animation, {
-                    duration: 'short3',
-                    easing: 'standard',
-                    toValue,
-                }).start(),
-            );
-        },
-        [theme],
-    );
-
     useEffect(() => {
-        processAnimatedTiming(innerHeightAnimated, listVisible ? 1 : 0);
-    }, [innerHeightAnimated, processAnimatedTiming, listVisible]);
+        requestAnimationFrame(() =>
+            animatedTiming(innerHeightAnimated, {
+                toValue: listVisible ? 1 : 0,
+                useNativeDriver: false,
+            }).start(),
+        );
+    }, [innerHeightAnimated, animatedTiming, listVisible]);
 
     return {innerHeight};
 };

@@ -34,8 +34,8 @@ const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => {
             id,
             renderStyle,
             style,
-            x,
-            y,
+            locationX,
+            locationY,
             ...containerProps
         } = renderProps;
 
@@ -56,8 +56,8 @@ const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => {
                 }}
                 testID={`ripple--${id}`}
                 width={width}
-                x={x}
-                y={y}
+                locationX={locationX}
+                locationY={locationY}
             />
         );
     };

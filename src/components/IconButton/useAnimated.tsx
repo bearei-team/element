@@ -1,7 +1,7 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {HOOK} from '../../hooks/hook';
 import {UTIL} from '../../utils/util';
 import {RenderProps} from './IconButtonBase';
 
@@ -11,8 +11,8 @@ export type UseAnimatedOptions = Required<
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {disabled, type} = options;
-    const [borderAnimated] = useAnimatedValue(1);
-    const [colorAnimated] = useAnimatedValue(1);
+    const [borderAnimated] = HOOK.useAnimatedValue(1);
+    const [colorAnimated] = HOOK.useAnimatedValue(1);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
     const disabledBackgroundColor = theme.color.rgba(

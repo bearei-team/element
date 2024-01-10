@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 import {useTheme} from 'styled-components/native';
-import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
+import {HOOK} from '../../../hooks/hook';
 import {UTIL} from '../../../utils/util';
 import {RenderProps} from './NavigationRailItemBase';
 
@@ -11,7 +11,9 @@ export interface UseAnimatedOptions
 
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {active, block, defaultActive} = options;
-    const [labelAnimated] = useAnimatedValue(block || defaultActive ? 1 : 0);
+    const [labelAnimated] = HOOK.useAnimatedValue(
+        block || defaultActive ? 1 : 0,
+    );
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
     const height = labelAnimated.interpolate({

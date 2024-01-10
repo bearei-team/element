@@ -13,7 +13,6 @@ export const Container = styled(View)<ContainerProps>`
     align-self: stretch;
     display: flex;
     flex-direction: column;
-    flex: 1;
     justify-content: center;
 
     ${({theme}) => css`
@@ -69,7 +68,6 @@ export const Container = styled(View)<ContainerProps>`
 
 export const Content = styled.View`
     align-self: stretch;
-    flex: 1;
 
     ${({theme}) => css`
         background-color: ${theme.palette.outline.outlineVariant};
