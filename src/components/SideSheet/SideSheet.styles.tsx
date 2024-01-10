@@ -78,6 +78,7 @@ export const HeadlineText = styled(Typography)`
 
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurfaceVariant};
+        margin-top: ${theme.spacing.extraSmall - 2}px;
     `}
 `;
 
