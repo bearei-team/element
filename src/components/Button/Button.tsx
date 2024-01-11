@@ -87,7 +87,8 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                                 size={link ? 'small' : 'large'}
                                 style={{color}}
                                 testID={`button__labelText--${id}`}
-                                type={link ? 'body' : 'label'}>
+                                type={link ? 'body' : 'label'}
+                                numberOfLines={1}>
                                 {labelText}
                             </AnimatedLabelText>
 

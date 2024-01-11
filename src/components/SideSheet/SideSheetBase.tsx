@@ -2,7 +2,6 @@ import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {Animated, GestureResponderEvent, ViewStyle} from 'react-native';
 import {useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
-
 import {Button} from '../Button/Button';
 import {Icon} from '../Icon/Icon';
 import {IconButton} from '../IconButton/IconButton';

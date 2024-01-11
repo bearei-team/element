@@ -16,23 +16,23 @@ export const Container = styled(View)`
     align-items: center;
     display: flex;
     flex-direction: column;
-    flex: 1;
 `;
 
 export const Header = styled.View`
+    align-self: stretch;
+`;
+
+export const HeaderScrollView = styled.ScrollView``;
+export const HeaderInner = styled.View<ContentItemProps>`
+    align-self: stretch;
     display: flex;
     flex-direction: row;
     justify-content: center;
-`;
-
-export const HeaderScrollView = styled.ScrollView`
-    flex: 1;
-`;
-
-export const HeaderInner = styled.View`
-    display: flex;
-    flex-direction: row;
     position: relative;
+
+    ${({width = 0}) => css`
+        width: ${width}px;
+    `};
 `;
 
 export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
@@ -41,9 +41,9 @@ export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
     flex-direction: row;
     position: absolute;
 
-    ${({width, theme, paddingHorizontal = 0}) => css`
-        padding: ${theme.adaptSize(theme.spacing.none)}px ${paddingHorizontal}px;
+    ${({theme, width = 0, paddingHorizontal = 0}) => css`
         width: ${width}px;
+        padding: ${theme.spacing.none}px ${paddingHorizontal}px;
     `};
 
     ${({offsetPosition}) =>
@@ -64,10 +64,10 @@ export const ActiveIndicatorInner = styled(Shape)`
 `;
 
 export const Content = styled.View`
+    align-self: stretch;
     flex: 1;
     overflow: hidden;
     position: relative;
-    width: 100%;
 
     ${({theme}) => css`
         min-height: ${theme.adaptSize(theme.spacing.small * 9)}px;

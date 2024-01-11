@@ -1,7 +1,6 @@
 import {FC, ReactNode, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, View, ViewProps} from 'react-native';
 import {Divider} from '../Divider/Divider';
-import {ItemProps} from './Item/Item';
 import {
     ActiveIndicator,
     ActiveIndicatorInner,
@@ -13,9 +12,10 @@ import {
     HeaderScrollView,
 } from './Tab.styles';
 import {RenderProps, TabBase} from './TabBase';
+import {TabItemProps} from './TabItem/TabItem';
 
 export type TabType = 'primary' | 'secondary';
-export interface TabDataSource extends Pick<ItemProps, 'labelText'> {
+export interface TabDataSource extends Pick<TabItemProps, 'labelText'> {
     content?: ReactNode;
     key?: string;
 }
@@ -23,8 +23,7 @@ export interface TabDataSource extends Pick<ItemProps, 'labelText'> {
 export interface TabProps extends Partial<ViewProps & RefAttributes<View>> {
     data?: TabDataSource[];
     defaultActiveKey?: string;
-    headerVisible?: boolean;
-    onChange?: (key: string) => void;
+    onActive?: (key?: string) => void;
     type?: TabType;
 }
 
@@ -62,46 +61,38 @@ const ForwardRefTab = forwardRef<View, TabProps>((props, ref) => {
         } = renderStyle;
 
         return (
-            <Container {...containerProps} ref={ref} testID={`tab--${id}`}>
+            <Container {...containerProps} testID={`tab--${id}`}>
                 <AnimatedHeader
                     testID={`tab__header--${id}`}
                     style={{height: headerHeight}}>
                     <HeaderScrollView
                         horizontal={true}
-                        centerContent={true}
                         showsHorizontalScrollIndicator={false}
                         showsVerticalScrollIndicator={false}
                         testID={`tab__headerScrollView--${id}`}>
-                        <HeaderInner>
+                        <HeaderInner
+                            testID={`tab__headerInner--${id}`}
+                            width={width}>
                             {items}
-                            {typeof itemWidth === 'number' && (
-                                <AnimatedActiveIndicator
-                                    offsetPosition={
-                                        activeIndicatorOffsetPosition
-                                    }
-                                    paddingHorizontal={
-                                        activeIndicatorPaddingHorizontal
-                                    }
-                                    style={{left: activeIndicatorLeft}}
-                                    testID={`tab__activeIndicator--${id}`}
-                                    width={itemWidth}>
-                                    <AnimatedActiveIndicatorInner
-                                        shape="extraSmallTop"
-                                        style={{
-                                            width: activeIndicatorWidth,
-                                        }}
-                                        testID={`tab__activeIndicatorInner--${id}`}
-                                    />
-                                </AnimatedActiveIndicator>
-                            )}
+                            <AnimatedActiveIndicator
+                                offsetPosition={activeIndicatorOffsetPosition}
+                                paddingHorizontal={
+                                    activeIndicatorPaddingHorizontal
+                                }
+                                style={{left: activeIndicatorLeft}}
+                                testID={`tab__activeIndicator--${id}`}
+                                width={itemWidth}>
+                                <AnimatedActiveIndicatorInner
+                                    shape="extraSmallTop"
+                                    style={{width: activeIndicatorWidth}}
+                                    testID={`tab__activeIndicatorInner--${id}`}
+                                />
+                            </AnimatedActiveIndicator>
                         </HeaderInner>
                     </HeaderScrollView>
                 </AnimatedHeader>
 
-                {typeof width === 'number' && (
-                    <Divider size="large" width={width} />
-                )}
-
+                <Divider size="large" width={width} />
                 <Content testID={`tab__content--${id}`}>
                     <AnimatedContentInner
                         style={{left: contentInnerLeft}}
@@ -113,7 +104,7 @@ const ForwardRefTab = forwardRef<View, TabProps>((props, ref) => {
         );
     };
 
-    return <TabBase {...props} render={render} />;
+    return <TabBase {...props} ref={ref} render={render} />;
 });
 
 export const Tab: FC<TabProps> = memo(ForwardRefTab);

@@ -1,46 +1,35 @@
-// import {Meta, StoryObj} from '@storybook/react';
-// import {Tab, TabProps} from './Tab';
+import {Meta, StoryObj} from '@storybook/react';
+import {Tab, TabProps} from './Tab';
 
-// export default {
-//     title: 'components/Tab',
-//     component: Tab,
-// } as Meta<typeof Tab>;
+export default {
+    title: 'components/Tab',
+    component: Tab,
+} as Meta<typeof Tab>;
 
-// export const TabHorizontal: StoryObj<TabProps> = {
-//     args: {
-//         data: [
-//             {
-//                 labelText: 'TabA',
-//                 content: 'A',
-//             },
-//             {
-//                 labelText: 'TabBcc',
-//                 content: 'B',
-//             },
-//             {
-//                 labelText: 'TabC',
-//                 content: 'C',
-//             },
-//             {
-//                 labelText: 'TabD',
-//                 content: 'D',
-//             },
-//             {
-//                 labelText: 'TabA',
-//                 content: 'A',
-//             },
-//             {
-//                 labelText: 'TabBcc',
-//                 content: 'B',
-//             },
-//             {
-//                 labelText: 'TabC',
-//                 content: 'C',
-//             },
-//             {
-//                 labelText: 'TabD',
-//                 content: 'D',
-//             },
-//         ],
-//     },
-// };
+export const TabHorizontal: StoryObj<TabProps> = {
+    args: {
+        defaultActiveKey: 'A',
+        data: [
+            {
+                labelText: 'TabA',
+                content: 'A',
+                key: 'A',
+            },
+            {
+                labelText: 'Specifications',
+                content: 'B',
+                key: 'B',
+            },
+            {
+                labelText: 'TabC',
+                content: 'C',
+                key: 'C',
+            },
+            {
+                labelText: 'TabD',
+                content: 'D',
+                key: 'D',
+            },
+        ],
+    },
+};

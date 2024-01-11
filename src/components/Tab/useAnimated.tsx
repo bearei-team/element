@@ -1,25 +1,28 @@
-import {useCallback, useEffect} from 'react';
-import {Animated, LayoutRectangle} from 'react-native';
+import {useEffect} from 'react';
+import {LayoutRectangle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
-import {AnimatedTimingOptions} from '../../utils/animatedTiming.utils';
 import {UTIL} from '../../utils/util';
 import {Data} from './TabBase';
 
 export interface UseAnimatedOptions {
-    data: Data[];
+    data: Data;
     headerVisible: boolean;
     itemLayout: LayoutRectangle;
     layout: LayoutRectangle;
-}
-
-export interface ProcessAnimatedTimingOptions extends AnimatedTimingOptions {
-    toValue: number;
-    finished?: () => void;
+    activeKey?: string;
+    activeIndicatorBaseWidth: number;
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {data, itemLayout, layout, headerVisible} = options;
+    const {
+        data,
+        itemLayout,
+        layout,
+        headerVisible,
+        activeKey,
+        activeIndicatorBaseWidth,
+    } = options;
     const {width: layoutWidth = 0} = layout;
     const {height: itemLayoutHeight = 0, width: itemLayoutWidth = 0} =
         itemLayout;
@@ -27,13 +30,11 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const dataIndexes = Array.from({length: data.length}, (_, index) => index);
     const defaultRange = dataIndexes.length <= 1;
     const range = defaultRange ? [0, 1] : dataIndexes;
-    const draftActiveIndicatorWidth =
-        data.find(({active}) => active)?.labelTextLayout.width ?? 0;
-
     const [headerAnimated] = useAnimatedValue(1);
     const [activeAnimated] = useAnimatedValue(0);
     const [activeIndicatorWidthAnimated] = useAnimatedValue(0);
     const theme = useTheme();
+    const animatedTiming = UTIL.animatedTiming(theme);
     const headerHeight = headerAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
@@ -60,67 +61,53 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
     const activeIndicatorWidth = activeIndicatorWidthAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [
-            draftActiveIndicatorWidth,
-            draftActiveIndicatorWidth * 1.2,
-        ],
+        outputRange: [activeIndicatorBaseWidth, activeIndicatorBaseWidth * 1.3],
     });
 
-    const processAnimatedTiming = useCallback(
-        (
-            animation: Animated.Value,
-            processAnimatedTimingOptions: ProcessAnimatedTimingOptions,
-        ) => {
-            const {toValue, finished, duration, easing} =
-                processAnimatedTimingOptions;
-
-            const animatedTiming = UTIL.animatedTiming(theme);
-
-            requestAnimationFrame(() =>
-                animatedTiming(animation, {
-                    duration,
-                    easing,
-                    toValue,
-                }).start(finished),
-            );
-        },
-        [theme],
-    );
-
     useEffect(() => {
-        const index = data.findIndex(({active}) => active);
+        const index = data.findIndex(({key}) => key === activeKey);
+        const toValue = index === -1 ? 0 : index;
 
-        processAnimatedTiming(activeIndicatorWidthAnimated, {
-            duration: 'short3',
-            easing: 'standard',
-            toValue: index === -1 ? 0 : index,
-            finished: () =>
-                processAnimatedTiming(activeIndicatorWidthAnimated, {
-                    toValue: 0,
-                    duration: 'short3',
-                    easing: 'standard',
-                }),
+        requestAnimationFrame(() => {
+            animatedTiming(activeAnimated, {
+                toValue,
+                duration: 'medium3',
+                easing: 'emphasizedDecelerate',
+            }).start();
         });
 
-        processAnimatedTiming(activeAnimated, {
-            toValue: index === -1 ? 0 : index,
-            duration: 'medium3',
-            easing: 'emphasizedDecelerate',
+        requestAnimationFrame(() => {
+            animatedTiming(activeIndicatorWidthAnimated, {
+                duration: 'short3',
+                easing: 'standard',
+                toValue,
+                useNativeDriver: false,
+            }).start(() => {
+                requestAnimationFrame(() => {
+                    animatedTiming(activeIndicatorWidthAnimated, {
+                        duration: 'short3',
+                        easing: 'standard',
+                        toValue: 0,
+                        useNativeDriver: false,
+                    }).start();
+                });
+            });
         });
     }, [
         activeAnimated,
         activeIndicatorWidthAnimated,
         data,
-        processAnimatedTiming,
+        animatedTiming,
+        activeKey,
     ]);
 
     useEffect(() => {
-        processAnimatedTiming(headerAnimated, {
-            toValue: headerVisible ? 1 : 0,
-            duration: 'short3',
-            easing: 'standard',
+        requestAnimationFrame(() => {
+            animatedTiming(headerAnimated, {
+                toValue: headerVisible ? 1 : 0,
+            });
         });
-    }, [headerAnimated, headerVisible, processAnimatedTiming]);
+    }, [headerAnimated, headerVisible, animatedTiming]);
 
     return {
         activeIndicatorLeft,

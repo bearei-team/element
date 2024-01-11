@@ -3,15 +3,16 @@ import {
     Animated,
     LayoutChangeEvent,
     LayoutRectangle,
+    Text,
     ViewStyle,
 } from 'react-native';
+import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
-import {AnimatedInterpolation} from '../Common/interface';
-import {Item} from './Item/Item';
+import {AnimatedInterpolation, ComponentStatus} from '../Common/interface';
 import {TabDataSource, TabProps} from './Tab';
 import {ContentItem} from './Tab.styles';
+import {TabItem, TabItemProps} from './TabItem/TabItem';
 import {useAnimated} from './useAnimated';
-
 export interface RenderProps extends TabProps {
     activeIndicatorOffsetPosition: 'left' | 'right';
     items: ReactNode;
@@ -31,37 +32,41 @@ export interface TabBaseProps extends TabProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface RenderItemOptions {
-    active?: boolean;
+export interface RenderItemOptions extends TabItemProps {
     data: TabDataSource[];
-    onActive: (key: string) => void;
-    onLabelTextLayout: (event: LayoutChangeEvent, key: string) => void;
-    onLayout: (event: LayoutChangeEvent) => void;
 }
 
-export interface Data extends TabDataSource {
-    active: boolean;
-    labelTextLayout: LayoutRectangle;
-}
+export type Data = (TabDataSource & {labelTextLayout?: LayoutRectangle})[];
 
 const initialState = {
     activeIndicatorOffsetPosition: 'left' as 'left' | 'right',
-    data: [] as Data[],
+    activeKey: undefined as string | undefined,
+    data: [] as Data,
     itemLayout: {} as LayoutRectangle,
     layout: {} as LayoutRectangle,
+    status: 'idle' as ComponentStatus,
 };
 
 const renderItem = (options: RenderItemOptions) => {
-    const {onActive, data, onLayout, onLabelTextLayout} = options;
+    const {
+        data,
+        onActive,
+        onLayout,
+        onLabelTextLayout,
+        defaultActiveKey,
+        activeKey,
+    } = options;
 
     return data.map(datum => (
-        <Item
+        <TabItem
             {...datum}
+            activeKey={activeKey}
+            defaultActiveKey={defaultActiveKey}
             indexKey={datum.key}
             key={datum.key}
+            onActive={onActive}
             onLabelTextLayout={onLabelTextLayout}
             onLayout={onLayout}
-            onPress={() => onActive(datum.key!)}
         />
     ));
 };
@@ -70,18 +75,33 @@ export const TabBase: FC<TabBaseProps> = props => {
     const {
         data: dataSources,
         defaultActiveKey,
-        headerVisible = true,
-        onChange,
+        onActive,
         onLayout,
         render,
         ...renderProps
     } = props;
 
-    const id = useId();
     const [
-        {activeIndicatorOffsetPosition, data, itemLayout, layout},
+        {
+            activeIndicatorOffsetPosition,
+            activeKey,
+            data,
+            itemLayout,
+            layout,
+            status,
+        },
         setState,
     ] = useImmer(initialState);
+    const id = useId();
+    const theme = useTheme();
+    const activeData = data.find(({key}) => key === activeKey);
+    const activeDataLabelTextWidth = activeData?.labelTextLayout?.width ?? 0;
+    const activeIndicatorBaseWidth =
+        theme.spacing.large - theme.spacing.extraSmall;
+
+    const activeIndicatorPaddingHorizontal =
+        ((itemLayout.width ?? 0) - activeDataLabelTextWidth) / 2 +
+        (activeDataLabelTextWidth - activeIndicatorBaseWidth) / 2;
 
     const {
         activeIndicatorLeft,
@@ -89,8 +109,10 @@ export const TabBase: FC<TabBaseProps> = props => {
         contentInnerLeft,
         headerHeight,
     } = useAnimated({
+        activeIndicatorBaseWidth,
+        activeKey,
         data,
-        headerVisible,
+        headerVisible: false,
         itemLayout,
         layout,
     });
@@ -98,10 +120,11 @@ export const TabBase: FC<TabBaseProps> = props => {
     const processLayout = (event: LayoutChangeEvent) => {
         const nativeEventLayout = event.nativeEvent.layout;
 
-        onLayout?.(event);
         setState(draft => {
             draft.layout = nativeEventLayout;
         });
+
+        onLayout?.(event);
     };
 
     const processItemLayout = useCallback(
@@ -109,7 +132,7 @@ export const TabBase: FC<TabBaseProps> = props => {
             const nativeEventLayout = event.nativeEvent.layout;
 
             setState(draft => {
-                if (typeof draft.itemLayout.width !== 'number') {
+                if (!draft.itemLayout.width) {
                     draft.itemLayout = nativeEventLayout;
                 }
             });
@@ -118,78 +141,95 @@ export const TabBase: FC<TabBaseProps> = props => {
     );
 
     const processItemLabelTextLayout = useCallback(
-        (event: LayoutChangeEvent, key: string) => {
+        (event: LayoutChangeEvent, key?: string) => {
             const nativeEventLayout = event.nativeEvent.layout;
 
             setState(draft => {
                 const dataItem = draft.data.find(datum => datum.key === key);
 
-                dataItem && (dataItem.labelTextLayout = nativeEventLayout);
+                if (!dataItem) {
+                    return;
+                }
+
+                dataItem.labelTextLayout = nativeEventLayout;
             });
         },
         [setState],
     );
 
     const handleActive = useCallback(
-        (key: string) => {
+        (key?: string) => {
             setState(draft => {
-                const draftActiveItemIndex = draft.data.findIndex(
-                    ({active}) => active,
-                );
+                if (draft.activeKey !== key) {
+                    const draftActiveItemIndex = draft.data.findIndex(
+                        datum => datum.key === draft.activeKey,
+                    );
 
-                const nextActiveItemIndex = draft.data.findIndex(
-                    datum => datum.key === key,
-                );
+                    const nextActiveItemIndex = draft.data.findIndex(
+                        datum => datum.key === key,
+                    );
 
-                draft.activeIndicatorOffsetPosition =
-                    nextActiveItemIndex > draftActiveItemIndex
-                        ? 'right'
-                        : 'left';
+                    draft.activeIndicatorOffsetPosition =
+                        nextActiveItemIndex > draftActiveItemIndex
+                            ? 'right'
+                            : 'left';
 
-                draft.data.forEach(datum => (datum.active = datum.key === key));
+                    draft.activeKey = key;
+                }
             });
 
-            onChange?.(key);
+            onActive?.(key);
         },
-        [onChange, setState],
+        [onActive, setState],
     );
 
-    const processRenderItem = useCallback(
+    const items = useMemo(
         () =>
             renderItem({
+                activeKey,
                 data,
+                defaultActiveKey,
                 onActive: handleActive,
                 onLabelTextLayout: processItemLabelTextLayout,
                 onLayout: processItemLayout,
             }),
-        [data, handleActive, processItemLabelTextLayout, processItemLayout],
+        [
+            activeKey,
+            data,
+            defaultActiveKey,
+            handleActive,
+            processItemLabelTextLayout,
+            processItemLayout,
+        ],
     );
 
-    const items = useMemo(() => processRenderItem(), [processRenderItem]);
     const children = useMemo(
         () =>
             typeof layout.width === 'number' &&
             data.map(({content, key}, index) => (
                 <ContentItem key={key ?? index} width={layout.width}>
-                    {content}
+                    {typeof content === 'string' ? (
+                        <Text>{content}</Text>
+                    ) : (
+                        content
+                    )}
                 </ContentItem>
             )),
         [data, layout.width],
     );
 
     useEffect(() => {
-        dataSources &&
+        if (dataSources && status === 'idle') {
             setState(draft => {
-                draft.data = dataSources.map((datum, index) => ({
-                    ...datum,
-                    active: defaultActiveKey
-                        ? datum.key === defaultActiveKey
-                        : index === 0,
-                    key: datum.key ?? `${index}`,
-                    labelTextLayout: {} as LayoutRectangle,
-                }));
+                draft.data = dataSources;
+                draft.status = 'succeeded';
             });
-    }, [dataSources, defaultActiveKey, setState]);
+        }
+    }, [dataSources, setState, status]);
+
+    if (status === 'idle') {
+        return <></>;
+    }
 
     return render({
         ...renderProps,
@@ -201,17 +241,13 @@ export const TabBase: FC<TabBaseProps> = props => {
         children,
         renderStyle: {
             activeIndicatorLeft,
+            activeIndicatorPaddingHorizontal,
             activeIndicatorWidth,
             contentInnerLeft,
             headerHeight,
             height: layout.height,
             itemWidth: itemLayout.width,
             width: layout.width,
-            activeIndicatorPaddingHorizontal:
-                ((itemLayout.width ?? 0) -
-                    (data.find(({active}) => active)?.labelTextLayout.width ??
-                        0)) /
-                2,
         },
     });
 };
