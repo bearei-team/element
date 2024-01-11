@@ -54,8 +54,8 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                 accessibilityLabel={labelText}
                 accessibilityRole="button"
                 block={block}
-                testID={`button--${id}`}
-                onLayout={onLayout}>
+                onLayout={onLayout}
+                testID={`button--${id}`}>
                 <Elevation
                     defaultLevel={defaultElevation}
                     level={elevation}
@@ -84,11 +84,12 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                             )}
 
                             <AnimatedLabelText
+                                ellipsizeMode="tail"
+                                numberOfLines={1}
                                 size={link ? 'small' : 'large'}
                                 style={{color}}
                                 testID={`button__labelText--${id}`}
-                                type={link ? 'body' : 'label'}
-                                numberOfLines={1}>
+                                type={link ? 'body' : 'label'}>
                                 {labelText}
                             </AnimatedLabelText>
 

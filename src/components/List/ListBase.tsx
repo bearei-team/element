@@ -66,7 +66,6 @@ export const ListBase: FC<ListBaseProps> = props => {
 
     const [{data, status, activeKey}, setState] = useImmer(initialState);
     const id = useId();
-
     const handleActive = useCallback(
         (key?: string) => {
             setState(draft => {

@@ -30,7 +30,6 @@ export const FormItemBase: FC<FormItemBaseProps> = props => {
     const errors = getFieldError(name)?.errors;
     const fieldValue = name ? getFieldValue(name) : name;
     const id = useId();
-
     const onValueChange = useCallback(
         (value?: unknown) => {
             if (name) {

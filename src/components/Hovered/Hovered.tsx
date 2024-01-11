@@ -42,7 +42,7 @@ const ForwardRefHovered = forwardRef<Animated.LegacyRef<View>, HoveredProps>(
             );
         };
 
-        return <HoveredBase {...props} render={render} ref={ref} />;
+        return <HoveredBase {...props} ref={ref} render={render} />;
     },
 );
 

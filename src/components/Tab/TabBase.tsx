@@ -103,12 +103,14 @@ export const TabBase: FC<TabBaseProps> = props => {
         ((itemLayout.width ?? 0) - activeDataLabelTextWidth) / 2 +
         (activeDataLabelTextWidth - activeIndicatorBaseWidth) / 2;
 
-    const {
-        activeIndicatorLeft,
-        activeIndicatorWidth,
-        contentInnerLeft,
-        headerHeight,
-    } = useAnimated({
+    const [
+        {
+            activeIndicatorLeft,
+            activeIndicatorWidth,
+            contentInnerLeft,
+            headerHeight,
+        },
+    ] = useAnimated({
         activeIndicatorBaseWidth,
         activeKey,
         data,
@@ -233,12 +235,12 @@ export const TabBase: FC<TabBaseProps> = props => {
 
     return render({
         ...renderProps,
-        data,
-        items,
-        id,
-        onLayout: processLayout,
         activeIndicatorOffsetPosition,
         children,
+        data,
+        id,
+        items,
+        onLayout: processLayout,
         renderStyle: {
             activeIndicatorLeft,
             activeIndicatorPaddingHorizontal,

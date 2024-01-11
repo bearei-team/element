@@ -43,7 +43,6 @@ export const SideSheetBase: FC<SideSheetBaseProps> = props => {
 
     const [{visible, modalVisible}, setState] = useImmer(initialState);
     const id = useId();
-
     const processAnimatedFinished = useCallback(() => {
         setState(draft => {
             if (!draft.modalVisible) {
@@ -52,7 +51,7 @@ export const SideSheetBase: FC<SideSheetBaseProps> = props => {
         });
     }, [setState]);
 
-    const {backgroundColor, innerTranslateX} = useAnimated({
+    const [{backgroundColor, innerTranslateX}] = useAnimated({
         finished: processAnimatedFinished,
         position,
         visible,

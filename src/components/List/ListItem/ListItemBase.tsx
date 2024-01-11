@@ -80,7 +80,7 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
         typeof activeKey === 'string' ? activeKey === indexKey : undefined;
 
     const defaultActive = defaultActiveKey === indexKey;
-    const {height, onCloseAnimated, trailingOpacity} = useAnimated({
+    const [{height, onCloseAnimated, trailingOpacity}] = useAnimated({
         close,
         eventName,
         layoutHeight: layout?.height,

@@ -34,6 +34,7 @@ export interface FormStore<T extends Store> {
         names?: (keyof T)[],
         signOut?: boolean,
     ) => (keyof T | undefined)[];
+
     getFieldError: {
         (): Error<T>;
         (name?: (keyof T)[]): Error<T>;
@@ -68,7 +69,6 @@ export const formStore = <T extends Store>(): FormStore<T> => {
     const initialValue = {} as T;
     const store = {} as T;
     let fieldEntities = [] as FieldEntity<T>[];
-
     const getFieldEntities = (signOut = false) =>
         signOut
             ? fieldEntities
@@ -110,7 +110,6 @@ export const formStore = <T extends Store>(): FormStore<T> => {
 
     const signOutField = (name?: NamePath<T>) => {
         const names = UTIL.namePath(name);
-
         const processSignOut = (signOutName?: keyof T) => {
             if (!signOutName) {
                 return;
@@ -147,7 +146,6 @@ export const formStore = <T extends Store>(): FormStore<T> => {
         const {response = true, skipValidate = false} = options;
         const {onValueChange} = callback;
         const entities = getFieldEntities();
-
         const processResponse = async (name: keyof T) => {
             const entity = entities.find(({props}) => props.name === name);
 
@@ -182,7 +180,6 @@ export const formStore = <T extends Store>(): FormStore<T> => {
     function getFieldValue(name?: NamePath<T>) {
         const names = UTIL.namePath(name);
         const value = {} as T;
-
         const processValue = (entityName?: keyof T) =>
             entityName &&
             Object.assign(value, {[entityName]: store[entityName]});
@@ -195,14 +192,12 @@ export const formStore = <T extends Store>(): FormStore<T> => {
     }
 
     const setFieldError = (err: Error<T>) => Object.assign(error, err);
-
     function getFieldError(): Error<T>;
     function getFieldError(name?: keyof T): Error<T>[keyof T];
     function getFieldError(name?: (keyof T)[]): Error<T>;
     function getFieldError(name?: NamePath<T>) {
         const names = UTIL.namePath(name);
         const err = {} as Error<T>;
-
         const processError = (entityName?: keyof T) =>
             entityName && Object.assign(err, {[entityName]: error[entityName]});
 
@@ -264,7 +259,6 @@ export const formStore = <T extends Store>(): FormStore<T> => {
     async function validateField(name?: NamePath<T>) {
         const names = UTIL.namePath(name);
         const entities = getFieldEntities();
-
         const processValidate = (entityName?: keyof T) => {
             if (entityName) {
                 const value = getFieldValue(entityName);
@@ -302,7 +296,6 @@ export const formStore = <T extends Store>(): FormStore<T> => {
 
     const resetField = (name?: NamePath<T>) => {
         const names = UTIL.namePath(name);
-
         const processReset = (entityName?: keyof T) => {
             if (entityName) {
                 setFieldValue({[entityName]: undefined} as T, {

@@ -26,21 +26,20 @@ import {Input} from './Search.styles';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends SearchProps {
+    containerRef: RefObject<View>;
+    eventName: EventName;
+    listVisible: boolean;
+    onEvent: OnEvent;
+    onListActive?: (key?: string) => void;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
-        innerHeight: AnimatedInterpolation;
-    } & {
         height: number;
+        innerHeight: AnimatedInterpolation;
         listBackgroundColor: string;
         pageX: number;
         pageY: number;
         width: number;
     };
-    eventName: EventName;
-    listVisible: boolean;
-    onEvent: OnEvent;
-    onListActive?: (key?: string) => void;
     underlayColor: string;
-    containerRef: RefObject<View>;
 }
 export interface SearchBaseProps extends SearchProps {
     render: (props: RenderProps) => React.JSX.Element;
@@ -219,11 +218,13 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         data,
         eventName,
         id,
+        leadingIcon: leadingIcon ?? (
+            <Icon type="outlined" name="search" width={24} height={24} />
+        ),
         listVisible,
         onEvent: {...onEvent, onBlur, onFocus},
         onListActive: handleListActive,
         placeholder,
-        underlayColor,
         renderStyle: {
             height: layout.height,
             innerHeight,
@@ -235,8 +236,6 @@ export const SearchBase: FC<SearchBaseProps> = props => {
                 0,
             ),
         },
-        leadingIcon: leadingIcon ?? (
-            <Icon type="outlined" name="search" width={24} height={24} />
-        ),
+        underlayColor,
     });
 };

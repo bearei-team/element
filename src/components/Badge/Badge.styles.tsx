@@ -32,9 +32,9 @@ export const Container = styled(Shape)<ContainerProps>`
             `,
 
             small: css`
-                width: ${theme.adaptSize(theme.spacing.small - 2)}px;
                 height: ${theme.adaptSize(theme.spacing.small - 2)}px;
                 padding: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
+                width: ${theme.adaptSize(theme.spacing.small - 2)}px;
             `,
         };
 

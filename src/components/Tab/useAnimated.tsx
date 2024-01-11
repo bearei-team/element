@@ -109,10 +109,12 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         });
     }, [headerAnimated, headerVisible, animatedTiming]);
 
-    return {
-        activeIndicatorLeft,
-        activeIndicatorWidth,
-        contentInnerLeft,
-        headerHeight,
-    };
+    return [
+        {
+            activeIndicatorLeft,
+            activeIndicatorWidth,
+            contentInnerLeft,
+            headerHeight,
+        },
+    ];
 };

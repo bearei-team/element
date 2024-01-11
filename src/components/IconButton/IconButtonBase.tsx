@@ -46,7 +46,6 @@ export const IconButtonBase: FC<IconButtonBaseProps> = props => {
     const [{eventName, layout}, setState] = useImmer(initialState);
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
-
     const processLayout = useCallback(
         (event: LayoutChangeEvent) => {
             const nativeEventLayout = event.nativeEvent.layout;

@@ -1,6 +1,5 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, LayoutChangeEvent, View} from 'react-native';
-
 import {Hovered} from '../../Hovered/Hovered';
 import {
     TouchableRipple,
@@ -14,8 +13,8 @@ export interface TabItemProps extends TouchableRippleProps {
     defaultActiveKey?: string;
     indexKey?: string;
     labelText?: string;
-    onLabelTextLayout: (event: LayoutChangeEvent, key: string) => void;
     onActive?: (key?: string) => void;
+    onLabelTextLayout: (event: LayoutChangeEvent, key: string) => void;
 }
 
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);

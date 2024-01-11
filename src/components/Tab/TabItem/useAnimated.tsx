@@ -31,5 +31,5 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         }
     }, [active, animatedTiming, activeAnimated]);
 
-    return {color};
+    return [{color}];
 };

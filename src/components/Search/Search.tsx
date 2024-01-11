@@ -36,18 +36,18 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
             children,
+            containerRef,
             data,
+            eventName,
             id,
             leadingIcon,
             listVisible,
-            eventName,
+            onEvent,
+            onListActive,
             placeholder,
             renderStyle,
-            onEvent,
             trailingIcon,
             underlayColor,
-            containerRef,
-            onListActive,
             ...containerProps
         } = renderProps;
 

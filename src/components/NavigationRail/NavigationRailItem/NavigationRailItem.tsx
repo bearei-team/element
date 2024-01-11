@@ -80,7 +80,7 @@ const ForwardRefNavigationRailItem = forwardRef<View, NavigationRailItemProps>(
                     </TouchableRipple>
 
                     <AnimatedLabelText
-                        active={active || defaultActive}
+                        active={active ?? defaultActive}
                         size="medium"
                         style={{color, height: labelHeight}}
                         testID={`navigationRailItem__labelText--${id}`}

@@ -9,9 +9,9 @@ export const useUnderlayColor = (options: UseUnderlayColorOptions) => {
     const underlay = {
         elevated: theme.palette.primary.primary,
         filled: theme.palette.primary.onPrimary,
+        link: theme.palette.primary.primary,
         outlined: theme.palette.primary.primary,
         text: theme.palette.primary.primary,
-        link: theme.palette.primary.primary,
         tonal: theme.palette.secondary.onSecondaryContainer,
     };
 

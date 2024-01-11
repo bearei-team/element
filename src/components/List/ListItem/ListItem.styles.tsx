@@ -2,15 +2,11 @@ import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Typography} from '../../Common/Common.styles';
 
-export interface ContainerProps {
-    visible?: boolean;
-}
-
 export interface ContentProps {
     supportingTextShow?: boolean;
 }
 
-export const Container = styled(View)<ContainerProps>`
+export const Container = styled(View)`
     overflow: hidden;
 `;
 

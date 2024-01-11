@@ -39,9 +39,9 @@ export const TabItemBase: FC<TabItemBaseProps> = props => {
         activeKey,
         defaultActiveKey,
         indexKey,
+        onActive,
         onLabelTextLayout,
         render,
-        onActive,
         ...renderProps
     } = props;
 
@@ -102,7 +102,7 @@ export const TabItemBase: FC<TabItemBaseProps> = props => {
         onStateChange: processStateChange,
     });
 
-    const {color} = useAnimated({active, defaultActive});
+    const [{color}] = useAnimated({active, defaultActive});
     const processLabelTextLayout = (event: LayoutChangeEvent) => {
         onLabelTextLayout(event, indexKey ?? id);
     };
@@ -114,11 +114,7 @@ export const TabItemBase: FC<TabItemBaseProps> = props => {
         onEvent,
         onLabelTextLayout: processLabelTextLayout,
         onLayout: processLayout,
-        renderStyle: {
-            color,
-            width: layout.width,
-            height: layout.height,
-        },
+        renderStyle: {color, height: layout.height, width: layout.width},
         underlayColor,
     });
 };

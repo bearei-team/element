@@ -69,9 +69,11 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         trailingOpacityAnimated,
     ]);
 
-    return {
-        height,
-        onCloseAnimated: processCloseAnimated,
-        trailingOpacity,
-    };
+    return [
+        {
+            height,
+            onCloseAnimated: processCloseAnimated,
+            trailingOpacity,
+        },
+    ];
 };

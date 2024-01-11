@@ -176,8 +176,8 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
             ...border,
             backgroundColor,
             color,
-            height: layout?.height,
-            width: layout?.width,
+            height: layout.height,
+            width: layout.width,
         },
     });
 };

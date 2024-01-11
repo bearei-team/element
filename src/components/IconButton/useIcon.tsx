@@ -19,7 +19,7 @@ export const useIcon = (options: UseIconOptions) => {
     };
 
     return [
-        cloneElement(icon ? icon : <Icon />, {
+        cloneElement(icon ?? <Icon />, {
             eventName,
             fill: disabled
                 ? theme.color.rgba(theme.palette.surface.onSurface, 0.38)

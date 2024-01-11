@@ -63,8 +63,8 @@ const ForwardRefSideSheet = forwardRef<View, SideSheetProps>((props, ref) => {
             primaryButton,
             renderStyle,
             secondaryButton,
-            visible,
             style,
+            visible,
             ...innerProps
         } = renderProps;
 

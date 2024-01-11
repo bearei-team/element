@@ -51,7 +51,6 @@ export const FABBase: FC<FABBaseProps> = props => {
     const [{elevation, layout, eventName}, setState] = useImmer(initialState);
     const [underlayColor] = useUnderlayColor({type});
     const id = useId();
-
     const processElevation = useCallback(
         (nextState: State) => {
             const level = {

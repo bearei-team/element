@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useId, useMemo} from 'react';
+import {useEffect, useId, useMemo} from 'react';
 import {useImmer} from 'use-immer';
 import {ComponentStatus} from '../Common/interface';
 import {FormProps} from './Form';
@@ -32,16 +32,13 @@ export const FormBase = <T extends Store = Store>(props: FormBaseProps<T>) => {
     const [formStore] = useForm<T>(form);
     const {setCallback, setInitialValue} = formStore;
     const id = useId();
-
-    const renderChildren = useCallback(
+    const children = useMemo(
         () =>
             items?.map((item, index) => (
                 <FormItem {...item} key={(item.name ?? index).toString()} />
             )),
         [items],
     );
-
-    const children = useMemo(() => renderChildren(), [renderChildren]);
 
     useEffect(() => {
         setCallback({onFinish, onFinishFailed, onValueChange});

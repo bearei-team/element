@@ -85,5 +85,5 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         exitScreen,
     ]);
 
-    return {backgroundColor, innerTranslateX};
+    return [{backgroundColor, innerTranslateX}];
 };

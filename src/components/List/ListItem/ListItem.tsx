@@ -19,6 +19,7 @@ import {ListItemBase, RenderProps} from './ListItemBase';
 export interface ListItemProps extends TouchableRippleProps {
     activeKey?: string;
     close?: boolean;
+    defaultActiveKey?: string;
     headline?: string;
     indexKey?: string;
     leading?: React.JSX.Element;
@@ -27,7 +28,6 @@ export interface ListItemProps extends TouchableRippleProps {
     supportingText?: string;
     supportingTextNumberOfLines?: number;
     trailing?: React.JSX.Element;
-    defaultActiveKey?: string;
 }
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);

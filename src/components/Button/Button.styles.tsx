@@ -102,16 +102,16 @@ export const Content = styled(Shape)<ContentProps>`
 `;
 
 export const LabelText = styled(Typography)`
-    user-select: none;
     text-align: center;
+    user-select: none;
 `;
 
 export const Icon = styled.View`
-    overflow: hidden;
+    align-items: center;
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center;
+    overflow: hidden;
 
     ${({theme}) => css`
         height: ${theme.adaptSize(theme.spacing.large - 6)}px;

@@ -14,6 +14,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const [labelAnimated] = HOOK.useAnimatedValue(
         block || defaultActive ? 1 : 0,
     );
+
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
     const height = labelAnimated.interpolate({

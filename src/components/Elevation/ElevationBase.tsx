@@ -15,13 +15,10 @@ import {useAnimated} from './useAnimated';
 export interface RenderProps extends ElevationProps {
     onContentLayout?: (event: LayoutChangeEvent) => void;
     onEvent: OnEvent;
-    renderStyle: Animated.WithAnimatedObject<
-        ViewStyle & {
-            opacity0?: AnimatedInterpolation;
-            opacity1?: AnimatedInterpolation;
-        }
-    > & {
+    renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         height: number;
+        opacity0?: AnimatedInterpolation;
+        opacity1?: AnimatedInterpolation;
         width: number;
     };
 }
@@ -76,10 +73,10 @@ export const ElevationBase: FC<ElevationBaseProps> = props => {
         level: level ?? defaultLevel,
         onEvent,
         renderStyle: {
-            height: layout?.height,
+            height: layout.height,
             opacity0: shadow0Opacity,
             opacity1: shadow1Opacity,
-            width: layout?.width,
+            width: layout.width,
         },
     });
 };
