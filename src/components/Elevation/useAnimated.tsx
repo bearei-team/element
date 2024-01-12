@@ -41,7 +41,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 animatedTiming(opacityAnimated, {toValue: level}).start();
             });
         }
-    }, [level, animatedTiming, opacityAnimated]);
+    }, [animatedTiming, level, opacityAnimated]);
 
     return [{shadow0Opacity, shadow1Opacity}];
 };

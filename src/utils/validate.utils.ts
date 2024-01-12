@@ -1,9 +1,4 @@
-import Schema, {
-    RuleItem,
-    ValidateError,
-    ValidateFieldsError,
-    Values,
-} from 'async-validator';
+import Schema, {RuleItem, ValidateError, ValidateFieldsError, Values} from 'async-validator';
 
 export interface ValidateOptions {
     name: string;
@@ -26,11 +21,8 @@ const validateRule = (options: ValidateOptions) => {
 
 export const validate = async (options: ValidateOptions) => {
     const {name, rules, value} = options;
-
-    const processErrors = (
-        errors: ValidateError[] | null,
-        fields: ValidateFieldsError | Values,
-    ) => (fields[name] === value ? undefined : {errors: errors ?? [], rules});
+    const processErrors = (errors: ValidateError[] | null, fields: ValidateFieldsError | Values) =>
+        fields[name] === value ? undefined : {errors: errors ?? [], rules};
 
     return validateRule(options)
         .then(() => undefined)

@@ -13,14 +13,7 @@ export interface UseAnimatedOptions extends Pick<RenderProps, 'close'> {
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {
-        close,
-        eventName,
-        layoutHeight = 0,
-        state,
-        trailingEventName,
-    } = options;
-
+    const {close, eventName, layoutHeight = 0, state, trailingEventName} = options;
     const [heightAnimated] = HOOK.useAnimatedValue(1);
     const [trailingOpacityAnimated] = HOOK.useAnimatedValue(close ? 0 : 1);
     const theme = useTheme();
@@ -49,9 +42,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
     useEffect(() => {
         const closeIconValue = state !== 'enabled' ? 1 : 0;
-        const closeIconToValue = [eventName, trailingEventName].includes(
-            'hoverIn',
-        )
+        const closeIconToValue = [eventName, trailingEventName].includes('hoverIn')
             ? 1
             : closeIconValue;
 
@@ -60,14 +51,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 toValue: close ? closeIconToValue : 1,
             }).start();
         });
-    }, [
-        close,
-        eventName,
-        animatedTiming,
-        state,
-        trailingEventName,
-        trailingOpacityAnimated,
-    ]);
+    }, [animatedTiming, close, eventName, state, trailingEventName, trailingOpacityAnimated]);
 
     return [
         {

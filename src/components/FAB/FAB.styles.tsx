@@ -19,9 +19,7 @@ export const Content = styled(Shape)<ContentProps>`
     position: relative;
 
     ${({theme}) => css`
-        gap: ${theme.adaptSize(
-            theme.spacing.small + theme.spacing.extraSmall,
-        )}px;
+        gap: ${theme.adaptSize(theme.spacing.small + theme.spacing.extraSmall)}px;
     `}
 
     ${({theme, size = 'medium'}) => {
@@ -52,9 +50,7 @@ export const Content = styled(Shape)<ContentProps>`
             height: ${theme.adaptSize(theme.spacing.small * 7)}px;
             min-width: ${theme.adaptSize(theme.spacing.small * 7)}px;
             padding: ${theme.adaptSize(theme.spacing.medium)}px
-                ${theme.adaptSize(
-                    theme.spacing.large - theme.spacing.extraSmall,
-                )}px
+                ${theme.adaptSize(theme.spacing.large - theme.spacing.extraSmall)}px
                 ${theme.adaptSize(theme.spacing.medium)}px
                 ${theme.adaptSize(theme.spacing.medium)}px;
         `}
@@ -83,13 +79,8 @@ export const Icon = styled.View<IconProps>`
                 width: ${theme.adaptSize(theme.spacing.large)}px;
             `,
             large: css`
-                height: ${theme.adaptSize(
-                    theme.spacing.extraLarge + theme.spacing.extraSmall,
-                )}px;
-
-                width: ${theme.adaptSize(
-                    theme.spacing.extraLarge + theme.spacing.extraSmall,
-                )}px;
+                height: ${theme.adaptSize(theme.spacing.extraLarge + theme.spacing.extraSmall)}px;
+                width: ${theme.adaptSize(theme.spacing.extraLarge + theme.spacing.extraSmall)}px;
             `,
         };
 

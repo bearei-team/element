@@ -2,17 +2,18 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './HoveredBase';
 
-export type ContainerProps = Pick<
-    RenderProps,
-    'underlayColor' | 'width' | 'height'
->;
+export type ContainerProps = Pick<RenderProps, 'underlayColor' | 'width' | 'height'>;
 
 export const Container = styled(Shape)<ContainerProps>`
-    left: 0;
     pointer-events: none;
     position: absolute;
-    top: 0;
     z-index: 2048;
+
+    ${({theme}) =>
+        css`
+            left: ${theme.adaptSize(theme.spacing.none)}px;
+            top: ${theme.adaptSize(theme.spacing.none)}px;
+        `}
 
     ${({underlayColor, width = 0, height = 0}) =>
         underlayColor &&

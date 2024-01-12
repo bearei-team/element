@@ -1,9 +1,5 @@
 import {FC, useCallback, useEffect, useId, useMemo} from 'react';
-import {
-    GestureResponderEvent,
-    LayoutChangeEvent,
-    LayoutRectangle,
-} from 'react-native';
+import {GestureResponderEvent, LayoutChangeEvent, LayoutRectangle} from 'react-native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
@@ -30,17 +26,9 @@ export interface ProcessAddRippleOptions {
     locationY: number;
 }
 
-const renderRipples = (
-    rippleSequence: RippleSequence,
-    props: Omit<RippleProps, 'sequence'>,
-) =>
+const renderRipples = (rippleSequence: RippleSequence, props: Omit<RippleProps, 'sequence'>) =>
     Object.entries(rippleSequence).map(([sequence, {location}]) => (
-        <Ripple
-            {...props}
-            key={sequence}
-            location={location}
-            sequence={sequence}
-        />
+        <Ripple {...props} key={sequence} location={location} sequence={sequence} />
     ));
 
 const initialState = {
@@ -53,7 +41,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
     const {
         active,
         activeLocation,
-        centered = false,
+        centered,
         children,
         defaultActive,
         onRippleAnimatedEnd,
@@ -64,18 +52,13 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
 
     const [{rippleSequence, status, layout}, setState] = useImmer(initialState);
     const id = useId();
-    const activeRipple = [typeof defaultActive, typeof active].includes(
-        'boolean',
-    );
-
+    const activeRipple = [typeof defaultActive, typeof active].includes('boolean');
     const processAddRipple = useCallback(
         (options: ProcessAddRippleOptions) => {
             const {locationX, locationY} = options;
 
             setState(draft => {
-                const existRipple =
-                    activeRipple &&
-                    Object.keys(draft.rippleSequence).length !== 0;
+                const existRipple = activeRipple && Object.keys(draft.rippleSequence).length !== 0;
 
                 if (existRipple) {
                     return;
@@ -177,8 +160,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
     );
 
     const ripples = useMemo(() => {
-        const renderRipple =
-            typeof layout.width === 'number' && layout.width !== 0;
+        const renderRipple = typeof layout.width === 'number' && layout.width !== 0;
 
         if (!renderRipple) {
             return <></>;
@@ -221,14 +203,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
                 draft.status = 'succeeded';
             });
         }
-    }, [
-        activeRipple,
-        processAddRipple,
-        setState,
-        status,
-        active,
-        defaultActive,
-    ]);
+    }, [activeRipple, defaultActive, processAddRipple, setState, status]);
 
     useEffect(() => {
         const processRipple = activeRipple;
@@ -238,19 +213,9 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         }
 
         if (status === 'succeeded' && typeof active === 'boolean') {
-            active
-                ? activeLocation && processAddRipple(activeLocation)
-                : processRippleExit();
+            active ? activeLocation && processAddRipple(activeLocation) : processRippleExit();
         }
-    }, [
-        activeLocation,
-        activeRipple,
-        processAddRipple,
-        processRippleExit,
-        setState,
-        status,
-        active,
-    ]);
+    }, [active, activeLocation, activeRipple, processAddRipple, processRippleExit, status]);
 
     return render({
         ...renderProps,

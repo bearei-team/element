@@ -36,12 +36,12 @@ export const HeaderInner = styled.View<ContentItemProps>`
 `;
 
 export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
-    bottom: 0;
     display: flex;
     flex-direction: row;
     position: absolute;
 
     ${({theme, width = 0, paddingHorizontal = 0}) => css`
+        bottom: ${theme.adaptSize(theme.spacing.none)}px;
         width: ${width}px;
         padding: ${theme.spacing.none}px ${paddingHorizontal}px;
     `};
@@ -79,7 +79,11 @@ export const ContentInner = styled.View`
     flex-direction: row;
     height: 100%;
     position: absolute;
-    top: 0;
+
+    ${({theme}) =>
+        css`
+            top: ${theme.adaptSize(theme.spacing.none)}px;
+        `}
 `;
 
 export const ContentItem = styled.View<ContentItemProps>`

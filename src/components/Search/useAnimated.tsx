@@ -27,7 +27,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 useNativeDriver: false,
             }).start(),
         );
-    }, [innerHeightAnimated, animatedTiming, listVisible]);
+    }, [animatedTiming, innerHeightAnimated, listVisible]);
 
     return [{innerHeight}];
 };

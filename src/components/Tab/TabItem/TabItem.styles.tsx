@@ -17,8 +17,7 @@ export const Inner = styled(View)`
     ${({theme}) => css`
         min-height: ${theme.adaptSize(theme.spacing.small * 6)}px;
         min-width: ${theme.adaptSize(theme.spacing.small * 7)}px;
-        padding: ${theme.adaptSize(theme.spacing.none)}px
-            ${theme.adaptSize(theme.spacing.medium)}px;
+        padding: ${theme.adaptSize(theme.spacing.none)}px ${theme.adaptSize(theme.spacing.medium)}px;
     `}
 `;
 

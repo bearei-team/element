@@ -1,11 +1,5 @@
 import {FC, useCallback, useEffect, useId} from 'react';
-import {
-    Animated,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    TextStyle,
-    ViewStyle,
-} from 'react-native';
+import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
@@ -49,8 +43,8 @@ const initialState = {
 
 export const ButtonBase: FC<ButtonBaseProps> = props => {
     const {
-        block = false,
-        disabled = false,
+        block,
+        disabled,
         icon,
         labelText = 'Label',
         render,
@@ -65,9 +59,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     const [underlayColor] = useUnderlayColor({type});
     const processElevation = useCallback(
         (nextState: State) => {
-            const elevationType = ['elevated', 'filled', 'tonal'].includes(
-                type,
-            );
+            const elevationType = ['elevated', 'filled', 'tonal'].includes(type);
 
             if (elevationType) {
                 const level = {
@@ -85,8 +77,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
                 });
 
                 setState(draft => {
-                    draft.elevation = (level[nextState] +
-                        correctionCoefficient) as ElevationLevel;
+                    draft.elevation = (level[nextState] + correctionCoefficient) as ElevationLevel;
                 });
             }
         },
@@ -146,8 +137,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
     }, [setState, status, type]);
 
     useEffect(() => {
-        const setElevation =
-            typeof disabled === 'boolean' && type === 'elevated';
+        const setElevation = typeof disabled === 'boolean' && type === 'elevated';
 
         if (setElevation) {
             setState(draft => {

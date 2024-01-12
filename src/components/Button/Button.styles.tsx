@@ -14,8 +14,6 @@ export const Container = styled(View)<ContainerProps>`
     ${({block}) =>
         block &&
         css`
-            align-self: stretch;
-            flex: 1;
             width: 100%;
         `}
 `;
@@ -53,9 +51,7 @@ export const Content = styled(Shape)<ContentProps>`
             text: css`
                 min-width: ${theme.adaptSize(theme.spacing.small * 7 + 3)}px;
                 padding: ${theme.adaptSize(theme.spacing.small + 2)}px
-                    ${theme.adaptSize(
-                        theme.spacing.medium - theme.spacing.extraSmall,
-                    )}px;
+                    ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px;
             `,
             link: css`
                 height: ${theme.adaptSize(theme.spacing.medium)}px;

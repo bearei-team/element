@@ -14,22 +14,14 @@ export interface DividerProps extends Partial<ViewProps & RefAttributes<View>> {
 
 const ForwardRefDivider = forwardRef<View, DividerProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {id, subheader, width, height, style, ...containerProps} =
-            renderProps;
+        const {id, subheader, width, height, style, ...containerProps} = renderProps;
 
         return (
-            <Container
-                {...containerProps}
-                height={height}
-                testID={`divider--${id}`}
-                width={width}>
+            <Container {...containerProps} height={height} testID={`divider--${id}`} width={width}>
                 <Content style={style} testID={`divider__content--${id}`} />
 
                 {subheader && (
-                    <Subheader
-                        size="small"
-                        testID={`divider__subheader--${id}`}
-                        type="title">
+                    <Subheader size="small" testID={`divider__subheader--${id}`} type="title">
                         {subheader}
                     </Subheader>
                 )}

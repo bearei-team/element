@@ -21,10 +21,7 @@ export interface FormProps<T extends Store = Store>
     layout?: 'horizontal' | 'vertical';
 }
 
-const FormInner = <T extends Store>(
-    props: FormProps<T>,
-    ref: ForwardedRef<View>,
-) => {
+const FormInner = <T extends Store>(props: FormProps<T>, ref: ForwardedRef<View>) => {
     const render = (renderProps: RenderProps<T>) => {
         const {id, children, ...containerProps} = renderProps;
 

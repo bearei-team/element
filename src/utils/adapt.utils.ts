@@ -14,12 +14,8 @@ export const adapt = (options = {} as AdaptOptions) => {
     const mobile = Platform.OS === 'ios' || Platform.OS === 'android';
     const widthScale = screenWidth / (designWidth / designDensity);
     const scale = Math.min(widthScale, heightScale);
-
-    const adaptFontSize = (size: number) =>
-        mobile ? Math.round(size * scale * fontScale) : size;
-
-    const adaptSize = (size: number) =>
-        mobile ? Math.round(size * scale) : size;
+    const adaptFontSize = (size: number) => (mobile ? Math.round(size * scale * fontScale) : size);
+    const adaptSize = (size: number) => (mobile ? Math.round(size * scale) : size);
 
     return {
         adaptFontSize,

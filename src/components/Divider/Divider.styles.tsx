@@ -3,14 +3,10 @@ import styled, {css} from 'styled-components/native';
 import {Typography} from '../Common/Common.styles';
 import {RenderProps} from './DividerBase';
 
-export type ContainerProps = Pick<
-    RenderProps,
-    'layout' | 'size' | 'width' | 'height'
->;
+export type ContainerProps = Pick<RenderProps, 'layout' | 'size' | 'width' | 'height'>;
 
 export const Container = styled(View)<ContainerProps>`
     align-items: flex-start;
-    align-self: stretch;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -41,14 +37,10 @@ export const Container = styled(View)<ContainerProps>`
             medium:
                 layout === 'horizontal'
                     ? css`
-                          padding-left: ${theme.adaptSize(
-                              theme.spacing.medium,
-                          )}px;
+                          padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
                       `
                     : css`
-                          padding-top: ${theme.adaptSize(
-                              theme.spacing.medium,
-                          )}px;
+                          padding-top: ${theme.adaptSize(theme.spacing.medium)}px;
                       `,
             small:
                 layout === 'horizontal'

@@ -6,10 +6,7 @@ import {Container, Content} from './TouchableRipple.styles';
 import {RenderProps, TouchableRippleBase} from './TouchableRippleBase';
 
 export type TouchableProps = PressableProps &
-    Pick<
-        RippleProps,
-        'underlayColor' | 'centered' | 'active' | 'defaultActive'
-    > &
+    Pick<RippleProps, 'underlayColor' | 'centered' | 'active' | 'defaultActive'> &
     RefAttributes<View> &
     ViewProps &
     Pick<ShapeProps, 'shape'>;
@@ -22,30 +19,20 @@ export interface TouchableRippleProps
     onRippleAnimatedEnd?: () => void;
 }
 
-const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>(
-    (props, ref) => {
-        const render = (renderProps: RenderProps) => {
-            const {id, children, shape, onEvent, ...pressableProps} =
-                renderProps;
+const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>((props, ref) => {
+    const render = (renderProps: RenderProps) => {
+        const {id, children, shape, onEvent, ...pressableProps} = renderProps;
 
-            return (
-                <Container
-                    {...pressableProps}
-                    {...onEvent}
-                    testID={`touchableRipple--${id}`}>
-                    <Content
-                        shape={shape}
-                        testID={`touchableRipple__content--${id}`}>
-                        {children}
-                    </Content>
-                </Container>
-            );
-        };
+        return (
+            <Container {...pressableProps} {...onEvent} testID={`touchableRipple--${id}`}>
+                <Content shape={shape} testID={`touchableRipple__content--${id}`}>
+                    {children}
+                </Content>
+            </Container>
+        );
+    };
 
-        return <TouchableRippleBase {...props} render={render} ref={ref} />;
-    },
-);
+    return <TouchableRippleBase {...props} render={render} ref={ref} />;
+});
 
-export const TouchableRipple: FC<TouchableRippleProps> = memo(
-    ForwardRefTouchableRipple,
-);
+export const TouchableRipple: FC<TouchableRippleProps> = memo(ForwardRefTouchableRipple);

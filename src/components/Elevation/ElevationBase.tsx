@@ -1,10 +1,5 @@
 import {FC, useCallback, useId} from 'react';
-import {
-    Animated,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    ViewStyle,
-} from 'react-native';
+import {Animated, LayoutChangeEvent, LayoutRectangle, ViewStyle} from 'react-native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';

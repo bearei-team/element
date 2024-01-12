@@ -2,8 +2,7 @@ import React, {cloneElement} from 'react';
 import {useTheme} from 'styled-components/native';
 import {RenderProps} from './FABBase';
 
-export interface UseIconOptions
-    extends Pick<RenderProps, 'disabled' | 'type' | 'eventName'> {
+export interface UseIconOptions extends Pick<RenderProps, 'disabled' | 'type' | 'eventName'> {
     icon?: React.JSX.Element;
 }
 

@@ -1,11 +1,5 @@
 import {FC, useCallback, useId} from 'react';
-import {
-    Animated,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    TextStyle,
-    ViewStyle,
-} from 'react-native';
+import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
@@ -35,14 +29,7 @@ const initialState = {
 };
 
 export const IconButtonBase: FC<IconButtonBaseProps> = props => {
-    const {
-        disabled = false,
-        icon,
-        render,
-        type = 'filled',
-        ...renderProps
-    } = props;
-
+    const {disabled = false, icon, render, type = 'filled', ...renderProps} = props;
     const [{eventName, layout}, setState] = useImmer(initialState);
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});

@@ -3,20 +3,15 @@ import {useTheme} from 'styled-components/native';
 import {RenderProps} from './TextFieldBase';
 
 export interface UseIconOptions
-    extends Pick<
-        RenderProps,
-        'disabled' | 'leadingIcon' | 'trailingIcon' | 'error'
-    > {}
+    extends Pick<RenderProps, 'disabled' | 'leadingIcon' | 'trailingIcon' | 'error'> {}
 
 export const useIcon = (options: UseIconOptions) => {
     const {disabled, leadingIcon, trailingIcon, error} = options;
     const theme = useTheme();
     const fillColor = theme.palette.surface.onSurfaceVariant;
     const errorColor = theme.palette.error.error;
-    const disabledColor = theme.color.rgba(
-        theme.palette.surface.onSurface,
-        0.38,
-    );
+    const defaultColor = error ? errorColor : fillColor;
+    const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
 
     return [
         {
@@ -28,11 +23,7 @@ export const useIcon = (options: UseIconOptions) => {
             trailingIcon:
                 trailingIcon &&
                 cloneElement(trailingIcon, {
-                    fill: disabled
-                        ? disabledColor
-                        : error
-                        ? errorColor
-                        : fillColor,
+                    fill: disabled ? disabledColor : defaultColor,
                 }),
         },
     ];

@@ -8,8 +8,7 @@ export interface NavigationDataSource extends NavigationRailItemProps {
     key?: string;
 }
 
-export interface NavigationRailProps
-    extends Partial<ViewProps & RefAttributes<View>> {
+export interface NavigationRailProps extends Partial<ViewProps & RefAttributes<View>> {
     block?: boolean;
     data?: NavigationDataSource[];
     defaultActiveKey?: string;
@@ -17,28 +16,20 @@ export interface NavigationRailProps
     onActive?: (key?: string) => void;
 }
 
-const ForwardRefNavigationRail = forwardRef<View, NavigationRailProps>(
-    (props, ref) => {
-        const render = (renderProps: RenderProps) => {
-            const {id, children, fab, ...containerProps} = renderProps;
+const ForwardRefNavigationRail = forwardRef<View, NavigationRailProps>((props, ref) => {
+    const render = (renderProps: RenderProps) => {
+        const {id, children, fab, ...containerProps} = renderProps;
 
-            return (
-                <Container {...containerProps} testID={`navigationRail--${id}`}>
-                    {fab && (
-                        <Fab testID={`navigationRail__fab--${id}`}>{fab}</Fab>
-                    )}
+        return (
+            <Container {...containerProps} testID={`navigationRail--${id}`}>
+                {fab && <Fab testID={`navigationRail__fab--${id}`}>{fab}</Fab>}
 
-                    <Destination testID={`navigationRail__destination--${id}`}>
-                        {children}
-                    </Destination>
-                </Container>
-            );
-        };
+                <Destination testID={`navigationRail__destination--${id}`}>{children}</Destination>
+            </Container>
+        );
+    };
 
-        return <NavigationRailBase {...props} ref={ref} render={render} />;
-    },
-);
+    return <NavigationRailBase {...props} ref={ref} render={render} />;
+});
 
-export const NavigationRail: FC<NavigationRailProps> = memo(
-    ForwardRefNavigationRail,
-);
+export const NavigationRail: FC<NavigationRailProps> = memo(ForwardRefNavigationRail);

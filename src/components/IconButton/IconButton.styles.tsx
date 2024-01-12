@@ -3,8 +3,7 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './IconButtonBase';
 
-export interface ContentProps
-    extends Pick<RenderProps, 'type' | 'width' | 'height'> {
+export interface ContentProps extends Pick<RenderProps, 'type' | 'width' | 'height'> {
     iconShow: boolean;
 }
 

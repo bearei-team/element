@@ -1,25 +1,14 @@
 import {FC, forwardRef, memo} from 'react';
-import {
-    Animated,
-    LayoutRectangle,
-    NativeTouchEvent,
-    View,
-    ViewProps,
-} from 'react-native';
+import {Animated, LayoutRectangle, NativeTouchEvent, View, ViewProps} from 'react-native';
 import {Container} from './Ripple.styles';
 import {RenderProps, RippleBase} from './RippleBase';
 
-export interface RippleProps
-    extends Partial<ViewProps & React.RefAttributes<View>> {
+export interface RippleProps extends Partial<ViewProps & React.RefAttributes<View>> {
     active?: boolean;
     centered?: boolean;
     defaultActive?: boolean;
     location?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
-    onEntryAnimatedEnd?: (
-        sequence: string,
-        exitAnimated: (finished?: () => void) => void,
-    ) => void;
-
+    onEntryAnimatedEnd?: (sequence: string, exitAnimated: (finished?: () => void) => void) => void;
     sequence: string;
     touchableLayout?: LayoutRectangle;
     underlayColor?: string;
@@ -40,9 +29,7 @@ const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => {
         } = renderProps;
 
         const {height, width, ...containerStyle} = renderStyle;
-        const activeRipple = [typeof active, typeof defaultActive].includes(
-            'boolean',
-        );
+        const activeRipple = [typeof active, typeof defaultActive].includes('boolean');
 
         return (
             <AnimatedContainer

@@ -15,10 +15,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const animatedTiming = UTIL.animatedTiming(theme);
     const color = activeAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [
-            theme.palette.surface.onSurface,
-            theme.palette.primary.primary,
-        ],
+        outputRange: [theme.palette.surface.onSurface, theme.palette.primary.primary],
     });
 
     useEffect(() => {
@@ -29,7 +26,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 }).start();
             });
         }
-    }, [active, animatedTiming, activeAnimated]);
+    }, [active, activeAnimated, animatedTiming]);
 
     return [{color}];
 };

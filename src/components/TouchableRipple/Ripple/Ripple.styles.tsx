@@ -25,10 +25,7 @@ export const Container = styled(Shape)<ContainerProps>`
         css`
             background-color: ${activeRipple
                 ? underlayColor
-                : theme.color.rgba(
-                      underlayColor ?? theme.palette.surface.surface,
-                      0.12,
-                  )};
+                : theme.color.rgba(underlayColor ?? theme.palette.surface.surface, 0.12)};
         `};
 
     ${({activeRipple}) =>

@@ -1,11 +1,5 @@
 import React, {FC, RefAttributes, forwardRef, memo} from 'react';
-import {
-    Animated,
-    GestureResponderEvent,
-    ModalProps,
-    View,
-    ViewProps,
-} from 'react-native';
+import {Animated, GestureResponderEvent, ModalProps, View, ViewProps} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
 import {Divider} from '../Divider/Divider';
 import {
@@ -25,9 +19,7 @@ import {RenderProps, SideSheetBase} from './SideSheetBase';
 export type SideSheetType = 'side' | 'bottom';
 
 export interface SideSheetProps
-    extends Partial<
-        ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & ModalProps
-    > {
+    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & ModalProps> {
     back?: boolean;
     backIcon?: React.JSX.Element;
     closeIcon?: React.JSX.Element;
@@ -69,16 +61,13 @@ const ForwardRefSideSheet = forwardRef<View, SideSheetProps>((props, ref) => {
         } = renderProps;
 
         const {backgroundColor, innerTranslateX} = renderStyle;
-        const shape =
-            position === 'horizontalStart' ? 'largeEnd' : 'largeStart';
+        const shape = position === 'horizontalStart' ? 'largeEnd' : 'largeStart';
 
         return (
             <>
                 {visible && (
                     <Modal onLayout={onShow} testID={`sideSheet__modal--${id}`}>
-                        <AnimatedContainer
-                            style={{backgroundColor}}
-                            testID={`sideSheet--${id}`}>
+                        <AnimatedContainer style={{backgroundColor}} testID={`sideSheet--${id}`}>
                             <AnimatedInner
                                 {...innerProps}
                                 shape={shape}
@@ -90,8 +79,7 @@ const ForwardRefSideSheet = forwardRef<View, SideSheetProps>((props, ref) => {
                                 accessibilityRole="alert">
                                 <Header testID={`sideSheet__header--${id}`}>
                                     {back && (
-                                        <BackAffordance
-                                            testID={`sideSheet__backAffordance--${id}`}>
+                                        <BackAffordance testID={`sideSheet__backAffordance--${id}`}>
                                             {backIcon}
                                         </BackAffordance>
                                     )}
@@ -100,8 +88,7 @@ const ForwardRefSideSheet = forwardRef<View, SideSheetProps>((props, ref) => {
                                         {headlineText}
                                     </HeadlineText>
 
-                                    <CloseAffordance
-                                        testID={`sideSheet__closeAffordance--${id}`}>
+                                    <CloseAffordance testID={`sideSheet__closeAffordance--${id}`}>
                                         {closeIcon}
                                     </CloseAffordance>
                                 </Header>
@@ -115,8 +102,7 @@ const ForwardRefSideSheet = forwardRef<View, SideSheetProps>((props, ref) => {
                                 {footer && (
                                     <>
                                         <Divider size="large" />
-                                        <Footer
-                                            testID={`sideSheet__footer--${id}`}>
+                                        <Footer testID={`sideSheet__footer--${id}`}>
                                             <PrimaryButton
                                                 testID={`sideSheet__primaryButton--${id}`}>
                                                 {primaryButton}

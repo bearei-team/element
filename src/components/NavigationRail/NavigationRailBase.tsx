@@ -13,7 +13,7 @@ export interface NavigationBaseProps extends NavigationRailProps {
 export interface RenderItemOptions {
     active?: boolean;
     activeKey?: string;
-    block: boolean;
+    block?: boolean;
     data: ListDataSource[];
     defaultActiveKey?: string;
     onActive: (key?: string) => void;
@@ -43,7 +43,7 @@ const initialState = {
 
 export const NavigationRailBase: FC<NavigationBaseProps> = props => {
     const {
-        block = false,
+        block,
         data: dataSources,
         defaultActiveKey,
         fab,

@@ -1,11 +1,5 @@
 import {FC, ReactNode, useCallback, useEffect, useId, useMemo} from 'react';
-import {
-    Animated,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    Text,
-    ViewStyle,
-} from 'react-native';
+import {Animated, LayoutChangeEvent, LayoutRectangle, Text, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {AnimatedInterpolation, ComponentStatus} from '../Common/interface';
@@ -48,14 +42,7 @@ const initialState = {
 };
 
 const renderItem = (options: RenderItemOptions) => {
-    const {
-        data,
-        onActive,
-        onLayout,
-        onLabelTextLayout,
-        defaultActiveKey,
-        activeKey,
-    } = options;
+    const {data, onActive, onLayout, onLabelTextLayout, defaultActiveKey, activeKey} = options;
 
     return data.map(datum => (
         <TabItem
@@ -72,52 +59,28 @@ const renderItem = (options: RenderItemOptions) => {
 };
 
 export const TabBase: FC<TabBaseProps> = props => {
-    const {
-        data: dataSources,
-        defaultActiveKey,
-        onActive,
-        onLayout,
-        render,
-        ...renderProps
-    } = props;
+    const {data: dataSources, defaultActiveKey, onActive, onLayout, render, ...renderProps} = props;
+    const [{activeIndicatorOffsetPosition, activeKey, data, itemLayout, layout, status}, setState] =
+        useImmer(initialState);
 
-    const [
-        {
-            activeIndicatorOffsetPosition,
-            activeKey,
-            data,
-            itemLayout,
-            layout,
-            status,
-        },
-        setState,
-    ] = useImmer(initialState);
     const id = useId();
     const theme = useTheme();
     const activeData = data.find(({key}) => key === activeKey);
     const activeDataLabelTextWidth = activeData?.labelTextLayout?.width ?? 0;
-    const activeIndicatorBaseWidth =
-        theme.spacing.large - theme.spacing.extraSmall;
-
+    const activeIndicatorBaseWidth = theme.spacing.large - theme.spacing.extraSmall;
     const activeIndicatorPaddingHorizontal =
         ((itemLayout.width ?? 0) - activeDataLabelTextWidth) / 2 +
         (activeDataLabelTextWidth - activeIndicatorBaseWidth) / 2;
 
-    const [
-        {
-            activeIndicatorLeft,
-            activeIndicatorWidth,
-            contentInnerLeft,
-            headerHeight,
-        },
-    ] = useAnimated({
-        activeIndicatorBaseWidth,
-        activeKey,
-        data,
-        headerVisible: false,
-        itemLayout,
-        layout,
-    });
+    const [{activeIndicatorLeft, activeIndicatorWidth, contentInnerLeft, headerHeight}] =
+        useAnimated({
+            activeIndicatorBaseWidth,
+            activeKey,
+            data,
+            headerVisible: false,
+            itemLayout,
+            layout,
+        });
 
     const processLayout = (event: LayoutChangeEvent) => {
         const nativeEventLayout = event.nativeEvent.layout;
@@ -167,14 +130,10 @@ export const TabBase: FC<TabBaseProps> = props => {
                         datum => datum.key === draft.activeKey,
                     );
 
-                    const nextActiveItemIndex = draft.data.findIndex(
-                        datum => datum.key === key,
-                    );
+                    const nextActiveItemIndex = draft.data.findIndex(datum => datum.key === key);
 
                     draft.activeIndicatorOffsetPosition =
-                        nextActiveItemIndex > draftActiveItemIndex
-                            ? 'right'
-                            : 'left';
+                        nextActiveItemIndex > draftActiveItemIndex ? 'right' : 'left';
 
                     draft.activeKey = key;
                 }
@@ -210,11 +169,7 @@ export const TabBase: FC<TabBaseProps> = props => {
             typeof layout.width === 'number' &&
             data.map(({content, key}, index) => (
                 <ContentItem key={key ?? index} width={layout.width}>
-                    {typeof content === 'string' ? (
-                        <Text>{content}</Text>
-                    ) : (
-                        content
-                    )}
+                    {typeof content === 'string' ? <Text>{content}</Text> : content}
                 </ContentItem>
             )),
         [data, layout.width],

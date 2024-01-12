@@ -15,18 +15,9 @@ export interface UseAnimatedOptions {
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {
-        data,
-        itemLayout,
-        layout,
-        headerVisible,
-        activeKey,
-        activeIndicatorBaseWidth,
-    } = options;
+    const {data, itemLayout, layout, headerVisible, activeKey, activeIndicatorBaseWidth} = options;
     const {width: layoutWidth = 0} = layout;
-    const {height: itemLayoutHeight = 0, width: itemLayoutWidth = 0} =
-        itemLayout;
-
+    const {height: itemLayoutHeight = 0, width: itemLayoutWidth = 0} = itemLayout;
     const dataIndexes = Array.from({length: data.length}, (_, index) => index);
     const defaultRange = dataIndexes.length <= 1;
     const range = defaultRange ? [0, 1] : dataIndexes;
@@ -39,24 +30,18 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         inputRange: [0, 1],
         outputRange: [
             0,
-            !itemLayoutHeight
-                ? theme.adaptSize(theme.spacing.small * 6)
-                : itemLayoutHeight,
+            !itemLayoutHeight ? theme.adaptSize(theme.spacing.small * 6) : itemLayoutHeight,
         ],
     });
 
     const activeIndicatorLeft = activeAnimated.interpolate({
         inputRange: range,
-        outputRange: defaultRange
-            ? range
-            : dataIndexes.map(index => index * itemLayoutWidth),
+        outputRange: defaultRange ? range : dataIndexes.map(index => index * itemLayoutWidth),
     });
 
     const contentInnerLeft = activeAnimated.interpolate({
         inputRange: range,
-        outputRange: defaultRange
-            ? range
-            : dataIndexes.map(index => -(index * layoutWidth)),
+        outputRange: defaultRange ? range : dataIndexes.map(index => -(index * layoutWidth)),
     });
 
     const activeIndicatorWidth = activeIndicatorWidthAnimated.interpolate({
@@ -93,13 +78,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 });
             });
         });
-    }, [
-        activeAnimated,
-        activeIndicatorWidthAnimated,
-        data,
-        animatedTiming,
-        activeKey,
-    ]);
+    }, [activeAnimated, activeIndicatorWidthAnimated, activeKey, animatedTiming, data]);
 
     useEffect(() => {
         requestAnimationFrame(() => {
@@ -107,7 +86,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 toValue: headerVisible ? 1 : 0,
             });
         });
-    }, [headerAnimated, headerVisible, animatedTiming]);
+    }, [animatedTiming, headerAnimated, headerVisible]);
 
     return [
         {

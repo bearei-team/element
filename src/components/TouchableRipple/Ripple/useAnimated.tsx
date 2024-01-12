@@ -1,32 +1,24 @@
 import {useCallback, useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
+import {HOOK} from '../../../hooks/hook';
 import {AnimatedTimingOptions} from '../../../utils/animatedTiming.utils';
 import {UTIL} from '../../../utils/util';
 import {RenderProps} from './RippleBase';
 
 export interface UseAnimatedOptions
-    extends Pick<
-        RenderProps,
-        'onEntryAnimatedEnd' | 'active' | 'defaultActive'
-    > {
+    extends Pick<RenderProps, 'onEntryAnimatedEnd' | 'active' | 'defaultActive'> {
     minDuration: number;
     sequence: string;
 }
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {active, defaultActive, minDuration, onEntryAnimatedEnd, sequence} =
-        options;
-
-    const [opacityAnimated] = useAnimatedValue(1);
-    const [scaleAnimated] = useAnimatedValue(defaultActive ? 1 : 0);
+    const {active, defaultActive, minDuration, onEntryAnimatedEnd, sequence} = options;
+    const [opacityAnimated] = HOOK.useAnimatedValue(1);
+    const [scaleAnimated] = HOOK.useAnimatedValue(defaultActive ? 1 : 0);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
-    const activeRipple = [typeof defaultActive, typeof active].includes(
-        'boolean',
-    );
-
+    const activeRipple = [typeof defaultActive, typeof active].includes('boolean');
     const opacity = opacityAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 1],
@@ -66,9 +58,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                     ]).start(finished);
                 }
 
-                animatedTiming(opacityAnimated, animatedTimingOptions).start(
-                    finished,
-                );
+                animatedTiming(opacityAnimated, animatedTimingOptions).start(finished);
             });
         },
         [activeRipple, animatedTiming, opacityAnimated, scaleAnimated],

@@ -28,8 +28,8 @@ export const Inner = styled.View`
 
 export const Leading = styled.View`
     ${({theme}) => css`
-        width: ${theme.adaptSize(theme.spacing.small * 5)}px;
         height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+        width: ${theme.adaptSize(theme.spacing.small * 5)}px;
     `}
 `;
 

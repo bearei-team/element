@@ -2,20 +2,11 @@ import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
-import {
-    TouchableRipple,
-    TouchableRippleProps,
-} from '../TouchableRipple/TouchableRipple';
+import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon, LabelText} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
-export type ButtonType =
-    | 'elevated'
-    | 'filled'
-    | 'link'
-    | 'outlined'
-    | 'text'
-    | 'tonal';
+export type ButtonType = 'elevated' | 'filled' | 'link' | 'outlined' | 'text' | 'tonal';
 
 export interface ButtonProps extends TouchableRippleProps {
     block?: boolean;
@@ -56,10 +47,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                 block={block}
                 onLayout={onLayout}
                 testID={`button--${id}`}>
-                <Elevation
-                    defaultLevel={defaultElevation}
-                    level={elevation}
-                    shape={shape}>
+                <Elevation defaultLevel={defaultElevation} level={elevation} shape={shape}>
                     <TouchableRipple
                         {...onTouchableRippleEvent}
                         shape={shape}
@@ -77,11 +65,7 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                             type={type}
                             block={block}
                             width={width}>
-                            {icon && !link && (
-                                <Icon testID={`button__icon--${id}`}>
-                                    {icon}
-                                </Icon>
-                            )}
+                            {icon && !link && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
 
                             <AnimatedLabelText
                                 ellipsizeMode="tail"

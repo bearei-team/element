@@ -11,22 +11,10 @@ export interface FormItemBaseProps extends FormItemProps {
 }
 
 const initialState = {};
-
 export const FormItemBase: FC<FormItemBaseProps> = props => {
-    const {
-        labelText,
-        name,
-        render,
-        renderControl,
-        rules,
-        validateFirst,
-        ...renderProps
-    } = props;
-
+    const {labelText, name, render, renderControl, rules, validateFirst, ...renderProps} = props;
     const [, setState] = useImmer(initialState);
-    const {getFieldError, getFieldValue, setFieldValue, signInField} =
-        useFormContext();
-
+    const {getFieldError, getFieldValue, setFieldValue, signInField} = useFormContext();
     const errors = getFieldError(name)?.errors;
     const fieldValue = name ? getFieldValue(name) : name;
     const id = useId();

@@ -67,8 +67,7 @@ export const TrailingIcon = styled.View`
     ${({theme}) => css`
         height: ${theme.adaptSize(theme.spacing.small * 6)}px;
         width: ${theme.adaptSize(theme.spacing.small * 6)}px;
-        padding: ${theme.adaptSize(theme.spacing.small)}px
-            ${theme.adaptSize(theme.spacing.small)}px;
+        padding: ${theme.adaptSize(theme.spacing.small)}px ${theme.adaptSize(theme.spacing.small)}px;
     `}
 `;
 
@@ -92,16 +91,13 @@ export const Input = styled(TextInput)`
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
         height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
-        letter-spacing: ${theme.adaptSize(
-            theme.typography.body.large.letterSpacing,
-        )}px;
+        letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
     `};
 `;
 
 export const SupportingText = styled(Typography)`
     ${({theme}) => css`
-        padding: ${theme.adaptSize(theme.spacing.none)}px
-            ${theme.adaptSize(theme.spacing.medium)}px;
+        padding: ${theme.adaptSize(theme.spacing.none)}px ${theme.adaptSize(theme.spacing.medium)}px;
     `}
 `;
 

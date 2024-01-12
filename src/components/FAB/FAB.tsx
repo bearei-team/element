@@ -3,10 +3,7 @@ import {Animated, View} from 'react-native';
 import {Size} from '../Common/interface';
 import {Elevation, ElevationLevel} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
-import {
-    TouchableRipple,
-    TouchableRippleProps,
-} from '../TouchableRipple/TouchableRipple';
+import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon, LabelText} from './FAB.styles';
 import {FABBase, RenderProps} from './FABBase';
 
@@ -51,10 +48,7 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
                 accessibilityLabel={labelText ?? accessibilityLabel}
                 accessibilityRole="button"
                 testID={`fab--${id}`}>
-                <Elevation
-                    level={elevation}
-                    shape={shape}
-                    defaultLevel={defaultElevation}>
+                <Elevation level={elevation} shape={shape} defaultLevel={defaultElevation}>
                     <TouchableRipple
                         {...onTouchableRippleEvent}
                         shape={shape}
@@ -70,9 +64,7 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => {
                             }}
                             testID={`fab__content--${id}`}
                             type={type}>
-                            {icon && (
-                                <Icon testID={`fab__icon--${id}`}>{icon}</Icon>
-                            )}
+                            {icon && <Icon testID={`fab__icon--${id}`}>{icon}</Icon>}
 
                             {labelText && (
                                 <AnimatedLabelText

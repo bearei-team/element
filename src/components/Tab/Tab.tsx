@@ -28,27 +28,17 @@ export interface TabProps extends Partial<ViewProps & RefAttributes<View>> {
 }
 
 /**
- * TODO: secondary and icon
+ * TODO: secondary and icon,Autohide Head
  */
 
-const AnimatedActiveIndicator =
-    Animated.createAnimatedComponent(ActiveIndicator);
-
-const AnimatedActiveIndicatorInner =
-    Animated.createAnimatedComponent(ActiveIndicatorInner);
-
+const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
+const AnimatedActiveIndicatorInner = Animated.createAnimatedComponent(ActiveIndicatorInner);
 const AnimatedContentInner = Animated.createAnimatedComponent(ContentInner);
 const AnimatedHeader = Animated.createAnimatedComponent(Header);
 const ForwardRefTab = forwardRef<View, TabProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {
-            activeIndicatorOffsetPosition,
-            children,
-            id,
-            items,
-            renderStyle,
-            ...containerProps
-        } = renderProps;
+        const {activeIndicatorOffsetPosition, children, id, items, renderStyle, ...containerProps} =
+            renderProps;
 
         const {
             activeIndicatorLeft,
@@ -62,23 +52,17 @@ const ForwardRefTab = forwardRef<View, TabProps>((props, ref) => {
 
         return (
             <Container {...containerProps} testID={`tab--${id}`}>
-                <AnimatedHeader
-                    testID={`tab__header--${id}`}
-                    style={{height: headerHeight}}>
+                <AnimatedHeader testID={`tab__header--${id}`} style={{height: headerHeight}}>
                     <HeaderScrollView
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
                         showsVerticalScrollIndicator={false}
                         testID={`tab__headerScrollView--${id}`}>
-                        <HeaderInner
-                            testID={`tab__headerInner--${id}`}
-                            width={width}>
+                        <HeaderInner testID={`tab__headerInner--${id}`} width={width}>
                             {items}
                             <AnimatedActiveIndicator
                                 offsetPosition={activeIndicatorOffsetPosition}
-                                paddingHorizontal={
-                                    activeIndicatorPaddingHorizontal
-                                }
+                                paddingHorizontal={activeIndicatorPaddingHorizontal}
                                 style={{left: activeIndicatorLeft}}
                                 testID={`tab__activeIndicator--${id}`}
                                 width={itemWidth}>

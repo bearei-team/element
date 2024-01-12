@@ -11,30 +11,16 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const [colorAnimated] = HOOK.useAnimatedValue(1);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
-    const disabledBackgroundColor = theme.color.rgba(
-        theme.palette.surface.onSurface,
-        0.12,
-    );
-
-    const disabledColor = theme.color.rgba(
-        theme.palette.surface.onSurface,
-        0.38,
-    );
-
+    const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
+    const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
     const backgroundColorConfig = {
         surface: {
             inputRange: [0, 1],
-            outputRange: [
-                disabledBackgroundColor,
-                theme.palette.surface.surfaceContainerHigh,
-            ],
+            outputRange: [disabledBackgroundColor, theme.palette.surface.surfaceContainerHigh],
         },
         primary: {
             inputRange: [0, 1],
-            outputRange: [
-                disabledBackgroundColor,
-                theme.palette.primary.primaryContainer,
-            ],
+            outputRange: [disabledBackgroundColor, theme.palette.primary.primaryContainer],
         },
         secondary: {
             inputRange: [0, 1],
@@ -59,31 +45,19 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         },
         primary: {
             inputRange: [0, 1],
-            outputRange: [
-                disabledColor,
-                theme.palette.primary.onPrimaryContainer,
-            ],
+            outputRange: [disabledColor, theme.palette.primary.onPrimaryContainer],
         },
         secondary: {
             inputRange: [0, 1],
-            outputRange: [
-                disabledColor,
-                theme.palette.secondary.onSecondaryContainer,
-            ],
+            outputRange: [disabledColor, theme.palette.secondary.onSecondaryContainer],
         },
         tertiary: {
             inputRange: [0, 1],
-            outputRange: [
-                disabledColor,
-                theme.palette.tertiary.onTertiaryContainer,
-            ],
+            outputRange: [disabledColor, theme.palette.tertiary.onTertiaryContainer],
         },
     };
 
-    const backgroundColor = colorAnimated.interpolate(
-        backgroundColorConfig[type],
-    );
-
+    const backgroundColor = colorAnimated.interpolate(backgroundColorConfig[type]);
     const color = colorAnimated.interpolate(colorConfig[type]);
 
     useEffect(() => {

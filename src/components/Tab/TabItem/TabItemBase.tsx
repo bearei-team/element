@@ -1,11 +1,5 @@
 import {FC, useCallback, useId} from 'react';
-import {
-    Animated,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    TextStyle,
-    ViewStyle,
-} from 'react-native';
+import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../../hooks/hook';
@@ -48,17 +42,13 @@ export const TabItemBase: FC<TabItemBaseProps> = props => {
     const [{layout, eventName}, setState] = useImmer(initialState);
     const id = useId();
     const theme = useTheme();
-    const active =
-        typeof activeKey === 'string' ? activeKey === indexKey : undefined;
-
+    const active = typeof activeKey === 'string' ? activeKey === indexKey : undefined;
     const defaultActive =
         [typeof defaultActiveKey, typeof indexKey].includes('string') &&
         defaultActiveKey === indexKey;
 
     const underlayColor =
-        active || defaultActive
-            ? theme.palette.primary.primary
-            : theme.palette.surface.onSurface;
+        active || defaultActive ? theme.palette.primary.primary : theme.palette.surface.onSurface;
 
     const processLayout = useCallback(
         (event: LayoutChangeEvent) => {
@@ -78,7 +68,6 @@ export const TabItemBase: FC<TabItemBaseProps> = props => {
     const processStateChange = useCallback(
         (_nextState: State, options = {} as OnStateChangeOptions) => {
             const {event, eventName: nextEventName} = options;
-
             const nextEvent = {
                 layout: () => {
                     processLayout(event as LayoutChangeEvent);

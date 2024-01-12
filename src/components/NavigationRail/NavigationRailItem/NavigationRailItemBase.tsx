@@ -12,12 +12,7 @@ import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../../hooks/useOnEvent';
-import {
-    AnimatedInterpolation,
-    ComponentStatus,
-    EventName,
-    State,
-} from '../../Common/interface';
+import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
 import {NavigationRailItemProps} from './NavigationRailItem';
 import {useAnimated} from './useAnimated';
@@ -50,13 +45,11 @@ const initialState = {
     status: 'idle' as ComponentStatus,
 };
 
-export const NavigationRailItemBase: FC<
-    NavigationRailItemBaseProps
-> = props => {
+export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = props => {
     const {
         activeIcon = <Icon type="filled" name="circle" />,
         activeKey,
-        block = false,
+        block,
         defaultActiveKey,
         icon = <Icon type="outlined" name="circle" />,
         indexKey,
@@ -65,18 +58,14 @@ export const NavigationRailItemBase: FC<
         ...renderProps
     } = props;
 
-    const [
-        {activeLocation, eventName, layout, rippleCentered, status},
-        setState,
-    ] = useImmer(initialState);
+    const [{activeLocation, eventName, layout, rippleCentered, status}, setState] =
+        useImmer(initialState);
 
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
     const id = useId();
     const underlayColor = theme.palette.surface.onSurface;
-    const active =
-        typeof activeKey === 'string' ? activeKey === indexKey : undefined;
-
+    const active = typeof activeKey === 'string' ? activeKey === indexKey : undefined;
     const defaultActive = defaultActiveKey === indexKey;
     const [{height, color}] = useAnimated({
         active,
@@ -142,10 +131,7 @@ export const NavigationRailItemBase: FC<
         [activeIcon, eventName],
     );
 
-    const iconElement = useMemo(
-        () => cloneElement(icon, {eventName}),
-        [eventName, icon],
-    );
+    const iconElement = useMemo(() => cloneElement(icon, {eventName}), [eventName, icon]);
 
     useEffect(() => {
         if (status === 'idle') {

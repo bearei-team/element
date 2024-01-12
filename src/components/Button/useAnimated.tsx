@@ -5,41 +5,25 @@ import {HOOK} from '../../hooks/hook';
 import {UTIL} from '../../utils/util';
 import {RenderProps} from './ButtonBase';
 
-export type UseAnimatedOptions = Required<
-    Pick<RenderProps, 'disabled' | 'type' | 'eventName'>
->;
+export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName'>;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {disabled, type, eventName} = options;
+    const {disabled, type = 'filled', eventName} = options;
     const [borderAnimated] = HOOK.useAnimatedValue(1);
     const [colorAnimated] = HOOK.useAnimatedValue(1);
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
-    const disabledBackgroundColor = theme.color.rgba(
-        theme.palette.surface.onSurface,
-        0.12,
-    );
-
-    const disabledColor = theme.color.rgba(
-        theme.palette.surface.onSurface,
-        0.38,
-    );
-
+    const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
+    const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
     const backgroundColorType = {
         elevated: {
             inputRange: [0, 1],
-            outputRange: [
-                disabledBackgroundColor,
-                theme.palette.surface.surfaceContainerLow,
-            ],
+            outputRange: [disabledBackgroundColor, theme.palette.surface.surfaceContainerLow],
         },
         filled: {
             inputRange: [0, 1],
-            outputRange: [
-                disabledBackgroundColor,
-                theme.palette.primary.primary,
-            ],
+            outputRange: [disabledBackgroundColor, theme.palette.primary.primary],
         },
         outlined: {
             inputRange: [0, 1],
@@ -64,10 +48,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         },
         tonal: {
             inputRange: [0, 1],
-            outputRange: [
-                disabledBackgroundColor,
-                theme.palette.secondary.secondaryContainer,
-            ],
+            outputRange: [disabledBackgroundColor, theme.palette.secondary.secondaryContainer],
         },
     };
 
@@ -94,17 +75,11 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         },
         tonal: {
             inputRange: [0, 1],
-            outputRange: [
-                disabledColor,
-                theme.palette.secondary.onSecondaryContainer,
-            ],
+            outputRange: [disabledColor, theme.palette.secondary.onSecondaryContainer],
         },
     };
 
-    const backgroundColor = colorAnimated.interpolate(
-        backgroundColorType[type],
-    );
-
+    const backgroundColor = colorAnimated.interpolate(backgroundColorType[type]);
     const color = colorAnimated.interpolate(colorType[type]);
     const borderColor = borderAnimated.interpolate({
         inputRange: borderInputRange,
@@ -118,33 +93,18 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     });
 
     const processOutlinedAndLinkAnimatedTiming = useCallback(() => {
-        const value = disabled
-            ? 0
-            : borderInputRange[borderInputRange.length - 2];
-
+        const value = disabled ? 0 : borderInputRange[borderInputRange.length - 2];
         const responseEvent =
             type === 'link'
-                ? [
-                      'focus',
-                      'hoverIn',
-                      'longPress',
-                      'press',
-                      'pressIn',
-                      'pressOut',
-                  ].includes(eventName)
+                ? ['focus', 'hoverIn', 'longPress', 'press', 'pressIn', 'pressOut'].includes(
+                      eventName,
+                  )
                 : eventName === 'focus';
 
         const toValue = responseEvent ? borderInputRange[2] : value;
 
         return animatedTiming(borderAnimated, {toValue});
-    }, [
-        animatedTiming,
-        borderAnimated,
-        borderInputRange,
-        disabled,
-        eventName,
-        type,
-    ]);
+    }, [animatedTiming, borderAnimated, borderInputRange, disabled, eventName, type]);
 
     useEffect(() => {
         const toValue = disabled ? 0 : 1;
@@ -159,13 +119,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
             animatedTiming(colorAnimated, {toValue}).start();
         });
-    }, [
-        animatedTiming,
-        colorAnimated,
-        disabled,
-        processOutlinedAndLinkAnimatedTiming,
-        type,
-    ]);
+    }, [animatedTiming, colorAnimated, disabled, processOutlinedAndLinkAnimatedTiming, type]);
 
     return [
         {

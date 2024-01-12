@@ -8,18 +8,13 @@ import {ListItemProps} from './ListItem/ListItem';
 export interface ListDataSource
     extends Pick<
         ListItemProps,
-        | 'headline'
-        | 'leading'
-        | 'supportingText'
-        | 'supportingTextNumberOfLines'
+        'headline' | 'leading' | 'supportingText' | 'supportingTextNumberOfLines'
     > {
     key?: string;
 }
 
 export interface ListProps
-    extends Partial<
-        FlatListProps<ListDataSource> & RefAttributes<FlatList<ListDataSource>>
-    > {
+    extends Partial<FlatListProps<ListDataSource> & RefAttributes<FlatList<ListDataSource>>> {
     close?: boolean;
     data?: ListDataSource[];
     defaultActiveKey?: string;
@@ -27,28 +22,26 @@ export interface ListProps
     supportingTextNumberOfLines?: ListDataSource['supportingTextNumberOfLines'];
 }
 
-const ForwardRefList = forwardRef<FlatList<ListDataSource>, ListProps>(
-    (props, ref) => {
-        const render = (renderProps: RenderProps) => {
-            const {id, style, ...contentProps} = renderProps;
+const ForwardRefList = forwardRef<FlatList<ListDataSource>, ListProps>((props, ref) => {
+    const render = (renderProps: RenderProps) => {
+        const {id, style, ...contentProps} = renderProps;
 
-            return (
-                <Container
-                    accessibilityLabel="list"
-                    accessibilityRole="list"
-                    style={style}
-                    testID={`list--${id}`}>
-                    <Content<NativeTarget>
-                        {...contentProps}
-                        showsVerticalScrollIndicator={false}
-                        testID={`list__content--${id}`}
-                    />
-                </Container>
-            );
-        };
+        return (
+            <Container
+                accessibilityLabel="list"
+                accessibilityRole="list"
+                style={style}
+                testID={`list--${id}`}>
+                <Content<NativeTarget>
+                    {...contentProps}
+                    showsVerticalScrollIndicator={false}
+                    testID={`list__content--${id}`}
+                />
+            </Container>
+        );
+    };
 
-        return <ListBase {...props} ref={ref} render={render} />;
-    },
-);
+    return <ListBase {...props} ref={ref} render={render} />;
+});
 
 export const List: FC<ListProps> = memo(ForwardRefList);

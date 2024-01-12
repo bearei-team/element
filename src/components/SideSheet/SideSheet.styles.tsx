@@ -8,11 +8,15 @@ export type HeaderProps = Pick<RenderProps, 'back'>;
 
 export const Modal = styled.View`
     height: 100%;
-    left: 0;
     position: fixed;
-    top: 0;
     width: 100%;
     z-index: 2048;
+
+    ${({theme}) =>
+        css`
+            left: ${theme.adaptSize(theme.spacing.none)}px;
+            top: ${theme.adaptSize(theme.spacing.none)}px;
+        `}
 `;
 
 export const Container = styled(View)`
@@ -52,16 +56,9 @@ export const Header = styled.View<HeaderProps>`
     flex-direction: row;
 
     ${({theme}) => css`
-        height: ${theme.adaptSize(
-            theme.spacing.small * 9 + theme.spacing.extraSmall,
-        )}px;
-
-        padding: ${theme.adaptSize(
-                theme.spacing.medium - theme.spacing.extraSmall,
-            )}px
-            ${theme.adaptSize(
-                theme.spacing.medium - theme.spacing.extraSmall,
-            )}px
+        height: ${theme.adaptSize(theme.spacing.small * 9 + theme.spacing.extraSmall)}px;
+        padding: ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px
+            ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px
             ${theme.adaptSize(theme.spacing.medium)}px
             ${theme.adaptSize(theme.spacing.extraSmall)}px;
     `}
@@ -112,7 +109,6 @@ export const Footer = styled.View`
         gap: ${theme.adaptSize(theme.spacing.small)}px;
         min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
         padding: ${theme.adaptSize(theme.spacing.medium)}px
-            ${theme.adaptSize(theme.spacing.large)}px
-            ${theme.adaptSize(theme.spacing.none)}px;
+            ${theme.adaptSize(theme.spacing.large)}px ${theme.adaptSize(theme.spacing.none)}px;
     `}
 `;

@@ -44,7 +44,7 @@ export type UseHandleEventOptions = PressableProps & {
 
 export const useOnEvent = (options: UseHandleEventOptions) => {
     const {
-        disabled = false,
+        disabled,
         omitEvents = [],
         onBlur,
         onFocus,
@@ -62,11 +62,7 @@ export const useOnEvent = (options: UseHandleEventOptions) => {
     const mobile = ['ios', 'android'].includes(theme.OS);
     const processState = useCallback(
         (nextState: State, processStateOptions = {} as ProcessStateOptions) => {
-            const {
-                callback,
-                event,
-                eventName: processStateEventName,
-            } = processStateOptions;
+            const {callback, event, eventName: processStateEventName} = processStateOptions;
 
             if (disabled && processStateEventName !== 'layout') {
                 return;

@@ -7,9 +7,7 @@ import {ElevationBase, RenderProps} from './ElevationBase';
 export type ElevationLevel = 0 | 1 | 2 | 3 | 4 | 5 | undefined;
 
 export interface ElevationProps
-    extends Partial<
-        ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>
-    > {
+    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>> {
     level?: ElevationLevel;
     defaultLevel?: ElevationLevel;
 }
@@ -17,30 +15,16 @@ export interface ElevationProps
 const AnimatedShadow = Animated.createAnimatedComponent(Shadow);
 const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {
-            children,
-            id,
-            level,
-            onEvent,
-            renderStyle,
-            shape,
-            style,
-            ...contentProps
-        } = renderProps;
-
+        const {children, id, level, onEvent, renderStyle, shape, ...contentProps} = renderProps;
         const {onLayout} = onEvent;
         const {height, opacity0, opacity1, width} = renderStyle;
 
         return (
-            <Container
-                height={height}
-                testID={`elevation--${id}`}
-                width={width}>
+            <Container height={height} testID={`elevation--${id}`} width={width}>
                 <Content
                     {...contentProps}
                     onLayout={onLayout}
                     shape={shape}
-                    style={style}
                     testID={`elevation__content--${id}`}>
                     {children}
                 </Content>

@@ -30,11 +30,7 @@ export interface SetFieldValueOptions {
 
 export interface FormStore<T extends Store> {
     getFieldEntities: (signOut?: boolean) => FieldEntity<T>[];
-    getFieldEntitiesName: (
-        names?: (keyof T)[],
-        signOut?: boolean,
-    ) => (keyof T | undefined)[];
-
+    getFieldEntitiesName: (names?: (keyof T)[], signOut?: boolean) => (keyof T | undefined)[];
     getFieldError: {
         (): Error<T>;
         (name?: (keyof T)[]): Error<T>;
@@ -70,19 +66,13 @@ export const formStore = <T extends Store>(): FormStore<T> => {
     const store = {} as T;
     let fieldEntities = [] as FieldEntity<T>[];
     const getFieldEntities = (signOut = false) =>
-        signOut
-            ? fieldEntities
-            : fieldEntities.filter(fieldEntity => fieldEntity.props.name);
+        signOut ? fieldEntities : fieldEntities.filter(fieldEntity => fieldEntity.props.name);
 
     const getFieldEntitiesName = (names?: (keyof T)[], signOut = false) => {
-        const entityNames = getFieldEntities(signOut).map(
-            ({props}) => props.name,
-        );
+        const entityNames = getFieldEntities(signOut).map(({props}) => props.name);
 
         return [
-            ...(names
-                ? entityNames.filter(name => name && names.includes(name))
-                : entityNames),
+            ...(names ? entityNames.filter(name => name && names.includes(name)) : entityNames),
         ];
     };
 
@@ -116,9 +106,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
             }
 
             const entities = getFieldEntities(true);
-            const fieldEntity = entities.find(
-                ({props}) => props.name === signOutName,
-            );
+            const fieldEntity = entities.find(({props}) => props.name === signOutName);
 
             if (fieldEntity) {
                 const nextError = {...error};
@@ -127,9 +115,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
                 delete nextError[signOutName];
                 delete nextFormStore[signOutName];
 
-                fieldEntities = entities.filter(
-                    ({props}) => props.name !== signOutName,
-                );
+                fieldEntities = entities.filter(({props}) => props.name !== signOutName);
 
                 setFieldValue(nextFormStore, {response: false});
                 setFieldError(nextError);
@@ -139,10 +125,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
         getFieldEntitiesName(names).forEach(processSignOut);
     };
 
-    const setFieldValue = (
-        value = {} as T,
-        options = {} as SetFieldValueOptions,
-    ) => {
+    const setFieldValue = (value = {} as T, options = {} as SetFieldValueOptions) => {
         const {response = true, skipValidate = false} = options;
         const {onValueChange} = callback;
         const entities = getFieldEntities();
@@ -159,9 +142,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
 
                 skipValidate
                     ? processValidateResult()
-                    : await entity
-                          .validate(value[entity.props.name!])
-                          .then(processValidateResult);
+                    : await entity.validate(value[entity.props.name!]).then(processValidateResult);
             }
         };
 
@@ -181,12 +162,9 @@ export const formStore = <T extends Store>(): FormStore<T> => {
         const names = UTIL.namePath(name);
         const value = {} as T;
         const processValue = (entityName?: keyof T) =>
-            entityName &&
-            Object.assign(value, {[entityName]: store[entityName]});
+            entityName && Object.assign(value, {[entityName]: store[entityName]});
 
-        names
-            ? getFieldEntitiesName(names).forEach(processValue)
-            : Object.assign(value, store);
+        names ? getFieldEntitiesName(names).forEach(processValue) : Object.assign(value, store);
 
         return !Array.isArray(name) && name ? value[name] : value;
     }
@@ -201,9 +179,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
         const processError = (entityName?: keyof T) =>
             entityName && Object.assign(err, {[entityName]: error[entityName]});
 
-        names
-            ? getFieldEntitiesName(names).forEach(processError)
-            : Object.assign(err, error);
+        names ? getFieldEntitiesName(names).forEach(processError) : Object.assign(err, error);
 
         return !Array.isArray(name) && name ? err[name] : err;
     }
@@ -217,25 +193,19 @@ export const formStore = <T extends Store>(): FormStore<T> => {
 
             Object.entries(initialValue)
                 .filter(([key]) => names.includes(key))
-                .forEach(([key, nextValue]) =>
-                    Object.assign(fieldValue, {[key]: nextValue}),
-                );
+                .forEach(([key, nextValue]) => Object.assign(fieldValue, {[key]: nextValue}));
 
             setFieldValue(fieldValue);
         }
     };
 
     const getInitialValue = () => initialValue;
-    const setCallback = (callbackValue: Callback<T>) =>
-        Object.assign(callback, callbackValue);
-
+    const setCallback = (callbackValue: Callback<T>) => Object.assign(callback, callbackValue);
     const setFieldTouched = (name?: keyof T, touched = false) => {
         if (name) {
             fieldEntities = [
                 ...getFieldEntities().map(fieldEntity =>
-                    fieldEntity.props.name === name
-                        ? {...fieldEntity, touched}
-                        : fieldEntity,
+                    fieldEntity.props.name === name ? {...fieldEntity, touched} : fieldEntity,
                 ),
             ];
         }
@@ -245,8 +215,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
         const names = UTIL.namePath(name);
         const entities = getFieldEntities();
         const processFieldTouched = (entityName?: keyof T) =>
-            entityName &&
-            entities.find(({props}) => props.name === entityName)?.touched;
+            entityName && entities.find(({props}) => props.name === entityName)?.touched;
 
         return getFieldEntitiesName(names)
             .map(processFieldTouched)
@@ -262,9 +231,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
         const processValidate = (entityName?: keyof T) => {
             if (entityName) {
                 const value = getFieldValue(entityName);
-                const entity = entities.find(
-                    ({props}) => props.name === entityName,
-                );
+                const entity = entities.find(({props}) => props.name === entityName);
 
                 return entity?.validate(value).then(err => {
                     setFieldError({[entityName]: err} as Error<T>);
@@ -287,9 +254,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
             return !Array.isArray(name) && name ? err[name] : err;
         };
 
-        const fieldError = await Promise.all(
-            getFieldEntitiesName(names).map(processValidate),
-        );
+        const fieldError = await Promise.all(getFieldEntitiesName(names).map(processValidate));
 
         return processFieldError(fieldError);
     }

@@ -1,10 +1,7 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Hovered} from '../../Hovered/Hovered';
-import {
-    TouchableRipple,
-    TouchableRippleProps,
-} from '../../TouchableRipple/TouchableRipple';
+import {TouchableRipple, TouchableRippleProps} from '../../TouchableRipple/TouchableRipple';
 import {
     Container,
     Content,
@@ -72,9 +69,7 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
                     underlayColor={activeColor}>
                     <AnimatedInner {...innerProps} onLayout={onLayout}>
                         {leading && (
-                            <Leading testID={`listItem__leading--${id}`}>
-                                {leading}
-                            </Leading>
+                            <Leading testID={`listItem__leading--${id}`}>{leading}</Leading>
                         )}
 
                         <Content

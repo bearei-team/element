@@ -7,9 +7,7 @@ import {HoveredBase, RenderProps} from './HoveredBase';
 
 export interface HoveredProps
     extends Partial<
-        ViewProps &
-            RefAttributes<Animated.LegacyRef<View>> &
-            Pick<ShapeProps, 'shape'>
+        ViewProps & RefAttributes<Animated.LegacyRef<View>> & Pick<ShapeProps, 'shape'>
     > {
     eventName?: EventName;
     height?: number;
@@ -19,31 +17,27 @@ export interface HoveredProps
 }
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
-const ForwardRefHovered = forwardRef<Animated.LegacyRef<View>, HoveredProps>(
-    (props, ref) => {
-        const render = (renderProps: RenderProps) => {
-            const {id, renderStyle, style, underlayColor, ...containerProps} =
-                renderProps;
+const ForwardRefHovered = forwardRef<Animated.LegacyRef<View>, HoveredProps>((props, ref) => {
+    const render = (renderProps: RenderProps) => {
+        const {id, renderStyle, style, underlayColor, ...containerProps} = renderProps;
+        const {width, height, ...containerStyle} = renderStyle;
 
-            const {width, height, ...containerStyle} = renderStyle;
+        return (
+            <AnimatedContainer
+                {...containerProps}
+                height={height}
+                style={{
+                    ...(typeof style === 'object' && style),
+                    ...containerStyle,
+                }}
+                testID={`hovered--${id}`}
+                width={width}
+                underlayColor={underlayColor}
+            />
+        );
+    };
 
-            return (
-                <AnimatedContainer
-                    {...containerProps}
-                    height={height}
-                    style={{
-                        ...(typeof style === 'object' && style),
-                        ...containerStyle,
-                    }}
-                    testID={`hovered--${id}`}
-                    width={width}
-                    underlayColor={underlayColor}
-                />
-            );
-        };
-
-        return <HoveredBase {...props} ref={ref} render={render} />;
-    },
-);
+    return <HoveredBase {...props} ref={ref} render={render} />;
+});
 
 export const Hovered: FC<HoveredProps> = memo(ForwardRefHovered);

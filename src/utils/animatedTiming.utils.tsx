@@ -3,15 +3,13 @@ import {Animated, Easing, Platform} from 'react-native';
 
 export interface AnimatedTimingOptions
     extends Partial<
-        Omit<Animated.TimingAnimationConfig, 'easing' | 'duration'> &
-            TransitionOptions
+        Omit<Animated.TimingAnimationConfig, 'easing' | 'duration'> & TransitionOptions
     > {
     toValue: number;
 }
 
 export const animatedTiming =
-    (theme: Theme) =>
-    (animation: Animated.Value, options: AnimatedTimingOptions) => {
+    (theme: Theme) => (animation: Animated.Value, options: AnimatedTimingOptions) => {
         const {
             duration = 'short3',
             easing = 'standard',

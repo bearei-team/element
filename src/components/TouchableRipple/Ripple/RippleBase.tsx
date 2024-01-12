@@ -3,9 +3,7 @@ import {Animated, NativeTouchEvent, ViewStyle} from 'react-native';
 import {RippleProps} from './Ripple';
 import {useAnimated} from './useAnimated';
 export interface RenderProps extends Omit<RippleProps, 'sequence'> {
-    renderStyle: Animated.WithAnimatedObject<
-        ViewStyle & {height: number; width: number}
-    >;
+    renderStyle: Animated.WithAnimatedObject<ViewStyle & {height: number; width: number}>;
     locationX: number;
     locationY: number;
 }
@@ -17,7 +15,7 @@ export interface RippleBaseProps extends RippleProps {
 export const RippleBase: FC<RippleBaseProps> = props => {
     const {
         active,
-        centered = false,
+        centered,
         defaultActive,
         location = {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
         onEntryAnimatedEnd,
@@ -38,10 +36,7 @@ export const RippleBase: FC<RippleBaseProps> = props => {
 
     const offsetX = Math.abs(centerX - locationX);
     const offsetY = Math.abs(centerY - locationY);
-    const radius = Math.sqrt(
-        Math.pow(centerX + offsetX, 2) + Math.pow(centerY + offsetY, 2),
-    );
-
+    const radius = Math.sqrt(Math.pow(centerX + offsetX, 2) + Math.pow(centerY + offsetY, 2));
     const diameter = radius * 2;
     const [{opacity, scale}] = useAnimated({
         active,
@@ -62,7 +57,6 @@ export const RippleBase: FC<RippleBaseProps> = props => {
             transform: [{translateY: -radius}, {translateX: -radius}, {scale}],
             width: diameter,
         },
-
         underlayColor,
         locationX,
         locationY,

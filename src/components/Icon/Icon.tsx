@@ -10,9 +10,7 @@ export type IconName = keyof (typeof filled)['svg'];
 export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
 
 export interface IconProps
-    extends Partial<
-        Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps
-    > {
+    extends Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps> {
     eventName?: EventName;
     height?: number;
     name?: IconName;
@@ -23,9 +21,7 @@ export interface IconProps
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {id, renderStyle, children, style, ...containerProps} =
-            renderProps;
-
+        const {id, renderStyle, children, style, ...containerProps} = renderProps;
         const {height, width, ...containerStyle} = renderStyle;
 
         return (

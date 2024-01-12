@@ -5,28 +5,19 @@ import {HOOK} from '../../hooks/hook';
 import {UTIL} from '../../utils/util';
 import {RenderProps} from './IconButtonBase';
 
-export type UseAnimatedOptions = Required<
-    Pick<RenderProps, 'disabled' | 'type'>
->;
+export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type'>;
 
 export const useAnimated = (options: UseAnimatedOptions) => {
-    const {disabled, type} = options;
+    const {disabled, type = 'filled'} = options;
     const [borderAnimated] = HOOK.useAnimatedValue(1);
     const [colorAnimated] = HOOK.useAnimatedValue(1);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
-    const disabledBackgroundColor = theme.color.rgba(
-        theme.palette.surface.onSurface,
-        0.12,
-    );
-
+    const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
     const backgroundColorConfig = {
         filled: {
             inputRange: [0, 1],
-            outputRange: [
-                disabledBackgroundColor,
-                theme.palette.primary.primary,
-            ],
+            outputRange: [disabledBackgroundColor, theme.palette.primary.primary],
         },
         outlined: {
             inputRange: [0, 1],
@@ -44,17 +35,11 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         },
         tonal: {
             inputRange: [0, 1],
-            outputRange: [
-                disabledBackgroundColor,
-                theme.palette.secondary.secondaryContainer,
-            ],
+            outputRange: [disabledBackgroundColor, theme.palette.secondary.secondaryContainer],
         },
     };
 
-    const backgroundColor = colorAnimated.interpolate(
-        backgroundColorConfig[type],
-    );
-
+    const backgroundColor = colorAnimated.interpolate(backgroundColorConfig[type]);
     const borderColor = borderAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [disabledBackgroundColor, theme.palette.outline.outline],

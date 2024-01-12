@@ -1,10 +1,7 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Hovered} from '../Hovered/Hovered';
-import {
-    TouchableRipple,
-    TouchableRippleProps,
-} from '../TouchableRipple/TouchableRipple';
+import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon} from './IconButton.styles';
 import {IconButtonBase, RenderProps} from './IconButtonBase';
 

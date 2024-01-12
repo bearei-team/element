@@ -19,8 +19,6 @@ export const Container = styled(Shape)<ContainerProps>`
 export const LabelText = styled(Typography)`
     ${({theme}) => css`
         color: ${theme.palette.primary.onPrimaryContainer};
-        max-width: ${theme.adaptSize(
-            theme.spacing.small + theme.spacing.extraSmall,
-        )}px;
+        max-width: ${theme.adaptSize(theme.spacing.small + theme.spacing.extraSmall)}px;
     `}
 `;

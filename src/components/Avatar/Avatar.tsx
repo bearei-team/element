@@ -17,10 +17,7 @@ const ForwardRefAvatar = forwardRef<View, AvatarProps>((props, ref) => {
         const {id, labelText, ...containerProps} = renderProps;
 
         return (
-            <Container
-                {...containerProps}
-                shape="full"
-                testID={`avatar--${id}`}>
+            <Container {...containerProps} shape="full" testID={`avatar--${id}`}>
                 <LabelText
                     ellipsizeMode="tail"
                     numberOfLines={1}

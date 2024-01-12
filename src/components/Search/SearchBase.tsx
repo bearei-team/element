@@ -1,19 +1,5 @@
-import {
-    FC,
-    RefObject,
-    useCallback,
-    useEffect,
-    useId,
-    useMemo,
-    useRef,
-} from 'react';
-import {
-    Animated,
-    LayoutRectangle,
-    TextInput,
-    View,
-    ViewStyle,
-} from 'react-native';
+import {FC, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
+import {Animated, LayoutRectangle, TextInput, View, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
@@ -31,6 +17,7 @@ export interface RenderProps extends SearchProps {
     listVisible: boolean;
     onEvent: OnEvent;
     onListActive?: (key?: string) => void;
+    input: React.JSX.Element;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         height: number;
         innerHeight: AnimatedInterpolation;
@@ -75,20 +62,8 @@ const initialState = {
 };
 
 export const SearchBase: FC<SearchBaseProps> = props => {
-    const {
-        data,
-        defaultValue,
-        leadingIcon,
-        onChangeText,
-        placeholder,
-        ref,
-        render,
-        ...renderProps
-    } = props;
-
-    const [{value, layout, listVisible, eventName, state}, setState] =
-        useImmer(initialState);
-
+    const {data, leadingIcon, placeholder, ref, render, value, ...textInputProps} = props;
+    const [{layout, listVisible, eventName, state}, setState] = useImmer(initialState);
     const [{innerHeight}] = useAnimated({listVisible});
     const containerRef = useRef<View>(null);
     const id = useId();
@@ -102,10 +77,7 @@ export const SearchBase: FC<SearchBaseProps> = props => {
     }, [inputRef]);
 
     const processState = useCallback(
-        (
-            nextState: State,
-            options: Pick<OnStateChangeOptions, 'eventName'>,
-        ) => {
+        (nextState: State, options: Pick<OnStateChangeOptions, 'eventName'>) => {
             const {eventName: nextEventName} = options;
 
             setState(draft => {
@@ -149,17 +121,6 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         onStateChange: processStateChange,
     });
 
-    const handleChangeText = useCallback(
-        (text: string) => {
-            setState(draft => {
-                draft.value = text;
-            });
-
-            onChangeText?.(text);
-        },
-        [onChangeText, setState],
-    );
-
     const handleListActive = useCallback(
         (key?: string) => {
             const nextValue = data?.find(datum => datum.key === key)?.headline;
@@ -173,12 +134,11 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         [data, setState],
     );
 
-    const children = useMemo(
+    const input = useMemo(
         () =>
             renderTextInput({
-                defaultValue,
+                ...textInputProps,
                 onBlur,
-                onChangeText: handleChangeText,
                 onFocus,
                 placeholder,
                 placeholderTextColor,
@@ -186,47 +146,32 @@ export const SearchBase: FC<SearchBaseProps> = props => {
                 testID: `search__input--${id}`,
                 value,
             }),
-        [
-            defaultValue,
-            handleChangeText,
-            id,
-            inputRef,
-            onBlur,
-            onFocus,
-            placeholder,
-            placeholderTextColor,
-            value,
-        ],
+        [id, inputRef, onBlur, onFocus, placeholder, placeholderTextColor, textInputProps, value],
     );
 
     useEffect(() => {
         setState(draft => {
             draft.listVisible = data?.length !== 0 && state === 'focused';
         });
-    }, [data, setState, state]);
+    }, [data?.length, setState, state]);
 
     useEffect(() => {
         if (containerRef.current) {
-            containerRef.current.measure(
-                (x, y, width, height, pageX, pageY) => {
-                    setState(draft => {
-                        draft.layout = {x, y, width, height, pageX, pageY};
-                    });
-                },
-            );
+            containerRef.current.measure((x, y, width, height, pageX, pageY) => {
+                setState(draft => {
+                    draft.layout = {x, y, width, height, pageX, pageY};
+                });
+            });
         }
     }, [setState]);
 
     return render({
-        ...renderProps,
-        children,
+        input,
         containerRef,
         data,
         eventName,
         id,
-        leadingIcon: leadingIcon ?? (
-            <Icon type="outlined" name="search" width={24} height={24} />
-        ),
+        leadingIcon: leadingIcon ?? <Icon type="outlined" name="search" width={24} height={24} />,
         listVisible,
         onEvent: {...onEvent, onBlur, onFocus},
         onListActive: handleListActive,
@@ -237,10 +182,7 @@ export const SearchBase: FC<SearchBaseProps> = props => {
             pageX: layout.pageX,
             pageY: layout.pageY,
             width: layout.width,
-            listBackgroundColor: theme.color.rgba(
-                theme.palette.surface.surface,
-                0,
-            ),
+            listBackgroundColor: theme.color.rgba(theme.palette.surface.surface, 0),
         },
         underlayColor,
     });

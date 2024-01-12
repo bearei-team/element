@@ -1,10 +1,7 @@
 import {createContext, useContext} from 'react';
 import {FormStore, Store} from './formStore';
 
-export const FormContext = createContext<FormStore<Store> | undefined>(
-    undefined,
-);
-
+export const FormContext = createContext<FormStore<Store> | undefined>(undefined);
 export const useFormContext = <T extends Store>() => {
     const contextValue = useContext(FormContext);
 

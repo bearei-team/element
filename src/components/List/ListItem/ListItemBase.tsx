@@ -11,12 +11,7 @@ import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../../hooks/useOnEvent';
-import {
-    AnimatedInterpolation,
-    ComponentStatus,
-    EventName,
-    State,
-} from '../../Common/interface';
+import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
 import {IconButton} from '../../IconButton/IconButton';
 import {ListItemProps} from './ListItem';
@@ -56,7 +51,7 @@ const initialState = {
 export const ListItemBase: FC<ListItemBaseProps> = props => {
     const {
         activeKey,
-        close = false,
+        close,
         defaultActiveKey,
         indexKey,
         onActive,
@@ -67,18 +62,14 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [
-        {activeLocation, eventName, layout, state, status, trailingEventName},
-        setState,
-    ] = useImmer(initialState);
+    const [{activeLocation, eventName, layout, state, status, trailingEventName}, setState] =
+        useImmer(initialState);
 
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
     const id = useId();
     const underlayColor = theme.palette.surface.onSurface;
-    const active =
-        typeof activeKey === 'string' ? activeKey === indexKey : undefined;
-
+    const active = typeof activeKey === 'string' ? activeKey === indexKey : undefined;
     const defaultActive = defaultActiveKey === indexKey;
     const [{height, onCloseAnimated, trailingOpacity}] = useAnimated({
         close,
@@ -182,12 +173,7 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
             close ? (
                 <IconButton
                     type="standard"
-                    icon={
-                        <Icon
-                            name={active ? 'remove' : 'close'}
-                            type="filled"
-                        />
-                    }
+                    icon={<Icon name={active ? 'remove' : 'close'} type="filled" />}
                     onHoverIn={handleTrailingHoverIn}
                     onHoverOut={handleTrailingHoverOut}
                     onPressOut={handleTrailingPress}

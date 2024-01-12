@@ -9,11 +9,7 @@ import {
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
-import {
-    OnEvent,
-    OnStateChangeOptions,
-    useOnEvent,
-} from '../../hooks/useOnEvent';
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {AnimatedInterpolation, EventName, State} from '../Common/interface';
 import {TextFieldProps} from './TextField';
 import {Input} from './TextField.styles';
@@ -93,9 +89,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         ...textInputProps
     } = props;
 
-    const [{layout, value, eventName, state}, setState] =
-        useImmer(initialState);
-
+    const [{layout, value, eventName, state}, setState] = useImmer(initialState);
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
@@ -112,10 +106,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     }, [inputRef]);
 
     const processState = useCallback(
-        (
-            nextState: State,
-            options: Pick<OnStateChangeOptions, 'eventName'>,
-        ) => {
+        (nextState: State, options: Pick<OnStateChangeOptions, 'eventName'>) => {
             const {eventName: nextEventName} = options;
 
             setState(draft => {
@@ -196,9 +187,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         filled: !!filled,
     });
 
-    const [
-        {leadingIcon: leadingIconElement, trailingIcon: trailingIconElement},
-    ] = useIcon({
+    const [{leadingIcon: leadingIconElement, trailingIcon: trailingIconElement}] = useIcon({
         error,
         disabled,
         leadingIcon,

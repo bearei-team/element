@@ -9,22 +9,12 @@ import {
 import {Divider} from '../Divider/Divider';
 import {Hovered} from '../Hovered/Hovered';
 import {List, ListDataSource} from '../List/List';
-import {
-    Container,
-    Content,
-    Header,
-    Inner,
-    LeadingIcon,
-    TrailingIcon,
-} from './Search.styles';
+import {Container, Content, Header, Inner, LeadingIcon, TrailingIcon} from './Search.styles';
 import {RenderProps, SearchBase} from './SearchBase';
 
 export interface SearchProps
     extends Partial<
-        TextInputProps &
-            PressableProps &
-            TouchableWithoutFeedbackProps &
-            RefAttributes<TextInput>
+        TextInputProps & PressableProps & TouchableWithoutFeedbackProps & RefAttributes<TextInput>
     > {
     data?: ListDataSource[];
     leadingIcon?: React.JSX.Element;
@@ -35,11 +25,11 @@ const AnimatedInner = Animated.createAnimatedComponent(Inner);
 const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {
-            children,
             containerRef,
             data,
             eventName,
             id,
+            input,
             leadingIcon,
             listVisible,
             onEvent,
@@ -52,9 +42,7 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
         } = renderProps;
 
         const {onLayout, ...onHeaderEvent} = onEvent;
-        const {height, innerHeight, width, listBackgroundColor, pageX, pageY} =
-            renderStyle;
-
+        const {height, innerHeight, width, listBackgroundColor, pageX, pageY} = renderStyle;
         const shape = 'extraLarge';
 
         return (
@@ -79,10 +67,7 @@ const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
                             {leadingIcon}
                         </LeadingIcon>
 
-                        <Content testID={`search__content--${id}`}>
-                            {children}
-                        </Content>
-
+                        <Content testID={`search__content--${id}`}>{input}</Content>
                         <TrailingIcon testID={`search__trailingIcon--${id}`}>
                             {trailingIcon}
                         </TrailingIcon>

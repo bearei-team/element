@@ -6,7 +6,6 @@ export type ContainerProps = Pick<RenderProps, 'width' | 'height'>;
 
 export const Container = styled(View)<ContainerProps>`
     align-items: center;
-    align-self: stretch;
     display: flex;
     flex-direction: row;
     justify-content: center;

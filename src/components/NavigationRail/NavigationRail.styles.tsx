@@ -8,11 +8,8 @@ export const Container = styled(View)`
 
     ${({theme}) => css`
         width: ${theme.adaptSize(theme.spacing.small * 10)}px;
-        padding: ${theme.adaptSize(
-                theme.spacing.small * 6 + theme.spacing.extraSmall,
-            )}px
-            ${theme.adaptSize(theme.spacing.none)}px
-            ${theme.adaptSize(theme.spacing.small * 7)}px;
+        padding: ${theme.adaptSize(theme.spacing.small * 6 + theme.spacing.extraSmall)}px
+            ${theme.adaptSize(theme.spacing.none)}px ${theme.adaptSize(theme.spacing.small * 7)}px;
     `}
 `;
 
@@ -36,8 +33,6 @@ export const Fab = styled.View`
             width: ${theme.adaptSize(theme.spacing.small * 7)}px;
             height: ${theme.adaptSize(theme.spacing.small * 7)}px;
             margin-top: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-            margin-bottom: ${theme.adaptSize(
-                theme.spacing.small * 8 - theme.spacing.extraSmall,
-            )}px;
+            margin-bottom: ${theme.adaptSize(theme.spacing.small * 8 - theme.spacing.extraSmall)}px;
         `};
 `;

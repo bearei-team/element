@@ -49,8 +49,6 @@ export const LabelText = styled(Typography)<LabelTextProps>`
     overflow: hidden;
 
     ${({theme, active}) => css`
-        font-weight: ${active
-            ? theme.font.weight.bold
-            : theme.font.weight.medium};
+        font-weight: ${active ? theme.font.weight.bold : theme.font.weight.medium};
     `}
 `;
