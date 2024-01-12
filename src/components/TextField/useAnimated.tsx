@@ -1,4 +1,4 @@
-import {useEffect, useMemo} from 'react';
+import {useCallback, useEffect, useMemo} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {HOOK} from '../../hooks/hook';
@@ -120,86 +120,98 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
+    const processEnabledState = useCallback(() => {
+        if (error) {
+            return requestAnimationFrame(() => {
+                animatedTiming(labeAnimated, {
+                    toValue: filledToValue,
+                    useNativeDriver: false,
+                }).start();
+            });
+        }
+
+        const compositeAnimations = [
+            animatedTiming(colorAnimated, {toValue: 1}),
+            animatedTiming(activeIndicatorAnimated, {toValue: 0}),
+            animatedTiming(labeAnimated, {
+                toValue: filledToValue,
+                useNativeDriver: false,
+            }),
+        ];
+
+        requestAnimationFrame(() => {
+            Animated.parallel(compositeAnimations).start();
+        });
+    }, [
+        activeIndicatorAnimated,
+        animatedTiming,
+        colorAnimated,
+        error,
+        filledToValue,
+        labeAnimated,
+    ]);
+
+    const processDisabledState = useCallback(() => {
+        const toValue = 0;
+
+        requestAnimationFrame(() => {
+            Animated.parallel([
+                animatedTiming(backgroundColorAnimated, {toValue}),
+                animatedTiming(colorAnimated, {toValue}),
+                animatedTiming(supportingTextAnimated, {toValue}),
+                animatedTiming(activeIndicatorAnimated, {toValue}),
+                animatedTiming(inputAnimated, {toValue}),
+            ]).start();
+        });
+    }, [
+        activeIndicatorAnimated,
+        animatedTiming,
+        backgroundColorAnimated,
+        colorAnimated,
+        inputAnimated,
+        supportingTextAnimated,
+    ]);
+
+    const processErrorState = useCallback(() => {
+        requestAnimationFrame(() => {
+            Animated.parallel([
+                animatedTiming(colorAnimated, {toValue: 3}),
+                animatedTiming(supportingTextAnimated, {toValue: 2}),
+                animatedTiming(activeIndicatorAnimated, {toValue: 1}),
+            ]).start();
+        });
+    }, [activeIndicatorAnimated, animatedTiming, colorAnimated, supportingTextAnimated]);
+
+    const processFocusedState = useCallback(() => {
+        if (error) {
+            return requestAnimationFrame(() => {
+                animatedTiming(labeAnimated, {
+                    toValue: 0,
+                    useNativeDriver: false,
+                }).start();
+            });
+        }
+
+        const compositeAnimations = [
+            animatedTiming(colorAnimated, {toValue: 2}),
+            animatedTiming(activeIndicatorAnimated, {toValue: 1}),
+            animatedTiming(labeAnimated, {toValue: 0, useNativeDriver: false}),
+        ];
+
+        requestAnimationFrame(() => {
+            Animated.parallel(compositeAnimations).start();
+        });
+    }, [activeIndicatorAnimated, animatedTiming, colorAnimated, error, labeAnimated]);
+
     const stateAnimated = useMemo(
         () =>
             ({
-                enabled: () => {
-                    if (error) {
-                        return requestAnimationFrame(() => {
-                            animatedTiming(labeAnimated, {
-                                toValue: filledToValue,
-                                useNativeDriver: false,
-                            }).start();
-                        });
-                    }
-
-                    const compositeAnimations = [
-                        animatedTiming(colorAnimated, {toValue: 1}),
-                        animatedTiming(activeIndicatorAnimated, {toValue: 0}),
-                        animatedTiming(labeAnimated, {
-                            toValue: filledToValue,
-                            useNativeDriver: false,
-                        }),
-                    ];
-
-                    requestAnimationFrame(() => {
-                        Animated.parallel(compositeAnimations).start();
-                    });
-                },
-                disabled: () => {
-                    const toValue = 0;
-
-                    requestAnimationFrame(() => {
-                        Animated.parallel([
-                            animatedTiming(backgroundColorAnimated, {toValue}),
-                            animatedTiming(colorAnimated, {toValue}),
-                            animatedTiming(supportingTextAnimated, {toValue}),
-                            animatedTiming(activeIndicatorAnimated, {toValue}),
-                            animatedTiming(inputAnimated, {toValue}),
-                        ]).start();
-                    });
-                },
-                error: () => {
-                    requestAnimationFrame(() => {
-                        Animated.parallel([
-                            animatedTiming(colorAnimated, {toValue: 3}),
-                            animatedTiming(supportingTextAnimated, {toValue: 2}),
-                            animatedTiming(activeIndicatorAnimated, {toValue: 1}),
-                        ]).start();
-                    });
-                },
-                focused: () => {
-                    if (error) {
-                        return requestAnimationFrame(() => {
-                            animatedTiming(labeAnimated, {
-                                toValue: 0,
-                                useNativeDriver: false,
-                            }).start();
-                        });
-                    }
-
-                    const compositeAnimations = [
-                        animatedTiming(colorAnimated, {toValue: 2}),
-                        animatedTiming(activeIndicatorAnimated, {toValue: 1}),
-                        animatedTiming(labeAnimated, {toValue: 0, useNativeDriver: false}),
-                    ];
-
-                    requestAnimationFrame(() => {
-                        Animated.parallel(compositeAnimations).start();
-                    });
-                },
+                disabled: processDisabledState,
+                enabled: processEnabledState,
+                error: processErrorState,
+                focused: processFocusedState,
             } as Record<State, () => void | undefined>),
-        [
-            activeIndicatorAnimated,
-            animatedTiming,
-            backgroundColorAnimated,
-            colorAnimated,
-            error,
-            filledToValue,
-            inputAnimated,
-            labeAnimated,
-            supportingTextAnimated,
-        ],
+        [processDisabledState, processEnabledState, processErrorState, processFocusedState],
     );
 
     useEffect(() => {
