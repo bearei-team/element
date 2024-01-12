@@ -51,22 +51,28 @@ export interface Data extends ListDataSource {
 
 export type RenderTextInputOptions = SearchProps;
 
-const initialState = {
-    eventName: 'none' as EventName,
-    layout: {} as LayoutRectangle & {pageX: number; pageY: number},
-    listVisible: false,
-    state: 'enabled' as State,
-    value: '',
-};
-
 const renderTextInput = (options: RenderTextInputOptions) => (
     <Input
         {...options}
+        /**
+         * enableFocusRing is used to disable the focus style in macOS,
+         * this parameter has been implemented and is available.
+         * However, react-native-macos does not have an official typescript declaration for this parameter,
+         * so using it directly in a typescript will result in an undefined parameter.
+         */
         // @ts-ignore
         enableFocusRing={false}
         textAlignVertical="center"
     />
 );
+
+const initialState = {
+    eventName: 'none' as EventName,
+    layout: {} as LayoutRectangle & {pageX: number; pageY: number},
+    listVisible: false,
+    state: 'enabled' as State,
+    value: undefined as string | undefined,
+};
 
 export const SearchBase: FC<SearchBaseProps> = props => {
     const {
@@ -83,7 +89,7 @@ export const SearchBase: FC<SearchBaseProps> = props => {
     const [{value, layout, listVisible, eventName, state}, setState] =
         useImmer(initialState);
 
-    const {innerHeight} = useAnimated({listVisible});
+    const [{innerHeight}] = useAnimated({listVisible});
     const containerRef = useRef<View>(null);
     const id = useId();
     const theme = useTheme();

@@ -42,5 +42,5 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         });
     }, [animatedTiming, event, eventName, opacityAnimated]);
 
-    return {opacity};
+    return [{opacity}];
 };

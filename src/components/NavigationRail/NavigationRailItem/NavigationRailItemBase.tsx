@@ -78,7 +78,7 @@ export const NavigationRailItemBase: FC<
         typeof activeKey === 'string' ? activeKey === indexKey : undefined;
 
     const defaultActive = defaultActiveKey === indexKey;
-    const {height, color} = useAnimated({
+    const [{height, color}] = useAnimated({
         active,
         block,
         defaultActive,

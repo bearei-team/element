@@ -40,5 +40,5 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         }
     }, [active, animatedTiming, block, labelAnimated]);
 
-    return {height, color};
+    return [{height, color}];
 };

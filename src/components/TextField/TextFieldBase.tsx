@@ -9,69 +9,59 @@ import {
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
-import {useHandleEvent} from '../../hooks/useOnEvent';
-import {AnimatedInterpolation, State} from '../Common/interface';
+import {
+    OnEvent,
+    OnStateChangeOptions,
+    useOnEvent,
+} from '../../hooks/useOnEvent';
+import {AnimatedInterpolation, EventName, State} from '../Common/interface';
 import {TextFieldProps} from './TextField';
 import {Input} from './TextField.styles';
 import {useAnimated} from './useAnimated';
-import {useUnderlayColor} from './useUnderlayColor';
+import {useIcon} from './useIcon';
 
 export interface RenderProps extends TextFieldProps {
-    onLabelTextLayout: (event: LayoutChangeEvent) => void;
-    onHeaderLayout: (event: LayoutChangeEvent) => void;
-    renderStyle: Animated.WithAnimatedObject<
-        ViewStyle & {
-            activeIndicatorColor: AnimatedInterpolation;
-            activeIndicatorHeight: AnimatedInterpolation;
-            inputContainerHeight: AnimatedInterpolation;
-            labelColor: AnimatedInterpolation;
-            labelHeight: AnimatedInterpolation;
-            labelLeft?: AnimatedInterpolation;
-            labelLineHeight: AnimatedInterpolation;
-            labelLineLetterSpacing: AnimatedInterpolation;
-            labelSize: AnimatedInterpolation;
-            labelTextBackgroundWidth?: AnimatedInterpolation;
-            labelTop?: AnimatedInterpolation;
-            supportingTextColor: AnimatedInterpolation;
-            supportingTextOpacity: AnimatedInterpolation;
-        }
-    > & {
-        headerHeight: number;
-        headerWidth: number;
-        labelTextHeight: number;
-        labelTextWidth: number;
-    };
-    state: State;
+    eventName: EventName;
+    onEvent: OnEvent;
     underlayColor: string;
+    input: React.JSX.Element;
+    state: State;
+    renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
+        activeIndicatorBackgroundColor: AnimatedInterpolation;
+        activeIndicatorScale: AnimatedInterpolation;
+        height: number;
+        labelTextColor: AnimatedInterpolation;
+        labelTextHeight: AnimatedInterpolation;
+        labelTextLetterSpacing: AnimatedInterpolation;
+        labelTextLineHeight: AnimatedInterpolation;
+        labelTextSize: AnimatedInterpolation;
+        labelTextTop: AnimatedInterpolation;
+        supportingTextColor: AnimatedInterpolation;
+        width: number;
+    };
 }
 
 export interface TextFieldBaseProps extends TextFieldProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export type RenderTextInputOptions = TextFieldProps & {
+export type RenderTextInputProps = TextFieldProps & {
     renderStyle: Animated.WithAnimatedObject<TextStyle>;
 };
 
-const initialState = {
-    headerLayout: {} as LayoutRectangle,
-    labelTextLayout: {} as LayoutRectangle,
-    underlayColor: undefined,
-    value: '',
-};
-
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-const renderTextInput = (options: RenderTextInputOptions) => {
-    const {renderStyle, ...props} = options;
+const renderTextInput = (props: RenderTextInputProps) => {
+    const {renderStyle, ...inputProps} = props;
 
     return (
         <AnimatedTextInput
-            {...props}
+            {...inputProps}
             style={renderStyle}
             /**
-             * The current parameter function has been implemented,
-             * but react-native-macos doesn't provide a special typescript type declaration yet,
-             * so the current attribute ignores the type error hints for the time being.
+             * enableFocusRing is used to disable the focus style in macOS,
+             * this parameter has been implemented and is available.
+             * However, react-native-macos does not have an official typescript declaration for this parameter,
+             * so using it directly in a typescript will result in an undefined parameter.
              */
             // @ts-ignore
             enableFocusRing={false}
@@ -80,75 +70,140 @@ const renderTextInput = (options: RenderTextInputOptions) => {
     );
 };
 
-export const TextFieldBase: FC<TextFieldBaseProps> = props => {
-    const [{headerLayout, labelTextLayout, value}, setState] =
-        useImmer(initialState);
+const initialState = {
+    eventName: 'none' as EventName,
+    layout: {} as LayoutRectangle,
+    state: 'enabled' as State,
+    value: undefined as string | undefined,
+};
 
+export const TextFieldBase: FC<TextFieldBaseProps> = props => {
     const {
-        defaultValue,
-        disabled = false,
-        error = false,
         labelText = 'Label',
-        leadingIcon,
         onChangeText,
-        placeholder,
         ref,
         render,
-        style,
         supportingText,
-        trailingIcon,
         type = 'filled',
+        error,
+        disabled,
+        leadingIcon,
+        trailingIcon,
+        placeholder,
         ...textInputProps
     } = props;
 
-    const [underlayColor] = useUnderlayColor({type});
-    const theme = useTheme();
-    const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
+    const [{layout, value, eventName, state}, setState] =
+        useImmer(initialState);
+
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
-    const {state, eventName, onBlur, onFocus, ...handleEvent} = useHandleEvent({
-        ...props,
-        disabled,
-        lockFocusState: true,
-        lockPressInState: true,
-    });
+    const theme = useTheme();
+    const filled = value ?? placeholder;
+    const placeholderTextColor =
+        state === 'disabled'
+            ? theme.color.rgba(theme.palette.surface.onSurface, 0.38)
+            : theme.palette.surface.onSurfaceVariant;
 
-    const processFocus = useCallback(
-        (focused: boolean) => {
-            focused && inputRef.current?.focus();
+    const underlayColor = theme.palette.surface.onSurface;
+    const processFocus = useCallback(() => {
+        inputRef.current?.focus();
+    }, [inputRef]);
+
+    const processState = useCallback(
+        (
+            nextState: State,
+            options: Pick<OnStateChangeOptions, 'eventName'>,
+        ) => {
+            const {eventName: nextEventName} = options;
+
+            setState(draft => {
+                if (draft.state === 'focused') {
+                    if (nextEventName === 'blur') {
+                        draft.eventName = nextEventName;
+                        draft.state = nextState;
+                    }
+
+                    return;
+                }
+
+                draft.eventName = nextEventName;
+                draft.state = nextState;
+            });
         },
-        [inputRef],
+        [setState],
     );
 
-    const {inputColor, ...animatedStyle} = useAnimated({
-        disabled,
-        error,
-        eventName,
-        filled: !!value || !!placeholder,
-        onFocus: processFocus,
-        labelTextWidth: labelTextLayout.width,
-        leadingIconShow: !!leadingIcon,
-        state,
-        supportingTextShow: !!supportingText,
-        type,
+    const processLayout = useCallback(
+        (event: LayoutChangeEvent) => {
+            const nativeEventLayout = event.nativeEvent.layout;
+
+            setState(draft => {
+                draft.layout = nativeEventLayout;
+            });
+        },
+        [setState],
+    );
+
+    const processStateChange = useCallback(
+        (nextState: State, options = {} as OnStateChangeOptions) => {
+            const {event, eventName: nextEventName} = options;
+            const nextEvent = {
+                layout: () => {
+                    processLayout(event as LayoutChangeEvent);
+                },
+                pressOut: () => {
+                    processFocus();
+                },
+                focus: () => {
+                    processFocus();
+                },
+            };
+
+            nextEvent[nextEventName as keyof typeof nextEvent]?.();
+
+            processState(nextState, {eventName: nextEventName});
+        },
+        [processFocus, processLayout, processState],
+    );
+
+    const [{onBlur, onFocus, ...onEvent}] = useOnEvent({
+        ...props,
+        onStateChange: processStateChange,
     });
 
-    const processHeaderLayout = (event: LayoutChangeEvent) => {
-        const nativeEventLayout = event.nativeEvent.layout;
+    const [
+        {
+            activeIndicatorBackgroundColor,
+            activeIndicatorScale,
+            backgroundColor,
+            inputColor,
+            labelTextColor,
+            labelTextHeight,
+            labelTextLetterSpacing,
+            labelTextLineHeight,
+            labelTextSize,
+            labelTextTop,
+            supportingTextColor,
+        },
+    ] = useAnimated({
+        type,
+        eventName,
+        disabled,
+        error,
+        state,
+        filled: !!filled,
+    });
 
-        setState(draft => {
-            draft.headerLayout = nativeEventLayout;
-        });
-    };
-
-    const processLabelTextLayout = (event: LayoutChangeEvent) => {
-        const nativeEventLayout = event.nativeEvent.layout;
-
-        setState(draft => {
-            draft.labelTextLayout = nativeEventLayout;
-        });
-    };
+    const [
+        {leadingIcon: leadingIconElement, trailingIcon: trailingIconElement},
+    ] = useIcon({
+        error,
+        disabled,
+        leadingIcon,
+        trailingIcon,
+    });
 
     const handleChangeText = useCallback(
         (text: string) => {
@@ -161,56 +216,56 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         [onChangeText, setState],
     );
 
-    const children = useMemo(
+    const input = useMemo(
         () =>
             renderTextInput({
                 ...textInputProps,
-                defaultValue,
                 onBlur,
                 onChangeText: handleChangeText,
                 onFocus,
-                placeholder,
                 placeholderTextColor,
                 ref: inputRef,
                 renderStyle: {color: inputColor},
-                testID: `textfield__input--${id}`,
+                testID: `textField__input--${id}`,
+                placeholder,
             }),
         [
-            defaultValue,
             handleChangeText,
             id,
             inputColor,
             inputRef,
             onBlur,
             onFocus,
-            placeholder,
             placeholderTextColor,
             textInputProps,
+            placeholder,
         ],
     );
 
     return render({
-        ...handleEvent,
-        children,
-        disabled,
+        eventName,
         id,
+        input,
         labelText,
-        leadingIcon,
-        onHeaderLayout: processHeaderLayout,
-        onLabelTextLayout: processLabelTextLayout,
-        renderStyle: {
-            ...animatedStyle,
-            headerHeight: headerLayout.height,
-            headerWidth: headerLayout.width,
-            labelTextHeight: labelTextLayout.height,
-            labelTextWidth: labelTextLayout.width,
-        },
-        shape: type === 'filled' ? 'extraSmallTop' : 'extraSmall',
+        leadingIcon: leadingIconElement,
+        onEvent: {...onEvent, onBlur, onFocus},
         state,
-        style,
-        supportingText,
-        trailingIcon,
-        type,
+        trailingIcon: trailingIconElement,
         underlayColor,
+        renderStyle: {
+            activeIndicatorBackgroundColor,
+            activeIndicatorScale,
+            backgroundColor,
+            height: layout.height,
+            labelTextColor,
+            labelTextHeight,
+            labelTextLetterSpacing,
+            labelTextLineHeight,
+            labelTextSize,
+            labelTextTop,
+            supportingTextColor,
+            width: layout.width,
+        },
+        supportingText,
     });
 };

@@ -1,4 +1,4 @@
-import React, {FC, RefAttributes, forwardRef, memo} from 'react';
+import {FC, RefAttributes, forwardRef, memo} from 'react';
 import {
     Animated,
     PressableProps,
@@ -14,11 +14,7 @@ import {
     Header,
     HeaderInner,
     Inner,
-    InputContainer,
-    Label,
     LabelText,
-    LabelTextBackground,
-    LabelTextBackgroundInner,
     LeadingIcon,
     SupportingText,
     TrailingIcon,
@@ -26,13 +22,14 @@ import {
 import {RenderProps, TextFieldBase} from './TextFieldBase';
 
 export type TextFieldType = 'filled' | 'outlined';
-export interface TextFieldProps
-    extends Partial<
-        TextInputProps &
-            PressableProps &
-            RefAttributes<TextInput> &
-            Pick<ShapeProps, 'shape'>
-    > {
+export type InputProps = Partial<
+    TextInputProps &
+        PressableProps &
+        RefAttributes<TextInput> &
+        Pick<ShapeProps, 'shape'>
+>;
+
+export interface TextFieldProps extends InputProps {
     disabled?: boolean;
     error?: boolean;
     labelText?: string;
@@ -42,78 +39,45 @@ export interface TextFieldProps
     type?: TextFieldType;
 }
 
+const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner);
+const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
+const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 const AnimatedActiveIndicator =
     Animated.createAnimatedComponent(ActiveIndicator);
 
-const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner);
-const AnimatedInputContainer = Animated.createAnimatedComponent(InputContainer);
-const AnimatedLabel = Animated.createAnimatedComponent(Label);
-const AnimatedLabelTextBackgroundInner = Animated.createAnimatedComponent(
-    LabelTextBackgroundInner,
-);
-
-const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>(
     (props, ref) => {
         const render = (renderProps: RenderProps) => {
             const {
-                children,
                 error,
+                supportingText,
                 id,
+                onEvent,
                 labelText,
                 leadingIcon,
-                onHeaderLayout,
-                onLabelTextLayout,
-                renderStyle,
-                shape,
-                state,
-                style,
-                supportingText,
                 trailingIcon,
-                type,
+                input,
+                renderStyle,
                 underlayColor,
-                ...pressableProps
+                eventName,
             } = renderProps;
 
             const {
-                activeIndicatorColor,
-                activeIndicatorHeight,
-                backgroundColor,
-                borderColor,
-                borderWidth,
-                headerHeight,
-                headerWidth,
-                inputContainerHeight,
-                labelColor,
-                labelHeight,
-                labelLeft,
-                labelLineHeight,
-                labelLineLetterSpacing,
-                labelSize,
-                labelTextBackgroundWidth,
-                labelTextHeight,
-                labelTextWidth,
-                labelTop,
+                activeIndicatorBackgroundColor,
                 supportingTextColor,
-                supportingTextOpacity,
+                activeIndicatorScale,
+                backgroundColor,
+                labelTextColor,
+                labelTextHeight,
+                labelTextLineHeight,
+                labelTextSize,
+                labelTextTop,
+                labelTextLetterSpacing,
+                width,
+                height,
             } = renderStyle;
 
-            const LabelComponent = (
-                <AnimatedLabel
-                    style={{
-                        color: labelColor,
-                        fontSize: labelSize,
-                        height: labelHeight,
-                        left: labelLeft,
-                        letterSpacing: labelLineLetterSpacing,
-                        lineHeight: labelLineHeight,
-                        top: labelTop,
-                    }}
-                    testID={`textField__label--${id}`}
-                    type={type}>
-                    {labelText}
-                </AnimatedLabel>
-            );
+            const shape = 'extraSmallTop';
 
             return (
                 <Container
@@ -121,28 +85,21 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>(
                         accessibilityLabel: supportingText,
                         accessibilityRole: 'alert',
                     })}
-                    testID={`textfield--${id}`}
-                    style={{...(typeof style === 'object' && style)}}>
-                    <Inner
-                        {...pressableProps}
-                        testID={`textfield__inner--${id}`}>
+                    testID={`textfield--${id}`}>
+                    <Inner testID={`textfield__inner--${id}`}>
                         <Header
-                            onLayout={onHeaderLayout}
-                            testID={`textfield__header--${id}`}
+                            {...onEvent}
                             {...(!error && {
                                 accessibilityLabel: labelText,
                                 accessibilityRole: 'keyboardkey',
-                            })}>
+                            })}
+                            testID={`textfield__header--${id}`}>
                             <AnimatedHeaderInner
-                                leadingIconShow={!!leadingIcon}
                                 shape={shape}
-                                style={{
-                                    backgroundColor,
-                                    borderColor,
-                                    borderWidth,
-                                }}
-                                testID={`textField__headerInner--${id}`}
-                                trailingIconShow={!!trailingIcon}>
+                                testID={`textfield__headerInner--${id}`}
+                                leadingIconShow={!!leadingIcon}
+                                trailingIconShow={!!trailingIcon}
+                                style={{backgroundColor}}>
                                 {leadingIcon && (
                                     <LeadingIcon
                                         testID={`textfield__leadingIcon--${id}`}>
@@ -151,11 +108,7 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>(
                                 )}
 
                                 <Content testID={`textfield__content--${id}`}>
-                                    {type === 'filled' && LabelComponent}
-                                    <AnimatedInputContainer
-                                        style={{height: inputContainerHeight}}>
-                                        {children}
-                                    </AnimatedInputContainer>
+                                    {input}
                                 </Content>
 
                                 {trailingIcon && (
@@ -165,63 +118,48 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>(
                                     </TrailingIcon>
                                 )}
 
-                                {type === 'filled' &&
-                                    typeof headerWidth === 'number' && (
-                                        <>
-                                            <AnimatedActiveIndicator
-                                                style={{
-                                                    backgroundColor:
-                                                        activeIndicatorColor,
-                                                    height: activeIndicatorHeight,
-                                                }}
-                                                testID={`textfield__activeIndicator--${id}`}
-                                                width={headerWidth}
-                                            />
+                                <AnimatedLabelText
+                                    testID={`textField__labelText--${id}`}
+                                    type="body"
+                                    size="large"
+                                    style={{
+                                        color: labelTextColor,
+                                        top: labelTextTop,
+                                        fontSize: labelTextSize,
+                                        height: labelTextHeight,
+                                        lineHeight: labelTextLineHeight,
+                                        letterSpacing: labelTextLetterSpacing,
+                                    }}>
+                                    {labelText}
+                                </AnimatedLabelText>
 
-                                            <Hovered
-                                                height={headerHeight}
-                                                shape={shape}
-                                                state={state}
-                                                underlayColor={underlayColor}
-                                                width={headerWidth}
-                                                opacities={[0.08, 0]}
-                                            />
-                                        </>
-                                    )}
+                                <AnimatedActiveIndicator
+                                    testID={`textfield__activeIndicator--${id}`}
+                                    width={width}
+                                    style={{
+                                        backgroundColor:
+                                            activeIndicatorBackgroundColor,
+                                        transform: [
+                                            {scaleY: activeIndicatorScale},
+                                        ],
+                                    }}
+                                />
 
-                                {type === 'outlined' && (
-                                    <>
-                                        {LabelComponent}
-                                        <LabelText
-                                            onLayout={onLabelTextLayout}
-                                            testID={`textField__labelText--${id}`}>
-                                            {labelText}
-                                        </LabelText>
-
-                                        <LabelTextBackground
-                                            height={labelTextHeight}
-                                            width={labelTextWidth}
-                                            testID={`textField__labelTextBackground--${id}`}>
-                                            <AnimatedLabelTextBackgroundInner
-                                                testID={`textField__labelTextBackgroundInner--${id}`}
-                                                style={{
-                                                    width: labelTextBackgroundWidth,
-                                                }}
-                                            />
-                                        </LabelTextBackground>
-                                    </>
-                                )}
+                                <Hovered
+                                    height={height}
+                                    shape={shape}
+                                    eventName={eventName}
+                                    underlayColor={underlayColor}
+                                    width={width}
+                                    opacities={[0, 0.08]}
+                                />
                             </AnimatedHeaderInner>
                         </Header>
 
                         <AnimatedSupportingText
-                            ellipsizeMode="tail"
-                            numberOfLines={1}
-                            style={{
-                                color: supportingTextColor,
-                                opacity: supportingTextOpacity,
-                            }}
-                            testID={`textfield__supportingText--${id}`}>
+                            type="body"
+                            size="small"
+                            style={{color: supportingTextColor}}>
                             {supportingText}
                         </AnimatedSupportingText>
                     </Inner>

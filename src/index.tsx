@@ -15,7 +15,7 @@ export * from './components/NavigationRail/NavigationRailItem/NavigationRailItem
 export * from './components/Search/Search';
 export * from './components/SideSheet/SideSheet';
 export * from './components/Tab/Tab';
-export * from './components/TextField/TextField';
+export * from './components/TextField/reTextField';
 export * from './components/TouchableRipple/TouchableRipple';
 export * from './context/context';
 export * from './hooks/hook';

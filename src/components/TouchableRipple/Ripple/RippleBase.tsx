@@ -43,7 +43,7 @@ export const RippleBase: FC<RippleBaseProps> = props => {
     );
 
     const diameter = radius * 2;
-    const {opacity, scale} = useAnimated({
+    const [{opacity, scale}] = useAnimated({
         active,
         defaultActive,
         minDuration: diameter,

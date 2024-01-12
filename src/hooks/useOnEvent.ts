@@ -62,15 +62,15 @@ export const useOnEvent = (options: UseHandleEventOptions) => {
     const mobile = ['ios', 'android'].includes(theme.OS);
     const processState = useCallback(
         (nextState: State, processStateOptions = {} as ProcessStateOptions) => {
-            if (disabled) {
-                return;
-            }
-
             const {
                 callback,
                 event,
                 eventName: processStateEventName,
             } = processStateOptions;
+
+            if (disabled && processStateEventName !== 'layout') {
+                return;
+            }
 
             onStateChange?.(nextState, {
                 event,

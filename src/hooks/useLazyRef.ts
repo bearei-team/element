@@ -7,9 +7,5 @@ export const useLazyRef = <T>(callback: () => T) => {
         lazyRef.current = callback();
     }
 
-    // useEffect(() => {
-    //     lazyRef.current = callback();
-    // }, [callback, dependencies]);
-
     return [lazyRef as React.MutableRefObject<T>];
 };

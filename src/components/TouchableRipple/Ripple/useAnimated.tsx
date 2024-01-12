@@ -92,5 +92,5 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         }
     }, [active, activeRipple, processAnimatedTiming]);
 
-    return {opacity, scale};
+    return [{opacity, scale}];
 };

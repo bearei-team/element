@@ -29,5 +29,5 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         );
     }, [innerHeightAnimated, animatedTiming, listVisible]);
 
-    return {innerHeight};
+    return [{innerHeight}];
 };
