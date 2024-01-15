@@ -17,7 +17,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const backgroundColorConfig = {
         filled: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.primary.primary],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.color.rgba(theme.palette.primary.primary, 1),
+            ],
         },
         outlined: {
             inputRange: [0, 1],
@@ -35,7 +38,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         },
         tonal: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.secondary.secondaryContainer],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.color.rgba(theme.palette.secondary.secondaryContainer, 1),
+            ],
         },
     };
 

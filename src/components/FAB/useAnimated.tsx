@@ -16,24 +16,30 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const backgroundColorConfig = {
         surface: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.surface.surfaceContainerHigh],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.color.rgba(theme.palette.surface.surfaceContainerHigh, 1),
+            ],
         },
         primary: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.primary.primaryContainer],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.color.rgba(theme.palette.primary.primaryContainer, 1),
+            ],
         },
         secondary: {
             inputRange: [0, 1],
             outputRange: [
-                theme.color.rgba(theme.palette.primary.primary, 0),
-                theme.palette.secondary.secondaryContainer,
+                disabledBackgroundColor,
+                theme.color.rgba(theme.palette.secondary.secondaryContainer, 1),
             ],
         },
         tertiary: {
             inputRange: [0, 1],
             outputRange: [
-                theme.color.rgba(theme.palette.primary.primary, 0),
-                theme.palette.tertiary.tertiaryContainer,
+                disabledBackgroundColor,
+                theme.color.rgba(theme.palette.tertiary.tertiaryContainer, 1),
             ],
         },
     };
@@ -41,19 +47,28 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const colorConfig = {
         surface: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.primary.primary],
+            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.primary, 1)],
         },
         primary: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.primary.onPrimaryContainer],
+            outputRange: [
+                disabledColor,
+                theme.color.rgba(theme.palette.primary.onPrimaryContainer, 1),
+            ],
         },
         secondary: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.secondary.onSecondaryContainer],
+            outputRange: [
+                disabledColor,
+                theme.color.rgba(theme.palette.secondary.onSecondaryContainer, 1),
+            ],
         },
         tertiary: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.tertiary.onTertiaryContainer],
+            outputRange: [
+                disabledColor,
+                theme.color.rgba(theme.palette.tertiary.onTertiaryContainer, 1),
+            ],
         },
     };
 

@@ -19,11 +19,17 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const backgroundColorType = {
         elevated: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.surface.surfaceContainerLow],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.color.rgba(theme.palette.surface.surfaceContainerLow, 1),
+            ],
         },
         filled: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.primary.primary],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.color.rgba(theme.palette.primary.primary, 1),
+            ],
         },
         outlined: {
             inputRange: [0, 1],
@@ -48,34 +54,40 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         },
         tonal: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.secondary.secondaryContainer],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.color.rgba(theme.palette.secondary.secondaryContainer, 1),
+            ],
         },
     };
 
     const colorType = {
         elevated: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.primary.primary],
+            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.primary, 1)],
         },
         filled: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.primary.onPrimary],
+            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.onPrimary, 1)],
         },
         outlined: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.primary.primary],
+            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.primary, 1)],
         },
         text: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.primary.primary],
+            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.primary, 1)],
         },
         link: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.primary.primary],
+            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.primary, 1)],
         },
         tonal: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.palette.secondary.onSecondaryContainer],
+            outputRange: [
+                disabledColor,
+                theme.color.rgba(theme.palette.secondary.onSecondaryContainer, 1),
+            ],
         },
     };
 
@@ -87,7 +99,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
             disabledBackgroundColor,
             type === 'link'
                 ? theme.color.rgba(theme.palette.outline.outline, 0)
-                : theme.palette.outline.outline,
+                : theme.color.rgba(theme.palette.outline.outline, 1),
             theme.palette.primary.primary,
         ],
     });

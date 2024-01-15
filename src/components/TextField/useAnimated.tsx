@@ -28,7 +28,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const backgroundColorConfig = {
         filled: {
             inputRange: [0, 1],
-            outputRange: [disabledBackgroundColor, theme.palette.surface.surfaceContainerHighest],
+            outputRange: [
+                disabledBackgroundColor,
+                theme.color.rgba(theme.palette.surface.surfaceContainerHighest, 1),
+            ],
         },
         outlined: {
             inputRange: [0, 1],
@@ -43,18 +46,18 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         () =>
             inputAnimated.interpolate({
                 inputRange: [0, 1],
-                outputRange: [disabledColor, theme.palette.surface.onSurface],
+                outputRange: [disabledColor, theme.color.rgba(theme.palette.surface.onSurface, 1)],
             }),
-        [disabledColor, inputAnimated, theme.palette.surface.onSurface],
+        [disabledColor, inputAnimated, theme.color, theme.palette.surface.onSurface],
     );
 
     const labelTextColor = colorAnimated.interpolate({
         inputRange: [0, 1, 2, 3],
         outputRange: [
             disabledColor,
-            theme.palette.surface.onSurfaceVariant,
-            theme.palette.primary.primary,
-            theme.palette.error.error,
+            theme.color.rgba(theme.palette.surface.onSurfaceVariant, 1),
+            theme.color.rgba(theme.palette.primary.primary, 1),
+            theme.color.rgba(theme.palette.error.error, 1),
         ],
     });
 
@@ -62,9 +65,9 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         inputRange: [0, 1, 2, 3],
         outputRange: [
             disabledColor,
-            theme.palette.surface.onSurfaceVariant,
-            theme.palette.primary.primary,
-            theme.palette.error.error,
+            theme.color.rgba(theme.palette.surface.onSurfaceVariant, 1),
+            theme.color.rgba(theme.palette.primary.primary, 1),
+            theme.color.rgba(theme.palette.error.error, 1),
         ],
     });
 
@@ -115,8 +118,8 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         inputRange: [0, 1, 2],
         outputRange: [
             disabledColor,
-            theme.palette.surface.onSurfaceVariant,
-            theme.palette.error.error,
+            theme.color.rgba(theme.palette.surface.onSurfaceVariant, 1),
+            theme.color.rgba(theme.palette.error.error, 1),
         ],
     });
 

@@ -20,7 +20,10 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
     const color = labelAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [theme.palette.surface.onSurfaceVariant, theme.palette.surface.onSurface],
+        outputRange: [
+            theme.color.rgba(theme.palette.surface.onSurfaceVariant, 1),
+            theme.color.rgba(theme.palette.surface.onSurface, 1),
+        ],
     });
 
     useEffect(() => {
