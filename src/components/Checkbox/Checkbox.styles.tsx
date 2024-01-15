@@ -1,11 +1,14 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
-import {RenderProps} from './IconButtonBase';
+import {RenderProps} from './CheckboxBase';
 
-export interface ContentProps extends Pick<RenderProps, 'width' | 'height'> {}
+export type ContentProps = Pick<RenderProps, 'width' | 'height'>;
 
-export const Container = styled(View)``;
+export const Container = styled(View)`
+    display: inline-block;
+`;
+
 export const Content = styled(Shape)<ContentProps>`
     align-items: center;
     display: flex;

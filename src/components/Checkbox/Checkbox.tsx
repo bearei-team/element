@@ -2,33 +2,34 @@ import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Hovered} from '../Hovered/Hovered';
 import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
-import {Container, Content, Icon} from './IconButton.styles';
-import {IconButtonBase, RenderProps} from './IconButtonBase';
+import {Container, Content, Icon} from './Checkbox.styles';
+import {CheckboxBase, RenderProps} from './CheckboxBase';
 
-export type IconButtonType = 'filled' | 'outlined' | 'standard' | 'tonal';
+export type CheckboxType = 'selected' | 'indeterminate' | 'unselected';
 
-export interface IconButtonProps extends TouchableRippleProps {
+export interface CheckboxProps extends TouchableRippleProps {
+    defaultActive?: boolean;
+    disabled?: boolean;
+    error?: boolean;
     height?: number;
-    icon?: React.JSX.Element;
-    type?: IconButtonType;
+    indeterminate?: boolean;
+    type?: CheckboxType;
     width?: number;
+    onActive?: (active?: boolean) => void;
 }
 
-/**
- * TODO: Selected
- */
 const AnimatedContent = Animated.createAnimatedComponent(Content);
-const ForwardRefIconButton = forwardRef<View, IconButtonProps>((props, ref) => {
+const ForwardRefCheckbox = forwardRef<View, CheckboxProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
-        const {eventName, icon, id, onEvent, renderStyle, style, underlayColor, ...contentProps} =
+        const {eventName, icon, id, onEvent, renderStyle, underlayColor, ...contentProps} =
             renderProps;
 
-        const {backgroundColor, height, width, ...border} = renderStyle;
+        const {height, width} = renderStyle;
         const {onLayout, ...onTouchableRippleEvent} = onEvent;
         const shape = 'full';
 
         return (
-            <Container accessibilityRole="button" testID={`iconButton--${id}`}>
+            <Container accessibilityRole="checkbox" testID={`checkbox--${id}`}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
                     shape={shape}
@@ -37,13 +38,8 @@ const ForwardRefIconButton = forwardRef<View, IconButtonProps>((props, ref) => {
                         {...contentProps}
                         onLayout={onLayout}
                         shape={shape}
-                        style={{
-                            ...(typeof style === 'object' && style),
-                            ...border,
-                            backgroundColor,
-                        }}
-                        testID={`iconButton__content--${id}`}>
-                        <Icon testID={`iconButton__icon--${id}`}>{icon}</Icon>
+                        testID={`checkbox__content--${id}`}>
+                        <Icon testID={`checkbox__icon--${id}`}>{icon}</Icon>
 
                         <Hovered
                             eventName={eventName}
@@ -58,7 +54,7 @@ const ForwardRefIconButton = forwardRef<View, IconButtonProps>((props, ref) => {
         );
     };
 
-    return <IconButtonBase {...props} ref={ref} render={render} />;
+    return <CheckboxBase {...props} ref={ref} render={render} />;
 });
 
-export const IconButton: FC<IconButtonProps> = memo(ForwardRefIconButton);
+export const Checkbox: FC<CheckboxProps> = memo(ForwardRefCheckbox);

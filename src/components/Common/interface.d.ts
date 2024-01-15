@@ -2,15 +2,7 @@ export type AnimatedInterpolation = Animated.AnimatedInterpolation<string | numb
 export type BorderStyle = 'dotted' | 'solid' | 'dashed';
 export type Layout = 'horizontal' | 'vertical';
 export type Size = 'large' | 'medium' | 'small';
-export type State =
-    | 'disabled'
-    | 'enabled'
-    | 'error'
-    | 'focused'
-    | 'hovered'
-    | 'longPressIn'
-    | 'pressIn';
-
+export type State = 'enabled' | 'focused' | 'hovered' | 'longPressIn' | 'pressIn';
 export type EventName =
     | 'none'
     | 'pressIn'

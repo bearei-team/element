@@ -62,10 +62,6 @@ export const LabelText = styled(Typography)`
 `;
 
 export const Icon = styled.View<IconProps>`
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
     overflow: hidden;
 
     ${({theme, size = 'medium'}) => {

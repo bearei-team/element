@@ -9,7 +9,7 @@ export default {
 export const Filled: StoryObj<IconProps> = {
     args: {
         type: 'filled',
-        name: 'lens',
+        name: 'checkBox',
     },
 };
 
