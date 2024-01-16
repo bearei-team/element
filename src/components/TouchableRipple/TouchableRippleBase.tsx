@@ -44,6 +44,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         centered,
         children,
         defaultActive,
+        disabled,
         onRippleAnimatedEnd,
         render,
         underlayColor,
@@ -112,7 +113,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
 
     const [onEvent] = HOOK.useOnEvent({
         ...props,
-        disabled: false,
+        disabled,
         onStateChange: processStateChange,
     });
 

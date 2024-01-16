@@ -9,6 +9,7 @@ export const Container = styled(View)<ContainerProps>`
     display: flex;
     flex-direction: row;
     justify-content: center;
+    flex: 1;
 
     ${({width, height, theme}) => css`
         max-height: ${height ?? theme.adaptSize(theme.spacing.small * 6)}px;

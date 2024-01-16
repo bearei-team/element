@@ -16,9 +16,12 @@ export interface RenderProps extends ButtonProps {
     elevation: ElevationLevel;
     eventName: EventName;
     onEvent: OnEvent;
+    onContentLayout: (event: LayoutChangeEvent) => void;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
         width: number;
+        contentWidth: number;
+        contentHeight: number;
     };
 }
 
@@ -38,6 +41,7 @@ const initialState = {
     elevation: undefined as ElevationLevel,
     eventName: 'none' as EventName,
     layout: {} as LayoutRectangle,
+    contentLayout: {} as LayoutRectangle,
     status: 'idle' as ComponentStatus,
 };
 
@@ -52,7 +56,7 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{defaultElevation, elevation, eventName, layout, status}, setState] =
+    const [{defaultElevation, elevation, eventName, layout, status, contentLayout}, setState] =
         useImmer(initialState);
 
     const id = useId();
@@ -88,11 +92,26 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         (event: LayoutChangeEvent) => {
             const nativeEventLayout = event.nativeEvent.layout;
 
-            setState(draft => {
-                draft.layout = nativeEventLayout;
-            });
+            if (block) {
+                setState(draft => {
+                    draft.layout = nativeEventLayout;
+                });
+            }
         },
-        [setState],
+        [block, setState],
+    );
+
+    const processContentLayout = useCallback(
+        (event: LayoutChangeEvent) => {
+            const nativeEventLayout = event.nativeEvent.layout;
+
+            if (!block) {
+                setState(draft => {
+                    draft.contentLayout = nativeEventLayout;
+                });
+            }
+        },
+        [block, setState],
     );
 
     const processStateChange = useCallback(
@@ -154,11 +173,13 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
         ...renderProps,
         block,
         defaultElevation,
+        disabled,
         elevation,
         eventName,
         icon: iconElement,
         id,
         labelText,
+        onContentLayout: processContentLayout,
         onEvent,
         type,
         underlayColor,
@@ -166,6 +187,8 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
             ...border,
             backgroundColor,
             color,
+            contentHeight: contentLayout.height,
+            contentWidth: contentLayout.width,
             height: layout.height,
             width: layout.width,
         },

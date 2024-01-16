@@ -3,7 +3,9 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './ButtonBase';
 
-export interface ContainerProps extends Pick<RenderProps, 'block'> {}
+export interface ContainerProps extends Pick<RenderProps, 'block'> {
+    width?: number;
+}
 
 export interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
     iconShow: boolean;
@@ -11,11 +13,14 @@ export interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
 }
 
 export const Container = styled(View)<ContainerProps>`
-    ${({block}) =>
-        block &&
-        css`
-            width: 100%;
-        `}
+    ${({block, width = 0}) =>
+        block
+            ? css`
+                  width: 100%;
+              `
+            : css`
+                  width: ${width}px;
+              `}
 `;
 
 export const Content = styled(Shape)<ContentProps>`

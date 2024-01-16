@@ -5,10 +5,7 @@ import {RenderProps} from './CheckboxBase';
 
 export type ContentProps = Pick<RenderProps, 'width' | 'height'>;
 
-export const Container = styled(View)`
-    display: inline-block;
-`;
-
+export const Container = styled(View)``;
 export const Content = styled(Shape)<ContentProps>`
     align-items: center;
     display: flex;

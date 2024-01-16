@@ -27,18 +27,26 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
             icon,
             id,
             labelText,
+            onContentLayout,
             onEvent,
             renderStyle,
             style,
             type,
             underlayColor,
+            disabled,
             ...contentProps
         } = renderProps;
 
-        const {backgroundColor, color, height, width, ...border} = renderStyle;
+        const {backgroundColor, color, height, width, contentWidth, contentHeight, ...border} =
+            renderStyle;
+
         const {onLayout, ...onTouchableRippleEvent} = onEvent;
         const link = type === 'link';
-        const shape = link ? 'none' : 'full';
+        const shape = link ? 'extraSmall' : 'full';
+        const hoveredLayout = {
+            height: height || contentHeight,
+            width: width || contentWidth,
+        };
 
         return (
             <Container
@@ -46,15 +54,18 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
                 accessibilityRole="button"
                 block={block}
                 onLayout={onLayout}
-                testID={`button--${id}`}>
+                testID={`button--${id}`}
+                width={contentWidth}>
                 <Elevation defaultLevel={defaultElevation} level={elevation} shape={shape}>
                     <TouchableRipple
                         {...onTouchableRippleEvent}
                         shape={shape}
-                        underlayColor={underlayColor}>
+                        underlayColor={underlayColor}
+                        disabled={disabled}>
                         <AnimatedContent
                             {...contentProps}
                             iconShow={!!icon}
+                            onLayout={onContentLayout}
                             shape={shape}
                             style={{
                                 ...(typeof style === 'object' && style),
@@ -79,10 +90,10 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
 
                             <Hovered
                                 eventName={eventName}
-                                height={height}
+                                height={hoveredLayout.height}
                                 shape={shape}
                                 underlayColor={underlayColor}
-                                width={width}
+                                width={hoveredLayout.width}
                             />
                         </AnimatedContent>
                     </TouchableRipple>
