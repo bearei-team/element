@@ -18,10 +18,6 @@ export const Content = styled(Shape)<ContentProps>`
     pointer-events: none;
     position: relative;
 
-    ${({theme}) => css`
-        gap: ${theme.adaptSize(theme.spacing.small + theme.spacing.extraSmall)}px;
-    `}
-
     ${({theme, size = 'medium'}) => {
         const contentSize = {
             small: css`
@@ -47,6 +43,7 @@ export const Content = styled(Shape)<ContentProps>`
     ${({theme, labelTextShow}) =>
         labelTextShow &&
         css`
+            gap: ${theme.adaptSize(theme.spacing.small + theme.spacing.extraSmall)}px;
             height: ${theme.adaptSize(theme.spacing.small * 7)}px;
             min-width: ${theme.adaptSize(theme.spacing.small * 7)}px;
             padding: ${theme.adaptSize(theme.spacing.medium)}px

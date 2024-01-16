@@ -35,7 +35,7 @@ export const FABBase: FC<FABBaseProps> = props => {
     const {
         defaultElevation = 3,
         disabled,
-        disabledElevation = false,
+        disabledElevation,
         icon,
         render,
         type = 'primary',
@@ -117,7 +117,7 @@ export const FABBase: FC<FABBaseProps> = props => {
 
     return render({
         ...renderProps,
-        defaultElevation,
+        defaultElevation: disabledElevation ? 0 : defaultElevation,
         elevation,
         eventName,
         icon: iconElement,
