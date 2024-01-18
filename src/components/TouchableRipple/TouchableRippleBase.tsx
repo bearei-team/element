@@ -192,6 +192,10 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         </>
     );
 
+    /**
+     * When rendering a component for the first time, if the component has active ripples and is active by default.
+     * Initialize the default ripple here.
+     */
     useEffect(() => {
         if (status === 'idle') {
             const addRipple = activeRipple && defaultActive;
@@ -205,6 +209,12 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
             });
         }
     }, [activeRipple, defaultActive, processAddRipple, setState, status]);
+
+    useEffect(() => {
+        if (status === 'succeeded' && typeof defaultActive === 'boolean') {
+            !defaultActive && processRippleExit();
+        }
+    }, [defaultActive, processRippleExit, status]);
 
     useEffect(() => {
         const processRipple = activeRipple;

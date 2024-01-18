@@ -11,9 +11,7 @@ export default {
 export const Ripple: StoryObj<TouchableRippleProps> = {
     args: {
         underlayColor: '#ce1616',
-        children: (
-            <View style={{height: 80, width: 200, backgroundColor: 'gray'}} />
-        ),
+        children: <View style={{height: 80, width: 200, backgroundColor: 'gray'}} />,
     },
 };
 

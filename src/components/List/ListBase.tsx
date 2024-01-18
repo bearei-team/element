@@ -61,6 +61,7 @@ export const ListBase: FC<ListBaseProps> = props => {
         onActive,
         render,
         supportingTextNumberOfLines,
+        onClose,
         ...renderProps
     } = props;
 
@@ -84,8 +85,10 @@ export const ListBase: FC<ListBaseProps> = props => {
             setState(draft => {
                 draft.data = draft.data.filter(datum => datum.key !== key);
             });
+
+            onClose?.(key);
         },
-        [setState],
+        [onClose, setState],
     );
 
     const processRenderItem = useCallback(
