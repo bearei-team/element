@@ -136,11 +136,19 @@ export const SideSheetBase: FC<SideSheetBaseProps> = props => {
 
     useEffect(() => {
         setState(draft => {
+            if (draft.modalVisible) {
+                draft.visible = false;
+
+                return;
+            }
+
             draft.modalVisible = sheetVisible;
         });
+    }, [setState, sheetVisible]);
 
+    useEffect(() => {
         emitter.emit('sheet', sheet);
-    }, [setState, sheet, sheetVisible]);
+    }, [sheet]);
 
     return <></>;
 };

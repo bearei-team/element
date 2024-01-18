@@ -90,7 +90,6 @@ export const Input = styled(TextInput)`
         font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
-        height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
     `};
 `;

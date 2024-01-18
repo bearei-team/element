@@ -176,13 +176,13 @@ export const TabBase: FC<TabBaseProps> = props => {
     );
 
     useEffect(() => {
-        if (dataSources && status === 'idle') {
+        if (dataSources) {
             setState(draft => {
                 draft.data = dataSources;
-                draft.status = 'succeeded';
+                draft.status === 'idle' && (draft.status = 'succeeded');
             });
         }
-    }, [dataSources, setState, status]);
+    }, [dataSources, setState]);
 
     if (status === 'idle') {
         return <></>;

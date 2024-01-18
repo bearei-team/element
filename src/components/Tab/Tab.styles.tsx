@@ -16,6 +16,7 @@ export const Container = styled(View)`
     align-items: center;
     display: flex;
     flex-direction: column;
+    flex: 1;
 `;
 
 export const Header = styled.View`
