@@ -1,5 +1,5 @@
 import {FC, useCallback, useEffect, useId, useMemo} from 'react';
-import {Animated, GestureResponderEvent, ViewStyle} from 'react-native';
+import {Animated, ViewStyle} from 'react-native';
 import {useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
 import {Button} from '../Button/Button';
@@ -18,8 +18,8 @@ export interface SideSheetBaseProps extends SideSheetProps {
 }
 
 const initialState = {
-    modalVisible: false,
-    visible: false,
+    modalVisible: undefined as boolean | undefined,
+    visible: undefined as boolean | undefined,
 };
 
 export const SideSheetBase: FC<SideSheetBaseProps> = props => {
@@ -44,12 +44,16 @@ export const SideSheetBase: FC<SideSheetBaseProps> = props => {
     const [{visible, modalVisible}, setState] = useImmer(initialState);
     const id = useId();
     const processAnimatedFinished = useCallback(() => {
-        setState(draft => {
-            if (!draft.modalVisible) {
+        if (modalVisible) {
+            setState(draft => {
                 draft.modalVisible = false;
-            }
-        });
-    }, [setState]);
+                draft.visible = undefined;
+            });
+
+            onClose?.();
+            onBack?.();
+        }
+    }, [modalVisible, onBack, onClose, setState]);
 
     const [{backgroundColor, innerTranslateX}] = useAnimated({
         finished: processAnimatedFinished,
@@ -57,17 +61,11 @@ export const SideSheetBase: FC<SideSheetBaseProps> = props => {
         visible,
     });
 
-    const handleClose = useCallback(
-        (event: GestureResponderEvent) => {
-            setState(draft => {
-                draft.visible = false;
-            });
-
-            onClose?.(event);
-            onBack?.(event);
-        },
-        [onBack, onClose, setState],
-    );
+    const handleClose = useCallback(() => {
+        setState(draft => {
+            draft.visible = false;
+        });
+    }, [setState]);
 
     const processModalShow = useCallback(() => {
         setState(draft => {

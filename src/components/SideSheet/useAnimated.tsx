@@ -6,7 +6,7 @@ import {AnimatedTimingOptions} from '../../utils/animatedTiming.utils';
 import {UTIL} from '../../utils/util';
 import {RenderProps} from './SideSheetBase';
 
-export interface UseAnimatedOptions extends Required<Pick<RenderProps, 'visible' | 'position'>> {
+export interface UseAnimatedOptions extends Pick<RenderProps, 'visible' | 'position'> {
     finished: () => void;
 }
 
@@ -73,7 +73,9 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     }, [animatedTiming, containerAnimated, finished, innerAnimated]);
 
     useEffect(() => {
-        visible ? enterScreen() : exitScreen();
+        if (typeof visible === 'boolean') {
+            visible ? enterScreen() : exitScreen();
+        }
     }, [enterScreen, exitScreen, visible]);
 
     return [{backgroundColor, innerTranslateX}];

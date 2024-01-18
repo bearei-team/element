@@ -25,8 +25,8 @@ export interface SideSheetProps
     closeIcon?: React.JSX.Element;
     footer?: boolean;
     headlineText?: string;
-    onBack?: (event: GestureResponderEvent) => void;
-    onClose?: (event: GestureResponderEvent) => void;
+    onBack?: () => void;
+    onClose?: () => void;
     onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
     onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
     position?: 'horizontalStart' | 'horizontalEnd';

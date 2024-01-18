@@ -8,16 +8,15 @@ export type EmitterEvent = {
 
 export const emitter = mitt<EmitterEvent>();
 export const ModalProvider: FC<unknown> = () => {
-    const [{children}, setSheet] = useImmer({
-        children: <></>,
+    const [{sheet}, setSheet] = useImmer({
+        sheet: <></>,
     });
 
-    emitter.on('sheet', sheet => {
-        console.info(sheet);
+    emitter.on('sheet', e => {
         setSheet(draft => {
-            draft.children = sheet;
+            draft.sheet = e;
         });
     });
 
-    return <>{children}</>;
+    return <>{sheet}</>;
 };

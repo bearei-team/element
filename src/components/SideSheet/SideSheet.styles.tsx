@@ -3,12 +3,12 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './SideSheetBase';
 
-export type InnerProps = Pick<RenderProps, 'position'>;
+export type ContainerProps = Pick<RenderProps, 'position'>;
 export type HeaderProps = Pick<RenderProps, 'back'>;
 
 export const Modal = styled.View`
     height: 100%;
-    position: fixed;
+    position: absolute;
     width: 100%;
     z-index: 2048;
 
@@ -19,35 +19,33 @@ export const Modal = styled.View`
         `}
 `;
 
-export const Container = styled(View)`
+export const Container = styled(View)<ContainerProps>`
     flex: 1;
-    position: relative;
-`;
+    display: flex;
+    flex-direction: row;
 
-export const Inner = styled(Shape)<InnerProps>`
-    position: absolute;
-
-    ${({theme}) => css`
-        background-color: ${theme.palette.surface.surfaceContainerLow};
-        height: 100%;
-        padding-bottom: ${theme.adaptSize(theme.spacing.large)}px;
-        width: ${theme.adaptSize(theme.spacing.small * 40)}px;
-    `}
-
-    ${({theme, position = 'horizontalEnd'}) => {
+    ${({position = 'horizontalEnd'}) => {
         const innerPosition = {
             horizontalStart: css`
-                left: ${theme.adaptSize(theme.spacing.none)}px;
-                top: ${theme.adaptSize(theme.spacing.none)}px;
+                justify-content: flex-start;
             `,
             horizontalEnd: css`
-                right: ${theme.adaptSize(theme.spacing.none)}px;
-                top: ${theme.adaptSize(theme.spacing.none)}px;
+                justify-content: flex-end;
             `,
         };
 
         return innerPosition[position];
     }}
+`;
+
+export const Inner = styled(Shape)`
+    align-self: stretch;
+
+    ${({theme}) => css`
+        background-color: ${theme.palette.surface.surfaceContainerLow};
+        padding-bottom: ${theme.adaptSize(theme.spacing.large)}px;
+        width: ${theme.adaptSize(theme.spacing.small * 40)}px;
+    `}
 `;
 
 export const Header = styled.View<HeaderProps>`

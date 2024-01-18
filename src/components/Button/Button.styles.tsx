@@ -31,6 +31,12 @@ export const Content = styled(Shape)<ContentProps>`
     pointer-events: none;
     position: relative;
 
+    ${({theme, iconShow}) =>
+        iconShow &&
+        css`
+            gap: ${theme.adaptSize(theme.spacing.small)}px;
+        `}
+
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.small)}px;
         height: ${theme.adaptSize(theme.spacing.small * 5)}px;
