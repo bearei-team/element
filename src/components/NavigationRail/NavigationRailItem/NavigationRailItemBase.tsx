@@ -38,7 +38,7 @@ export interface NavigationRailItemBaseProps extends NavigationRailItemProps {
 }
 
 const initialState = {
-    activeLocation: {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
+    activeLocation: undefined as Pick<NativeTouchEvent, 'locationX' | 'locationY'> | undefined,
     eventName: 'none' as EventName,
     layout: {} as LayoutRectangle,
     rippleCentered: false,
@@ -143,18 +143,12 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = props => 
     }, [defaultActive, setState, status]);
 
     useEffect(() => {
-        setState(draft => {
-            const uncenter =
-                draft.status === 'succeeded' &&
-                typeof active === 'boolean' &&
-                active &&
-                defaultActive;
-
-            if (uncenter) {
+        if (activeLocation) {
+            setState(draft => {
                 draft.rippleCentered = false;
-            }
-        });
-    }, [active, defaultActive, setState]);
+            });
+        }
+    }, [activeLocation, setState]);
 
     if (status === 'idle') {
         return <></>;

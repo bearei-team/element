@@ -123,7 +123,9 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
 
             exitAnimated?.(() => {
                 setState(draft => {
-                    delete draft.rippleSequence[sequence];
+                    if (draft.rippleSequence[sequence]) {
+                        delete draft.rippleSequence[sequence];
+                    }
                 });
 
                 onRippleAnimatedEnd?.();
@@ -144,14 +146,18 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
         (sequence: string, exitAnimated: (finished?: () => void) => void) => {
             if (activeRipple) {
                 return setState(draft => {
-                    draft.rippleSequence[sequence].exitAnimated = exitAnimated;
+                    draft.rippleSequence[sequence] &&
+                        (draft.rippleSequence[sequence].exitAnimated = exitAnimated);
+
                     draft.status === 'idle' && (draft.status = 'succeeded');
                 });
             }
 
             exitAnimated(() => {
                 setState(draft => {
-                    delete draft.rippleSequence[sequence];
+                    if (draft.rippleSequence[sequence]) {
+                        delete draft.rippleSequence[sequence];
+                    }
                 });
 
                 onRippleAnimatedEnd?.();
@@ -197,9 +203,9 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
      * Initialize the default ripple here.
      */
     useEffect(() => {
-        if (status === 'idle') {
-            const addRipple = activeRipple && defaultActive;
+        const addRipple = activeRipple && defaultActive;
 
+        if (status === 'idle') {
             if (addRipple) {
                 return processAddRipple({locationX: 0, locationY: 0});
             }
@@ -207,14 +213,14 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
             setState(draft => {
                 draft.status = 'succeeded';
             });
-        }
-    }, [activeRipple, defaultActive, processAddRipple, setState, status]);
 
-    useEffect(() => {
-        if (status === 'succeeded' && typeof defaultActive === 'boolean') {
+            return;
+        }
+
+        if (activeRipple) {
             !defaultActive && processRippleExit();
         }
-    }, [defaultActive, processRippleExit, status]);
+    }, [activeRipple, defaultActive, processAddRipple, processRippleExit, setState, status]);
 
     useEffect(() => {
         const processRipple = activeRipple;

@@ -15,7 +15,10 @@ export interface UseAnimatedOptions
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {active, defaultActive, minDuration, onEntryAnimatedEnd, sequence} = options;
     const [opacityAnimated] = HOOK.useAnimatedValue(1);
-    const [scaleAnimated] = HOOK.useAnimatedValue(defaultActive ? 1 : 0);
+    const [scaleAnimated] = HOOK.useAnimatedValue(
+        defaultActive && typeof active !== 'boolean' ? 1 : 0,
+    );
+
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
     const activeRipple = [typeof defaultActive, typeof active].includes('boolean');

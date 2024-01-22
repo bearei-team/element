@@ -39,7 +39,7 @@ export interface ListItemBaseProps extends ListItemProps {
 }
 
 const initialState = {
-    activeLocation: {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
+    activeLocation: undefined as Pick<NativeTouchEvent, 'locationX' | 'locationY'> | undefined,
     eventName: 'none' as EventName,
     layout: {} as LayoutRectangle,
     rippleCentered: false,
@@ -62,8 +62,10 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
         ...renderProps
     } = props;
 
-    const [{activeLocation, eventName, layout, state, status, trailingEventName}, setState] =
-        useImmer(initialState);
+    const [
+        {activeLocation, eventName, layout, state, status, trailingEventName, rippleCentered},
+        setState,
+    ] = useImmer(initialState);
 
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
@@ -94,12 +96,6 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
         (event: GestureResponderEvent) => {
             const responseActive = activeKey !== indexKey;
             const {locationX = 0, locationY = 0} = event.nativeEvent;
-
-            setState(draft => {
-                if (responseActive) {
-                    draft.activeLocation = {locationX, locationY};
-                }
-            });
 
             if (responseActive) {
                 setState(draft => {
@@ -201,18 +197,23 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
     }, [defaultActive, setState, status]);
 
     useEffect(() => {
-        setState(draft => {
-            const uncenter =
-                draft.status === 'succeeded' &&
-                typeof active === 'boolean' &&
-                active &&
-                defaultActive;
+        if (status === 'succeeded' && defaultActive) {
+            setState(draft => {
+                draft.rippleCentered = true;
+                draft.activeLocation = {locationX: 0, locationY: 0};
+            });
 
-            if (uncenter) {
+            onActive?.(indexKey);
+        }
+    }, [defaultActive, indexKey, onActive, setState, status]);
+
+    useEffect(() => {
+        if (activeLocation?.locationX) {
+            setState(draft => {
                 draft.rippleCentered = false;
-            }
-        });
-    }, [active, defaultActive, setState]);
+            });
+        }
+    }, [activeLocation, setState]);
 
     if (status === 'idle') {
         return <></>;
@@ -225,6 +226,7 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
         activeLocation,
         defaultActive,
         eventName,
+        rippleCentered,
         id,
         onEvent,
         renderStyle: {
