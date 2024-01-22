@@ -1,12 +1,14 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
+import {RenderProps} from './TabBase';
 
-export interface ActiveIndicatorProps {
-    offsetPosition: 'left' | 'right';
+export interface ActiveIndicatorProps extends Pick<RenderProps, 'activeIndicatorOffsetPosition'> {
     paddingHorizontal: number;
     width: number;
 }
+
+export type HeaderProps = Pick<RenderProps, 'autohide' | 'headerPosition'>;
 
 export interface ContentItemProps {
     width: number;
@@ -17,10 +19,29 @@ export const Container = styled(View)`
     display: flex;
     flex-direction: column;
     flex: 1;
+    position: relative;
+    overflow: hidden;
 `;
 
-export const Header = styled.View`
-    align-self: stretch;
+export const Header = styled.View<HeaderProps>`
+    ${({autohide, theme}) =>
+        autohide &&
+        css`
+            background-color: ${theme.palette.surface.surface};
+            left: ${theme.adaptSize(theme.spacing.none)}px;
+            position: absolute;
+            z-index: 2048;
+        `};
+
+    ${({headerPosition, theme}) =>
+        headerPosition &&
+        (headerPosition === 'verticalStart'
+            ? css`
+                  top: ${theme.adaptSize(theme.spacing.none)}px;
+              `
+            : css`
+                  bottom: ${theme.adaptSize(theme.spacing.none)}px;
+              `)};
 `;
 
 export const HeaderScrollView = styled.ScrollView``;
@@ -36,6 +57,27 @@ export const HeaderInner = styled.View<ContentItemProps>`
     `};
 `;
 
+export const TriggerIndicator = styled.Pressable<HeaderProps>`
+    background-color: black;
+    position: absolute;
+    width: 100%;
+    z-index: 1024;
+
+    ${({theme}) => css`
+        height: ${theme.adaptSize(theme.spacing.small)}px;
+    `};
+
+    ${({headerPosition, theme}) =>
+        headerPosition &&
+        (headerPosition === 'verticalStart'
+            ? css`
+                  top: ${theme.adaptSize(theme.spacing.none)}px;
+              `
+            : css`
+                  bottom: ${theme.adaptSize(theme.spacing.none)}px;
+              `)};
+`;
+
 export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
     display: flex;
     flex-direction: row;
@@ -47,8 +89,8 @@ export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
         padding: ${theme.spacing.none}px ${paddingHorizontal}px;
     `};
 
-    ${({offsetPosition}) =>
-        offsetPosition === 'left'
+    ${({activeIndicatorOffsetPosition}) =>
+        activeIndicatorOffsetPosition === 'horizontalStart'
             ? css`
                   justify-content: flex-start;
               `
@@ -64,11 +106,12 @@ export const ActiveIndicatorInner = styled(Shape)`
     `};
 `;
 
-export const Content = styled.View`
+export const Content = styled.Pressable`
     align-self: stretch;
     flex: 1;
     overflow: hidden;
     position: relative;
+    background-color: red;
 
     ${({theme}) => css`
         min-height: ${theme.adaptSize(theme.spacing.small * 9)}px;

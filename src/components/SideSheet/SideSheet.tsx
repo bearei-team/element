@@ -66,7 +66,10 @@ const ForwardRefSideSheet = forwardRef<View, SideSheetProps>((props, ref) => {
         return (
             <>
                 {visible && (
-                    <Modal onLayout={onShow} testID={`sideSheet__modal--${id}`}>
+                    <Modal
+                        key={`sideSheet__modal--${id}`}
+                        onLayout={onShow}
+                        testID={`sideSheet__modal--${id}`}>
                         <AnimatedContainer style={{backgroundColor}} testID={`sideSheet--${id}`}>
                             <AnimatedInner
                                 {...innerProps}

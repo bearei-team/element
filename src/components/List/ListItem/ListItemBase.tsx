@@ -197,15 +197,15 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
     }, [defaultActive, setState, status]);
 
     useEffect(() => {
-        if (status === 'succeeded' && defaultActive) {
+        if (status === 'succeeded' && active) {
             setState(draft => {
-                draft.rippleCentered = true;
-                draft.activeLocation = {locationX: 0, locationY: 0};
+                if (!draft.activeLocation?.locationX) {
+                    draft.rippleCentered = true;
+                    draft.activeLocation = {locationX: 0, locationY: 0};
+                }
             });
-
-            onActive?.(indexKey);
         }
-    }, [defaultActive, indexKey, onActive, setState, status]);
+    }, [active, indexKey, onActive, setState, status]);
 
     useEffect(() => {
         if (activeLocation?.locationX) {

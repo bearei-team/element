@@ -1,33 +1,24 @@
 import {FC, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
-import {Animated, LayoutRectangle, TextInput, View, ViewStyle} from 'react-native';
+import {Animated, LayoutRectangle, TextInput, View} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
+import {emitter} from '../../context/ModalProvider';
 import {HOOK} from '../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
-import {AnimatedInterpolation, EventName, State} from '../Common/interface';
+import {EventName, State} from '../Common/interface';
+import {Divider} from '../Divider/Divider';
+import {Hovered} from '../Hovered/Hovered';
 import {Icon} from '../Icon/Icon';
-import {ListDataSource} from '../List/List';
+import {List, ListDataSource} from '../List/List';
 import {SearchProps} from './Search';
-import {Input} from './Search.styles';
+import {Content, Header, Inner, Input, LeadingIcon, TrailingIcon} from './Search.styles';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends SearchProps {
     containerRef: RefObject<View>;
-    eventName: EventName;
-    listVisible: boolean;
-    onEvent: OnEvent;
-    onListActive?: (key?: string) => void;
-    input: React.JSX.Element;
-    renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
-        height: number;
-        innerHeight: AnimatedInterpolation;
-        listBackgroundColor: string;
-        pageX: number;
-        pageY: number;
-        width: number;
-    };
-    underlayColor: string;
+    onEvent: Omit<OnEvent, 'onBlur' | 'onFocus'>;
 }
+
 export interface SearchBaseProps extends SearchProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
@@ -61,8 +52,11 @@ const initialState = {
     value: undefined as string | undefined,
 };
 
+const AnimatedInner = Animated.createAnimatedComponent(Inner);
 export const SearchBase: FC<SearchBaseProps> = props => {
-    const {data, leadingIcon, placeholder, ref, render, value, ...textInputProps} = props;
+    const {data, leadingIcon, placeholder, ref, render, value, trailingIcon, ...textInputProps} =
+        props;
+
     const [{layout, listVisible, eventName, state}, setState] = useImmer(initialState);
     const [{innerHeight}] = useAnimated({listVisible});
     const containerRef = useRef<View>(null);
@@ -149,6 +143,77 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         [id, inputRef, onBlur, onFocus, placeholder, placeholderTextColor, textInputProps, value],
     );
 
+    const inner = useMemo(() => {
+        const shape = 'extraLarge';
+        const {width, pageX, pageY, height} = layout;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const {onLayout: _, ...onHeaderEvent} = onEvent;
+
+        return (
+            <AnimatedInner
+                key={`search__inner-${id}`}
+                pageX={pageX}
+                pageY={pageY}
+                shape={shape}
+                style={{height: innerHeight}}
+                testID={`search__inner--${id}`}
+                width={width}>
+                <Header
+                    {...onHeaderEvent}
+                    onBlur={onBlur}
+                    onFocus={onFocus}
+                    accessibilityLabel={placeholder}
+                    accessibilityRole="keyboardkey"
+                    testID={`search__header--${id}`}>
+                    <LeadingIcon testID={`search__leadingIcon--${id}`}>
+                        {leadingIcon ?? (
+                            <Icon type="outlined" name="search" width={24} height={24} />
+                        )}
+                    </LeadingIcon>
+
+                    <Content testID={`search__content--${id}`}>{input}</Content>
+                    <TrailingIcon testID={`search__trailingIcon--${id}`}>
+                        {trailingIcon}
+                    </TrailingIcon>
+
+                    <Hovered
+                        eventName={eventName}
+                        height={height}
+                        opacities={[0, 0.08]}
+                        shape={listVisible ? 'extraLargeTop' : shape}
+                        underlayColor={underlayColor}
+                        width={width}
+                    />
+                </Header>
+
+                <Divider size="large" width={width} />
+                <List
+                    onActive={handleListActive}
+                    data={data}
+                    style={{backgroundColor: theme.color.rgba(theme.palette.surface.surface, 0)}}
+                />
+            </AnimatedInner>
+        );
+    }, [
+        data,
+        eventName,
+        handleListActive,
+        id,
+        innerHeight,
+        input,
+        layout,
+        leadingIcon,
+        listVisible,
+        onBlur,
+        onEvent,
+        onFocus,
+        placeholder,
+        theme.color,
+        theme.palette.surface.surface,
+        trailingIcon,
+        underlayColor,
+    ]);
+
     useEffect(() => {
         setState(draft => {
             draft.listVisible = data?.length !== 0 && state === 'focused';
@@ -165,25 +230,15 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         }
     }, [setState]);
 
+    useEffect(() => {
+        emitter.emit('sheet', {id, element: inner});
+    }, [id, inner]);
+
     return render({
-        input,
         containerRef,
         data,
-        eventName,
         id,
-        leadingIcon: leadingIcon ?? <Icon type="outlined" name="search" width={24} height={24} />,
-        listVisible,
-        onEvent: {...onEvent, onBlur, onFocus},
-        onListActive: handleListActive,
         placeholder,
-        renderStyle: {
-            height: layout.height,
-            innerHeight,
-            pageX: layout.pageX,
-            pageY: layout.pageY,
-            width: layout.width,
-            listBackgroundColor: theme.color.rgba(theme.palette.surface.surface, 0),
-        },
-        underlayColor,
+        onEvent,
     });
 };

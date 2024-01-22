@@ -143,6 +143,17 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = props => 
     }, [defaultActive, setState, status]);
 
     useEffect(() => {
+        if (status === 'succeeded' && active) {
+            setState(draft => {
+                if (!draft.activeLocation?.locationX) {
+                    draft.rippleCentered = true;
+                    draft.activeLocation = {locationX: 0, locationY: 0};
+                }
+            });
+        }
+    }, [active, setState, status]);
+
+    useEffect(() => {
         if (activeLocation) {
             setState(draft => {
                 draft.rippleCentered = false;

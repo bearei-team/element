@@ -46,6 +46,7 @@ export const NavigationRailBase: FC<NavigationBaseProps> = props => {
         block,
         data: dataSources,
         defaultActiveKey,
+        activeKey: propsActiveKey,
         fab,
         onActive,
         render,
@@ -95,6 +96,12 @@ export const NavigationRailBase: FC<NavigationBaseProps> = props => {
             });
         }
     }, [dataSources, setState, status]);
+
+    useEffect(() => {
+        if (status === 'succeeded' && typeof propsActiveKey === 'string') {
+            handleActive(propsActiveKey);
+        }
+    }, [propsActiveKey, handleActive, status]);
 
     if (status === 'idle') {
         return <></>;

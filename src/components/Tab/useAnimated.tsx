@@ -21,17 +21,14 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const dataIndexes = Array.from({length: data.length}, (_, index) => index);
     const defaultRange = dataIndexes.length <= 1;
     const range = defaultRange ? [0, 1] : dataIndexes;
-    const [headerAnimated] = useAnimatedValue(1);
+    const [headerAnimated] = useAnimatedValue(0);
     const [activeAnimated] = useAnimatedValue(0);
     const [activeIndicatorWidthAnimated] = useAnimatedValue(0);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
-    const headerHeight = headerAnimated.interpolate({
+    const headerTranslateY = headerAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [
-            0,
-            !itemLayoutHeight ? theme.adaptSize(theme.spacing.small * 6) : itemLayoutHeight,
-        ],
+        outputRange: [itemLayoutHeight, theme.adaptSize(theme.spacing.none)],
     });
 
     const activeIndicatorLeft = activeAnimated.interpolate({
@@ -84,7 +81,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         requestAnimationFrame(() => {
             animatedTiming(headerAnimated, {
                 toValue: headerVisible ? 1 : 0,
-            });
+            }).start();
         });
     }, [animatedTiming, headerAnimated, headerVisible]);
 
@@ -93,7 +90,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
             activeIndicatorLeft,
             activeIndicatorWidth,
             contentInnerLeft,
-            headerHeight,
+            headerTranslateY,
         },
     ];
 };

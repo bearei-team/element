@@ -58,6 +58,7 @@ export const ListBase: FC<ListBaseProps> = props => {
         close,
         data: dataSources,
         defaultActiveKey,
+        activeKey: propsActiveKey,
         onActive,
         render,
         supportingTextNumberOfLines,
@@ -113,13 +114,19 @@ export const ListBase: FC<ListBaseProps> = props => {
     );
 
     useEffect(() => {
-        if (dataSources) {
+        if (dataSources && status === 'idle') {
             setState(draft => {
                 draft.data = dataSources;
-                draft.status === 'idle' && (draft.status = 'succeeded');
+                draft.status = 'succeeded';
             });
         }
-    }, [dataSources, setState]);
+    }, [dataSources, setState, status]);
+
+    useEffect(() => {
+        if (status === 'succeeded' && typeof propsActiveKey === 'string') {
+            handleActive(propsActiveKey);
+        }
+    }, [propsActiveKey, handleActive, status]);
 
     if (status === 'idle') {
         return <></>;

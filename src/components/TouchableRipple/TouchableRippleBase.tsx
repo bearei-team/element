@@ -213,14 +213,8 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
             setState(draft => {
                 draft.status = 'succeeded';
             });
-
-            return;
         }
-
-        if (activeRipple) {
-            !defaultActive && processRippleExit();
-        }
-    }, [activeRipple, defaultActive, processAddRipple, processRippleExit, setState, status]);
+    }, [activeRipple, defaultActive, processAddRipple, setState, status]);
 
     useEffect(() => {
         const processRipple = activeRipple;

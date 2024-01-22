@@ -4,6 +4,7 @@ import {Platform, useColorScheme} from 'react-native';
 import {ThemeProvider as StyledComponentThemeProvider} from 'styled-components/native';
 import {AdaptOptions} from '../utils/adapt.utils';
 import {UTIL} from '../utils/util';
+import {ModalProvider} from './ModalProvider';
 
 export interface ThemeProps {
     adaptOptions?: AdaptOptions;
@@ -27,6 +28,8 @@ export const ThemeProvider: FC<ThemeProps> = props => {
                 OS,
             }}>
             {children}
+
+            <ModalProvider />
         </StyledComponentThemeProvider>
     );
 };

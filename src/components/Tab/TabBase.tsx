@@ -7,15 +7,20 @@ import {TabDataSource, TabProps} from './Tab';
 import {ContentItem} from './Tab.styles';
 import {TabItem, TabItemProps} from './TabItem/TabItem';
 import {useAnimated} from './useAnimated';
+
+export type ActiveIndicatorOffsetPosition = 'horizontalStart' | 'horizontalEnd';
 export interface RenderProps extends TabProps {
-    activeIndicatorOffsetPosition: 'left' | 'right';
+    activeIndicatorOffsetPosition: ActiveIndicatorOffsetPosition;
     items: ReactNode;
+    onTriggerIndicatorHoverIn: () => void;
+    onContentHoverIn: () => void;
+    headerVisible: boolean;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         activeIndicatorLeft: AnimatedInterpolation;
         activeIndicatorPaddingHorizontal: number;
         activeIndicatorWidth: AnimatedInterpolation;
         contentInnerLeft: AnimatedInterpolation;
-        headerHeight: AnimatedInterpolation;
+        headerTranslateY: AnimatedInterpolation;
         height: number;
         itemWidth: number;
         width: number;
@@ -33,9 +38,10 @@ export interface RenderItemOptions extends TabItemProps {
 export type Data = (TabDataSource & {labelTextLayout?: LayoutRectangle})[];
 
 const initialState = {
-    activeIndicatorOffsetPosition: 'left' as 'left' | 'right',
+    activeIndicatorOffsetPosition: 'horizontalStart' as ActiveIndicatorOffsetPosition,
     activeKey: undefined as string | undefined,
     data: [] as Data,
+    headerVisible: false,
     itemLayout: {} as LayoutRectangle,
     layout: {} as LayoutRectangle,
     status: 'idle' as ComponentStatus,
@@ -59,9 +65,20 @@ const renderItem = (options: RenderItemOptions) => {
 };
 
 export const TabBase: FC<TabBaseProps> = props => {
-    const {data: dataSources, defaultActiveKey, onActive, onLayout, render, ...renderProps} = props;
-    const [{activeIndicatorOffsetPosition, activeKey, data, itemLayout, layout, status}, setState] =
-        useImmer(initialState);
+    const {
+        data: dataSources,
+        defaultActiveKey,
+        headerPosition = 'verticalStart',
+        onActive,
+        onLayout,
+        render,
+        ...renderProps
+    } = props;
+
+    const [
+        {activeIndicatorOffsetPosition, activeKey, data, itemLayout, layout, status, headerVisible},
+        setState,
+    ] = useImmer(initialState);
 
     const id = useId();
     const theme = useTheme();
@@ -72,12 +89,12 @@ export const TabBase: FC<TabBaseProps> = props => {
         ((itemLayout.width ?? 0) - activeDataLabelTextWidth) / 2 +
         (activeDataLabelTextWidth - activeIndicatorBaseWidth) / 2;
 
-    const [{activeIndicatorLeft, activeIndicatorWidth, contentInnerLeft, headerHeight}] =
+    const [{activeIndicatorLeft, activeIndicatorWidth, contentInnerLeft, headerTranslateY}] =
         useAnimated({
             activeIndicatorBaseWidth,
             activeKey,
             data,
-            headerVisible: false,
+            headerVisible,
             itemLayout,
             layout,
         });
@@ -133,7 +150,9 @@ export const TabBase: FC<TabBaseProps> = props => {
                     const nextActiveItemIndex = draft.data.findIndex(datum => datum.key === key);
 
                     draft.activeIndicatorOffsetPosition =
-                        nextActiveItemIndex > draftActiveItemIndex ? 'right' : 'left';
+                        nextActiveItemIndex > draftActiveItemIndex
+                            ? 'horizontalEnd'
+                            : 'horizontalStart';
 
                     draft.activeKey = key;
                 }
@@ -143,6 +162,20 @@ export const TabBase: FC<TabBaseProps> = props => {
         },
         [onActive, setState],
     );
+
+    const handleTriggerIndicatorHoverIn = () => {
+        setState(draft => {
+            draft.headerVisible = true;
+        });
+    };
+
+    const handleContentHoverIn = () => {
+        setState(draft => {
+            if (draft.headerVisible) {
+                draft.headerVisible = false;
+            }
+        });
+    };
 
     const items = useMemo(
         () =>
@@ -164,16 +197,15 @@ export const TabBase: FC<TabBaseProps> = props => {
         ],
     );
 
-    const children = useMemo(
-        () =>
-            typeof layout.width === 'number' &&
-            data.map(({content, key}, index) => (
+    const children = useMemo(() => {
+        if (typeof layout.width === 'number') {
+            return data.map(({content, key}, index) => (
                 <ContentItem key={key ?? index} width={layout.width}>
                     {typeof content === 'string' ? <Text>{content}</Text> : content}
                 </ContentItem>
-            )),
-        [data, layout.width],
-    );
+            ));
+        }
+    }, [data, layout.width]);
 
     useEffect(() => {
         if (dataSources) {
@@ -193,15 +225,19 @@ export const TabBase: FC<TabBaseProps> = props => {
         activeIndicatorOffsetPosition,
         children,
         data,
+        headerPosition,
+        headerVisible,
         id,
         items,
+        onContentHoverIn: handleContentHoverIn,
         onLayout: processLayout,
+        onTriggerIndicatorHoverIn: handleTriggerIndicatorHoverIn,
         renderStyle: {
             activeIndicatorLeft,
             activeIndicatorPaddingHorizontal,
             activeIndicatorWidth,
             contentInnerLeft,
-            headerHeight,
+            headerTranslateY,
             height: layout.height,
             itemWidth: itemLayout.width,
             width: layout.width,

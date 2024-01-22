@@ -9,6 +9,7 @@ export interface NavigationDataSource extends NavigationRailItemProps {
 }
 
 export interface NavigationRailProps extends Partial<ViewProps & RefAttributes<View>> {
+    activeKey?: string;
     block?: boolean;
     data?: NavigationDataSource[];
     defaultActiveKey?: string;
