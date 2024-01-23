@@ -7,8 +7,7 @@ export interface UseAnimatedOptions {
     listVisible?: boolean;
 }
 
-export const useAnimated = (options: UseAnimatedOptions) => {
-    const {listVisible} = options;
+export const useAnimated = ({listVisible}: UseAnimatedOptions) => {
     const [innerHeightAnimated] = HOOK.useAnimatedValue(0);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);

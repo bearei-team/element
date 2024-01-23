@@ -1,7 +1,7 @@
-import {FC, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
+import {FC, RefObject, useEffect, useId, useMemo, useRef} from 'react';
 import {Animated, LayoutRectangle, TextInput, View} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {useImmer} from 'use-immer';
+import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
 import {HOOK} from '../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
@@ -28,6 +28,57 @@ export interface Data extends ListDataSource {
 }
 
 export type RenderTextInputOptions = SearchProps;
+
+export interface ProcessOptions {
+    setState?: Updater<typeof initialState>;
+}
+
+export type ProcessListActiveOptions = Partial<Pick<RenderProps, 'data'> & ProcessOptions>;
+export type ProcessStateOptions = Partial<Pick<OnStateChangeOptions, 'eventName'> & ProcessOptions>;
+
+export type ProcessStateChangeOptions = Partial<{ref: RefObject<TextInput>} & ProcessOptions>;
+
+const processListActive =
+    ({data, setState}: ProcessListActiveOptions) =>
+    (key?: string) => {
+        const nextValue = data?.find(datum => datum.key === key)?.headline;
+
+        if (nextValue) {
+            setState?.(draft => {
+                draft.value = nextValue;
+            });
+        }
+    };
+
+const processFocus = (inputRef?: RefObject<TextInput>) => inputRef?.current?.focus();
+const processState = (nextState: State, {eventName = 'none', setState}: ProcessStateOptions) => {
+    setState?.(draft => {
+        if (draft.state === 'focused') {
+            if (eventName === 'blur') {
+                draft.eventName = eventName;
+                draft.state = nextState;
+            }
+
+            return;
+        }
+
+        draft.eventName = eventName;
+        draft.state = nextState;
+    });
+};
+
+const processStateChange =
+    ({ref, setState}: ProcessStateChangeOptions) =>
+    (nextState: State, {eventName} = {} as OnStateChangeOptions) => {
+        const nextEvent = {
+            pressOut: () => processFocus(ref),
+            focus: () => processFocus(ref),
+        };
+
+        nextEvent[eventName as keyof typeof nextEvent]?.();
+
+        processState(nextState, {eventName, setState});
+    };
 
 const renderTextInput = (options: RenderTextInputOptions) => (
     <Input
@@ -66,70 +117,18 @@ export const SearchBase: FC<SearchBaseProps> = props => {
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
     const underlayColor = theme.palette.surface.onSurface;
-    const processFocus = useCallback(() => {
-        inputRef.current?.focus();
-    }, [inputRef]);
 
-    const processState = useCallback(
-        (nextState: State, options: Pick<OnStateChangeOptions, 'eventName'>) => {
-            const {eventName: nextEventName} = options;
-
-            setState(draft => {
-                if (draft.state === 'focused') {
-                    if (nextEventName === 'blur') {
-                        draft.eventName = nextEventName;
-                        draft.state = nextState;
-                    }
-
-                    return;
-                }
-
-                draft.eventName = nextEventName;
-                draft.state = nextState;
-            });
-        },
+    const onStateChange = useMemo(
+        () => processStateChange({ref: textFieldRef, setState}),
         [setState],
-    );
-
-    const processStateChange = useCallback(
-        (nextState: State, options = {} as OnStateChangeOptions) => {
-            const {eventName: nextEventName} = options;
-            const nextEvent = {
-                pressOut: () => {
-                    processFocus();
-                },
-                focus: () => {
-                    processFocus();
-                },
-            };
-
-            nextEvent[nextEventName as keyof typeof nextEvent]?.();
-
-            processState(nextState, {eventName: nextEventName});
-        },
-        [processFocus, processState],
     );
 
     const [{onBlur, onFocus, ...onEvent}] = HOOK.useOnEvent({
         ...props,
-        onStateChange: processStateChange,
+        onStateChange,
     });
 
-    const processListActive = useCallback(
-        (dataSources?: ListDataSource[]) => (key?: string) => {
-            const nextValue = dataSources?.find(datum => datum.key === key)?.headline;
-
-            if (nextValue) {
-                setState(draft => {
-                    draft.value = nextValue;
-                });
-            }
-        },
-        [setState],
-    );
-
-    const handleListActive = useMemo(() => processListActive(data), [data, processListActive]);
-
+    const handleListActive = useMemo(() => processListActive({data, setState}), [data, setState]);
     const input = useMemo(
         () =>
             renderTextInput({

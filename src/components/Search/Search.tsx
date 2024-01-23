@@ -18,22 +18,21 @@ export interface SearchProps
     trailingIcon?: React.JSX.Element;
 }
 
-const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {containerRef, id, onEvent, ...containerProps} = renderProps;
-        const {onLayout} = onEvent;
+const render = ({containerRef, id, onEvent, ...containerProps}: RenderProps) => {
+    const {onLayout} = onEvent;
 
-        return (
-            <Container
-                {...containerProps}
-                testID={`search--${id}`}
-                onLayout={onLayout}
-                ref={containerRef}
-            />
-        );
-    };
+    return (
+        <Container
+            {...containerProps}
+            testID={`search--${id}`}
+            onLayout={onLayout}
+            ref={containerRef}
+        />
+    );
+};
 
-    return <SearchBase {...props} ref={ref} render={render} />;
-});
+const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => (
+    <SearchBase {...props} ref={ref} render={render} />
+));
 
 export const Search: FC<SearchProps> = memo(ForwardRefSearch);
