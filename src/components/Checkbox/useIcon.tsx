@@ -8,8 +8,7 @@ export interface UseIconOptions
     icon?: React.JSX.Element;
 }
 
-export const useIcon = (options: UseIconOptions) => {
-    const {disabled, error, eventName, type = 'unselected'} = options;
+export const useIcon = ({disabled, error, eventName, type = 'unselected'}: UseIconOptions) => {
     const theme = useTheme();
     const checkColor =
         type === 'unselected'

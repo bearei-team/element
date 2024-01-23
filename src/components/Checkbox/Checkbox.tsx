@@ -19,42 +19,47 @@ export interface CheckboxProps extends TouchableRippleProps {
 }
 
 const AnimatedContent = Animated.createAnimatedComponent(Content);
-const ForwardRefCheckbox = forwardRef<View, CheckboxProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {eventName, icon, id, onEvent, renderStyle, underlayColor, ...contentProps} =
-            renderProps;
+const render = ({
+    eventName,
+    icon,
+    id,
+    onEvent,
+    renderStyle,
+    underlayColor,
+    ...contentProps
+}: RenderProps) => {
+    const {height, width} = renderStyle;
+    const {onLayout, ...onTouchableRippleEvent} = onEvent;
+    const shape = 'full';
 
-        const {height, width} = renderStyle;
-        const {onLayout, ...onTouchableRippleEvent} = onEvent;
-        const shape = 'full';
-
-        return (
-            <Container accessibilityRole="checkbox" testID={`checkbox--${id}`}>
-                <TouchableRipple
-                    {...onTouchableRippleEvent}
+    return (
+        <Container accessibilityRole="checkbox" testID={`checkbox--${id}`}>
+            <TouchableRipple
+                {...onTouchableRippleEvent}
+                shape={shape}
+                underlayColor={underlayColor}>
+                <AnimatedContent
+                    {...contentProps}
+                    onLayout={onLayout}
                     shape={shape}
-                    underlayColor={underlayColor}>
-                    <AnimatedContent
-                        {...contentProps}
-                        onLayout={onLayout}
+                    testID={`checkbox__content--${id}`}>
+                    <Icon testID={`checkbox__icon--${id}`}>{icon}</Icon>
+
+                    <Hovered
+                        eventName={eventName}
+                        height={height}
                         shape={shape}
-                        testID={`checkbox__content--${id}`}>
-                        <Icon testID={`checkbox__icon--${id}`}>{icon}</Icon>
+                        underlayColor={underlayColor}
+                        width={width}
+                    />
+                </AnimatedContent>
+            </TouchableRipple>
+        </Container>
+    );
+};
 
-                        <Hovered
-                            eventName={eventName}
-                            height={height}
-                            shape={shape}
-                            underlayColor={underlayColor}
-                            width={width}
-                        />
-                    </AnimatedContent>
-                </TouchableRipple>
-            </Container>
-        );
-    };
-
-    return <CheckboxBase {...props} ref={ref} render={render} />;
-});
+const ForwardRefCheckbox = forwardRef<View, CheckboxProps>((props, ref) => (
+    <CheckboxBase {...props} ref={ref} render={render} />
+));
 
 export const Checkbox: FC<CheckboxProps> = memo(ForwardRefCheckbox);
