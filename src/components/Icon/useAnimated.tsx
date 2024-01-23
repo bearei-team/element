@@ -6,8 +6,7 @@ import {RenderProps} from './IconBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'eventName'>;
 
-export const useAnimated = (options: UseAnimatedOptions) => {
-    const {eventName = 'none'} = options;
+export const useAnimated = ({eventName = 'none'}: UseAnimatedOptions) => {
     const [scaleAnimated] = HOOK.useAnimatedValue(1);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);

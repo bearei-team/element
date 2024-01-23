@@ -19,28 +19,27 @@ export interface IconProps
 }
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
-const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {id, renderStyle, children, style, ...containerProps} = renderProps;
-        const {height, width, ...containerStyle} = renderStyle;
+const render = ({id, renderStyle, children, style, ...containerProps}: RenderProps) => {
+    const {height, width, ...containerStyle} = renderStyle;
 
-        return (
-            <AnimatedContainer
-                {...containerProps}
-                accessibilityRole="image"
-                height={height}
-                style={{
-                    ...(typeof style === 'object' && style),
-                    ...containerStyle,
-                }}
-                testID={`icon--${id}`}
-                width={width}>
-                {children}
-            </AnimatedContainer>
-        );
-    };
+    return (
+        <AnimatedContainer
+            {...containerProps}
+            accessibilityRole="image"
+            height={height}
+            style={{
+                ...(typeof style === 'object' && style),
+                ...containerStyle,
+            }}
+            testID={`icon--${id}`}
+            width={width}>
+            {children}
+        </AnimatedContainer>
+    );
+};
 
-    return <IconBase {...props} ref={ref} render={render} />;
-});
+const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => (
+    <IconBase {...props} ref={ref} render={render} />
+));
 
 export const Icon: FC<IconProps> = memo(ForwardRefIcon);

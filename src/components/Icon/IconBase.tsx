@@ -16,18 +16,16 @@ export interface IconBaseProps extends IconProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const IconBase: FC<IconBaseProps> = props => {
-    const {
-        eventName,
-        fill,
-        height,
-        name = 'circle',
-        render,
-        type = 'outlined',
-        width,
-        ...renderProps
-    } = props;
-
+export const IconBase: FC<IconBaseProps> = ({
+    eventName,
+    fill,
+    height,
+    name = 'circle',
+    render,
+    type = 'outlined',
+    width,
+    ...renderProps
+}) => {
     const id = useId();
     const SvgIcon = icon?.[type]?.svg?.[name];
     const theme = useTheme();

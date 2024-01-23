@@ -7,8 +7,10 @@ import {RenderProps} from './HoveredBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'eventName' | 'opacities'>;
 
-export const useAnimated = (options: UseAnimatedOptions) => {
-    const {eventName = 'none', opacities = [0, 0.08, 0.12]} = options;
+export const useAnimated = ({
+    eventName = 'none',
+    opacities = [0, 0.08, 0.12],
+}: UseAnimatedOptions) => {
     const [opacityAnimated] = HOOK.useAnimatedValue(0);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
