@@ -35,9 +35,7 @@ export interface ProcessOptions {
 
 export type ProcessElevationOptions = Partial<Pick<RenderProps, 'type'> & ProcessOptions>;
 export type ProcessLayoutOptions = Partial<Pick<RenderProps, 'type' | 'block'> & ProcessOptions>;
-export type ProcessStateChangeOptions = Partial<
-    Pick<RenderProps, 'type' | 'block'> & ProcessOptions
->;
+export type ProcessStateChangeOptions = ProcessLayoutOptions;
 
 export type ProcessContentLayoutOptions = Partial<Pick<RenderProps, 'block'> & ProcessOptions>;
 
@@ -94,21 +92,19 @@ const processContentLayout =
         }
     };
 
-const processStateChange = ({type, block, setState}: ProcessStateChangeOptions) => {
-    return (nextState: State, options = {} as OnStateChangeOptions) => {
-        const {event, eventName: nextEventName} = options;
-
-        if (nextEventName === 'layout') {
+const processStateChange =
+    ({type, block, setState}: ProcessStateChangeOptions) =>
+    (nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
+        if (eventName === 'layout') {
             processLayout(event as LayoutChangeEvent, {block, setState});
         }
 
         processElevation(nextState, {type, setState});
 
         setState?.(draft => {
-            draft.eventName = nextEventName;
+            draft.eventName = eventName;
         });
     };
-};
 
 const initialState = {
     contentLayout: {} as LayoutRectangle,

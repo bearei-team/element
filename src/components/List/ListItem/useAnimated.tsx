@@ -1,6 +1,8 @@
-import {useCallback, useEffect} from 'react';
+import {useEffect, useMemo} from 'react';
+import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {HOOK} from '../../../hooks/hook';
+import {AnimatedTiming} from '../../../utils/animatedTiming.utils';
 import {UTIL} from '../../../utils/util';
 import {EventName, State} from '../../Common/interface';
 import {RenderProps} from './ListItemBase';
@@ -12,8 +14,24 @@ export interface UseAnimatedOptions extends Pick<RenderProps, 'close'> {
     trailingEventName: EventName;
 }
 
-export const useAnimated = (options: UseAnimatedOptions) => {
-    const {close, eventName, layoutHeight = 0, state, trailingEventName} = options;
+export interface ProcessCloseAnimatedOptions {
+    animatedTiming: AnimatedTiming;
+    heightAnimated: Animated.Value;
+}
+
+const processCloseAnimated =
+    ({animatedTiming, heightAnimated}: ProcessCloseAnimatedOptions) =>
+    (finished?: () => void) => {
+        requestAnimationFrame(() => animatedTiming(heightAnimated, {toValue: 0}).start(finished));
+    };
+
+export const useAnimated = ({
+    close,
+    eventName,
+    layoutHeight = 0,
+    state,
+    trailingEventName,
+}: UseAnimatedOptions) => {
     const [heightAnimated] = HOOK.useAnimatedValue(1);
     const [trailingOpacityAnimated] = HOOK.useAnimatedValue(close ? 0 : 1);
     const theme = useTheme();
@@ -28,16 +46,9 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         outputRange: [0, layoutHeight],
     });
 
-    const processCloseAnimated = useCallback(
-        (finished?: () => void) => {
-            requestAnimationFrame(() =>
-                animatedTiming(heightAnimated, {
-                    toValue: 0,
-                    useNativeDriver: false,
-                }).start(finished),
-            );
-        },
-        [heightAnimated, animatedTiming],
+    const onCloseAnimated = useMemo(
+        () => processCloseAnimated({animatedTiming, heightAnimated}),
+        [animatedTiming, heightAnimated],
     );
 
     useEffect(() => {
@@ -56,7 +67,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     return [
         {
             height,
-            onCloseAnimated: processCloseAnimated,
+            onCloseAnimated,
             trailingOpacity,
         },
     ];

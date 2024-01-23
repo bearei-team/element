@@ -24,26 +24,22 @@ export interface ListProps
     supportingTextNumberOfLines?: ListDataSource['supportingTextNumberOfLines'];
 }
 
-const ForwardRefList = forwardRef<FlatList<ListDataSource>, ListProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {id, style, ...contentProps} = renderProps;
+const render = ({id, style, ...contentProps}: RenderProps) => (
+    <Container
+        accessibilityLabel="list"
+        accessibilityRole="list"
+        style={style}
+        testID={`list--${id}`}>
+        <Content<NativeTarget>
+            {...contentProps}
+            showsVerticalScrollIndicator={false}
+            testID={`list__content--${id}`}
+        />
+    </Container>
+);
 
-        return (
-            <Container
-                accessibilityLabel="list"
-                accessibilityRole="list"
-                style={style}
-                testID={`list--${id}`}>
-                <Content<NativeTarget>
-                    {...contentProps}
-                    showsVerticalScrollIndicator={false}
-                    testID={`list__content--${id}`}
-                />
-            </Container>
-        );
-    };
-
-    return <ListBase {...props} ref={ref} render={render} />;
-});
+const ForwardRefList = forwardRef<FlatList<ListDataSource>, ListProps>((props, ref) => (
+    <ListBase {...props} ref={ref} render={render} />
+));
 
 export const List: FC<ListProps> = memo(ForwardRefList);

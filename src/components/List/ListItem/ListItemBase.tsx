@@ -8,7 +8,7 @@ import {
     ViewStyle,
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {useImmer} from 'use-immer';
+import {Updater, useImmer} from 'use-immer';
 import {HOOK} from '../../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../../hooks/useOnEvent';
 import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../../Common/interface';
@@ -38,6 +38,94 @@ export interface ListItemBaseProps extends ListItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface ProcessOptions {
+    setState?: Updater<typeof initialState>;
+}
+
+export type ProcessPressOutOptions = Partial<
+    Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> & ProcessOptions
+>;
+
+export type ProcessStateChangeOptions = ProcessPressOutOptions;
+export type ProcessTrailingEventOptions = Partial<{callback?: () => void} & ProcessOptions>;
+export type ProcessTrailingPressOutOptions = Partial<
+    Pick<RenderProps, 'close' | 'indexKey' | 'onClose'> & {
+        onCloseAnimated: (finished?: (() => void) | undefined) => void;
+    } & ProcessOptions
+>;
+
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
+
+    setState?.(draft => {
+        draft.layout = nativeEventLayout;
+    });
+};
+
+const processPressOut = (
+    event: GestureResponderEvent,
+    {activeKey, indexKey, onActive, setState}: ProcessPressOutOptions,
+) => {
+    const responseActive = activeKey !== indexKey;
+    const {locationX = 0, locationY = 0} = event.nativeEvent;
+
+    if (responseActive) {
+        setState?.(draft => {
+            draft.activeLocation = {locationX, locationY};
+        });
+
+        onActive?.(indexKey);
+    }
+};
+
+const processStateChange =
+    ({activeKey, indexKey, onActive, setState}: ProcessStateChangeOptions) =>
+    (nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
+        const nextEvent = {
+            layout: () => {
+                processLayout(event as LayoutChangeEvent, {
+                    setState,
+                });
+            },
+            pressOut: () => {
+                processPressOut(event as GestureResponderEvent, {
+                    activeKey,
+                    indexKey,
+                    onActive,
+                    setState,
+                });
+            },
+        };
+
+        nextEvent[eventName as keyof typeof nextEvent]?.();
+
+        setState?.(draft => {
+            draft.eventName = eventName;
+            draft.state = nextState;
+        });
+    };
+
+const processTrailingEvent = (
+    eventName: EventName,
+    {callback, setState}: ProcessTrailingEventOptions,
+) => {
+    setState?.(draft => {
+        draft.trailingEventName = eventName;
+    });
+
+    callback?.();
+};
+
+const processTrailingPressOut =
+    ({close, indexKey, onCloseAnimated, onClose}: ProcessTrailingPressOutOptions) =>
+    () => {
+        if (close) {
+            onCloseAnimated?.(() => {
+                onClose?.(indexKey);
+            });
+        }
+    };
+
 const initialState = {
     activeLocation: undefined as Pick<NativeTouchEvent, 'locationX' | 'locationY'> | undefined,
     eventName: 'none' as EventName,
@@ -48,25 +136,22 @@ const initialState = {
     trailingEventName: 'none' as EventName,
 };
 
-export const ListItemBase: FC<ListItemBaseProps> = props => {
-    const {
-        activeKey,
-        close,
-        defaultActiveKey,
-        indexKey,
-        onActive,
-        onClose,
-        render,
-        supportingText,
-        trailing,
-        ...renderProps
-    } = props;
-
+export const ListItemBase: FC<ListItemBaseProps> = ({
+    activeKey,
+    close,
+    defaultActiveKey,
+    indexKey,
+    onActive,
+    onClose,
+    render,
+    supportingText,
+    trailing,
+    ...renderProps
+}) => {
     const [
         {activeLocation, eventName, layout, state, status, trailingEventName, rippleCentered},
         setState,
     ] = useImmer(initialState);
-
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
     const id = useId();
@@ -81,104 +166,29 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
         trailingEventName,
     });
 
-    const processLayout = useCallback(
-        (event: LayoutChangeEvent) => {
-            const nativeEventLayout = event.nativeEvent.layout;
-
-            setState(draft => {
-                draft.layout = nativeEventLayout;
-            });
-        },
-        [setState],
-    );
-
-    const processPressOut = useCallback(
-        (event: GestureResponderEvent, options: Pick<ListItemProps, 'activeKey' | 'indexKey'>) => {
-            const {activeKey: itemActiveKey, indexKey: itemIndexKey} = options;
-            const responseActive = itemActiveKey !== itemIndexKey;
-            const {locationX = 0, locationY = 0} = event.nativeEvent;
-
-            if (responseActive) {
-                setState(draft => {
-                    draft.activeLocation = {locationX, locationY};
-                });
-
-                onActive?.(itemIndexKey);
-            }
-        },
-        [onActive, setState],
-    );
-
-    const processState = useCallback(
-        (processPressOutOptions: Pick<ListItemProps, 'activeKey' | 'indexKey'>) =>
-            (nextState: State, options = {} as OnStateChangeOptions) => {
-                const {event, eventName: nextEventName} = options;
-                const nextEvent = {
-                    layout: () => {
-                        processLayout(event as LayoutChangeEvent);
-                    },
-                    pressOut: () => {
-                        processPressOut(event as GestureResponderEvent, processPressOutOptions);
-                    },
-                };
-
-                nextEvent[nextEventName as keyof typeof nextEvent]?.();
-
-                setState(draft => {
-                    draft.eventName = nextEventName;
-                    draft.state = nextState;
-                });
-            },
-        [processLayout, processPressOut, setState],
-    );
-
-    const processStateChange = useMemo(
-        () => processState({activeKey, indexKey}),
-        [activeKey, indexKey, processState],
+    const onStateChange = useMemo(
+        () => processStateChange({activeKey, indexKey, setState, onActive}),
+        [activeKey, indexKey, onActive, setState],
     );
 
     const [onEvent] = HOOK.useOnEvent({
-        ...props,
-        onStateChange: processStateChange,
+        ...renderProps,
+        onStateChange,
     });
 
-    const processTrailingEvent = useCallback(
-        (nextEventName: EventName, callback?: () => void) => {
-            setState(draft => {
-                draft.trailingEventName = nextEventName;
-            });
-
-            callback?.();
-        },
+    const handleTrailingHoverIn = useCallback(
+        () => processTrailingEvent('hoverIn', {setState}),
         [setState],
     );
 
-    const handleTrailingHoverIn = useCallback(
-        () => processTrailingEvent('hoverIn'),
-        [processTrailingEvent],
-    );
-
     const handleTrailingHoverOut = useCallback(
-        () => processTrailingEvent('hoverOut'),
-        [processTrailingEvent],
+        () => processTrailingEvent('hoverOut', {setState}),
+        [setState],
     );
 
-    const processTrailingPress = useCallback(
-        (options: Pick<ListItemProps, 'close' | 'indexKey'>) => () => {
-            const {close: itemClose, indexKey: itemIndexKey} = options;
-
-            if (itemClose) {
-                onCloseAnimated(() => {
-                    onClose?.(itemIndexKey);
-                });
-            }
-        },
-        [onClose, onCloseAnimated],
-    );
-
-    const handleTrailingPress = useMemo(
-        () => processTrailingPress({close, indexKey}),
-        [close, indexKey, processTrailingPress],
+    const handleTrailingPressOut = useMemo(
+        () => processTrailingPressOut({close, indexKey, onCloseAnimated, onClose}),
+        [close, indexKey, onClose, onCloseAnimated],
     );
 
     const trailingElement = useMemo(
@@ -189,7 +199,7 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
                     icon={<Icon name={active ? 'remove' : 'close'} type="filled" />}
                     onHoverIn={handleTrailingHoverIn}
                     onHoverOut={handleTrailingHoverOut}
-                    onPressOut={handleTrailingPress}
+                    onPressOut={handleTrailingPressOut}
                 />
             ) : (
                 trailing
@@ -199,7 +209,7 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
             close,
             handleTrailingHoverIn,
             handleTrailingHoverOut,
-            handleTrailingPress,
+            handleTrailingPressOut,
             trailing,
         ],
     );

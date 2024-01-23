@@ -30,93 +30,89 @@ export interface ListItemProps extends TouchableRippleProps {
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedInner = Animated.createAnimatedComponent(Inner);
 const AnimatedTrailing = Animated.createAnimatedComponent(Trailing);
-const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {
-            active,
-            activeColor,
-            activeLocation,
-            defaultActive,
-            eventName,
-            headline,
-            id,
-            leading,
-            onEvent,
-            renderStyle,
-            rippleCentered,
-            supportingText,
-            supportingTextNumberOfLines,
-            trailing,
-            underlayColor,
-            ...innerProps
-        } = renderProps;
+const render = ({
+    active,
+    activeColor,
+    activeLocation,
+    defaultActive,
+    eventName,
+    headline,
+    id,
+    leading,
+    onEvent,
+    renderStyle,
+    rippleCentered,
+    supportingText,
+    supportingTextNumberOfLines,
+    trailing,
+    underlayColor,
+    ...innerProps
+}: RenderProps) => {
+    const {onLayout, ...onTouchableRippleEvent} = onEvent;
+    const {containerHeight, height, trailingOpacity, width} = renderStyle;
 
-        const {onLayout, ...onTouchableRippleEvent} = onEvent;
-        const {containerHeight, height, trailingOpacity, width} = renderStyle;
+    return (
+        <AnimatedContainer
+            accessibilityLabel={headline}
+            accessibilityRole="list"
+            style={{height: containerHeight}}
+            testID={`listItem--${id}`}>
+            <TouchableRipple
+                {...onTouchableRippleEvent}
+                active={active}
+                activeLocation={activeLocation}
+                centered={rippleCentered}
+                defaultActive={defaultActive}
+                underlayColor={activeColor}>
+                <AnimatedInner {...innerProps} onLayout={onLayout}>
+                    {leading && <Leading testID={`listItem__leading--${id}`}>{leading}</Leading>}
 
-        return (
-            <AnimatedContainer
-                accessibilityLabel={headline}
-                accessibilityRole="list"
-                style={{height: containerHeight}}
-                testID={`listItem--${id}`}>
-                <TouchableRipple
-                    {...onTouchableRippleEvent}
-                    active={active}
-                    activeLocation={activeLocation}
-                    centered={rippleCentered}
-                    defaultActive={defaultActive}
-                    underlayColor={activeColor}>
-                    <AnimatedInner {...innerProps} onLayout={onLayout}>
-                        {leading && (
-                            <Leading testID={`listItem__leading--${id}`}>{leading}</Leading>
-                        )}
+                    <Content
+                        supportingTextShow={!!supportingText}
+                        testID={`listItem__content--${id}`}>
+                        <Headline
+                            ellipsizeMode="tail"
+                            numberOfLines={1}
+                            size="large"
+                            testID={`listItem__headline--${id}`}
+                            type="body">
+                            {headline}
+                        </Headline>
 
-                        <Content
-                            supportingTextShow={!!supportingText}
-                            testID={`listItem__content--${id}`}>
-                            <Headline
+                        {supportingText && (
+                            <SupportingText
                                 ellipsizeMode="tail"
-                                numberOfLines={1}
-                                size="large"
-                                testID={`listItem__headline--${id}`}
+                                numberOfLines={supportingTextNumberOfLines}
+                                size="medium"
+                                testID={`listItem__supportingText--${id}`}
                                 type="body">
-                                {headline}
-                            </Headline>
-
-                            {supportingText && (
-                                <SupportingText
-                                    ellipsizeMode="tail"
-                                    numberOfLines={supportingTextNumberOfLines}
-                                    size="medium"
-                                    testID={`listItem__supportingText--${id}`}
-                                    type="body">
-                                    {supportingText}
-                                </SupportingText>
-                            )}
-                        </Content>
-
-                        {trailing && (
-                            <AnimatedTrailing
-                                style={{opacity: trailingOpacity}}
-                                testID={`listItem__trailing--${id}`}>
-                                {trailing}
-                            </AnimatedTrailing>
+                                {supportingText}
+                            </SupportingText>
                         )}
+                    </Content>
 
-                        <Hovered
-                            eventName={eventName}
-                            height={height}
-                            underlayColor={underlayColor}
-                            width={width}
-                        />
-                    </AnimatedInner>
-                </TouchableRipple>
-            </AnimatedContainer>
-        );
-    };
+                    {trailing && (
+                        <AnimatedTrailing
+                            style={{opacity: trailingOpacity}}
+                            testID={`listItem__trailing--${id}`}>
+                            {trailing}
+                        </AnimatedTrailing>
+                    )}
 
-    return <ListItemBase {...props} ref={ref} render={render} />;
-});
+                    <Hovered
+                        eventName={eventName}
+                        height={height}
+                        underlayColor={underlayColor}
+                        width={width}
+                    />
+                </AnimatedInner>
+            </TouchableRipple>
+        </AnimatedContainer>
+    );
+};
+
+const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => (
+    <ListItemBase {...props} ref={ref} render={render} />
+));
 
 export const ListItem: FC<ListItemProps> = memo(ForwardRefListItem);
