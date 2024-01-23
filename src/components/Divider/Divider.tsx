@@ -12,24 +12,20 @@ export interface DividerProps extends Partial<ViewProps & RefAttributes<View>> {
     width?: number;
 }
 
-const ForwardRefDivider = forwardRef<View, DividerProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {id, subheader, width, height, style, ...containerProps} = renderProps;
+const render = ({id, subheader, width, height, style, ...containerProps}: RenderProps) => (
+    <Container {...containerProps} height={height} testID={`divider--${id}`} width={width}>
+        <Content style={style} testID={`divider__content--${id}`} />
 
-        return (
-            <Container {...containerProps} height={height} testID={`divider--${id}`} width={width}>
-                <Content style={style} testID={`divider__content--${id}`} />
+        {subheader && (
+            <Subheader size="small" testID={`divider__subheader--${id}`} type="title">
+                {subheader}
+            </Subheader>
+        )}
+    </Container>
+);
 
-                {subheader && (
-                    <Subheader size="small" testID={`divider__subheader--${id}`} type="title">
-                        {subheader}
-                    </Subheader>
-                )}
-            </Container>
-        );
-    };
-
-    return <DividerBase {...props} ref={ref} render={render} />;
-});
+const ForwardRefDivider = forwardRef<View, DividerProps>((props, ref) => (
+    <DividerBase {...props} ref={ref} render={render} />
+));
 
 export const Divider: FC<DividerProps> = memo(ForwardRefDivider);
