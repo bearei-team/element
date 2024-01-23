@@ -1,6 +1,6 @@
 import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {Animated, ViewStyle} from 'react-native';
-import {useImmer} from 'use-immer';
+import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
 import {Button} from '../Button/Button';
 import {Icon} from '../Icon/Icon';
@@ -17,50 +17,55 @@ export interface SideSheetBaseProps extends SideSheetProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface ProcessOptions {
+    setState?: Updater<typeof initialState>;
+}
+
+export type ProcessAnimatedFinishedOptions = Partial<
+    Pick<RenderProps, 'visible' | 'onClose' | 'onBack'> & ProcessOptions
+>;
+
+const processAnimatedFinished =
+    ({visible, setState, onClose, onBack}: ProcessAnimatedFinishedOptions) =>
+    () => {
+        if (visible) {
+            setState?.(draft => {
+                draft.modalVisible = false;
+                draft.visible = undefined;
+            });
+
+            onClose?.();
+            onBack?.();
+        }
+    };
+
 const initialState = {
     modalVisible: undefined as boolean | undefined,
     visible: undefined as boolean | undefined,
 };
 
-export const SideSheetBase: FC<SideSheetBaseProps> = props => {
-    const {
-        backIcon,
-        closeIcon,
-        headlineText = 'Title',
-        onBack,
-        onClose,
-        onPrimaryButtonPress,
-        onSecondaryButtonPress,
-        position = 'horizontalEnd',
-        primaryButton,
-        primaryButtonLabelText = 'Save',
-        render,
-        secondaryButton,
-        secondaryButtonLabelText = 'Cancel',
-        visible: sheetVisible = false,
-        ...renderProps
-    } = props;
-
+export const SideSheetBase: FC<SideSheetBaseProps> = ({
+    backIcon,
+    closeIcon,
+    headlineText = 'Title',
+    onBack,
+    onClose,
+    onPrimaryButtonPress,
+    onSecondaryButtonPress,
+    position = 'horizontalEnd',
+    primaryButton,
+    primaryButtonLabelText = 'Save',
+    render,
+    secondaryButton,
+    secondaryButtonLabelText = 'Cancel',
+    visible: sheetVisible = false,
+    ...renderProps
+}) => {
     const [{visible, modalVisible}, setState] = useImmer(initialState);
     const id = useId();
-    const processAnimatedFinished = useCallback(
-        (currentModalVisible?: boolean) => () => {
-            if (currentModalVisible) {
-                setState(draft => {
-                    draft.modalVisible = false;
-                    draft.visible = undefined;
-                });
-
-                onClose?.();
-                onBack?.();
-            }
-        },
-        [onBack, onClose, setState],
-    );
-
     const processFinished = useMemo(
-        () => processAnimatedFinished(modalVisible),
-        [modalVisible, processAnimatedFinished],
+        () => processAnimatedFinished({visible: modalVisible, setState, onBack, onClose}),
+        [modalVisible, onBack, onClose, setState],
     );
 
     const [{backgroundColor, innerTranslateX}] = useAnimated({

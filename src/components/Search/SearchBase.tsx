@@ -117,7 +117,6 @@ export const SearchBase: FC<SearchBaseProps> = props => {
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
     const underlayColor = theme.palette.surface.onSurface;
-
     const onStateChange = useMemo(
         () => processStateChange({ref: textFieldRef, setState}),
         [setState],
