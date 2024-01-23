@@ -9,22 +9,22 @@ export interface BadgeProps extends Partial<ViewProps & RefAttributes<View>> {
     size?: Size;
 }
 
-const ForwardRefBadge = forwardRef<View, BadgeProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {id, labelText, size, ...containerProps} = renderProps;
+const render = (renderProps: RenderProps) => {
+    const {id, labelText, size, ...containerProps} = renderProps;
 
-        return (
-            <Container {...containerProps} shape="full" size={size} testID={`badge--${id}`}>
-                {size !== 'small' && (
-                    <LabelText size="small" testID={`badge__labelText--${id}`} type="label">
-                        {labelText}
-                    </LabelText>
-                )}
-            </Container>
-        );
-    };
+    return (
+        <Container {...containerProps} shape="full" size={size} testID={`badge--${id}`}>
+            {size !== 'small' && (
+                <LabelText size="small" testID={`badge__labelText--${id}`} type="label">
+                    {labelText}
+                </LabelText>
+            )}
+        </Container>
+    );
+};
 
-    return <BadgeBase {...props} ref={ref} render={render} />;
-});
+const ForwardRefBadge = forwardRef<View, BadgeProps>((props, ref) => (
+    <BadgeBase {...props} ref={ref} render={render} />
+));
 
 export const Badge: FC<BadgeProps> = memo(ForwardRefBadge);

@@ -59,7 +59,6 @@ const ForwardRefSideSheet = forwardRef<View, SideSheetProps>((props, ref) => {
             visible,
             ...innerProps
         } = renderProps;
-
         const {backgroundColor, innerTranslateX} = renderStyle;
         const shape = position === 'horizontalStart' ? 'largeEnd' : 'largeStart';
 

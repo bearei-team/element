@@ -21,7 +21,6 @@ export interface SearchProps
 const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => {
     const render = (renderProps: RenderProps) => {
         const {containerRef, id, onEvent, ...containerProps} = renderProps;
-
         const {onLayout} = onEvent;
 
         return (

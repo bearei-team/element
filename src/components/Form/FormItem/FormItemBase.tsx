@@ -18,15 +18,16 @@ export const FormItemBase: FC<FormItemBaseProps> = props => {
     const errors = getFieldError(name)?.errors;
     const fieldValue = name ? getFieldValue(name) : name;
     const id = useId();
-    const onValueChange = useCallback(
-        (value?: unknown) => {
-            if (name) {
-                setFieldValue({[name]: value});
+    const processValue = useCallback(
+        (fieldName?: string) => (value?: unknown) => {
+            if (fieldName) {
+                setFieldValue({[fieldName]: value});
             }
         },
-        [name, setFieldValue],
+        [setFieldValue],
     );
 
+    const processStateChange = useMemo(() => processValue(name), [name, processValue]);
     const processValidate = useCallback(
         (validateRules?: RuleItem[]) => async (value: unknown) => {
             const isValidate = name && validateRules?.length !== 0;
@@ -50,10 +51,10 @@ export const FormItemBase: FC<FormItemBaseProps> = props => {
                 errors,
                 id,
                 labelText,
-                onValueChange: onValueChange,
+                onValueChange: processStateChange,
                 value: fieldValue,
             }),
-        [errors, fieldValue, id, labelText, onValueChange, renderControl],
+        [errors, fieldValue, id, labelText, processStateChange, renderControl],
     );
 
     useEffect(() => {

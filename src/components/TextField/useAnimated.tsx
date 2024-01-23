@@ -2,6 +2,7 @@ import {useCallback, useEffect, useMemo} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {HOOK} from '../../hooks/hook';
+import {AnimatedTimingOptions} from '../../utils/animatedTiming.utils';
 import {UTIL} from '../../utils/util';
 import {EventName, State} from '../Common/interface';
 import {RenderProps} from './TextFieldBase';
@@ -12,6 +13,80 @@ export interface UseAnimatedOptions extends Pick<RenderProps, 'type' | 'error' |
     filled: boolean;
 }
 
+export interface ProcessEnabledOptions extends Pick<RenderProps, 'error'> {
+    activeIndicatorAnimated: Animated.Value;
+    colorAnimated: Animated.Value;
+    filledToValue: number;
+    labelAnimated: Animated.Value;
+    animatedTiming: (
+        animation: Animated.Value,
+        options: AnimatedTimingOptions,
+    ) => Animated.CompositeAnimation;
+}
+
+export interface ProcessDisabledOptions {
+    activeIndicatorAnimated: Animated.Value;
+    backgroundColorAnimated: Animated.Value;
+    colorAnimated: Animated.Value;
+    inputAnimated: Animated.Value;
+    supportingTextAnimated: Animated.Value;
+    animatedTiming: (
+        animation: Animated.Value,
+        options: AnimatedTimingOptions,
+    ) => Animated.CompositeAnimation;
+}
+
+const processEnabled = (options: ProcessEnabledOptions) => () => {
+    const {
+        activeIndicatorAnimated,
+        colorAnimated,
+        error,
+        filledToValue,
+        labelAnimated,
+        animatedTiming,
+    } = options;
+
+    if (error) {
+        return requestAnimationFrame(() => {
+            animatedTiming(labelAnimated, {
+                toValue: filledToValue,
+            }).start();
+        });
+    }
+
+    const compositeAnimations = [
+        animatedTiming(colorAnimated, {toValue: 1}),
+        animatedTiming(activeIndicatorAnimated, {toValue: 0}),
+        animatedTiming(labelAnimated, {toValue: filledToValue}),
+    ];
+
+    requestAnimationFrame(() => {
+        Animated.parallel(compositeAnimations).start();
+    });
+};
+
+const processDisabled = (options: ProcessDisabledOptions) => () => {
+    const {
+        backgroundColorAnimated,
+        colorAnimated,
+        supportingTextAnimated,
+        activeIndicatorAnimated,
+        inputAnimated,
+        animatedTiming,
+    } = options;
+    const toValue = 0;
+
+    requestAnimationFrame(() => {
+        Animated.parallel([
+            animatedTiming(backgroundColorAnimated, {toValue}),
+            animatedTiming(colorAnimated, {toValue}),
+            animatedTiming(supportingTextAnimated, {toValue}),
+            animatedTiming(activeIndicatorAnimated, {toValue}),
+            animatedTiming(inputAnimated, {toValue}),
+        ]).start();
+    });
+};
+
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {type = 'filled', state, error, disabled, filled} = options;
     const theme = useTheme();
@@ -21,7 +96,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const [colorAnimated] = HOOK.useAnimatedValue(1);
     const [activeIndicatorAnimated] = HOOK.useAnimatedValue(0);
     const filledToValue = filled ? 0 : 1;
-    const [labeAnimated] = HOOK.useAnimatedValue(filledToValue);
+    const [labelAnimated] = HOOK.useAnimatedValue(filledToValue);
     const [supportingTextAnimated] = HOOK.useAnimatedValue(1);
     const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
     const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
@@ -72,12 +147,12 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     });
 
     const backgroundColor = backgroundColorAnimated.interpolate(backgroundColorConfig[type]);
-    const labelTextTop = labeAnimated.interpolate({
+    const labelTextTop = labelAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [theme.adaptSize(theme.spacing.small), theme.adaptSize(theme.spacing.medium)],
     });
 
-    const labelTextSize = labeAnimated.interpolate({
+    const labelTextSize = labelAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
             theme.adaptFontSize(theme.typography.body.small.size),
@@ -85,7 +160,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const labelTextLineHeight = labeAnimated.interpolate({
+    const labelTextLineHeight = labelAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
             theme.adaptSize(theme.typography.body.small.lineHeight),
@@ -93,7 +168,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const labelTextHeight = labeAnimated.interpolate({
+    const labelTextHeight = labelAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
             theme.adaptSize(theme.typography.body.small.lineHeight),
@@ -101,7 +176,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const labelTextLetterSpacing = labeAnimated.interpolate({
+    const labelTextLetterSpacing = labelAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
             theme.adaptSize(theme.typography.body.small.letterSpacing),
@@ -123,58 +198,49 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const processEnabledState = useCallback(() => {
-        if (error) {
-            return requestAnimationFrame(() => {
-                animatedTiming(labeAnimated, {
-                    toValue: filledToValue,
-                    useNativeDriver: false,
-                }).start();
-            });
-        }
-
-        const compositeAnimations = [
-            animatedTiming(colorAnimated, {toValue: 1}),
-            animatedTiming(activeIndicatorAnimated, {toValue: 0}),
-            animatedTiming(labeAnimated, {
-                toValue: filledToValue,
-                useNativeDriver: false,
+    const processEnabledState = useMemo(
+        () =>
+            processEnabled({
+                activeIndicatorAnimated,
+                colorAnimated,
+                error,
+                filledToValue,
+                labelAnimated,
+                animatedTiming,
             }),
-        ];
+        [
+            activeIndicatorAnimated,
+            animatedTiming,
+            colorAnimated,
+            error,
+            filledToValue,
+            labelAnimated,
+        ],
+    );
 
-        requestAnimationFrame(() => {
-            Animated.parallel(compositeAnimations).start();
-        });
-    }, [
-        activeIndicatorAnimated,
-        animatedTiming,
-        colorAnimated,
-        error,
-        filledToValue,
-        labeAnimated,
-    ]);
+    const processDisabledState = useMemo(
+        () =>
+            processDisabled({
+                backgroundColorAnimated,
+                colorAnimated,
+                supportingTextAnimated,
+                activeIndicatorAnimated,
+                inputAnimated,
+                animatedTiming,
+            }),
+        [
+            activeIndicatorAnimated,
+            animatedTiming,
+            backgroundColorAnimated,
+            colorAnimated,
+            inputAnimated,
+            supportingTextAnimated,
+        ],
+    );
 
-    const processDisabledState = useCallback(() => {
-        const toValue = 0;
-
-        requestAnimationFrame(() => {
-            Animated.parallel([
-                animatedTiming(backgroundColorAnimated, {toValue}),
-                animatedTiming(colorAnimated, {toValue}),
-                animatedTiming(supportingTextAnimated, {toValue}),
-                animatedTiming(activeIndicatorAnimated, {toValue}),
-                animatedTiming(inputAnimated, {toValue}),
-            ]).start();
-        });
-    }, [
-        activeIndicatorAnimated,
-        animatedTiming,
-        backgroundColorAnimated,
-        colorAnimated,
-        inputAnimated,
-        supportingTextAnimated,
-    ]);
-
+    /**
+     * TODO:
+     */
     const processErrorState = useCallback(() => {
         requestAnimationFrame(() => {
             Animated.parallel([
@@ -188,23 +254,20 @@ export const useAnimated = (options: UseAnimatedOptions) => {
     const processFocusedState = useCallback(() => {
         if (error) {
             return requestAnimationFrame(() => {
-                animatedTiming(labeAnimated, {
-                    toValue: 0,
-                    useNativeDriver: false,
-                }).start();
+                animatedTiming(labelAnimated, {toValue: 0}).start();
             });
         }
 
         const compositeAnimations = [
             animatedTiming(colorAnimated, {toValue: 2}),
             animatedTiming(activeIndicatorAnimated, {toValue: 1}),
-            animatedTiming(labeAnimated, {toValue: 0, useNativeDriver: false}),
+            animatedTiming(labelAnimated, {toValue: 0}),
         ];
 
         requestAnimationFrame(() => {
             Animated.parallel(compositeAnimations).start();
         });
-    }, [activeIndicatorAnimated, animatedTiming, colorAnimated, error, labeAnimated]);
+    }, [activeIndicatorAnimated, animatedTiming, colorAnimated, error, labelAnimated]);
 
     const stateAnimated = useMemo(
         () =>

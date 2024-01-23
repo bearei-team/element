@@ -43,20 +43,28 @@ export const SideSheetBase: FC<SideSheetBaseProps> = props => {
 
     const [{visible, modalVisible}, setState] = useImmer(initialState);
     const id = useId();
-    const processAnimatedFinished = useCallback(() => {
-        if (modalVisible) {
-            setState(draft => {
-                draft.modalVisible = false;
-                draft.visible = undefined;
-            });
+    const processAnimatedFinished = useCallback(
+        (currentModalVisible?: boolean) => () => {
+            if (currentModalVisible) {
+                setState(draft => {
+                    draft.modalVisible = false;
+                    draft.visible = undefined;
+                });
 
-            onClose?.();
-            onBack?.();
-        }
-    }, [modalVisible, onBack, onClose, setState]);
+                onClose?.();
+                onBack?.();
+            }
+        },
+        [onBack, onClose, setState],
+    );
+
+    const processFinished = useMemo(
+        () => processAnimatedFinished(modalVisible),
+        [modalVisible, processAnimatedFinished],
+    );
 
     const [{backgroundColor, innerTranslateX}] = useAnimated({
-        finished: processAnimatedFinished,
+        finished: processFinished,
         position,
         visible,
     });

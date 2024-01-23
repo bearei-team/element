@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect, useId} from 'react';
+import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
@@ -75,23 +75,32 @@ export const FABBase: FC<FABBaseProps> = props => {
         [setState],
     );
 
-    const processStateChange = useCallback(
-        (nextState: State, options = {} as OnStateChangeOptions) => {
-            const {event, eventName: nextEventName} = options;
+    const processState = useCallback(
+        (processStateChangeOptions: Pick<FABProps, 'disabledElevation'>) => {
+            const {disabledElevation: buttonDisabledElevation} = processStateChangeOptions;
 
-            if (nextEventName === 'layout') {
-                processLayout(event as LayoutChangeEvent);
-            }
+            return (nextState: State, options = {} as OnStateChangeOptions) => {
+                const {event, eventName: nextEventName} = options;
 
-            if (nextEventName !== 'layout') {
-                !disabledElevation && processElevation(nextState);
-            }
+                if (nextEventName === 'layout') {
+                    processLayout(event as LayoutChangeEvent);
+                }
 
-            setState(draft => {
-                draft.eventName = nextEventName;
-            });
+                if (nextEventName !== 'layout') {
+                    !buttonDisabledElevation && processElevation(nextState);
+                }
+
+                setState(draft => {
+                    draft.eventName = nextEventName;
+                });
+            };
         },
-        [disabledElevation, processElevation, processLayout, setState],
+        [processElevation, processLayout, setState],
+    );
+
+    const processStateChange = useMemo(
+        () => processState({disabledElevation}),
+        [disabledElevation, processState],
     );
 
     const [onEvent] = HOOK.useOnEvent({

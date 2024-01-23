@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect, useId} from 'react';
+import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
@@ -69,37 +69,47 @@ export const CheckboxBase: FC<CheckboxBaseProps> = props => {
         [setState],
     );
 
-    const processPressOut = useCallback(() => {
-        const nextActive = !active;
-        const activeType = indeterminate ? 'indeterminate' : 'selected';
-
-        setState(draft => {
-            draft.active = nextActive;
-            draft.type = nextActive ? activeType : 'unselected';
-        });
-
-        onActive?.(nextActive);
-    }, [active, indeterminate, onActive, setState]);
-
-    const processStateChange = useCallback(
-        (_nextState: State, options = {} as OnStateChangeOptions) => {
-            const {event, eventName: nextEventName} = options;
-            const nextEvent = {
-                layout: () => {
-                    processLayout(event as LayoutChangeEvent);
-                },
-                pressOut: () => {
-                    processPressOut();
-                },
-            };
-
-            nextEvent[nextEventName as keyof typeof nextEvent]?.();
+    const processPressOut = useCallback(
+        (options: Pick<CheckboxProps, 'active' | 'indeterminate'>) => {
+            const {active: checkboxActive, indeterminate: checkboxIndeterminate} = options;
+            const nextActive = !checkboxActive;
+            const activeType = checkboxIndeterminate ? 'indeterminate' : 'selected';
 
             setState(draft => {
-                draft.eventName = nextEventName;
+                draft.active = nextActive;
+                draft.type = nextActive ? activeType : 'unselected';
             });
+
+            onActive?.(nextActive);
         },
+        [onActive, setState],
+    );
+
+    const processState = useCallback(
+        (processPressOutOptions: Pick<CheckboxProps, 'active' | 'indeterminate'>) =>
+            (_nextState: State, options = {} as OnStateChangeOptions) => {
+                const {event, eventName: nextEventName} = options;
+                const nextEvent = {
+                    layout: () => {
+                        processLayout(event as LayoutChangeEvent);
+                    },
+                    pressOut: () => {
+                        processPressOut(processPressOutOptions);
+                    },
+                };
+
+                nextEvent[nextEventName as keyof typeof nextEvent]?.();
+
+                setState(draft => {
+                    draft.eventName = nextEventName;
+                });
+            },
         [processLayout, processPressOut, setState],
+    );
+
+    const processStateChange = useMemo(
+        () => processState({active, indeterminate}),
+        [active, indeterminate, processState],
     );
 
     const [onEvent] = HOOK.useOnEvent({

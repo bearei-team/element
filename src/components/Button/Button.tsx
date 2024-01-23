@@ -17,92 +17,92 @@ export interface ButtonProps extends TouchableRippleProps {
 
 const AnimatedContent = Animated.createAnimatedComponent(Content);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
-const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {
-            block,
-            defaultElevation,
-            elevation,
-            eventName,
-            icon,
-            id,
-            labelText,
-            onContentLayout,
-            onEvent,
-            renderStyle,
-            style,
-            type,
-            underlayColor,
-            disabled,
-            ...contentProps
-        } = renderProps;
+const render = (renderProps: RenderProps) => {
+    const {
+        block,
+        defaultElevation,
+        elevation,
+        eventName,
+        icon,
+        id,
+        labelText,
+        onContentLayout,
+        onEvent,
+        renderStyle,
+        style,
+        type,
+        underlayColor,
+        disabled,
+        ...contentProps
+    } = renderProps;
 
-        const {backgroundColor, color, height, width, contentWidth, contentHeight, ...border} =
-            renderStyle;
+    const {backgroundColor, color, height, width, contentWidth, contentHeight, ...border} =
+        renderStyle;
 
-        const {onLayout, ...onTouchableRippleEvent} = onEvent;
-        const link = type === 'link';
-        const shape = link ? 'extraSmall' : 'full';
-        const hoveredLayout = {
-            height: height || contentHeight,
-            width: width || contentWidth,
-        };
-
-        return (
-            <Container
-                accessibilityLabel={labelText}
-                accessibilityRole="button"
-                block={block}
-                onLayout={onLayout}
-                testID={`button--${id}`}
-                width={contentWidth}>
-                <Elevation defaultLevel={defaultElevation} level={elevation} shape={shape}>
-                    <TouchableRipple
-                        {...onTouchableRippleEvent}
-                        shape={shape}
-                        underlayColor={underlayColor}
-                        disabled={disabled}>
-                        <AnimatedContent
-                            {...contentProps}
-                            iconShow={!!icon}
-                            onLayout={onContentLayout}
-                            shape={shape}
-                            style={{
-                                ...(typeof style === 'object' && style),
-                                ...border,
-                                backgroundColor,
-                            }}
-                            testID={`button__content--${id}`}
-                            type={type}
-                            block={block}
-                            width={width}>
-                            {icon && !link && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
-
-                            <AnimatedLabelText
-                                ellipsizeMode="tail"
-                                numberOfLines={1}
-                                size={link ? 'small' : 'large'}
-                                style={{color}}
-                                testID={`button__labelText--${id}`}
-                                type={link ? 'body' : 'label'}>
-                                {labelText}
-                            </AnimatedLabelText>
-
-                            <Hovered
-                                eventName={eventName}
-                                height={hoveredLayout.height}
-                                shape={shape}
-                                underlayColor={underlayColor}
-                                width={hoveredLayout.width}
-                            />
-                        </AnimatedContent>
-                    </TouchableRipple>
-                </Elevation>
-            </Container>
-        );
+    const {onLayout, ...onTouchableRippleEvent} = onEvent;
+    const link = type === 'link';
+    const shape = link ? 'extraSmall' : 'full';
+    const hoveredLayout = {
+        height: height || contentHeight,
+        width: width || contentWidth,
     };
 
-    return <ButtonBase {...props} ref={ref} render={render} />;
-});
+    return (
+        <Container
+            accessibilityLabel={labelText}
+            accessibilityRole="button"
+            block={block}
+            onLayout={onLayout}
+            testID={`button--${id}`}
+            width={contentWidth}>
+            <Elevation defaultLevel={defaultElevation} level={elevation} shape={shape}>
+                <TouchableRipple
+                    {...onTouchableRippleEvent}
+                    shape={shape}
+                    underlayColor={underlayColor}
+                    disabled={disabled}>
+                    <AnimatedContent
+                        {...contentProps}
+                        iconShow={!!icon}
+                        onLayout={onContentLayout}
+                        shape={shape}
+                        style={{
+                            ...(typeof style === 'object' && style),
+                            ...border,
+                            backgroundColor,
+                        }}
+                        testID={`button__content--${id}`}
+                        type={type}
+                        block={block}
+                        width={width}>
+                        {icon && !link && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
+
+                        <AnimatedLabelText
+                            ellipsizeMode="tail"
+                            numberOfLines={1}
+                            size={link ? 'small' : 'large'}
+                            style={{color}}
+                            testID={`button__labelText--${id}`}
+                            type={link ? 'body' : 'label'}>
+                            {labelText}
+                        </AnimatedLabelText>
+
+                        <Hovered
+                            eventName={eventName}
+                            height={hoveredLayout.height}
+                            shape={shape}
+                            underlayColor={underlayColor}
+                            width={hoveredLayout.width}
+                        />
+                    </AnimatedContent>
+                </TouchableRipple>
+            </Elevation>
+        </Container>
+    );
+};
+
+const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => (
+    <ButtonBase {...props} ref={ref} render={render} />
+));
 
 export const Button: FC<ButtonProps> = memo(ForwardRefButton);

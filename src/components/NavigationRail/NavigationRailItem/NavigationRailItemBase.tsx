@@ -85,8 +85,12 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = props => 
     );
 
     const processPressOut = useCallback(
-        (event: GestureResponderEvent) => {
-            const responseActive = activeKey !== indexKey;
+        (
+            event: GestureResponderEvent,
+            options: Pick<NavigationRailItemProps, 'activeKey' | 'indexKey'>,
+        ) => {
+            const {activeKey: itemActiveKey, indexKey: itemIndexKey} = options;
+            const responseActive = itemActiveKey !== itemIndexKey;
             const {locationX = 0, locationY = 0} = event.nativeEvent;
 
             if (responseActive) {
@@ -94,32 +98,39 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = props => 
                     draft.activeLocation = {locationX, locationY};
                 });
 
-                onActive?.(indexKey);
+                onActive?.(itemIndexKey);
             }
         },
-        [activeKey, indexKey, onActive, setState],
+        [onActive, setState],
     );
 
-    const processStateChange = useCallback(
-        (_nextState: State, options = {} as OnStateChangeOptions) => {
-            const {event, eventName: nextEventName} = options;
-            const nextEvent = {
-                layout: () => {
-                    processLayout(event as LayoutChangeEvent);
-                },
-                pressOut: () => {
-                    processPressOut(event as GestureResponderEvent);
-                },
-            };
+    const processState = useCallback(
+        (processPressOutOptions: Pick<NavigationRailItemProps, 'activeKey' | 'indexKey'>) =>
+            (_nextState: State, options = {} as OnStateChangeOptions) => {
+                const {event, eventName: nextEventName} = options;
+                const nextEvent = {
+                    layout: () => {
+                        processLayout(event as LayoutChangeEvent);
+                    },
+                    pressOut: () => {
+                        processPressOut(event as GestureResponderEvent, processPressOutOptions);
+                    },
+                };
 
-            nextEvent[nextEventName as keyof typeof nextEvent]?.();
+                nextEvent[nextEventName as keyof typeof nextEvent]?.();
 
-            setState(draft => {
-                draft.eventName = nextEventName;
-            });
-        },
+                setState(draft => {
+                    draft.eventName = nextEventName;
+                });
+            },
         [processLayout, processPressOut, setState],
     );
+
+    const processStateChange = useMemo(
+        () => processState({activeKey, indexKey}),
+        [activeKey, indexKey, processState],
+    );
+
     const [onEvent] = HOOK.useOnEvent({
         ...props,
         disabled: false,

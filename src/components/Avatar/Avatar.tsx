@@ -9,28 +9,25 @@ export interface AvatarProps extends Partial<ViewProps & RefAttributes<View>> {
     width?: number;
 }
 
-/**
- * TODO: Image support
- */
-const ForwardRefAvatar = forwardRef<View, AvatarProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {id, labelText, ...containerProps} = renderProps;
+const render = (renderProps: RenderProps) => {
+    const {id, labelText, ...containerProps} = renderProps;
 
-        return (
-            <Container {...containerProps} shape="full" testID={`avatar--${id}`}>
-                <LabelText
-                    ellipsizeMode="tail"
-                    numberOfLines={1}
-                    size="medium"
-                    testID={`avatar__labelText--${id}`}
-                    type="title">
-                    {labelText}
-                </LabelText>
-            </Container>
-        );
-    };
+    return (
+        <Container {...containerProps} shape="full" testID={`avatar--${id}`}>
+            <LabelText
+                ellipsizeMode="tail"
+                numberOfLines={1}
+                size="medium"
+                testID={`avatar__labelText--${id}`}
+                type="title">
+                {labelText}
+            </LabelText>
+        </Container>
+    );
+};
 
-    return <AvatarBase {...props} ref={ref} render={render} />;
-});
+const ForwardRefAvatar = forwardRef<View, AvatarProps>((props, ref) => (
+    <AvatarBase {...props} ref={ref} render={render} />
+));
 
 export const Avatar: FC<AvatarProps> = memo(ForwardRefAvatar);

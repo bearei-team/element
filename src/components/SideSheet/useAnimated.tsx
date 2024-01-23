@@ -10,6 +10,11 @@ export interface UseAnimatedOptions extends Pick<RenderProps, 'visible' | 'posit
     finished: () => void;
 }
 
+export interface ScreenAnimatedOptions {
+    containerAnimated: Animated.Value;
+    innerAnimated: Animated.Value;
+}
+
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {visible, finished, position} = options;
     const [containerAnimated] = HOOK.useAnimatedValue(0);
@@ -42,41 +47,48 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         [innerAnimated, position, theme],
     );
 
-    const enterScreen = useCallback(() => {
-        const animatedTimingOptions = {
-            duration: 'medium3',
-            easing: 'emphasizedDecelerate',
-            toValue: 1,
-        } as AnimatedTimingOptions;
+    const enterScreen = useCallback(
+        ({containerAnimated: container, innerAnimated: inner}: ScreenAnimatedOptions) => {
+            const animatedTimingOptions = {
+                duration: 'medium3',
+                easing: 'emphasizedDecelerate',
+                toValue: 1,
+            } as AnimatedTimingOptions;
 
-        requestAnimationFrame(() => {
-            Animated.parallel([
-                animatedTiming(containerAnimated, animatedTimingOptions),
-                animatedTiming(innerAnimated, animatedTimingOptions),
-            ]).start();
-        });
-    }, [animatedTiming, containerAnimated, innerAnimated]);
+            requestAnimationFrame(() => {
+                Animated.parallel([
+                    animatedTiming(container, animatedTimingOptions),
+                    animatedTiming(inner, animatedTimingOptions),
+                ]).start();
+            });
+        },
+        [animatedTiming],
+    );
 
-    const exitScreen = useCallback(() => {
-        const animatedTimingOptions = {
-            duration: 'short3',
-            easing: 'emphasizedAccelerate',
-            toValue: 0,
-        } as AnimatedTimingOptions;
+    const exitScreen = useCallback(
+        ({containerAnimated: container, innerAnimated: inner}: ScreenAnimatedOptions) => {
+            const animatedTimingOptions = {
+                duration: 'short3',
+                easing: 'emphasizedAccelerate',
+                toValue: 0,
+            } as AnimatedTimingOptions;
 
-        requestAnimationFrame(() => {
-            Animated.parallel([
-                animatedTiming(containerAnimated, animatedTimingOptions),
-                animatedTiming(innerAnimated, animatedTimingOptions),
-            ]).start(finished);
-        });
-    }, [animatedTiming, containerAnimated, finished, innerAnimated]);
+            requestAnimationFrame(() => {
+                Animated.parallel([
+                    animatedTiming(container, animatedTimingOptions),
+                    animatedTiming(inner, animatedTimingOptions),
+                ]).start(finished);
+            });
+        },
+        [animatedTiming, finished],
+    );
 
     useEffect(() => {
         if (typeof visible === 'boolean') {
-            visible ? enterScreen() : exitScreen();
+            const screenAnimatedOptions = {containerAnimated, innerAnimated};
+            visible ? enterScreen(screenAnimatedOptions) : exitScreen(screenAnimatedOptions);
         }
-    }, [enterScreen, exitScreen, visible]);
+    }, [containerAnimated, enterScreen, exitScreen, innerAnimated, visible]);
 
     return [{backgroundColor, innerTranslateX}];
 };

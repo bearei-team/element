@@ -7,6 +7,11 @@ import {RenderProps} from './ButtonBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName'>;
 
+export interface ProcessOutlinedAndLinkAnimatedTimingOptions extends UseAnimatedOptions {
+    borderAnimated: Animated.Value;
+    borderInputRange: number[];
+}
+
 export const useAnimated = (options: UseAnimatedOptions) => {
     const {disabled, type = 'filled', eventName} = options;
     const [borderAnimated] = HOOK.useAnimatedValue(1);
@@ -104,19 +109,31 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const processOutlinedAndLinkAnimatedTiming = useCallback(() => {
-        const value = disabled ? 0 : borderInputRange[borderInputRange.length - 2];
-        const responseEvent =
-            type === 'link'
-                ? ['focus', 'hoverIn', 'longPress', 'press', 'pressIn', 'pressOut'].includes(
-                      eventName,
-                  )
-                : eventName === 'focus';
+    const processOutlinedAndLinkAnimatedTiming = useCallback(
+        (
+            processOutlinedAndLinkAnimatedTimingOptions: ProcessOutlinedAndLinkAnimatedTimingOptions,
+        ) => {
+            const {
+                borderAnimated: animated,
+                borderInputRange: inputRange,
+                disabled: buttonDisabled,
+                eventName: buttonEventName,
+                type: buttonType,
+            } = processOutlinedAndLinkAnimatedTimingOptions;
+            const value = buttonDisabled ? 0 : inputRange[inputRange.length - 2];
+            const responseEvent =
+                buttonType === 'link'
+                    ? ['focus', 'hoverIn', 'longPress', 'press', 'pressIn', 'pressOut'].includes(
+                          buttonEventName,
+                      )
+                    : buttonEventName === 'focus';
 
-        const toValue = responseEvent ? borderInputRange[2] : value;
+            const toValue = responseEvent ? inputRange[2] : value;
 
-        return animatedTiming(borderAnimated, {toValue});
-    }, [animatedTiming, borderAnimated, borderInputRange, disabled, eventName, type]);
+            return animatedTiming(animated, {toValue});
+        },
+        [animatedTiming],
+    );
 
     useEffect(() => {
         const toValue = disabled ? 0 : 1;
@@ -124,14 +141,29 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         requestAnimationFrame(() => {
             if (['link', 'outlined'].includes(type)) {
                 return Animated.parallel([
-                    processOutlinedAndLinkAnimatedTiming(),
+                    processOutlinedAndLinkAnimatedTiming({
+                        disabled,
+                        type,
+                        eventName,
+                        borderInputRange,
+                        borderAnimated,
+                    }),
                     animatedTiming(colorAnimated, {toValue}),
                 ]).start();
             }
 
             animatedTiming(colorAnimated, {toValue}).start();
         });
-    }, [animatedTiming, colorAnimated, disabled, processOutlinedAndLinkAnimatedTiming, type]);
+    }, [
+        animatedTiming,
+        borderAnimated,
+        borderInputRange,
+        colorAnimated,
+        disabled,
+        eventName,
+        processOutlinedAndLinkAnimatedTiming,
+        type,
+    ]);
 
     return [
         {

@@ -115,9 +115,9 @@ export const SearchBase: FC<SearchBaseProps> = props => {
         onStateChange: processStateChange,
     });
 
-    const handleListActive = useCallback(
-        (key?: string) => {
-            const nextValue = data?.find(datum => datum.key === key)?.headline;
+    const processListActive = useCallback(
+        (dataSources?: ListDataSource[]) => (key?: string) => {
+            const nextValue = dataSources?.find(datum => datum.key === key)?.headline;
 
             if (nextValue) {
                 setState(draft => {
@@ -125,8 +125,10 @@ export const SearchBase: FC<SearchBaseProps> = props => {
                 });
             }
         },
-        [data, setState],
+        [setState],
     );
+
+    const handleListActive = useMemo(() => processListActive(data), [data, processListActive]);
 
     const input = useMemo(
         () =>
@@ -151,7 +153,7 @@ export const SearchBase: FC<SearchBaseProps> = props => {
 
         return (
             <AnimatedInner
-                key={`search__inner-${id}`}
+                key={`search__inner--${id}`}
                 pageX={pageX}
                 pageY={pageY}
                 shape={shape}

@@ -1,4 +1,4 @@
-import {FC, useCallback, useId} from 'react';
+import {FC, useCallback, useId, useMemo} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useImmer} from 'use-immer';
@@ -61,29 +61,43 @@ export const TabItemBase: FC<TabItemBaseProps> = props => {
         [setState],
     );
 
-    const processPressOut = useCallback(() => {
-        onActive?.(indexKey);
-    }, [indexKey, onActive]);
+    const processPressOut = useCallback(
+        (options: Pick<TabItemProps, 'activeKey' | 'indexKey'>) => {
+            const {activeKey: itemActiveKey, indexKey: itemIndexKey} = options;
+            const responseActive = itemActiveKey !== itemIndexKey;
 
-    const processStateChange = useCallback(
-        (_nextState: State, options = {} as OnStateChangeOptions) => {
-            const {event, eventName: nextEventName} = options;
-            const nextEvent = {
-                layout: () => {
-                    processLayout(event as LayoutChangeEvent);
-                },
-                pressOut: () => {
-                    processPressOut();
-                },
-            };
-
-            nextEvent[nextEventName as keyof typeof nextEvent]?.();
-
-            setState(draft => {
-                draft.eventName = nextEventName;
-            });
+            if (responseActive) {
+                onActive?.(itemIndexKey);
+            }
         },
+        [onActive],
+    );
+
+    const processState = useCallback(
+        (processPressOutOptions: Pick<TabItemProps, 'activeKey' | 'indexKey'>) =>
+            (_nextState: State, options = {} as OnStateChangeOptions) => {
+                const {event, eventName: nextEventName} = options;
+                const nextEvent = {
+                    layout: () => {
+                        processLayout(event as LayoutChangeEvent);
+                    },
+                    pressOut: () => {
+                        processPressOut(processPressOutOptions);
+                    },
+                };
+
+                nextEvent[nextEventName as keyof typeof nextEvent]?.();
+
+                setState(draft => {
+                    draft.eventName = nextEventName;
+                });
+            },
         [setState, processLayout, processPressOut],
+    );
+
+    const processStateChange = useMemo(
+        () => processState({activeKey, indexKey}),
+        [activeKey, indexKey, processState],
     );
 
     const [onEvent] = HOOK.useOnEvent({

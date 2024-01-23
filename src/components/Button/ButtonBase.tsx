@@ -1,6 +1,6 @@
-import {FC, useCallback, useEffect, useId} from 'react';
+import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
-import {useImmer} from 'use-immer';
+import {Updater, useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
 import {ComponentStatus, EventName, State} from '../Common/interface';
@@ -29,11 +29,71 @@ export interface ButtonBaseProps extends ButtonProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface ProcessOptions {
+    setState?: Updater<typeof initialState>;
+}
+
+export type ProcessElevationOptions = Partial<Pick<RenderProps, 'type'> & ProcessOptions>;
+export type ProcessLayoutOptions = Partial<Pick<RenderProps, 'type' | 'block'> & ProcessOptions>;
+
 const processCorrectionCoefficient = (options: Pick<RenderProps, 'type'>) => {
     const {type} = options;
     const nextElevation = type === 'elevated' ? 1 : 0;
 
     return nextElevation;
+};
+
+const processElevation = (
+    nextState: State,
+    {type = 'filled', setState}: ProcessElevationOptions,
+) => {
+    const elevationType = ['elevated', 'filled', 'tonal'].includes(type);
+
+    if (elevationType) {
+        const level = {
+            disabled: 0,
+            enabled: 0,
+            error: 0,
+            focused: 0,
+            hovered: 1,
+            longPressIn: 0,
+            pressIn: 0,
+        };
+
+        const correctionCoefficient = processCorrectionCoefficient({type});
+
+        setState(draft => {
+            draft.elevation = (level[nextState] + correctionCoefficient) as ElevationLevel;
+        });
+    }
+};
+
+const processLayout = (event: LayoutChangeEvent, options: ProcessLayoutOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
+
+    if (buttonBlock) {
+        setState(draft => {
+            draft.layout = nativeEventLayout;
+        });
+    }
+};
+
+const processState = (processStateChangeOptions: Pick<ButtonProps, 'block' | 'type'>) => {
+    const {block: buttonBlock, type: buttonType} = processStateChangeOptions;
+
+    return (nextState: State, options = {} as OnStateChangeOptions) => {
+        const {event, eventName: nextEventName} = options;
+
+        if (nextEventName === 'layout') {
+            processLayout(event as LayoutChangeEvent, buttonBlock);
+        }
+
+        processElevation(nextState, buttonType);
+
+        setState(draft => {
+            draft.eventName = nextEventName;
+        });
+    };
 };
 
 const initialState = {
@@ -61,48 +121,9 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
 
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
-    const processElevation = useCallback(
-        (nextState: State) => {
-            const elevationType = ['elevated', 'filled', 'tonal'].includes(type);
-
-            if (elevationType) {
-                const level = {
-                    disabled: 0,
-                    enabled: 0,
-                    error: 0,
-                    focused: 0,
-                    hovered: 1,
-                    longPressIn: 0,
-                    pressIn: 0,
-                };
-
-                const correctionCoefficient = processCorrectionCoefficient({
-                    type,
-                });
-
-                setState(draft => {
-                    draft.elevation = (level[nextState] + correctionCoefficient) as ElevationLevel;
-                });
-            }
-        },
-        [setState, type],
-    );
-
-    const processLayout = useCallback(
-        (event: LayoutChangeEvent) => {
-            const nativeEventLayout = event.nativeEvent.layout;
-
-            if (block) {
-                setState(draft => {
-                    draft.layout = nativeEventLayout;
-                });
-            }
-        },
-        [block, setState],
-    );
 
     const processContentLayout = useCallback(
-        (event: LayoutChangeEvent) => {
+        (event: LayoutChangeEvent, block: boolean) => {
             const nativeEventLayout = event.nativeEvent.layout;
 
             if (!block) {
@@ -111,24 +132,33 @@ export const ButtonBase: FC<ButtonBaseProps> = props => {
                 });
             }
         },
-        [block, setState],
+        [setState],
     );
 
-    const processStateChange = useCallback(
-        (nextState: State, options = {} as OnStateChangeOptions) => {
-            const {event, eventName: nextEventName} = options;
+    const processState = useCallback(
+        (processStateChangeOptions: Pick<ButtonProps, 'block' | 'type'>) => {
+            const {block: buttonBlock, type: buttonType} = processStateChangeOptions;
 
-            if (nextEventName === 'layout') {
-                processLayout(event as LayoutChangeEvent);
-            }
+            return (nextState: State, options = {} as OnStateChangeOptions) => {
+                const {event, eventName: nextEventName} = options;
 
-            processElevation(nextState);
+                if (nextEventName === 'layout') {
+                    processLayout(event as LayoutChangeEvent, buttonBlock);
+                }
 
-            setState(draft => {
-                draft.eventName = nextEventName;
-            });
+                processElevation(nextState, buttonType);
+
+                setState(draft => {
+                    draft.eventName = nextEventName;
+                });
+            };
         },
-        [setState, processLayout, processElevation],
+        [setState, processLayout],
+    );
+
+    const processStateChange = useMemo(
+        () => processState({block, type}),
+        [block, processState, type],
     );
 
     const [onEvent] = HOOK.useOnEvent({

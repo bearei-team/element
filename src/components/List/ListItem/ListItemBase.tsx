@@ -93,8 +93,9 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
     );
 
     const processPressOut = useCallback(
-        (event: GestureResponderEvent) => {
-            const responseActive = activeKey !== indexKey;
+        (event: GestureResponderEvent, options: Pick<ListItemProps, 'activeKey' | 'indexKey'>) => {
+            const {activeKey: itemActiveKey, indexKey: itemIndexKey} = options;
+            const responseActive = itemActiveKey !== itemIndexKey;
             const {locationX = 0, locationY = 0} = event.nativeEvent;
 
             if (responseActive) {
@@ -102,32 +103,38 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
                     draft.activeLocation = {locationX, locationY};
                 });
 
-                onActive?.(indexKey);
+                onActive?.(itemIndexKey);
             }
         },
-        [activeKey, indexKey, onActive, setState],
+        [onActive, setState],
     );
 
-    const processStateChange = useCallback(
-        (nextState: State, options = {} as OnStateChangeOptions) => {
-            const {event, eventName: nextEventName} = options;
-            const nextEvent = {
-                layout: () => {
-                    processLayout(event as LayoutChangeEvent);
-                },
-                pressOut: () => {
-                    processPressOut(event as GestureResponderEvent);
-                },
-            };
+    const processState = useCallback(
+        (processPressOutOptions: Pick<ListItemProps, 'activeKey' | 'indexKey'>) =>
+            (nextState: State, options = {} as OnStateChangeOptions) => {
+                const {event, eventName: nextEventName} = options;
+                const nextEvent = {
+                    layout: () => {
+                        processLayout(event as LayoutChangeEvent);
+                    },
+                    pressOut: () => {
+                        processPressOut(event as GestureResponderEvent, processPressOutOptions);
+                    },
+                };
 
-            nextEvent[nextEventName as keyof typeof nextEvent]?.();
+                nextEvent[nextEventName as keyof typeof nextEvent]?.();
 
-            setState(draft => {
-                draft.eventName = nextEventName;
-                draft.state = nextState;
-            });
-        },
+                setState(draft => {
+                    draft.eventName = nextEventName;
+                    draft.state = nextState;
+                });
+            },
         [processLayout, processPressOut, setState],
+    );
+
+    const processStateChange = useMemo(
+        () => processState({activeKey, indexKey}),
+        [activeKey, indexKey, processState],
     );
 
     const [onEvent] = HOOK.useOnEvent({
@@ -156,13 +163,23 @@ export const ListItemBase: FC<ListItemBaseProps> = props => {
         [processTrailingEvent],
     );
 
-    const handleTrailingPress = useCallback(() => {
-        if (close) {
-            onCloseAnimated(() => {
-                onClose?.(indexKey);
-            });
-        }
-    }, [close, indexKey, onClose, onCloseAnimated]);
+    const processTrailingPress = useCallback(
+        (options: Pick<ListItemProps, 'close' | 'indexKey'>) => () => {
+            const {close: itemClose, indexKey: itemIndexKey} = options;
+
+            if (itemClose) {
+                onCloseAnimated(() => {
+                    onClose?.(itemIndexKey);
+                });
+            }
+        },
+        [onClose, onCloseAnimated],
+    );
+
+    const handleTrailingPress = useMemo(
+        () => processTrailingPress({close, indexKey}),
+        [close, indexKey, processTrailingPress],
+    );
 
     const trailingElement = useMemo(
         () =>
