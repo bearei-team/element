@@ -17,27 +17,26 @@ export interface HoveredProps
 }
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
-const ForwardRefHovered = forwardRef<Animated.LegacyRef<View>, HoveredProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {id, renderStyle, style, underlayColor, ...containerProps} = renderProps;
-        const {width, height, ...containerStyle} = renderStyle;
+const render = ({id, renderStyle, style, underlayColor, ...containerProps}: RenderProps) => {
+    const {width, height, ...containerStyle} = renderStyle;
 
-        return (
-            <AnimatedContainer
-                {...containerProps}
-                height={height}
-                style={{
-                    ...(typeof style === 'object' && style),
-                    ...containerStyle,
-                }}
-                testID={`hovered--${id}`}
-                width={width}
-                underlayColor={underlayColor}
-            />
-        );
-    };
+    return (
+        <AnimatedContainer
+            {...containerProps}
+            height={height}
+            style={{
+                ...(typeof style === 'object' && style),
+                ...containerStyle,
+            }}
+            testID={`hovered--${id}`}
+            width={width}
+            underlayColor={underlayColor}
+        />
+    );
+};
 
-    return <HoveredBase {...props} ref={ref} render={render} />;
-});
+const ForwardRefHovered = forwardRef<Animated.LegacyRef<View>, HoveredProps>((props, ref) => (
+    <HoveredBase {...props} ref={ref} render={render} />
+));
 
 export const Hovered: FC<HoveredProps> = memo(ForwardRefHovered);
