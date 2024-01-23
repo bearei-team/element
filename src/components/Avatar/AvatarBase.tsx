@@ -6,8 +6,7 @@ export interface AvatarBaseProps extends AvatarProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const AvatarBase: FC<AvatarBaseProps> = props => {
-    const {labelText = 'A', render, ...renderProps} = props;
+export const AvatarBase: FC<AvatarBaseProps> = ({labelText = 'A', render, ...renderProps}) => {
     const id = useId();
 
     return render({

@@ -6,8 +6,7 @@ export interface UseIconOptions extends Pick<RenderProps, 'disabled' | 'type' | 
     icon?: React.JSX.Element;
 }
 
-export const useIcon = (options: UseIconOptions) => {
-    const {disabled, icon, type, eventName} = options;
+export const useIcon = ({disabled, icon, type, eventName}: UseIconOptions) => {
     const theme = useTheme();
     const fillType = {
         elevated: theme.palette.primary.primary,

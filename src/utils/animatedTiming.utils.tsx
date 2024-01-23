@@ -7,6 +7,10 @@ export interface AnimatedTimingOptions
     > {
     toValue: number;
 }
+export type AnimatedTiming = (
+    animation: Animated.Value,
+    options: AnimatedTimingOptions,
+) => Animated.CompositeAnimation;
 
 export const animatedTiming =
     (theme: Theme) => (animation: Animated.Value, options: AnimatedTimingOptions) => {

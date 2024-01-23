@@ -6,8 +6,12 @@ export interface BadgeBaseProps extends BadgeProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const BadgeBase: FC<BadgeBaseProps> = props => {
-    const {labelText = 0, render, size = 'medium', ...renderProps} = props;
+export const BadgeBase: FC<BadgeBaseProps> = ({
+    labelText = 0,
+    render,
+    size = 'medium',
+    ...renderProps
+}) => {
     const id = useId();
     const renderText = Number(labelText) > 999 ? '999+' : labelText;
 

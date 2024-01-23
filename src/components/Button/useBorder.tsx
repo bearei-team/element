@@ -7,9 +7,8 @@ export interface UseBorderOptions {
     type: ButtonType;
 }
 
-export const useBorder = (options: UseBorderOptions) => {
+export const useBorder = ({borderColor, type}: UseBorderOptions) => {
     const theme = useTheme();
-    const {borderColor, type} = options;
     const borderPosition =
         type === 'link'
             ? {borderBottomWidth: theme.adaptSize(1)}

@@ -1,19 +1,39 @@
-import {useCallback, useEffect, useMemo} from 'react';
+import {useEffect, useMemo} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {HOOK} from '../../hooks/hook';
+import {AnimatedTiming} from '../../utils/animatedTiming.utils';
 import {UTIL} from '../../utils/util';
 import {RenderProps} from './ButtonBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName'>;
 
-export interface ProcessOutlinedAndLinkAnimatedTimingOptions extends UseAnimatedOptions {
+export interface ProcessOutlinedAnimatedOptions extends UseAnimatedOptions {
+    animatedTiming: AnimatedTiming;
     borderAnimated: Animated.Value;
     borderInputRange: number[];
 }
 
-export const useAnimated = (options: UseAnimatedOptions) => {
-    const {disabled, type = 'filled', eventName} = options;
+const processOutlinedAnimated = ({
+    animatedTiming,
+    borderAnimated,
+    borderInputRange,
+    disabled,
+    eventName,
+    type,
+}: ProcessOutlinedAnimatedOptions) => {
+    const value = disabled ? 0 : borderInputRange[borderInputRange.length - 2];
+    const responseEvent =
+        type === 'link'
+            ? ['focus', 'hoverIn', 'longPress', 'press', 'pressIn', 'pressOut'].includes(eventName)
+            : eventName === 'focus';
+
+    const toValue = responseEvent ? borderInputRange[2] : value;
+
+    return animatedTiming(borderAnimated, {toValue});
+};
+
+export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedOptions) => {
     const [borderAnimated] = HOOK.useAnimatedValue(1);
     const [colorAnimated] = HOOK.useAnimatedValue(1);
     const borderInputRange = useMemo(() => [0, 1, 2], []);
@@ -109,44 +129,19 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     });
 
-    const processOutlinedAndLinkAnimatedTiming = useCallback(
-        (
-            processOutlinedAndLinkAnimatedTimingOptions: ProcessOutlinedAndLinkAnimatedTimingOptions,
-        ) => {
-            const {
-                borderAnimated: animated,
-                borderInputRange: inputRange,
-                disabled: buttonDisabled,
-                eventName: buttonEventName,
-                type: buttonType,
-            } = processOutlinedAndLinkAnimatedTimingOptions;
-            const value = buttonDisabled ? 0 : inputRange[inputRange.length - 2];
-            const responseEvent =
-                buttonType === 'link'
-                    ? ['focus', 'hoverIn', 'longPress', 'press', 'pressIn', 'pressOut'].includes(
-                          buttonEventName,
-                      )
-                    : buttonEventName === 'focus';
-
-            const toValue = responseEvent ? inputRange[2] : value;
-
-            return animatedTiming(animated, {toValue});
-        },
-        [animatedTiming],
-    );
-
     useEffect(() => {
         const toValue = disabled ? 0 : 1;
 
         requestAnimationFrame(() => {
             if (['link', 'outlined'].includes(type)) {
                 return Animated.parallel([
-                    processOutlinedAndLinkAnimatedTiming({
+                    processOutlinedAnimated({
                         disabled,
                         type,
                         eventName,
                         borderInputRange,
                         borderAnimated,
+                        animatedTiming,
                     }),
                     animatedTiming(colorAnimated, {toValue}),
                 ]).start();
@@ -161,7 +156,6 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         colorAnimated,
         disabled,
         eventName,
-        processOutlinedAndLinkAnimatedTiming,
         type,
     ]);
 
