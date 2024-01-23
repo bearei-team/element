@@ -1,7 +1,7 @@
-import {FC, ReactNode, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, ReactNode, useEffect, useId, useMemo} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, Text, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {useImmer} from 'use-immer';
+import {Updater, useImmer} from 'use-immer';
 import {AnimatedInterpolation, ComponentStatus} from '../Common/interface';
 import {TabDataSource, TabProps} from './Tab';
 import {ContentItem} from './Tab.styles';
@@ -36,21 +36,101 @@ export interface RenderItemOptions extends TabItemProps {
 }
 
 export type Data = (TabDataSource & {labelTextLayout?: LayoutRectangle})[];
+export interface ProcessOptions {
+    setState?: Updater<typeof initialState>;
+}
 
-const initialState = {
-    activeIndicatorOffsetPosition: 'horizontalStart' as ActiveIndicatorOffsetPosition,
-    activeKey: undefined as string | undefined,
-    data: [] as Data,
-    headerVisible: false,
-    itemLayout: {} as LayoutRectangle,
-    layout: {} as LayoutRectangle,
-    status: 'idle' as ComponentStatus,
-};
+export type ProcessLayoutOptions = Partial<Pick<RenderProps, 'onLayout'> & ProcessOptions>;
+export type ProcessActiveOptions = Partial<Pick<RenderProps, 'onActive'> & ProcessOptions>;
 
-const renderItem = (options: RenderItemOptions) => {
-    const {data, onActive, onLayout, onLabelTextLayout, defaultActiveKey, activeKey} = options;
+const processLayout =
+    ({setState, onLayout}: ProcessLayoutOptions) =>
+    (event: LayoutChangeEvent) => {
+        const nativeEventLayout = event.nativeEvent.layout;
 
-    return data.map(datum => (
+        setState?.(draft => {
+            draft.layout = nativeEventLayout;
+        });
+
+        onLayout?.(event);
+    };
+
+const processItemLayout =
+    ({setState}: ProcessOptions) =>
+    (event: LayoutChangeEvent) => {
+        const nativeEventLayout = event.nativeEvent.layout;
+
+        setState?.(draft => {
+            if (!draft.itemLayout.width) {
+                draft.itemLayout = nativeEventLayout;
+            }
+        });
+    };
+
+const processItemLabelTextLayout =
+    ({setState}: ProcessOptions) =>
+    (event: LayoutChangeEvent, key?: string) => {
+        const nativeEventLayout = event.nativeEvent.layout;
+
+        setState?.(draft => {
+            const dataItem = draft.data.find(datum => datum.key === key);
+
+            if (!dataItem) {
+                return;
+            }
+
+            dataItem.labelTextLayout = nativeEventLayout;
+        });
+    };
+
+const processActive =
+    ({setState, onActive}: ProcessActiveOptions) =>
+    (key?: string) => {
+        setState?.(draft => {
+            if (draft.activeKey !== key) {
+                const draftActiveItemIndex = draft.data.findIndex(
+                    datum => datum.key === draft.activeKey,
+                );
+
+                const nextActiveItemIndex = draft.data.findIndex(datum => datum.key === key);
+
+                draft.activeIndicatorOffsetPosition =
+                    nextActiveItemIndex > draftActiveItemIndex
+                        ? 'horizontalEnd'
+                        : 'horizontalStart';
+
+                draft.activeKey = key;
+            }
+        });
+
+        onActive?.(key);
+    };
+
+const processTriggerIndicatorHoverIn =
+    ({setState}: ProcessOptions) =>
+    () =>
+        setState?.(draft => {
+            draft.headerVisible = true;
+        });
+
+const processContentHoverIn =
+    ({setState}: ProcessOptions) =>
+    () =>
+        setState?.(draft => {
+            if (draft.headerVisible) {
+                draft.headerVisible = false;
+            }
+        });
+
+const renderItem = ({
+    data,
+    onActive,
+    onLayout,
+    onLabelTextLayout,
+    defaultActiveKey,
+    activeKey,
+}: RenderItemOptions) =>
+    data.map(datum => (
         <TabItem
             {...datum}
             activeKey={activeKey}
@@ -62,6 +142,15 @@ const renderItem = (options: RenderItemOptions) => {
             onLayout={onLayout}
         />
     ));
+
+const initialState = {
+    activeIndicatorOffsetPosition: 'horizontalStart' as ActiveIndicatorOffsetPosition,
+    activeKey: undefined as string | undefined,
+    data: [] as Data,
+    headerVisible: false,
+    itemLayout: {} as LayoutRectangle,
+    layout: {} as LayoutRectangle,
+    status: 'idle' as ComponentStatus,
 };
 
 export const TabBase: FC<TabBaseProps> = props => {
@@ -69,8 +158,6 @@ export const TabBase: FC<TabBaseProps> = props => {
         data: dataSources,
         defaultActiveKey,
         headerPosition = 'verticalStart',
-        onActive,
-        onLayout,
         render,
         ...renderProps
     } = props;
@@ -99,83 +186,23 @@ export const TabBase: FC<TabBaseProps> = props => {
             layout,
         });
 
-    const processLayout = (event: LayoutChangeEvent) => {
-        const nativeEventLayout = event.nativeEvent.layout;
+    const onActive = useMemo(
+        () => processActive({setState, onActive: renderProps.onActive}),
+        [renderProps.onActive, setState],
+    );
 
-        setState(draft => {
-            draft.layout = nativeEventLayout;
-        });
+    const onLayout = useMemo(
+        () => processLayout({setState, onLayout: renderProps.onLayout}),
+        [renderProps.onLayout, setState],
+    );
 
-        onLayout?.(event);
-    };
-
-    const processItemLayout = useCallback(
-        (event: LayoutChangeEvent) => {
-            const nativeEventLayout = event.nativeEvent.layout;
-
-            setState(draft => {
-                if (!draft.itemLayout.width) {
-                    draft.itemLayout = nativeEventLayout;
-                }
-            });
-        },
+    const onContentHoverIn = useMemo(() => processContentHoverIn({setState}), [setState]);
+    const onItemLayout = useMemo(() => processItemLayout({setState}), [setState]);
+    const onLabelTextLayout = useMemo(() => processItemLabelTextLayout({setState}), [setState]);
+    const onTriggerIndicatorHoverIn = useMemo(
+        () => processTriggerIndicatorHoverIn({setState}),
         [setState],
     );
-
-    const processItemLabelTextLayout = useCallback(
-        (event: LayoutChangeEvent, key?: string) => {
-            const nativeEventLayout = event.nativeEvent.layout;
-
-            setState(draft => {
-                const dataItem = draft.data.find(datum => datum.key === key);
-
-                if (!dataItem) {
-                    return;
-                }
-
-                dataItem.labelTextLayout = nativeEventLayout;
-            });
-        },
-        [setState],
-    );
-
-    const handleActive = useCallback(
-        (key?: string) => {
-            setState(draft => {
-                if (draft.activeKey !== key) {
-                    const draftActiveItemIndex = draft.data.findIndex(
-                        datum => datum.key === draft.activeKey,
-                    );
-
-                    const nextActiveItemIndex = draft.data.findIndex(datum => datum.key === key);
-
-                    draft.activeIndicatorOffsetPosition =
-                        nextActiveItemIndex > draftActiveItemIndex
-                            ? 'horizontalEnd'
-                            : 'horizontalStart';
-
-                    draft.activeKey = key;
-                }
-            });
-
-            onActive?.(key);
-        },
-        [onActive, setState],
-    );
-
-    const handleTriggerIndicatorHoverIn = () => {
-        setState(draft => {
-            draft.headerVisible = true;
-        });
-    };
-
-    const handleContentHoverIn = () => {
-        setState(draft => {
-            if (draft.headerVisible) {
-                draft.headerVisible = false;
-            }
-        });
-    };
 
     const items = useMemo(
         () =>
@@ -183,18 +210,11 @@ export const TabBase: FC<TabBaseProps> = props => {
                 activeKey,
                 data,
                 defaultActiveKey,
-                onActive: handleActive,
-                onLabelTextLayout: processItemLabelTextLayout,
-                onLayout: processItemLayout,
+                onActive,
+                onLabelTextLayout,
+                onLayout: onItemLayout,
             }),
-        [
-            activeKey,
-            data,
-            defaultActiveKey,
-            handleActive,
-            processItemLabelTextLayout,
-            processItemLayout,
-        ],
+        [activeKey, data, defaultActiveKey, onActive, onItemLayout, onLabelTextLayout],
     );
 
     const children = useMemo(() => {
@@ -229,9 +249,9 @@ export const TabBase: FC<TabBaseProps> = props => {
         headerVisible,
         id,
         items,
-        onContentHoverIn: handleContentHoverIn,
-        onLayout: processLayout,
-        onTriggerIndicatorHoverIn: handleTriggerIndicatorHoverIn,
+        onContentHoverIn,
+        onLayout,
+        onTriggerIndicatorHoverIn,
         renderStyle: {
             activeIndicatorLeft,
             activeIndicatorPaddingHorizontal,

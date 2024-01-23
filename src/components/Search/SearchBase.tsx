@@ -35,7 +35,6 @@ export interface ProcessOptions {
 
 export type ProcessListActiveOptions = Partial<Pick<RenderProps, 'data'> & ProcessOptions>;
 export type ProcessStateOptions = Partial<Pick<OnStateChangeOptions, 'eventName'> & ProcessOptions>;
-
 export type ProcessStateChangeOptions = Partial<{ref: RefObject<TextInput>} & ProcessOptions>;
 
 const processListActive =

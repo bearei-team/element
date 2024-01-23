@@ -1,8 +1,8 @@
-import {useCallback, useEffect, useMemo} from 'react';
+import {useEffect, useMemo} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {HOOK} from '../../hooks/hook';
-import {AnimatedTimingOptions} from '../../utils/animatedTiming.utils';
+import {AnimatedTiming} from '../../utils/animatedTiming.utils';
 import {UTIL} from '../../utils/util';
 import {EventName, State} from '../Common/interface';
 import {RenderProps} from './TextFieldBase';
@@ -18,10 +18,7 @@ export interface ProcessEnabledOptions extends Pick<RenderProps, 'error'> {
     colorAnimated: Animated.Value;
     filledToValue: number;
     labelAnimated: Animated.Value;
-    animatedTiming: (
-        animation: Animated.Value,
-        options: AnimatedTimingOptions,
-    ) => Animated.CompositeAnimation;
+    animatedTiming: AnimatedTiming;
 }
 
 export interface ProcessDisabledOptions {
@@ -30,65 +27,124 @@ export interface ProcessDisabledOptions {
     colorAnimated: Animated.Value;
     inputAnimated: Animated.Value;
     supportingTextAnimated: Animated.Value;
-    animatedTiming: (
-        animation: Animated.Value,
-        options: AnimatedTimingOptions,
-    ) => Animated.CompositeAnimation;
+    animatedTiming: AnimatedTiming;
 }
 
-const processEnabled = (options: ProcessEnabledOptions) => () => {
-    const {
+export interface ProcessErrorOptions {
+    colorAnimated: Animated.Value;
+    supportingTextAnimated: Animated.Value;
+    activeIndicatorAnimated: Animated.Value;
+    animatedTiming: AnimatedTiming;
+}
+
+export interface FocusedOptions extends Pick<UseAnimatedOptions, 'error'> {
+    labelAnimated: Animated.Value;
+    colorAnimated: Animated.Value;
+    activeIndicatorAnimated: Animated.Value;
+    animatedTiming: AnimatedTiming;
+}
+
+const processEnabled =
+    ({
         activeIndicatorAnimated,
         colorAnimated,
         error,
         filledToValue,
         labelAnimated,
         animatedTiming,
-    } = options;
+    }: ProcessEnabledOptions) =>
+    () => {
+        if (error) {
+            return requestAnimationFrame(() => {
+                animatedTiming(labelAnimated, {
+                    toValue: filledToValue,
+                }).start();
+            });
+        }
 
-    if (error) {
-        return requestAnimationFrame(() => {
-            animatedTiming(labelAnimated, {
-                toValue: filledToValue,
-            }).start();
+        const compositeAnimations = [
+            animatedTiming(colorAnimated, {toValue: 1}),
+            animatedTiming(activeIndicatorAnimated, {toValue: 0}),
+            animatedTiming(labelAnimated, {toValue: filledToValue}),
+        ];
+
+        requestAnimationFrame(() => {
+            Animated.parallel(compositeAnimations).start();
         });
-    }
+    };
 
-    const compositeAnimations = [
-        animatedTiming(colorAnimated, {toValue: 1}),
-        animatedTiming(activeIndicatorAnimated, {toValue: 0}),
-        animatedTiming(labelAnimated, {toValue: filledToValue}),
-    ];
-
-    requestAnimationFrame(() => {
-        Animated.parallel(compositeAnimations).start();
-    });
-};
-
-const processDisabled = (options: ProcessDisabledOptions) => () => {
-    const {
+const processDisabled =
+    ({
         backgroundColorAnimated,
         colorAnimated,
         supportingTextAnimated,
         activeIndicatorAnimated,
         inputAnimated,
         animatedTiming,
-    } = options;
-    const toValue = 0;
+    }: ProcessDisabledOptions) =>
+    () => {
+        const toValue = 0;
 
-    requestAnimationFrame(() => {
-        Animated.parallel([
-            animatedTiming(backgroundColorAnimated, {toValue}),
-            animatedTiming(colorAnimated, {toValue}),
-            animatedTiming(supportingTextAnimated, {toValue}),
-            animatedTiming(activeIndicatorAnimated, {toValue}),
-            animatedTiming(inputAnimated, {toValue}),
-        ]).start();
-    });
-};
+        requestAnimationFrame(() => {
+            Animated.parallel([
+                animatedTiming(activeIndicatorAnimated, {toValue}),
+                animatedTiming(backgroundColorAnimated, {toValue}),
+                animatedTiming(colorAnimated, {toValue}),
+                animatedTiming(inputAnimated, {toValue}),
+                animatedTiming(supportingTextAnimated, {toValue}),
+            ]).start();
+        });
+    };
 
-export const useAnimated = (options: UseAnimatedOptions) => {
-    const {type = 'filled', state, error, disabled, filled} = options;
+const processError =
+    ({
+        activeIndicatorAnimated,
+        animatedTiming,
+        colorAnimated,
+        supportingTextAnimated,
+    }: ProcessErrorOptions) =>
+    () =>
+        requestAnimationFrame(() => {
+            Animated.parallel([
+                animatedTiming(activeIndicatorAnimated, {toValue: 1}),
+                animatedTiming(colorAnimated, {toValue: 3}),
+                animatedTiming(supportingTextAnimated, {toValue: 2}),
+            ]).start();
+        });
+
+const processFocused =
+    ({
+        animatedTiming,
+        labelAnimated,
+        colorAnimated,
+        activeIndicatorAnimated,
+        error,
+    }: FocusedOptions) =>
+    () => {
+        if (error) {
+            return requestAnimationFrame(() => {
+                animatedTiming(labelAnimated, {toValue: 0}).start();
+            });
+        }
+
+        const compositeAnimations = [
+            animatedTiming(activeIndicatorAnimated, {toValue: 1}),
+            animatedTiming(colorAnimated, {toValue: 2}),
+            animatedTiming(labelAnimated, {toValue: 0}),
+        ];
+
+        requestAnimationFrame(() => {
+            Animated.parallel(compositeAnimations).start();
+        });
+    };
+
+export const useAnimated = ({
+    type = 'filled',
+    state,
+    error,
+    disabled,
+    filled,
+}: UseAnimatedOptions) => {
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
     const [backgroundColorAnimated] = HOOK.useAnimatedValue(1);
@@ -238,36 +294,28 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         ],
     );
 
-    /**
-     * TODO:
-     */
-    const processErrorState = useCallback(() => {
-        requestAnimationFrame(() => {
-            Animated.parallel([
-                animatedTiming(colorAnimated, {toValue: 3}),
-                animatedTiming(supportingTextAnimated, {toValue: 2}),
-                animatedTiming(activeIndicatorAnimated, {toValue: 1}),
-            ]).start();
-        });
-    }, [activeIndicatorAnimated, animatedTiming, colorAnimated, supportingTextAnimated]);
+    const processErrorState = useMemo(
+        () =>
+            processError({
+                colorAnimated,
+                supportingTextAnimated,
+                activeIndicatorAnimated,
+                animatedTiming,
+            }),
+        [activeIndicatorAnimated, animatedTiming, colorAnimated, supportingTextAnimated],
+    );
 
-    const processFocusedState = useCallback(() => {
-        if (error) {
-            return requestAnimationFrame(() => {
-                animatedTiming(labelAnimated, {toValue: 0}).start();
-            });
-        }
-
-        const compositeAnimations = [
-            animatedTiming(colorAnimated, {toValue: 2}),
-            animatedTiming(activeIndicatorAnimated, {toValue: 1}),
-            animatedTiming(labelAnimated, {toValue: 0}),
-        ];
-
-        requestAnimationFrame(() => {
-            Animated.parallel(compositeAnimations).start();
-        });
-    }, [activeIndicatorAnimated, animatedTiming, colorAnimated, error, labelAnimated]);
+    const processFocusedState = useMemo(
+        () =>
+            processFocused({
+                animatedTiming,
+                labelAnimated,
+                colorAnimated,
+                activeIndicatorAnimated,
+                error,
+            }),
+        [activeIndicatorAnimated, animatedTiming, colorAnimated, error, labelAnimated],
+    );
 
     const stateAnimated = useMemo(
         () =>
@@ -276,7 +324,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
                 enabled: processEnabledState,
                 error: processErrorState,
                 focused: processFocusedState,
-            } as Record<State, () => void | undefined>),
+            } as Record<State, () => void | undefined | number>),
         [processDisabledState, processEnabledState, processErrorState, processFocusedState],
     );
 

@@ -8,8 +8,7 @@ export interface UseAnimatedOptions {
     defaultActive?: boolean;
 }
 
-export const useAnimated = (options: UseAnimatedOptions) => {
-    const {active, defaultActive} = options;
+export const useAnimated = ({active, defaultActive}: UseAnimatedOptions) => {
     const [activeAnimated] = HOOK.useAnimatedValue(defaultActive ? 1 : 0);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);

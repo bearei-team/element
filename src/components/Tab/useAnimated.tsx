@@ -14,8 +14,14 @@ export interface UseAnimatedOptions {
     activeIndicatorBaseWidth: number;
 }
 
-export const useAnimated = (options: UseAnimatedOptions) => {
-    const {data, itemLayout, layout, headerVisible, activeKey, activeIndicatorBaseWidth} = options;
+export const useAnimated = ({
+    data,
+    itemLayout,
+    layout,
+    headerVisible,
+    activeKey,
+    activeIndicatorBaseWidth,
+}: UseAnimatedOptions) => {
     const {width: layoutWidth = 0} = layout;
     const {height: itemLayoutHeight = 0, width: itemLayoutWidth = 0} = itemLayout;
     const dataIndexes = Array.from({length: data.length}, (_, index) => index);
@@ -59,19 +65,9 @@ export const useAnimated = (options: UseAnimatedOptions) => {
         });
 
         requestAnimationFrame(() => {
-            animatedTiming(activeIndicatorWidthAnimated, {
-                duration: 'short3',
-                easing: 'standard',
-                toValue,
-                useNativeDriver: false,
-            }).start(() => {
+            animatedTiming(activeIndicatorWidthAnimated, {toValue}).start(() => {
                 requestAnimationFrame(() => {
-                    animatedTiming(activeIndicatorWidthAnimated, {
-                        duration: 'short3',
-                        easing: 'standard',
-                        toValue: 0,
-                        useNativeDriver: false,
-                    }).start();
+                    animatedTiming(activeIndicatorWidthAnimated, {toValue: 0}).start();
                 });
             });
         });
@@ -79,9 +75,7 @@ export const useAnimated = (options: UseAnimatedOptions) => {
 
     useEffect(() => {
         requestAnimationFrame(() => {
-            animatedTiming(headerAnimated, {
-                toValue: headerVisible ? 1 : 0,
-            }).start();
+            animatedTiming(headerAnimated, {toValue: headerVisible ? 1 : 0}).start();
         });
     }, [animatedTiming, headerAnimated, headerVisible]);
 

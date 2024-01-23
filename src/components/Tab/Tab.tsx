@@ -39,86 +39,84 @@ const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator
 const AnimatedActiveIndicatorInner = Animated.createAnimatedComponent(ActiveIndicatorInner);
 const AnimatedContentInner = Animated.createAnimatedComponent(ContentInner);
 const AnimatedHeader = Animated.createAnimatedComponent(Header);
-const ForwardRefTab = forwardRef<View, TabProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {
-            activeIndicatorOffsetPosition,
-            children,
-            id,
-            items,
-            renderStyle,
-            autohide,
-            headerPosition,
-            onTriggerIndicatorHoverIn,
-            onContentHoverIn,
-            ...containerProps
-        } = renderProps;
+const render = ({
+    activeIndicatorOffsetPosition,
+    children,
+    id,
+    items,
+    renderStyle,
+    autohide,
+    headerPosition,
+    onTriggerIndicatorHoverIn,
+    onContentHoverIn,
+    ...containerProps
+}: RenderProps) => {
+    const {
+        activeIndicatorLeft,
+        activeIndicatorPaddingHorizontal,
+        activeIndicatorWidth,
+        contentInnerLeft,
+        itemWidth,
+        headerTranslateY,
+        width,
+    } = renderStyle;
 
-        const {
-            activeIndicatorLeft,
-            activeIndicatorPaddingHorizontal,
-            activeIndicatorWidth,
-            contentInnerLeft,
-            itemWidth,
-            headerTranslateY,
-            width,
-        } = renderStyle;
+    return (
+        <Container {...containerProps} testID={`tab--${id}`}>
+            <AnimatedHeader
+                autohide={autohide}
+                headerPosition={headerPosition}
+                testID={`tab__header--${id}`}
+                style={{transform: [{translateY: headerTranslateY}]}}>
+                {headerPosition === 'verticalEnd' && <Divider size="large" width={width} />}
 
-        return (
-            <Container {...containerProps} testID={`tab--${id}`}>
-                <AnimatedHeader
-                    autohide={autohide}
+                <Elevation defaultLevel={autohide ? 3 : 0}>
+                    <HeaderScrollView
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        showsVerticalScrollIndicator={false}
+                        testID={`tab__headerScrollView--${id}`}>
+                        <HeaderInner testID={`tab__headerInner--${id}`} width={width}>
+                            {items}
+                            <AnimatedActiveIndicator
+                                activeIndicatorOffsetPosition={activeIndicatorOffsetPosition}
+                                paddingHorizontal={activeIndicatorPaddingHorizontal}
+                                style={{left: activeIndicatorLeft}}
+                                testID={`tab__activeIndicator--${id}`}
+                                width={itemWidth}>
+                                <AnimatedActiveIndicatorInner
+                                    shape="extraSmallTop"
+                                    style={{width: activeIndicatorWidth}}
+                                    testID={`tab__activeIndicatorInner--${id}`}
+                                />
+                            </AnimatedActiveIndicator>
+                        </HeaderInner>
+                    </HeaderScrollView>
+                </Elevation>
+
+                {headerPosition === 'verticalStart' && <Divider size="large" width={width} />}
+            </AnimatedHeader>
+
+            {autohide && (
+                <TriggerIndicator
                     headerPosition={headerPosition}
-                    testID={`tab__header--${id}`}
-                    style={{transform: [{translateY: headerTranslateY}]}}>
-                    {headerPosition === 'verticalEnd' && <Divider size="large" width={width} />}
+                    onHoverIn={onTriggerIndicatorHoverIn}
+                />
+            )}
 
-                    <Elevation defaultLevel={autohide ? 3 : 0}>
-                        <HeaderScrollView
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}
-                            showsVerticalScrollIndicator={false}
-                            testID={`tab__headerScrollView--${id}`}>
-                            <HeaderInner testID={`tab__headerInner--${id}`} width={width}>
-                                {items}
-                                <AnimatedActiveIndicator
-                                    activeIndicatorOffsetPosition={activeIndicatorOffsetPosition}
-                                    paddingHorizontal={activeIndicatorPaddingHorizontal}
-                                    style={{left: activeIndicatorLeft}}
-                                    testID={`tab__activeIndicator--${id}`}
-                                    width={itemWidth}>
-                                    <AnimatedActiveIndicatorInner
-                                        shape="extraSmallTop"
-                                        style={{width: activeIndicatorWidth}}
-                                        testID={`tab__activeIndicatorInner--${id}`}
-                                    />
-                                </AnimatedActiveIndicator>
-                            </HeaderInner>
-                        </HeaderScrollView>
-                    </Elevation>
+            <Content testID={`tab__content--${id}`} onHoverIn={onContentHoverIn}>
+                <AnimatedContentInner
+                    style={{left: contentInnerLeft}}
+                    testID={`tab__contentInner--${id}`}>
+                    {children}
+                </AnimatedContentInner>
+            </Content>
+        </Container>
+    );
+};
 
-                    {headerPosition === 'verticalStart' && <Divider size="large" width={width} />}
-                </AnimatedHeader>
-
-                {autohide && (
-                    <TriggerIndicator
-                        headerPosition={headerPosition}
-                        onHoverIn={onTriggerIndicatorHoverIn}
-                    />
-                )}
-
-                <Content testID={`tab__content--${id}`} onHoverIn={onContentHoverIn}>
-                    <AnimatedContentInner
-                        style={{left: contentInnerLeft}}
-                        testID={`tab__contentInner--${id}`}>
-                        {children}
-                    </AnimatedContentInner>
-                </Content>
-            </Container>
-        );
-    };
-
-    return <TabBase {...props} ref={ref} render={render} />;
-});
+const ForwardRefTab = forwardRef<View, TabProps>((props, ref) => (
+    <TabBase {...props} ref={ref} render={render} />
+));
 
 export const Tab: FC<TabProps> = memo(ForwardRefTab);

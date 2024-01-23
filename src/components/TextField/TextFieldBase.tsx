@@ -1,4 +1,4 @@
-import {FC, RefObject, useCallback, useId, useMemo, useRef} from 'react';
+import {FC, RefObject, useId, useMemo, useRef} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
@@ -8,7 +8,7 @@ import {
     ViewStyle,
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {useImmer} from 'use-immer';
+import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {AnimatedInterpolation, EventName, State} from '../Common/interface';
 import {TextFieldProps} from './TextField';
@@ -41,9 +41,64 @@ export interface TextFieldBaseProps extends TextFieldProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface ProcessOptions {
+    setState?: Updater<typeof initialState>;
+}
+
 export type RenderTextInputProps = TextFieldProps & {
     renderStyle: Animated.WithAnimatedObject<TextStyle>;
 };
+
+export type ProcessStateOptions = Partial<Pick<OnStateChangeOptions, 'eventName'> & ProcessOptions>;
+export type ProcessChangeTextOptions = Partial<Pick<RenderProps, 'onChangeText'> & ProcessOptions>;
+
+const processFocus = (inputRef?: RefObject<TextInput>) => inputRef?.current?.focus();
+const processState = (nextState: State, {eventName = 'none', setState}: ProcessStateOptions) =>
+    setState?.(draft => {
+        if (draft.state === 'focused') {
+            if (eventName === 'blur') {
+                draft.eventName = eventName;
+                draft.state = nextState;
+            }
+
+            return;
+        }
+
+        draft.eventName = eventName;
+        draft.state = nextState;
+    });
+
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
+
+    setState?.(draft => {
+        draft.layout = nativeEventLayout;
+    });
+};
+
+const processStateChange =
+    ({setState}: ProcessOptions) =>
+    (nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
+        const nextEvent = {
+            focus: () => processFocus(),
+            layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+            pressOut: () => processFocus(),
+        };
+
+        nextEvent[eventName as keyof typeof nextEvent]?.();
+
+        processState(nextState, {eventName});
+    };
+
+const processChangeText =
+    ({setState, onChangeText}: ProcessChangeTextOptions) =>
+    (text: string) => {
+        setState?.(draft => {
+            draft.value = text;
+        });
+
+        onChangeText?.(text);
+    };
 
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
 const renderTextInput = (props: RenderTextInputProps) => {
@@ -73,22 +128,19 @@ const initialState = {
     value: undefined as string | undefined,
 };
 
-export const TextFieldBase: FC<TextFieldBaseProps> = props => {
-    const {
-        labelText = 'Label',
-        onChangeText,
-        ref,
-        render,
-        supportingText,
-        type = 'filled',
-        error,
-        disabled,
-        leadingIcon,
-        trailingIcon,
-        placeholder,
-        ...textInputProps
-    } = props;
-
+export const TextFieldBase: FC<TextFieldBaseProps> = ({
+    labelText = 'Label',
+    ref,
+    render,
+    supportingText,
+    type = 'filled',
+    error,
+    disabled,
+    leadingIcon,
+    trailingIcon,
+    placeholder,
+    ...textInputProps
+}) => {
     const [{layout, value, eventName, state}, setState] = useImmer(initialState);
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
@@ -101,67 +153,15 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
             : theme.palette.surface.onSurfaceVariant;
 
     const underlayColor = theme.palette.surface.onSurface;
-    const processFocus = useCallback(() => {
-        inputRef.current?.focus();
-    }, [inputRef]);
-
-    const processState = useCallback(
-        (nextState: State, options: Pick<OnStateChangeOptions, 'eventName'>) => {
-            const {eventName: nextEventName} = options;
-
-            setState(draft => {
-                if (draft.state === 'focused') {
-                    if (nextEventName === 'blur') {
-                        draft.eventName = nextEventName;
-                        draft.state = nextState;
-                    }
-
-                    return;
-                }
-
-                draft.eventName = nextEventName;
-                draft.state = nextState;
-            });
-        },
-        [setState],
+    const onChangeText = useMemo(
+        () => processChangeText({setState, onChangeText: textInputProps.onChangeText}),
+        [setState, textInputProps.onChangeText],
     );
 
-    const processLayout = useCallback(
-        (event: LayoutChangeEvent) => {
-            const nativeEventLayout = event.nativeEvent.layout;
-
-            setState(draft => {
-                draft.layout = nativeEventLayout;
-            });
-        },
-        [setState],
-    );
-
-    const processStateChange = useCallback(
-        (nextState: State, options = {} as OnStateChangeOptions) => {
-            const {event, eventName: nextEventName} = options;
-            const nextEvent = {
-                layout: () => {
-                    processLayout(event as LayoutChangeEvent);
-                },
-                pressOut: () => {
-                    processFocus();
-                },
-                focus: () => {
-                    processFocus();
-                },
-            };
-
-            nextEvent[nextEventName as keyof typeof nextEvent]?.();
-
-            processState(nextState, {eventName: nextEventName});
-        },
-        [processFocus, processLayout, processState],
-    );
-
+    const onStateChange = useMemo(() => processStateChange({setState}), [setState]);
     const [{onBlur, onFocus, ...onEvent}] = useOnEvent({
-        ...props,
-        onStateChange: processStateChange,
+        ...textInputProps,
+        onStateChange,
     });
 
     const [
@@ -194,23 +194,12 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
         trailingIcon,
     });
 
-    const handleChangeText = useCallback(
-        (text: string) => {
-            setState(draft => {
-                draft.value = text;
-            });
-
-            onChangeText?.(text);
-        },
-        [onChangeText, setState],
-    );
-
     const input = useMemo(
         () =>
             renderTextInput({
                 ...textInputProps,
                 onBlur,
-                onChangeText: handleChangeText,
+                onChangeText,
                 onFocus,
                 placeholderTextColor,
                 ref: inputRef,
@@ -219,7 +208,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = props => {
                 placeholder,
             }),
         [
-            handleChangeText,
+            onChangeText,
             id,
             inputColor,
             inputRef,

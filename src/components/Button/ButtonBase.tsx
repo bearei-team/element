@@ -36,7 +36,6 @@ export interface ProcessOptions {
 export type ProcessElevationOptions = Partial<Pick<RenderProps, 'type'> & ProcessOptions>;
 export type ProcessLayoutOptions = Partial<Pick<RenderProps, 'type' | 'block'> & ProcessOptions>;
 export type ProcessStateChangeOptions = ProcessLayoutOptions;
-
 export type ProcessContentLayoutOptions = Partial<Pick<RenderProps, 'block'> & ProcessOptions>;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) => {

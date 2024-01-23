@@ -5,8 +5,7 @@ import {RenderProps} from './TextFieldBase';
 export interface UseIconOptions
     extends Pick<RenderProps, 'disabled' | 'leadingIcon' | 'trailingIcon' | 'error'> {}
 
-export const useIcon = (options: UseIconOptions) => {
-    const {disabled, leadingIcon, trailingIcon, error} = options;
+export const useIcon = ({disabled, leadingIcon, trailingIcon, error}: UseIconOptions) => {
     const theme = useTheme();
     const fillColor = theme.palette.surface.onSurfaceVariant;
     const errorColor = theme.palette.error.error;

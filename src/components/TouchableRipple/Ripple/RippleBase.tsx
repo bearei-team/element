@@ -12,20 +12,18 @@ export interface RippleBaseProps extends RippleProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const RippleBase: FC<RippleBaseProps> = props => {
-    const {
-        active,
-        centered,
-        defaultActive,
-        location = {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
-        onEntryAnimatedEnd,
-        render,
-        sequence,
-        touchableLayout,
-        underlayColor,
-        ...renderProps
-    } = props;
-
+export const RippleBase: FC<RippleBaseProps> = ({
+    active,
+    centered,
+    defaultActive,
+    location = {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
+    onEntryAnimatedEnd,
+    render,
+    sequence,
+    touchableLayout,
+    underlayColor,
+    ...renderProps
+}) => {
     const {width = 0, height = 0} = touchableLayout ?? {};
     const centerX = width / 2;
     const centerY = height / 2;
