@@ -1,6 +1,6 @@
-import {FC, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, useEffect, useId, useMemo} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
-import {useImmer} from 'use-immer';
+import {Updater, useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
 import {EventName, State} from '../Common/interface';
@@ -25,88 +25,83 @@ export interface FABBaseProps extends FABProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface ProcessOptions {
+    setState?: Updater<typeof initialState>;
+}
+
+export type ProcessStateChangeOptions = Partial<
+    Pick<RenderProps, 'disabledElevation'> & ProcessOptions
+>;
+
+const processElevation = (nextState: State, {setState}: ProcessOptions) => {
+    const level = {
+        disabled: 0,
+        enabled: 0,
+        error: 0,
+        focused: 0,
+        hovered: 1,
+        longPressIn: 0,
+        pressIn: 0,
+    };
+
+    setState?.(draft => {
+        draft.elevation = (level[nextState] + 3) as ElevationLevel;
+    });
+};
+
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
+
+    setState?.(draft => {
+        draft.layout = nativeEventLayout;
+    });
+};
+
+const processStateChange =
+    ({disabledElevation, setState}: ProcessStateChangeOptions) =>
+    (nextState: State, options = {} as OnStateChangeOptions) => {
+        const {event, eventName: nextEventName} = options;
+
+        if (nextEventName === 'layout') {
+            processLayout(event as LayoutChangeEvent, {setState});
+        }
+
+        if (nextEventName !== 'layout') {
+            !disabledElevation && processElevation(nextState, {setState});
+        }
+
+        setState?.(draft => {
+            draft.eventName = nextEventName;
+        });
+    };
+
 const initialState = {
     elevation: undefined as ElevationLevel,
     eventName: 'none' as EventName,
     layout: {} as LayoutRectangle,
 };
 
-export const FABBase: FC<FABBaseProps> = props => {
-    const {
-        defaultElevation = 3,
-        disabled,
-        disabledElevation,
-        icon,
-        render,
-        type = 'primary',
-        ...renderProps
-    } = props;
-
+export const FABBase: FC<FABBaseProps> = ({
+    defaultElevation = 3,
+    disabled,
+    disabledElevation,
+    icon,
+    render,
+    type = 'primary',
+    ...renderProps
+}) => {
     const [{elevation, layout, eventName}, setState] = useImmer(initialState);
     const [underlayColor] = useUnderlayColor({type});
     const id = useId();
-    const processElevation = useCallback(
-        (nextState: State) => {
-            const level = {
-                disabled: 0,
-                enabled: 0,
-                error: 0,
-                focused: 0,
-                hovered: 1,
-                longPressIn: 0,
-                pressIn: 0,
-            };
-
-            setState(draft => {
-                draft.elevation = (level[nextState] + 3) as ElevationLevel;
-            });
-        },
-        [setState],
-    );
-
-    const processLayout = useCallback(
-        (event: LayoutChangeEvent) => {
-            const nativeEventLayout = event.nativeEvent.layout;
-
-            setState(draft => {
-                draft.layout = nativeEventLayout;
-            });
-        },
-        [setState],
-    );
-
-    const processState = useCallback(
-        (processStateChangeOptions: Pick<FABProps, 'disabledElevation'>) => {
-            const {disabledElevation: buttonDisabledElevation} = processStateChangeOptions;
-
-            return (nextState: State, options = {} as OnStateChangeOptions) => {
-                const {event, eventName: nextEventName} = options;
-
-                if (nextEventName === 'layout') {
-                    processLayout(event as LayoutChangeEvent);
-                }
-
-                if (nextEventName !== 'layout') {
-                    !buttonDisabledElevation && processElevation(nextState);
-                }
-
-                setState(draft => {
-                    draft.eventName = nextEventName;
-                });
-            };
-        },
-        [processElevation, processLayout, setState],
-    );
-
-    const processStateChange = useMemo(
-        () => processState({disabledElevation}),
-        [disabledElevation, processState],
+    const onStateChange = useMemo(
+        () => processStateChange({disabledElevation, setState}),
+        [disabledElevation, setState],
     );
 
     const [onEvent] = HOOK.useOnEvent({
-        ...props,
+        ...renderProps,
         disabled,
-        onStateChange: processStateChange,
+        onStateChange,
     });
 
     const [{backgroundColor, color}] = useAnimated({

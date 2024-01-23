@@ -111,11 +111,11 @@ const processStateChange = ({type, block, setState}: ProcessStateChangeOptions) 
 };
 
 const initialState = {
+    contentLayout: {} as LayoutRectangle,
     defaultElevation: undefined as ElevationLevel,
     elevation: undefined as ElevationLevel,
     eventName: 'none' as EventName,
     layout: {} as LayoutRectangle,
-    contentLayout: {} as LayoutRectangle,
     status: 'idle' as ComponentStatus,
 };
 
@@ -146,7 +146,7 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
     const [onEvent] = HOOK.useOnEvent({
         ...renderProps,
         disabled,
-        onStateChange: onStateChange,
+        onStateChange,
     });
 
     const [{backgroundColor, borderColor, color}] = useAnimated({

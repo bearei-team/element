@@ -3,8 +3,7 @@ import {RenderProps} from './FABBase';
 
 export type UseUnderlayColorOptions = Required<Pick<RenderProps, 'type'>>;
 
-export const useUnderlayColor = (options: UseUnderlayColorOptions) => {
-    const {type} = options;
+export const useUnderlayColor = ({type}: UseUnderlayColorOptions) => {
     const theme = useTheme();
     const underlay = {
         primary: theme.palette.primary.onPrimaryContainer,

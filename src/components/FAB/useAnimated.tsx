@@ -6,8 +6,7 @@ import {RenderProps} from './FABBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type'>;
 
-export const useAnimated = (options: UseAnimatedOptions) => {
-    const {disabled, type = 'primary'} = options;
+export const useAnimated = ({disabled, type = 'primary'}: UseAnimatedOptions) => {
     const [colorAnimated] = HOOK.useAnimatedValue(1);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
