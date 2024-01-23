@@ -7,8 +7,7 @@ import {RenderProps} from './IconButtonBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type'>;
 
-export const useAnimated = (options: UseAnimatedOptions) => {
-    const {disabled, type = 'filled'} = options;
+export const useAnimated = ({disabled, type = 'filled'}: UseAnimatedOptions) => {
     const [borderAnimated] = HOOK.useAnimatedValue(1);
     const [colorAnimated] = HOOK.useAnimatedValue(1);
     const theme = useTheme();

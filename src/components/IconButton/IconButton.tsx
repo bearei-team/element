@@ -18,47 +18,53 @@ export interface IconButtonProps extends TouchableRippleProps {
  * TODO: Selected
  */
 const AnimatedContent = Animated.createAnimatedComponent(Content);
-const ForwardRefIconButton = forwardRef<View, IconButtonProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {eventName, icon, id, onEvent, renderStyle, style, underlayColor, ...contentProps} =
-            renderProps;
+const render = ({
+    eventName,
+    icon,
+    id,
+    onEvent,
+    renderStyle,
+    style,
+    underlayColor,
+    ...contentProps
+}: RenderProps) => {
+    const {backgroundColor, height, width, ...border} = renderStyle;
+    const {onLayout, ...onTouchableRippleEvent} = onEvent;
+    const shape = 'full';
 
-        const {backgroundColor, height, width, ...border} = renderStyle;
-        const {onLayout, ...onTouchableRippleEvent} = onEvent;
-        const shape = 'full';
-
-        return (
-            <Container accessibilityRole="button" testID={`iconButton--${id}`}>
-                <TouchableRipple
-                    {...onTouchableRippleEvent}
+    return (
+        <Container accessibilityRole="button" testID={`iconButton--${id}`}>
+            <TouchableRipple
+                {...onTouchableRippleEvent}
+                shape={shape}
+                underlayColor={underlayColor}>
+                <AnimatedContent
+                    {...contentProps}
+                    onLayout={onLayout}
                     shape={shape}
-                    underlayColor={underlayColor}>
-                    <AnimatedContent
-                        {...contentProps}
-                        onLayout={onLayout}
+                    style={{
+                        ...(typeof style === 'object' && style),
+                        ...border,
+                        backgroundColor,
+                    }}
+                    testID={`iconButton__content--${id}`}>
+                    <Icon testID={`iconButton__icon--${id}`}>{icon}</Icon>
+
+                    <Hovered
+                        eventName={eventName}
+                        height={height}
                         shape={shape}
-                        style={{
-                            ...(typeof style === 'object' && style),
-                            ...border,
-                            backgroundColor,
-                        }}
-                        testID={`iconButton__content--${id}`}>
-                        <Icon testID={`iconButton__icon--${id}`}>{icon}</Icon>
+                        underlayColor={underlayColor}
+                        width={width}
+                    />
+                </AnimatedContent>
+            </TouchableRipple>
+        </Container>
+    );
+};
 
-                        <Hovered
-                            eventName={eventName}
-                            height={height}
-                            shape={shape}
-                            underlayColor={underlayColor}
-                            width={width}
-                        />
-                    </AnimatedContent>
-                </TouchableRipple>
-            </Container>
-        );
-    };
-
-    return <IconButtonBase {...props} ref={ref} render={render} />;
-});
+const ForwardRefIconButton = forwardRef<View, IconButtonProps>((props, ref) => (
+    <IconButtonBase {...props} ref={ref} render={render} />
+));
 
 export const IconButton: FC<IconButtonProps> = memo(ForwardRefIconButton);

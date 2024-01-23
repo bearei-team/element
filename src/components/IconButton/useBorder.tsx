@@ -5,9 +5,8 @@ export interface UseBorderOptions {
     borderColor?: Animated.AnimatedInterpolation<string | number>;
 }
 
-export const useBorder = (options: UseBorderOptions) => {
+export const useBorder = ({borderColor}: UseBorderOptions) => {
     const theme = useTheme();
-    const {borderColor} = options;
     const borderPosition = {borderWidth: theme.adaptSize(1)};
 
     return [

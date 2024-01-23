@@ -1,6 +1,6 @@
-import {FC, useCallback, useId} from 'react';
+import {FC, useId, useMemo} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
-import {useImmer} from 'use-immer';
+import {Updater, useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
 import {EventName, State} from '../Common/interface';
@@ -23,45 +23,52 @@ export interface IconButtonBaseProps extends IconButtonProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface ProcessOptions {
+    setState?: Updater<typeof initialState>;
+}
+
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
+
+    setState?.(draft => {
+        draft.layout = nativeEventLayout;
+    });
+};
+
+const processStateChange =
+    ({setState}: ProcessOptions) =>
+    (_nextState: State, options = {} as OnStateChangeOptions) => {
+        const {event, eventName: nextEventName} = options;
+
+        if (nextEventName === 'layout') {
+            processLayout(event as LayoutChangeEvent, {setState});
+        }
+
+        setState?.(draft => {
+            draft.eventName = nextEventName;
+        });
+    };
+
 const initialState = {
     eventName: 'none' as EventName,
     layout: {} as LayoutRectangle,
 };
 
-export const IconButtonBase: FC<IconButtonBaseProps> = props => {
-    const {disabled = false, icon, render, type = 'filled', ...renderProps} = props;
+export const IconButtonBase: FC<IconButtonBaseProps> = ({
+    disabled = false,
+    icon,
+    render,
+    type = 'filled',
+    ...renderProps
+}) => {
     const [{eventName, layout}, setState] = useImmer(initialState);
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
-    const processLayout = useCallback(
-        (event: LayoutChangeEvent) => {
-            const nativeEventLayout = event.nativeEvent.layout;
-
-            setState(draft => {
-                draft.layout = nativeEventLayout;
-            });
-        },
-        [setState],
-    );
-
-    const processStateChange = useCallback(
-        (_nextState: State, options = {} as OnStateChangeOptions) => {
-            const {event, eventName: nextEventName} = options;
-
-            if (nextEventName === 'layout') {
-                processLayout(event as LayoutChangeEvent);
-            }
-
-            setState(draft => {
-                draft.eventName = nextEventName;
-            });
-        },
-        [processLayout, setState],
-    );
+    const onStateChange = useMemo(() => processStateChange({setState}), [setState]);
     const [onEvent] = HOOK.useOnEvent({
-        ...props,
+        ...renderProps,
         disabled,
-        onStateChange: processStateChange,
+        onStateChange,
     });
 
     const [{backgroundColor, borderColor}] = useAnimated({disabled, type});

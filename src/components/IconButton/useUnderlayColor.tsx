@@ -3,8 +3,7 @@ import {RenderProps} from './IconButtonBase';
 
 export type UseUnderlayColorOptions = Required<Pick<RenderProps, 'type'>>;
 
-export const useUnderlayColor = (options: UseUnderlayColorOptions) => {
-    const {type} = options;
+export const useUnderlayColor = ({type}: UseUnderlayColorOptions) => {
     const theme = useTheme();
     const underlay = {
         filled: theme.palette.primary.onPrimary,
