@@ -17,20 +17,16 @@ export interface NavigationRailProps extends Partial<ViewProps & RefAttributes<V
     onActive?: (key?: string) => void;
 }
 
-const ForwardRefNavigationRail = forwardRef<View, NavigationRailProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {id, children, fab, ...containerProps} = renderProps;
+const render = ({id, children, fab, ...containerProps}: RenderProps) => (
+    <Container {...containerProps} testID={`navigationRail--${id}`}>
+        {fab && <Fab testID={`navigationRail__fab--${id}`}>{fab}</Fab>}
 
-        return (
-            <Container {...containerProps} testID={`navigationRail--${id}`}>
-                {fab && <Fab testID={`navigationRail__fab--${id}`}>{fab}</Fab>}
+        <Destination testID={`navigationRail__destination--${id}`}>{children}</Destination>
+    </Container>
+);
 
-                <Destination testID={`navigationRail__destination--${id}`}>{children}</Destination>
-            </Container>
-        );
-    };
-
-    return <NavigationRailBase {...props} ref={ref} render={render} />;
-});
+const ForwardRefNavigationRail = forwardRef<View, NavigationRailProps>((props, ref) => (
+    <NavigationRailBase {...props} ref={ref} render={render} />
+));
 
 export const NavigationRail: FC<NavigationRailProps> = memo(ForwardRefNavigationRail);

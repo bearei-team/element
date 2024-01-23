@@ -8,8 +8,7 @@ export interface UseAnimatedOptions extends Pick<RenderProps, 'active' | 'block'
     defaultActive?: boolean;
 }
 
-export const useAnimated = (options: UseAnimatedOptions) => {
-    const {active, block, defaultActive} = options;
+export const useAnimated = ({active, block, defaultActive}: UseAnimatedOptions) => {
     const [labelAnimated] = HOOK.useAnimatedValue(block || defaultActive ? 1 : 0);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);

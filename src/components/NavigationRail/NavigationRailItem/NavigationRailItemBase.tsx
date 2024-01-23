@@ -1,4 +1,4 @@
-import {FC, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, cloneElement, useEffect, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -9,7 +9,7 @@ import {
     ViewStyle,
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {useImmer} from 'use-immer';
+import {Updater, useImmer} from 'use-immer';
 import {HOOK} from '../../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../../hooks/useOnEvent';
 import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../../Common/interface';
@@ -36,6 +36,65 @@ export interface RenderProps extends NavigationRailItemProps {
 export interface NavigationRailItemBaseProps extends NavigationRailItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
+
+export interface ProcessOptions {
+    setState?: Updater<typeof initialState>;
+}
+
+export type ProcessPressOutOptions = Partial<
+    Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> & ProcessOptions
+>;
+
+export type ProcessStateChangeOptions = ProcessPressOutOptions;
+
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
+
+    setState?.(draft => {
+        draft.layout = nativeEventLayout;
+    });
+};
+
+const processPressOut = (
+    event: GestureResponderEvent,
+    {indexKey, activeKey, onActive, setState}: ProcessPressOutOptions,
+) => {
+    const responseActive = indexKey !== activeKey;
+    const {locationX = 0, locationY = 0} = event.nativeEvent;
+
+    if (responseActive) {
+        setState?.(draft => {
+            draft.activeLocation = {locationX, locationY};
+        });
+
+        onActive?.(indexKey);
+    }
+};
+
+const processStateChange =
+    ({setState, activeKey, indexKey, onActive}: ProcessStateChangeOptions) =>
+    (_nextState: State, options = {} as OnStateChangeOptions) => {
+        const {event, eventName: nextEventName} = options;
+        const nextEvent = {
+            layout: () => {
+                processLayout(event as LayoutChangeEvent, {setState});
+            },
+            pressOut: () => {
+                processPressOut(event as GestureResponderEvent, {
+                    activeKey,
+                    indexKey,
+                    onActive,
+                    setState,
+                });
+            },
+        };
+
+        nextEvent[nextEventName as keyof typeof nextEvent]?.();
+
+        setState?.(draft => {
+            draft.eventName = nextEventName;
+        });
+    };
 
 const initialState = {
     activeLocation: undefined as Pick<NativeTouchEvent, 'locationX' | 'locationY'> | undefined,
@@ -73,68 +132,15 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = props => 
         defaultActive,
     });
 
-    const processLayout = useCallback(
-        (event: LayoutChangeEvent) => {
-            const nativeEventLayout = event.nativeEvent.layout;
-
-            setState(draft => {
-                draft.layout = nativeEventLayout;
-            });
-        },
-        [setState],
-    );
-
-    const processPressOut = useCallback(
-        (
-            event: GestureResponderEvent,
-            options: Pick<NavigationRailItemProps, 'activeKey' | 'indexKey'>,
-        ) => {
-            const {activeKey: itemActiveKey, indexKey: itemIndexKey} = options;
-            const responseActive = itemActiveKey !== itemIndexKey;
-            const {locationX = 0, locationY = 0} = event.nativeEvent;
-
-            if (responseActive) {
-                setState(draft => {
-                    draft.activeLocation = {locationX, locationY};
-                });
-
-                onActive?.(itemIndexKey);
-            }
-        },
-        [onActive, setState],
-    );
-
-    const processState = useCallback(
-        (processPressOutOptions: Pick<NavigationRailItemProps, 'activeKey' | 'indexKey'>) =>
-            (_nextState: State, options = {} as OnStateChangeOptions) => {
-                const {event, eventName: nextEventName} = options;
-                const nextEvent = {
-                    layout: () => {
-                        processLayout(event as LayoutChangeEvent);
-                    },
-                    pressOut: () => {
-                        processPressOut(event as GestureResponderEvent, processPressOutOptions);
-                    },
-                };
-
-                nextEvent[nextEventName as keyof typeof nextEvent]?.();
-
-                setState(draft => {
-                    draft.eventName = nextEventName;
-                });
-            },
-        [processLayout, processPressOut, setState],
-    );
-
-    const processStateChange = useMemo(
-        () => processState({activeKey, indexKey}),
-        [activeKey, indexKey, processState],
+    const onStateChange = useMemo(
+        () => processStateChange({activeKey, indexKey, onActive, setState}),
+        [activeKey, indexKey, onActive, setState],
     );
 
     const [onEvent] = HOOK.useOnEvent({
         ...props,
         disabled: false,
-        onStateChange: processStateChange,
+        onStateChange,
     });
 
     const activeIconElement = useMemo(

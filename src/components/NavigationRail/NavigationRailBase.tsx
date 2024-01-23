@@ -35,6 +35,14 @@ const renderItems = (options: RenderItemOptions) => {
     ));
 };
 
+const processFAB = (fab?: React.JSX.Element | undefined) => {
+    if (!fab) {
+        return fab;
+    }
+
+    return cloneElement(fab, {disabledElevation: true, size: 'medium'});
+};
+
 const initialState = {
     activeKey: undefined as string | undefined,
     data: [] as ListDataSource[],
@@ -55,13 +63,6 @@ export const NavigationRailBase: FC<NavigationBaseProps> = props => {
 
     const [{activeKey, data, status}, setState] = useImmer(initialState);
     const id = useId();
-    const processFAB = () => {
-        if (!fab) {
-            return fab;
-        }
-
-        return cloneElement(fab, {disabledElevation: true, size: 'medium'});
-    };
 
     const handleActive = useCallback(
         (key?: string) => {
@@ -110,7 +111,7 @@ export const NavigationRailBase: FC<NavigationBaseProps> = props => {
     return render({
         ...renderProps,
         children,
-        fab: processFAB(),
+        fab: processFAB(fab),
         id,
     });
 };
