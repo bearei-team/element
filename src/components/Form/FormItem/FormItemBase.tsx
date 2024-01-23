@@ -1,7 +1,8 @@
 import {RuleItem} from 'async-validator';
-import {FC, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, useEffect, useId, useMemo} from 'react';
 import {useImmer} from 'use-immer';
 import {UTIL} from '../../../utils/util';
+import {FormStore} from '../formStore';
 import {useFormContext} from '../useFormContext';
 import {FormItemProps} from './FormItem';
 
@@ -9,6 +10,39 @@ export type RenderProps = FormItemProps;
 export interface FormItemBaseProps extends FormItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
+
+export interface ProcessValueChangeOptions extends Pick<FormStore<any>, 'setFieldValue'> {
+    name?: string;
+}
+
+export interface ProcessValidateOptions {
+    name?: string;
+    validateFirst?: boolean;
+    rules?: RuleItem[];
+}
+
+const processValueChange =
+    ({name, setFieldValue}: ProcessValueChangeOptions) =>
+    (value?: unknown) => {
+        if (name) {
+            setFieldValue({[name]: value});
+        }
+    };
+
+const processValidate =
+    ({rules, validateFirst, name}: ProcessValidateOptions) =>
+    async (value: unknown) => {
+        const isValidate = name && rules?.length !== 0;
+
+        if (isValidate) {
+            return UTIL.validate({
+                name,
+                rules,
+                validateFirst,
+                value,
+            });
+        }
+    };
 
 const initialState = {};
 export const FormItemBase: FC<FormItemBaseProps> = props => {
@@ -18,30 +52,15 @@ export const FormItemBase: FC<FormItemBaseProps> = props => {
     const errors = getFieldError(name)?.errors;
     const fieldValue = name ? getFieldValue(name) : name;
     const id = useId();
-    const processValue = useCallback(
-        (fieldName?: string) => (value?: unknown) => {
-            if (fieldName) {
-                setFieldValue({[fieldName]: value});
-            }
-        },
-        [setFieldValue],
+
+    const onValueChange = useMemo(
+        () => processValueChange({name, setFieldValue}),
+        [name, setFieldValue],
     );
 
-    const processStateChange = useMemo(() => processValue(name), [name, processValue]);
-    const processValidate = useCallback(
-        (validateRules?: RuleItem[]) => async (value: unknown) => {
-            const isValidate = name && validateRules?.length !== 0;
-
-            if (isValidate) {
-                return UTIL.validate({
-                    name,
-                    rules: validateRules,
-                    validateFirst,
-                    value,
-                });
-            }
-        },
-        [name, validateFirst],
+    const validate = useMemo(
+        () => processValidate({name, rules, validateFirst}),
+        [name, rules, validateFirst],
     );
 
     const children = useMemo(
@@ -51,10 +70,10 @@ export const FormItemBase: FC<FormItemBaseProps> = props => {
                 errors,
                 id,
                 labelText,
-                onValueChange: processStateChange,
+                onValueChange,
                 value: fieldValue,
             }),
-        [errors, fieldValue, id, labelText, processStateChange, renderControl],
+        [errors, fieldValue, id, labelText, onValueChange, renderControl],
     );
 
     useEffect(() => {
@@ -64,9 +83,9 @@ export const FormItemBase: FC<FormItemBaseProps> = props => {
             },
             props: {name, rules, validateFirst},
             touched: false,
-            validate: processValidate(rules),
+            validate,
         });
-    }, [name, processValidate, rules, setState, signInField, validateFirst]);
+    }, [name, rules, setState, signInField, validate, validateFirst]);
 
     return render({
         ...renderProps,

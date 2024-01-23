@@ -21,19 +21,15 @@ export interface FormProps<T extends Store = Store>
     layout?: 'horizontal' | 'vertical';
 }
 
-const FormInner = <T extends Store>(props: FormProps<T>, ref: ForwardedRef<View>) => {
-    const render = (renderProps: RenderProps<T>) => {
-        const {id, children, ...containerProps} = renderProps;
+const render = <T extends Store>({id, children, ...containerProps}: RenderProps<T>) => (
+    <Container {...containerProps} testID={`form--${id}`}>
+        {children}
+    </Container>
+);
 
-        return (
-            <Container {...containerProps} testID={`form--${id}`}>
-                {children}
-            </Container>
-        );
-    };
-
-    return <FormBase {...props} ref={ref} render={render} />;
-};
+const FormInner = <T extends Store>(props: FormProps<T>, ref: ForwardedRef<View>) => (
+    <FormBase {...props} ref={ref} render={render} />
+);
 
 const MemoForm = memo(forwardRef(FormInner)) as typeof FormInner;
 

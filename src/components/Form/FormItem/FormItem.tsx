@@ -27,18 +27,14 @@ export interface FormItemProps
     renderControl?: (props: ControlProps) => JSX.Element;
 }
 
-const ForwardRefFormItem = forwardRef<View, FormItemProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {id, children, ...containerProps} = renderProps;
+const render = ({id, children, ...containerProps}: RenderProps) => (
+    <Container {...containerProps} testID={`formItem--${id}`}>
+        {children}
+    </Container>
+);
 
-        return (
-            <Container {...containerProps} testID={`formItem--${id}`}>
-                {children}
-            </Container>
-        );
-    };
-
-    return <FormItemBase {...props} ref={ref} render={render} />;
-});
+const ForwardRefFormItem = forwardRef<View, FormItemProps>((props, ref) => (
+    <FormItemBase {...props} ref={ref} render={render} />
+));
 
 export const FormItem: FC<FormItemProps> = memo(ForwardRefFormItem);

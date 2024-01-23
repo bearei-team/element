@@ -125,8 +125,10 @@ export const formStore = <T extends Store>(): FormStore<T> => {
         getFieldEntitiesName(names).forEach(processSignOut);
     };
 
-    const setFieldValue = (value = {} as T, options = {} as SetFieldValueOptions) => {
-        const {response = true, skipValidate = false} = options;
+    const setFieldValue = (
+        value = {} as T,
+        {response = true, skipValidate = false} = {} as SetFieldValueOptions,
+    ) => {
         const {onValueChange} = callback;
         const entities = getFieldEntities();
         const processResponse = async (name: keyof T) => {

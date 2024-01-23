@@ -16,18 +16,16 @@ const initialState = {
     status: 'idle' as ComponentStatus,
 };
 
-export const FormBase = <T extends Store = Store>(props: FormBaseProps<T>) => {
-    const {
-        form,
-        initialValue,
-        items,
-        onFinish,
-        onFinishFailed,
-        onValueChange,
-        render,
-        ...renderProps
-    } = props;
-
+export const FormBase = <T extends Store = Store>({
+    form,
+    initialValue,
+    items,
+    onFinish,
+    onFinishFailed,
+    onValueChange,
+    render,
+    ...renderProps
+}: FormBaseProps<T>) => {
     const [{status}, setState] = useImmer(initialState);
     const [formStore] = useForm<T>(form);
     const {setCallback, setInitialValue} = formStore;
