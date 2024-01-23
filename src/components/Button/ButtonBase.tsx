@@ -137,6 +137,7 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
         () => processContentLayout({block, setState}),
         [block, setState],
     );
+
     const onStateChange = useMemo(
         () => processStateChange({block, type, setState}),
         [block, setState, type],

@@ -1,6 +1,6 @@
-import {FC, useCallback, useId} from 'react';
+import {FC, useId, useMemo} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, ViewStyle} from 'react-native';
-import {useImmer} from 'use-immer';
+import {Updater, useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
 import {AnimatedInterpolation, State} from '../Common/interface';
@@ -22,6 +22,28 @@ export interface ElevationBaseProps extends ElevationProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface ProcessOptions {
+    setState?: Updater<typeof initialState>;
+}
+
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
+
+    setState?.(draft => {
+        draft.layout = nativeEventLayout;
+    });
+};
+
+const processStateChange =
+    ({setState}: ProcessOptions) =>
+    (_nextState: State, options = {} as OnStateChangeOptions) => {
+        const {event, eventName} = options;
+
+        if (eventName === 'layout') {
+            processLayout(event as LayoutChangeEvent, {setState});
+        }
+    };
+
 const initialState = {
     layout: {} as LayoutRectangle,
 };
@@ -35,31 +57,10 @@ export const ElevationBase: FC<ElevationBaseProps> = props => {
         level,
     });
 
-    const processLayout = useCallback(
-        (event: LayoutChangeEvent) => {
-            const nativeEventLayout = event.nativeEvent.layout;
-
-            setState(draft => {
-                draft.layout = nativeEventLayout;
-            });
-        },
-        [setState],
-    );
-
-    const processStateChange = useCallback(
-        (_nextState: State, options = {} as OnStateChangeOptions) => {
-            const {event, eventName} = options;
-
-            if (eventName === 'layout') {
-                processLayout(event as LayoutChangeEvent);
-            }
-        },
-        [processLayout],
-    );
-
+    const onStateChange = useMemo(() => processStateChange({setState}), [setState]);
     const [onEvent] = HOOK.useOnEvent({
         ...props,
-        onStateChange: processStateChange,
+        onStateChange: onStateChange,
     });
 
     return render({

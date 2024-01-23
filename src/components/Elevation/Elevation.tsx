@@ -13,46 +13,53 @@ export interface ElevationProps
 }
 
 const AnimatedShadow = Animated.createAnimatedComponent(Shadow);
-const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {children, id, level, onEvent, renderStyle, shape, ...contentProps} = renderProps;
-        const {onLayout} = onEvent;
-        const {height, opacity0, opacity1, width} = renderStyle;
+const render = ({
+    children,
+    id,
+    level,
+    onEvent,
+    renderStyle,
+    shape,
+    ...contentProps
+}: RenderProps) => {
+    const {onLayout} = onEvent;
+    const {height, opacity0, opacity1, width} = renderStyle;
 
-        return (
-            <Container height={height} testID={`elevation--${id}`} width={width}>
-                <Content
-                    {...contentProps}
-                    onLayout={onLayout}
-                    shape={shape}
-                    testID={`elevation__content--${id}`}>
-                    {children}
-                </Content>
+    return (
+        <Container height={height} testID={`elevation--${id}`} width={width}>
+            <Content
+                {...contentProps}
+                onLayout={onLayout}
+                shape={shape}
+                testID={`elevation__content--${id}`}>
+                {children}
+            </Content>
 
-                <AnimatedShadow
-                    height={height}
-                    level={level}
-                    shadow={0}
-                    shape={shape}
-                    style={{opacity: opacity0}}
-                    testID={`elevation__shadow0--${id}`}
-                    width={width}
-                />
+            <AnimatedShadow
+                height={height}
+                level={level}
+                shadow={0}
+                shape={shape}
+                style={{opacity: opacity0}}
+                testID={`elevation__shadow0--${id}`}
+                width={width}
+            />
 
-                <AnimatedShadow
-                    height={height}
-                    level={level}
-                    shadow={1}
-                    shape={shape}
-                    style={{opacity: opacity1}}
-                    testID={`elevation__shadow1--${id}`}
-                    width={width}
-                />
-            </Container>
-        );
-    };
+            <AnimatedShadow
+                height={height}
+                level={level}
+                shadow={1}
+                shape={shape}
+                style={{opacity: opacity1}}
+                testID={`elevation__shadow1--${id}`}
+                width={width}
+            />
+        </Container>
+    );
+};
 
-    return <ElevationBase {...props} ref={ref} render={render} />;
-});
+const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => (
+    <ElevationBase {...props} ref={ref} render={render} />
+));
 
 export const Elevation: FC<ElevationProps> = memo(ForwardRefElevation);
