@@ -12,8 +12,7 @@ export interface ThemeProps {
     theme?: Theme;
 }
 
-export const ThemeProvider: FC<ThemeProps> = props => {
-    const {adaptOptions, children, theme: themeProvider} = props;
+export const ThemeProvider: FC<ThemeProps> = ({adaptOptions, children, theme: themeProvider}) => {
     const {adaptFontSize, adaptSize} = UTIL.adapt(adaptOptions);
     const colorScheme = useColorScheme() ?? 'light';
     const OS = Platform.OS;

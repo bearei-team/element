@@ -6,8 +6,7 @@ import {ElevationProps} from './Elevation';
 
 export type UseAnimatedOptions = Pick<ElevationProps, 'level' | 'defaultLevel'>;
 
-export const useAnimated = (options: UseAnimatedOptions) => {
-    const {level, defaultLevel = 0} = options;
+export const useAnimated = ({level, defaultLevel = 0}: UseAnimatedOptions) => {
     const [opacityAnimated] = HOOK.useAnimatedValue(defaultLevel);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);

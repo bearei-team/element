@@ -15,41 +15,39 @@ export interface RippleProps extends Partial<ViewProps & React.RefAttributes<Vie
 }
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
-const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => {
-    const render = (renderProps: RenderProps) => {
-        const {
-            active,
-            defaultActive,
-            id,
-            renderStyle,
-            style,
-            locationX,
-            locationY,
-            ...containerProps
-        } = renderProps;
+const render = ({
+    active,
+    defaultActive,
+    id,
+    renderStyle,
+    style,
+    locationX,
+    locationY,
+    ...containerProps
+}: RenderProps) => {
+    const {height, width, ...containerStyle} = renderStyle;
+    const activeRipple = [typeof active, typeof defaultActive].includes('boolean');
 
-        const {height, width, ...containerStyle} = renderStyle;
-        const activeRipple = [typeof active, typeof defaultActive].includes('boolean');
+    return (
+        <AnimatedContainer
+            {...containerProps}
+            activeRipple={activeRipple}
+            height={height}
+            shape="full"
+            style={{
+                ...(typeof style === 'object' && style),
+                ...containerStyle,
+            }}
+            testID={`ripple--${id}`}
+            width={width}
+            locationX={locationX}
+            locationY={locationY}
+        />
+    );
+};
 
-        return (
-            <AnimatedContainer
-                {...containerProps}
-                activeRipple={activeRipple}
-                height={height}
-                shape="full"
-                style={{
-                    ...(typeof style === 'object' && style),
-                    ...containerStyle,
-                }}
-                testID={`ripple--${id}`}
-                width={width}
-                locationX={locationX}
-                locationY={locationY}
-            />
-        );
-    };
-
-    return <RippleBase {...props} render={render} ref={ref} />;
-});
+const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => (
+    <RippleBase {...props} render={render} ref={ref} />
+));
 
 export const Ripple: FC<RippleProps> = memo(ForwardRefRipple);

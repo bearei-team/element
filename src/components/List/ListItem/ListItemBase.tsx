@@ -82,19 +82,14 @@ const processStateChange =
     ({activeKey, indexKey, onActive, setState}: ProcessStateChangeOptions) =>
     (nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
-            layout: () => {
-                processLayout(event as LayoutChangeEvent, {
-                    setState,
-                });
-            },
-            pressOut: () => {
+            layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+            pressOut: () =>
                 processPressOut(event as GestureResponderEvent, {
                     activeKey,
                     indexKey,
                     onActive,
                     setState,
-                });
-            },
+                }),
         };
 
         nextEvent[eventName as keyof typeof nextEvent]?.();
@@ -120,9 +115,7 @@ const processTrailingPressOut =
     ({close, indexKey, onCloseAnimated, onClose}: ProcessTrailingPressOutOptions) =>
     () => {
         if (close) {
-            onCloseAnimated?.(() => {
-                onClose?.(indexKey);
-            });
+            onCloseAnimated?.(() => onClose?.(indexKey));
         }
     };
 
@@ -176,17 +169,17 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
         onStateChange,
     });
 
-    const handleTrailingHoverIn = useCallback(
+    const onTrailingHoverIn = useCallback(
         () => processTrailingEvent('hoverIn', {setState}),
         [setState],
     );
 
-    const handleTrailingHoverOut = useCallback(
+    const onTrailingHoverOut = useCallback(
         () => processTrailingEvent('hoverOut', {setState}),
         [setState],
     );
 
-    const handleTrailingPressOut = useMemo(
+    const onTrailingPressOut = useMemo(
         () => processTrailingPressOut({close, indexKey, onCloseAnimated, onClose}),
         [close, indexKey, onClose, onCloseAnimated],
     );
@@ -195,23 +188,16 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
         () =>
             close ? (
                 <IconButton
-                    type="standard"
                     icon={<Icon name={active ? 'remove' : 'close'} type="filled" />}
-                    onHoverIn={handleTrailingHoverIn}
-                    onHoverOut={handleTrailingHoverOut}
-                    onPressOut={handleTrailingPressOut}
+                    onHoverIn={onTrailingHoverIn}
+                    onHoverOut={onTrailingHoverOut}
+                    onPressOut={onTrailingPressOut}
+                    type="standard"
                 />
             ) : (
                 trailing
             ),
-        [
-            active,
-            close,
-            handleTrailingHoverIn,
-            handleTrailingHoverOut,
-            handleTrailingPressOut,
-            trailing,
-        ],
+        [active, close, onTrailingHoverIn, onTrailingHoverOut, onTrailingPressOut, trailing],
     );
 
     useEffect(() => {

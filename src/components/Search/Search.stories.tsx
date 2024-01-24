@@ -17,26 +17,22 @@ export const SearchBar: StoryObj<SearchProps> = {
             {
                 key: 'TitleB',
                 headline: 'TitleB',
-                supportingText:
-                    'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
             },
             {
                 key: 'TitleC',
                 headline: 'TitleC',
-                supportingText:
-                    'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
             },
             {
                 key: 'TitleD',
                 headline: 'TitleD',
-                supportingText:
-                    'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
             },
             {
                 key: 'TitleE',
                 headline: 'TitleE',
-                supportingText:
-                    'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
             },
         ],
     },

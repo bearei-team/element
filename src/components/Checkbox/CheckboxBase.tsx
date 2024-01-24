@@ -30,9 +30,7 @@ export type ProcessPressOutOptions = Partial<
     Pick<RenderProps, 'active' | 'indeterminate' | 'onActive'> & ProcessOptions
 >;
 
-export type ProcessStateChangeOptions = Partial<
-    Pick<RenderProps, 'active' | 'indeterminate' | 'onActive'> & ProcessOptions
->;
+export type ProcessStateChangeOptions = ProcessPressOutOptions;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -56,8 +54,7 @@ const processPressOut = ({setState, active, indeterminate, onActive}: ProcessPre
 
 const processStateChange =
     ({setState, onActive, active, indeterminate}: ProcessStateChangeOptions) =>
-    (_nextState: State, options = {} as OnStateChangeOptions) => {
-        const {event, eventName: nextEventName} = options;
+    (_nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
             layout: () => {
                 processLayout(event as LayoutChangeEvent, {setState});
@@ -67,10 +64,10 @@ const processStateChange =
             },
         };
 
-        nextEvent[nextEventName as keyof typeof nextEvent]?.();
+        nextEvent[eventName as keyof typeof nextEvent]?.();
 
         setState?.(draft => {
-            draft.eventName = nextEventName;
+            draft.eventName = eventName;
         });
     };
 

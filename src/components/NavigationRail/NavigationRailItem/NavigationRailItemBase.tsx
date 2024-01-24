@@ -73,26 +73,22 @@ const processPressOut = (
 
 const processStateChange =
     ({setState, activeKey, indexKey, onActive}: ProcessStateChangeOptions) =>
-    (_nextState: State, options = {} as OnStateChangeOptions) => {
-        const {event, eventName: nextEventName} = options;
+    (_nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
-            layout: () => {
-                processLayout(event as LayoutChangeEvent, {setState});
-            },
-            pressOut: () => {
+            layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+            pressOut: () =>
                 processPressOut(event as GestureResponderEvent, {
                     activeKey,
                     indexKey,
                     onActive,
                     setState,
-                });
-            },
+                }),
         };
 
-        nextEvent[nextEventName as keyof typeof nextEvent]?.();
+        nextEvent[eventName as keyof typeof nextEvent]?.();
 
         setState?.(draft => {
-            draft.eventName = nextEventName;
+            draft.eventName = eventName;
         });
     };
 
@@ -104,19 +100,17 @@ const initialState = {
     status: 'idle' as ComponentStatus,
 };
 
-export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = props => {
-    const {
-        activeIcon = <Icon type="filled" name="circle" />,
-        activeKey,
-        block,
-        defaultActiveKey,
-        icon = <Icon type="outlined" name="circle" />,
-        indexKey,
-        onActive,
-        render,
-        ...renderProps
-    } = props;
-
+export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
+    activeIcon = <Icon type="filled" name="circle" />,
+    activeKey,
+    block,
+    defaultActiveKey,
+    icon = <Icon type="outlined" name="circle" />,
+    indexKey,
+    onActive,
+    render,
+    ...renderProps
+}) => {
     const [{activeLocation, eventName, layout, rippleCentered, status}, setState] =
         useImmer(initialState);
 
@@ -138,7 +132,7 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = props => 
     );
 
     const [onEvent] = HOOK.useOnEvent({
-        ...props,
+        ...renderProps,
         disabled: false,
         onStateChange,
     });

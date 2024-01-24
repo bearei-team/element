@@ -59,19 +59,17 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => 
 
 const processStateChange =
     ({disabledElevation, setState}: ProcessStateChangeOptions) =>
-    (nextState: State, options = {} as OnStateChangeOptions) => {
-        const {event, eventName: nextEventName} = options;
-
-        if (nextEventName === 'layout') {
+    (nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
+        if (eventName === 'layout') {
             processLayout(event as LayoutChangeEvent, {setState});
         }
 
-        if (nextEventName !== 'layout') {
+        if (eventName !== 'layout') {
             !disabledElevation && processElevation(nextState, {setState});
         }
 
         setState?.(draft => {
-            draft.eventName = nextEventName;
+            draft.eventName = eventName;
         });
     };
 

@@ -36,9 +36,7 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => 
 
 const processStateChange =
     ({setState}: ProcessOptions) =>
-    (_nextState: State, options = {} as OnStateChangeOptions) => {
-        const {event, eventName} = options;
-
+    (_nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
         if (eventName === 'layout') {
             processLayout(event as LayoutChangeEvent, {setState});
         }
@@ -48,8 +46,12 @@ const initialState = {
     layout: {} as LayoutRectangle,
 };
 
-export const ElevationBase: FC<ElevationBaseProps> = props => {
-    const {level, render, defaultLevel, ...renderProps} = props;
+export const ElevationBase: FC<ElevationBaseProps> = ({
+    level,
+    render,
+    defaultLevel,
+    ...renderProps
+}) => {
     const [{layout}, setState] = useImmer(initialState);
     const id = useId();
     const [{shadow0Opacity, shadow1Opacity}] = useAnimated({
@@ -59,7 +61,7 @@ export const ElevationBase: FC<ElevationBaseProps> = props => {
 
     const onStateChange = useMemo(() => processStateChange({setState}), [setState]);
     const [onEvent] = HOOK.useOnEvent({
-        ...props,
+        ...renderProps,
         onStateChange: onStateChange,
     });
 

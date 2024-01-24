@@ -56,12 +56,8 @@ const processStateChange =
     ({activeKey, indexKey, setState, onActive}: ProcessStateChangeOptions) =>
     (_nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
-            layout: () => {
-                processLayout(event as LayoutChangeEvent, {setState});
-            },
-            pressOut: () => {
-                processPressOut({activeKey, indexKey, setState, onActive});
-            },
+            layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+            pressOut: () => processPressOut({activeKey, indexKey, setState, onActive}),
         };
 
         nextEvent[eventName as keyof typeof nextEvent]?.();
@@ -73,9 +69,8 @@ const processStateChange =
 
 const processLabelTextLayout =
     ({onLabelTextLayout, indexKey, id}: ProcessLabelTextLayoutOptions) =>
-    (event: LayoutChangeEvent) => {
+    (event: LayoutChangeEvent) =>
         onLabelTextLayout?.(event, (indexKey ?? id)!);
-    };
 
 const initialState = {
     layout: {} as LayoutRectangle,
@@ -107,16 +102,17 @@ export const TabItemBase: FC<TabItemBaseProps> = ({
         [activeKey, indexKey, onActive, setState],
     );
 
+    const onLabelLayout = useMemo(
+        () => processLabelTextLayout({indexKey, id, onLabelTextLayout}),
+        [id, indexKey, onLabelTextLayout],
+    );
+
     const [onEvent] = HOOK.useOnEvent({
         ...renderProps,
         onStateChange,
     });
 
     const [{color}] = useAnimated({active, defaultActive});
-    const onLabelLayout = useMemo(
-        () => processLabelTextLayout({indexKey, id, onLabelTextLayout}),
-        [id, indexKey, onLabelTextLayout],
-    );
 
     return render({
         ...renderProps,

@@ -1,9 +1,9 @@
 import {useTheme} from 'styled-components/native';
 import {RenderProps} from './IconButtonBase';
 
-export type UseUnderlayColorOptions = Required<Pick<RenderProps, 'type'>>;
+export type UseUnderlayColorOptions = Pick<RenderProps, 'type'>;
 
-export const useUnderlayColor = ({type}: UseUnderlayColorOptions) => {
+export const useUnderlayColor = ({type = 'filled'}: UseUnderlayColorOptions) => {
     const theme = useTheme();
     const underlay = {
         filled: theme.palette.primary.onPrimary,

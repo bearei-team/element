@@ -101,25 +101,21 @@ const processChangeText =
     };
 
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-const renderTextInput = (props: RenderTextInputProps) => {
-    const {renderStyle, ...inputProps} = props;
-
-    return (
-        <AnimatedTextInput
-            {...inputProps}
-            style={renderStyle}
-            /**
-             * enableFocusRing is used to disable the focus style in macOS,
-             * this parameter has been implemented and is available.
-             * However, react-native-macos does not have an official typescript declaration for this parameter,
-             * so using it directly in a typescript will result in an undefined parameter.
-             */
-            // @ts-ignore
-            enableFocusRing={false}
-            textAlignVertical="center"
-        />
-    );
-};
+const renderTextInput = ({renderStyle, ...inputProps}: RenderTextInputProps) => (
+    <AnimatedTextInput
+        {...inputProps}
+        style={renderStyle}
+        /**
+         * enableFocusRing is used to disable the focus style in macOS,
+         * this parameter has been implemented and is available.
+         * However, react-native-macos does not have an official typescript declaration for this parameter,
+         * so using it directly in a typescript will result in an undefined parameter.
+         */
+        // @ts-ignore
+        enableFocusRing={false}
+        textAlignVertical="center"
+    />
+);
 
 const initialState = {
     eventName: 'none' as EventName,

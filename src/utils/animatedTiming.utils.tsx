@@ -13,15 +13,17 @@ export type AnimatedTiming = (
 ) => Animated.CompositeAnimation;
 
 export const animatedTiming =
-    (theme: Theme) => (animation: Animated.Value, options: AnimatedTimingOptions) => {
-        const {
+    (theme: Theme) =>
+    (
+        animation: Animated.Value,
+        {
             duration = 'short3',
             easing = 'standard',
             toValue,
             useNativeDriver = false,
             ...animatedConfig
-        } = options;
-
+        }: AnimatedTimingOptions,
+    ) => {
         const {bezier, duration: transitionDuration} = theme.transition({
             duration,
             easing,

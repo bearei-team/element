@@ -45,8 +45,15 @@ const processValidate =
     };
 
 const initialState = {};
-export const FormItemBase: FC<FormItemBaseProps> = props => {
-    const {labelText, name, render, renderControl, rules, validateFirst, ...renderProps} = props;
+export const FormItemBase: FC<FormItemBaseProps> = ({
+    labelText,
+    name,
+    render,
+    renderControl,
+    rules,
+    validateFirst,
+    ...renderProps
+}) => {
     const [, setState] = useImmer(initialState);
     const {getFieldError, getFieldValue, setFieldValue, signInField} = useFormContext();
     const errors = getFieldError(name)?.errors;

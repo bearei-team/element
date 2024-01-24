@@ -37,15 +37,13 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => 
 
 const processStateChange =
     ({setState}: ProcessOptions) =>
-    (_nextState: State, options = {} as OnStateChangeOptions) => {
-        const {event, eventName: nextEventName} = options;
-
-        if (nextEventName === 'layout') {
+    (_nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
+        if (eventName === 'layout') {
             processLayout(event as LayoutChangeEvent, {setState});
         }
 
         setState?.(draft => {
-            draft.eventName = nextEventName;
+            draft.eventName = eventName;
         });
     };
 

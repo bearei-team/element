@@ -123,7 +123,7 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
     type = 'filled',
     ...renderProps
 }) => {
-    const [{defaultElevation, elevation, eventName, layout, status, contentLayout}, setState] =
+    const [{contentLayout, defaultElevation, elevation, eventName, layout, status}, setState] =
         useImmer(initialState);
 
     const id = useId();

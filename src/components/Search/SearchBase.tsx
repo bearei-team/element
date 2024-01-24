@@ -103,10 +103,16 @@ const initialState = {
 };
 
 const AnimatedInner = Animated.createAnimatedComponent(Inner);
-export const SearchBase: FC<SearchBaseProps> = props => {
-    const {data, leadingIcon, placeholder, ref, render, value, trailingIcon, ...textInputProps} =
-        props;
-
+export const SearchBase: FC<SearchBaseProps> = ({
+    data,
+    leadingIcon,
+    placeholder,
+    ref,
+    render,
+    value,
+    trailingIcon,
+    ...textInputProps
+}) => {
     const [{layout, listVisible, eventName, state}, setState] = useImmer(initialState);
     const [{innerHeight}] = useAnimated({listVisible});
     const containerRef = useRef<View>(null);
@@ -122,11 +128,11 @@ export const SearchBase: FC<SearchBaseProps> = props => {
     );
 
     const [{onBlur, onFocus, ...onEvent}] = HOOK.useOnEvent({
-        ...props,
+        ...textInputProps,
         onStateChange,
     });
 
-    const handleListActive = useMemo(() => processListActive({data, setState}), [data, setState]);
+    const onListActive = useMemo(() => processListActive({data, setState}), [data, setState]);
     const input = useMemo(
         () =>
             renderTextInput({
@@ -187,7 +193,7 @@ export const SearchBase: FC<SearchBaseProps> = props => {
 
                 <Divider size="large" width={width} />
                 <List
-                    onActive={handleListActive}
+                    onActive={onListActive}
                     data={data}
                     style={{backgroundColor: theme.color.rgba(theme.palette.surface.surface, 0)}}
                 />
@@ -196,7 +202,7 @@ export const SearchBase: FC<SearchBaseProps> = props => {
     }, [
         data,
         eventName,
-        handleListActive,
+        onListActive,
         id,
         innerHeight,
         input,

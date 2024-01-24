@@ -147,20 +147,18 @@ const initialState = {
     status: 'idle' as ComponentStatus,
 };
 
-export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
-    const {
-        active,
-        activeLocation,
-        centered,
-        children,
-        defaultActive,
-        disabled,
-        onRippleAnimatedEnd,
-        render,
-        underlayColor,
-        ...renderProps
-    } = props;
-
+export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
+    active,
+    activeLocation,
+    centered,
+    children,
+    defaultActive,
+    disabled,
+    onRippleAnimatedEnd,
+    render,
+    underlayColor,
+    ...renderProps
+}) => {
     const [{rippleSequence, status, layout}, setState] = useImmer(initialState);
     const id = useId();
     const activeRipple = [typeof defaultActive, typeof active].includes('boolean');
@@ -170,7 +168,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = props => {
     );
 
     const [onEvent] = HOOK.useOnEvent({
-        ...props,
+        ...renderProps,
         disabled,
         onStateChange,
     });

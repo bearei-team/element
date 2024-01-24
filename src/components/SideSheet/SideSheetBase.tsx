@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, useEffect, useId, useMemo} from 'react';
 import {Animated, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
@@ -39,6 +39,22 @@ const processAnimatedFinished =
         }
     };
 
+const processClose =
+    ({setState}: ProcessOptions) =>
+    () => {
+        setState?.(draft => {
+            draft.visible = false;
+        });
+    };
+
+const processModalShow =
+    ({setState}: ProcessOptions) =>
+    () => {
+        setState?.(draft => {
+            draft.visible = true;
+        });
+    };
+
 const initialState = {
     modalVisible: undefined as boolean | undefined,
     visible: undefined as boolean | undefined,
@@ -49,7 +65,6 @@ export const SideSheetBase: FC<SideSheetBaseProps> = ({
     closeIcon,
     headlineText = 'Title',
     onBack,
-    onClose,
     onPrimaryButtonPress,
     onSecondaryButtonPress,
     position = 'horizontalEnd',
@@ -63,28 +78,25 @@ export const SideSheetBase: FC<SideSheetBaseProps> = ({
 }) => {
     const [{visible, modalVisible}, setState] = useImmer(initialState);
     const id = useId();
-    const processFinished = useMemo(
-        () => processAnimatedFinished({visible: modalVisible, setState, onBack, onClose}),
-        [modalVisible, onBack, onClose, setState],
+    const finished = useMemo(
+        () =>
+            processAnimatedFinished({
+                visible: modalVisible,
+                setState,
+                onBack,
+                onClose: renderProps.onClose,
+            }),
+        [modalVisible, onBack, renderProps.onClose, setState],
     );
 
     const [{backgroundColor, innerTranslateX}] = useAnimated({
-        finished: processFinished,
+        finished,
         position,
         visible,
     });
 
-    const handleClose = useCallback(() => {
-        setState(draft => {
-            draft.visible = false;
-        });
-    }, [setState]);
-
-    const processModalShow = useCallback(() => {
-        setState(draft => {
-            draft.visible = true;
-        });
-    }, [setState]);
+    const onClose = useMemo(() => processClose({setState}), [setState]);
+    const onShow = useMemo(() => processModalShow({setState}), [setState]);
 
     const sheet = useMemo(
         () =>
@@ -93,14 +105,14 @@ export const SideSheetBase: FC<SideSheetBaseProps> = ({
                 backIcon: backIcon ?? (
                     <IconButton
                         icon={<Icon type="filled" name="arrowBack" />}
-                        onPressOut={handleClose}
+                        onPressOut={onClose}
                         type="standard"
                     />
                 ),
                 closeIcon: closeIcon ?? (
                     <IconButton
                         icon={<Icon type="filled" name="close" />}
-                        onPressOut={handleClose}
+                        onPressOut={onClose}
                         type="standard"
                     />
                 ),
@@ -120,7 +132,7 @@ export const SideSheetBase: FC<SideSheetBaseProps> = ({
                         type="outlined"
                     />
                 ),
-                onShow: processModalShow,
+                onShow,
                 position,
                 renderStyle: {backgroundColor, innerTranslateX},
                 visible: modalVisible,
@@ -129,17 +141,17 @@ export const SideSheetBase: FC<SideSheetBaseProps> = ({
             backIcon,
             backgroundColor,
             closeIcon,
-            handleClose,
             headlineText,
             id,
             innerTranslateX,
             modalVisible,
+            onClose,
             onPrimaryButtonPress,
             onSecondaryButtonPress,
+            onShow,
             position,
             primaryButton,
             primaryButtonLabelText,
-            processModalShow,
             render,
             renderProps,
             secondaryButton,

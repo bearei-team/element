@@ -153,15 +153,13 @@ const initialState = {
     status: 'idle' as ComponentStatus,
 };
 
-export const TabBase: FC<TabBaseProps> = props => {
-    const {
-        data: dataSources,
-        defaultActiveKey,
-        headerPosition = 'verticalStart',
-        render,
-        ...renderProps
-    } = props;
-
+export const TabBase: FC<TabBaseProps> = ({
+    data: dataSources,
+    defaultActiveKey,
+    headerPosition = 'verticalStart',
+    render,
+    ...renderProps
+}) => {
     const [
         {activeIndicatorOffsetPosition, activeKey, data, itemLayout, layout, status, headerVisible},
         setState,

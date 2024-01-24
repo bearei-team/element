@@ -1,5 +1,5 @@
-import {FC, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
-import {useImmer} from 'use-immer';
+import {FC, cloneElement, useEffect, useId, useMemo} from 'react';
+import {Updater, useImmer} from 'use-immer';
 import {ComponentStatus} from '../Common/interface';
 import {ListDataSource} from '../List/List';
 import {NavigationRailProps} from './NavigationRail';
@@ -19,10 +19,14 @@ export interface RenderItemOptions {
     onActive: (key?: string) => void;
 }
 
-const renderItems = (options: RenderItemOptions) => {
-    const {activeKey, block, data, defaultActiveKey, onActive} = options;
+export interface ProcessOptions {
+    setState?: Updater<typeof initialState>;
+}
 
-    return data.map(({key, ...props}) => (
+export type ProcessActiveOptions = ProcessOptions & Pick<RenderProps, 'onActive'>;
+
+const renderItems = ({activeKey, block, data, defaultActiveKey, onActive}: RenderItemOptions) =>
+    data.map(({key, ...props}) => (
         <NavigationRailItem
             {...props}
             activeKey={activeKey}
@@ -33,7 +37,6 @@ const renderItems = (options: RenderItemOptions) => {
             onActive={onActive}
         />
     ));
-};
 
 const processFAB = (fab?: React.JSX.Element | undefined) => {
     if (!fab) {
@@ -43,38 +46,37 @@ const processFAB = (fab?: React.JSX.Element | undefined) => {
     return cloneElement(fab, {disabledElevation: true, size: 'medium'});
 };
 
+const processActive =
+    ({onActive, setState}: ProcessActiveOptions) =>
+    (key?: string) => {
+        setState?.(draft => {
+            if (draft.activeKey !== key) {
+                draft.activeKey = key;
+            }
+        });
+
+        onActive?.(key);
+    };
+
 const initialState = {
     activeKey: undefined as string | undefined,
     data: [] as ListDataSource[],
     status: 'idle' as ComponentStatus,
 };
 
-export const NavigationRailBase: FC<NavigationBaseProps> = props => {
-    const {
-        block,
-        data: dataSources,
-        defaultActiveKey,
-        activeKey: propsActiveKey,
-        fab,
-        onActive,
-        render,
-        ...renderProps
-    } = props;
-
+export const NavigationRailBase: FC<NavigationBaseProps> = ({
+    block,
+    data: dataSources,
+    defaultActiveKey,
+    fab,
+    render,
+    ...renderProps
+}) => {
     const [{activeKey, data, status}, setState] = useImmer(initialState);
     const id = useId();
-
-    const handleActive = useCallback(
-        (key?: string) => {
-            setState(draft => {
-                if (draft.activeKey !== key) {
-                    draft.activeKey = key;
-                }
-            });
-
-            onActive?.(key);
-        },
-        [onActive, setState],
+    const onActive = useMemo(
+        () => processActive({onActive: renderProps.onActive, setState}),
+        [renderProps.onActive, setState],
     );
 
     const children = useMemo(
@@ -84,9 +86,9 @@ export const NavigationRailBase: FC<NavigationBaseProps> = props => {
                 block,
                 data,
                 defaultActiveKey,
-                onActive: handleActive,
+                onActive,
             }),
-        [activeKey, block, data, defaultActiveKey, handleActive],
+        [activeKey, block, data, defaultActiveKey, onActive],
     );
 
     useEffect(() => {
@@ -97,12 +99,6 @@ export const NavigationRailBase: FC<NavigationBaseProps> = props => {
             });
         }
     }, [dataSources, setState, status]);
-
-    useEffect(() => {
-        if (status === 'succeeded' && typeof propsActiveKey === 'string') {
-            handleActive(propsActiveKey);
-        }
-    }, [propsActiveKey, handleActive, status]);
 
     if (status === 'idle') {
         return <></>;
