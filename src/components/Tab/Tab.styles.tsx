@@ -111,7 +111,6 @@ export const Content = styled.Pressable`
     flex: 1;
     overflow: hidden;
     position: relative;
-    background-color: red;
 
     ${({theme}) => css`
         min-height: ${theme.adaptSize(theme.spacing.small * 9)}px;

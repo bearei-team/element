@@ -23,11 +23,11 @@ export interface IconButtonBaseProps extends IconButtonProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface ProcessOptions {
+export interface ProcessEventOptions {
     setState?: Updater<typeof initialState>;
 }
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState?.(draft => {
@@ -36,8 +36,8 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => 
 };
 
 const processStateChange =
-    ({setState}: ProcessOptions) =>
-    (_nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
+    ({setState}: ProcessEventOptions) =>
+    (_state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         if (eventName === 'layout') {
             processLayout(event as LayoutChangeEvent, {setState});
         }

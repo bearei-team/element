@@ -25,15 +25,15 @@ export interface FABBaseProps extends FABProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface ProcessOptions {
+export interface ProcessEventOptions {
     setState?: Updater<typeof initialState>;
 }
 
 export type ProcessStateChangeOptions = Partial<
-    Pick<RenderProps, 'disabledElevation'> & ProcessOptions
+    Pick<RenderProps, 'disabledElevation'> & ProcessEventOptions
 >;
 
-const processElevation = (nextState: State, {setState}: ProcessOptions) => {
+const processElevation = (nextState: State, {setState}: ProcessEventOptions) => {
     const level = {
         disabled: 0,
         enabled: 0,
@@ -49,7 +49,7 @@ const processElevation = (nextState: State, {setState}: ProcessOptions) => {
     });
 };
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState?.(draft => {
@@ -59,13 +59,13 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => 
 
 const processStateChange =
     ({disabledElevation, setState}: ProcessStateChangeOptions) =>
-    (nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
+    (state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         if (eventName === 'layout') {
             processLayout(event as LayoutChangeEvent, {setState});
         }
 
         if (eventName !== 'layout') {
-            !disabledElevation && processElevation(nextState, {setState});
+            !disabledElevation && processElevation(state, {setState});
         }
 
         setState?.(draft => {

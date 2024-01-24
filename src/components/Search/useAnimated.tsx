@@ -23,7 +23,6 @@ export const useAnimated = ({listVisible}: UseAnimatedOptions) => {
         requestAnimationFrame(() =>
             animatedTiming(innerHeightAnimated, {
                 toValue: listVisible ? 1 : 0,
-                useNativeDriver: false,
             }).start(),
         );
     }, [animatedTiming, innerHeightAnimated, listVisible]);

@@ -44,7 +44,6 @@ const render = ({
                     shape={shape}
                     testID={`checkbox__content--${id}`}>
                     <Icon testID={`checkbox__icon--${id}`}>{icon}</Icon>
-
                     <Hovered
                         eventName={eventName}
                         height={height}

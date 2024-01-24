@@ -3,11 +3,11 @@ import {Shape} from '../../Common/Common.styles';
 import {RenderProps} from './RippleBase';
 
 export interface ContainerProps extends Pick<RenderProps, 'underlayColor'> {
+    activeRipple: boolean;
     height: number;
-    width: number;
     locationX: number;
     locationY: number;
-    activeRipple: boolean;
+    width: number;
 }
 
 export const Container = styled(Shape)<ContainerProps>`

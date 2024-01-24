@@ -9,6 +9,7 @@ import {TouchableRippleProps} from './TouchableRipple';
 
 export interface RenderProps extends Omit<TouchableRippleProps, 'centered'> {
     onEvent: OnEvent;
+    ripples: React.JSX.Element | React.JSX.Element[];
 }
 
 export interface TouchableRippleBaseProps extends TouchableRippleProps {
@@ -21,25 +22,28 @@ export interface Ripple extends Pick<RippleProps, 'location'> {
 
 export type RippleSequence = Record<string, Ripple>;
 
-export interface ProcessOptions {
+export interface ProcessEventOptions {
     setState?: Updater<typeof initialState>;
 }
 
-export interface ProcessAddRippleOptions extends ProcessOptions {
-    activeRipple: boolean;
-}
 export interface AddRippleOptions {
     locationX: number;
     locationY: number;
 }
 
-export interface ProcessPressOutOptions extends ProcessOptions {
+export interface ProcessAddRippleOptions extends ProcessEventOptions {
+    activeRipple: boolean;
+}
+
+export interface ProcessPressOutOptions extends ProcessEventOptions {
     activeRipple: boolean;
 }
 
 export type ProcessStateChangeOptions = ProcessPressOutOptions;
-export type ProcessRippleExitOptions = ProcessOptions & Pick<RenderProps, 'onRippleAnimatedEnd'>;
-export type ProcessRippleEntryAnimatedEndOptions = ProcessOptions &
+export type ProcessRippleExitOptions = ProcessEventOptions &
+    Pick<RenderProps, 'onRippleAnimatedEnd'>;
+
+export type ProcessRippleEntryAnimatedEndOptions = ProcessEventOptions &
     Pick<RenderProps, 'onRippleAnimatedEnd'> & {activeRipple: boolean};
 
 const processAddRipple =
@@ -52,13 +56,13 @@ const processAddRipple =
                 return;
             }
 
-            draft.rippleSequence[`${Date.now()}`] = {
+            draft.rippleSequence[`${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`] = {
                 exitAnimated: undefined,
                 location: {locationX, locationY},
             };
         });
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState?.(draft => {
@@ -79,7 +83,7 @@ const processPressOut = (
 
 const processStateChange =
     ({setState, activeRipple}: ProcessStateChangeOptions) =>
-    (_nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
+    (_state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
             layout: () => processLayout(event as LayoutChangeEvent, {setState}),
             pressOut: () =>
@@ -151,7 +155,6 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
     active,
     activeLocation,
     centered,
-    children,
     defaultActive,
     disabled,
     onRippleAnimatedEnd,
@@ -178,12 +181,12 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
         [activeRipple, onRippleAnimatedEnd, setState],
     );
 
-    const addAddRipple = useMemo(
+    const addRipple = useMemo(
         () => processAddRipple({activeRipple, setState}),
         [activeRipple, setState],
     );
 
-    const exitRipple = useMemo(
+    const rippleExit = useMemo(
         () => processRippleExit({onRippleAnimatedEnd, setState}),
         [onRippleAnimatedEnd, setState],
     );
@@ -213,47 +216,34 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
         underlayColor,
     ]);
 
-    const childrenElement = (
-        <>
-            {children}
-            {ripples}
-        </>
-    );
-
     /**
-     * When rendering a component for the first time, if the component has active ripples and is active by default.
-     * Initialize the default ripple here.
+     * When rendering a component for the first time, if the component has active ripples and is
+     * active by default. Initialize the default ripple here.
      */
     useEffect(() => {
-        const addRipple = activeRipple && defaultActive;
+        const defaultRipple = activeRipple && defaultActive;
 
         if (status === 'idle') {
-            if (addRipple) {
-                return addAddRipple({locationX: 0, locationY: 0});
+            if (defaultRipple) {
+                return addRipple({locationX: 0, locationY: 0});
             }
 
             setState(draft => {
                 draft.status = 'succeeded';
             });
         }
-    }, [activeRipple, addAddRipple, defaultActive, setState, status]);
+    }, [activeRipple, addRipple, defaultActive, setState, status]);
 
     useEffect(() => {
-        const processRipple = activeRipple;
-
-        if (!processRipple) {
-            return;
-        }
-
         if (status === 'succeeded' && typeof active === 'boolean') {
-            active ? activeLocation && addAddRipple(activeLocation) : exitRipple();
+            active ? activeLocation && addRipple(activeLocation) : rippleExit();
         }
-    }, [active, activeLocation, activeRipple, addAddRipple, exitRipple, status]);
+    }, [active, activeLocation, addRipple, rippleExit, status]);
 
     return render({
         ...renderProps,
-        children: childrenElement,
         id,
         onEvent,
+        ripples,
     });
 };

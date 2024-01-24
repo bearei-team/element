@@ -37,11 +37,11 @@ export const useAnimated = ({
     });
 
     useEffect(() => {
-        requestAnimationFrame(() => {
+        requestAnimationFrame(() =>
             animatedTiming(opacityAnimated, {
                 toValue: event[eventName] ?? 0,
-            }).start();
-        });
+            }).start(),
+        );
     }, [animatedTiming, event, eventName, opacityAnimated]);
 
     return [{opacity}];

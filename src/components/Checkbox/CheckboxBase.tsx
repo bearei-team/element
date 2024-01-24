@@ -22,17 +22,17 @@ export interface CheckboxBaseProps extends CheckboxProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface ProcessOptions {
+export interface ProcessEventOptions {
     setState?: Updater<typeof initialState>;
 }
 
 export type ProcessPressOutOptions = Partial<
-    Pick<RenderProps, 'active' | 'indeterminate' | 'onActive'> & ProcessOptions
+    Pick<RenderProps, 'active' | 'indeterminate' | 'onActive'> & ProcessEventOptions
 >;
 
 export type ProcessStateChangeOptions = ProcessPressOutOptions;
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState?.(draft => {
@@ -54,14 +54,10 @@ const processPressOut = ({setState, active, indeterminate, onActive}: ProcessPre
 
 const processStateChange =
     ({setState, onActive, active, indeterminate}: ProcessStateChangeOptions) =>
-    (_nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
+    (_state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
-            layout: () => {
-                processLayout(event as LayoutChangeEvent, {setState});
-            },
-            pressOut: () => {
-                processPressOut({setState, onActive, active, indeterminate});
-            },
+            layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+            pressOut: () => processPressOut({setState, onActive, active, indeterminate}),
         };
 
         nextEvent[eventName as keyof typeof nextEvent]?.();

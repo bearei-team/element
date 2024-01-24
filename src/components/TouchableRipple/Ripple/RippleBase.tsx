@@ -3,9 +3,9 @@ import {Animated, NativeTouchEvent, ViewStyle} from 'react-native';
 import {RippleProps} from './Ripple';
 import {useAnimated} from './useAnimated';
 export interface RenderProps extends Omit<RippleProps, 'sequence'> {
-    renderStyle: Animated.WithAnimatedObject<ViewStyle & {height: number; width: number}>;
     locationX: number;
     locationY: number;
+    renderStyle: Animated.WithAnimatedObject<ViewStyle & {height: number; width: number}>;
 }
 
 export interface RippleBaseProps extends RippleProps {

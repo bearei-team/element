@@ -12,9 +12,9 @@ import {EventName, State} from '../components/Common/interface';
 
 export type Event =
     | GestureResponderEvent
+    | LayoutChangeEvent
     | MouseEvent
-    | NativeSyntheticEvent<TargetedEvent>
-    | LayoutChangeEvent;
+    | NativeSyntheticEvent<TargetedEvent>;
 
 export interface OnEvent {
     onBlur: (event: NativeSyntheticEvent<TargetedEvent>) => void;
@@ -35,43 +35,49 @@ export interface ProcessStateOptions {
 }
 
 export type OnStateChangeOptions = Omit<ProcessStateOptions, 'callback'>;
-export type UseHandleEventOptions = PressableProps & {
+export interface UseHandleEventOptions extends PressableProps {
     disabled?: boolean;
-
     onStateChange?: (state: State, options?: OnStateChangeOptions) => void;
-};
+}
 
-export interface ProcessOptions {
-    processState: (nextState: State, options?: ProcessStateOptions) => void;
+export interface ProcessEventOptions {
+    processState: (state: State, options?: ProcessStateOptions) => void;
 }
 
 export type ProcessStateChangeOptions = Pick<UseHandleEventOptions, 'disabled' | 'onStateChange'>;
-export type ProcessPressInEventOptions = ProcessOptions & Pick<UseHandleEventOptions, 'onPressIn'>;
-export type ProcessPressEventOptions = ProcessOptions &
+export type ProcessPressInEventOptions = ProcessEventOptions &
+    Pick<UseHandleEventOptions, 'onPressIn'>;
+
+export type ProcessPressEventOptions = ProcessEventOptions &
     Pick<UseHandleEventOptions, 'onPress'> & {mobile: boolean};
 
-export type processLongPressEventEventOptions = ProcessOptions &
+export type processLongPressEventEventOptions = ProcessEventOptions &
     Pick<UseHandleEventOptions, 'onLongPress'>;
-export type processPressOutEventEventOptions = ProcessOptions &
+
+export type processPressOutEventEventOptions = ProcessEventOptions &
     Pick<UseHandleEventOptions, 'onPressOut'> & {mobile: boolean};
 
-export type processHoverIntEventEventOptions = ProcessOptions &
+export type processHoverIntEventEventOptions = ProcessEventOptions &
     Pick<UseHandleEventOptions, 'onHoverIn'>;
-export type processHoverOutEventEventOptions = ProcessOptions &
+
+export type processHoverOutEventEventOptions = ProcessEventOptions &
     Pick<UseHandleEventOptions, 'onHoverOut'>;
-export type processFocusEventEventOptions = ProcessOptions & Pick<UseHandleEventOptions, 'onFocus'>;
-export type ProcessBlurEventOptions = ProcessOptions & Pick<UseHandleEventOptions, 'onBlur'>;
-export type processLayoutEventEventOptions = ProcessOptions &
+
+export type processFocusEventEventOptions = ProcessEventOptions &
+    Pick<UseHandleEventOptions, 'onFocus'>;
+
+export type ProcessBlurEventOptions = ProcessEventOptions & Pick<UseHandleEventOptions, 'onBlur'>;
+export type processLayoutEventEventOptions = ProcessEventOptions &
     Pick<UseHandleEventOptions, 'onLayout'>;
 
 const processStateChange =
     ({disabled, onStateChange}: ProcessStateChangeOptions) =>
-    (nextState: State, {callback, event, eventName} = {} as ProcessStateOptions) => {
+    (state: State, {callback, event, eventName} = {} as ProcessStateOptions) => {
         if (disabled && eventName !== 'layout') {
             return;
         }
 
-        onStateChange?.(nextState, {event, eventName});
+        onStateChange?.(state, {event, eventName});
         callback?.();
     };
 

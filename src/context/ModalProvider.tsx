@@ -2,25 +2,27 @@ import mitt from 'mitt';
 import React, {FC} from 'react';
 import {useImmer} from 'use-immer';
 
-export type Sheet = {id: string; element: React.JSX.Element};
+export interface Sheet {
+    element: React.JSX.Element;
+    id: string;
+}
 
 export type EmitterEvent = {
-    sheet: {
-        id: string;
-        element: React.JSX.Element;
-    };
+    sheet: Sheet;
+};
+
+const initialState = {
+    sheets: [] as Sheet[],
 };
 
 export const emitter = mitt<EmitterEvent>();
 export const ModalProvider: FC<unknown> = () => {
-    const [{sheets}, setSheet] = useImmer({
-        sheets: [] as Sheet[],
-    });
+    const [{sheets}, setState] = useImmer(initialState);
 
     emitter.on('sheet', sheet => {
         const {id, element} = sheet;
 
-        setSheet(draft => {
+        setState(draft => {
             const exist = draft.sheets.some(item => item.id === id);
 
             if (exist) {

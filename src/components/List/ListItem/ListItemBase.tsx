@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, useEffect, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -38,23 +38,23 @@ export interface ListItemBaseProps extends ListItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface ProcessOptions {
+export interface ProcessEventOptions {
     setState?: Updater<typeof initialState>;
 }
 
 export type ProcessPressOutOptions = Partial<
-    Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> & ProcessOptions
+    Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> & ProcessEventOptions
 >;
 
 export type ProcessStateChangeOptions = ProcessPressOutOptions;
-export type ProcessTrailingEventOptions = Partial<{callback?: () => void} & ProcessOptions>;
+export type ProcessTrailingEventOptions = Partial<{callback?: () => void} & ProcessEventOptions>;
 export type ProcessTrailingPressOutOptions = Partial<
     Pick<RenderProps, 'close' | 'indexKey' | 'onClose'> & {
         onCloseAnimated: (finished?: (() => void) | undefined) => void;
-    } & ProcessOptions
+    } & ProcessEventOptions
 >;
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState?.(draft => {
@@ -80,7 +80,7 @@ const processPressOut = (
 
 const processStateChange =
     ({activeKey, indexKey, onActive, setState}: ProcessStateChangeOptions) =>
-    (nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
+    (state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
             layout: () => processLayout(event as LayoutChangeEvent, {setState}),
             pressOut: () =>
@@ -96,7 +96,7 @@ const processStateChange =
 
         setState?.(draft => {
             draft.eventName = eventName;
-            draft.state = nextState;
+            draft.state = state;
         });
     };
 
@@ -118,6 +118,16 @@ const processTrailingPressOut =
             onCloseAnimated?.(() => onClose?.(indexKey));
         }
     };
+
+const processTrailingHoverIn =
+    ({setState}: ProcessEventOptions) =>
+    () =>
+        processTrailingEvent('hoverIn', {setState});
+
+const processTrailingHoverOut =
+    ({setState}: ProcessEventOptions) =>
+    () =>
+        processTrailingEvent('hoverOut', {setState});
 
 const initialState = {
     activeLocation: undefined as Pick<NativeTouchEvent, 'locationX' | 'locationY'> | undefined,
@@ -169,16 +179,8 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
         onStateChange,
     });
 
-    const onTrailingHoverIn = useCallback(
-        () => processTrailingEvent('hoverIn', {setState}),
-        [setState],
-    );
-
-    const onTrailingHoverOut = useCallback(
-        () => processTrailingEvent('hoverOut', {setState}),
-        [setState],
-    );
-
+    const onTrailingHoverIn = useMemo(() => processTrailingHoverIn({setState}), [setState]);
+    const onTrailingHoverOut = useMemo(() => processTrailingHoverOut({setState}), [setState]);
     const onTrailingPressOut = useMemo(
         () => processTrailingPressOut({close, indexKey, onCloseAnimated, onClose}),
         [close, indexKey, onClose, onCloseAnimated],

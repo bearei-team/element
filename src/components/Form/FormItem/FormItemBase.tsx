@@ -59,7 +59,6 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
     const errors = getFieldError(name)?.errors;
     const fieldValue = name ? getFieldValue(name) : name;
     const id = useId();
-
     const onValueChange = useMemo(
         () => processValueChange({name, setFieldValue}),
         [name, setFieldValue],

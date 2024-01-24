@@ -29,14 +29,17 @@ export interface ButtonBaseProps extends ButtonProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface ProcessOptions {
+export interface ProcessEventOptions {
     setState?: Updater<typeof initialState>;
 }
 
-export type ProcessElevationOptions = Partial<Pick<RenderProps, 'type'> & ProcessOptions>;
-export type ProcessLayoutOptions = Partial<Pick<RenderProps, 'type' | 'block'> & ProcessOptions>;
+export type ProcessElevationOptions = Partial<Pick<RenderProps, 'type'> & ProcessEventOptions>;
+export type ProcessLayoutOptions = Partial<
+    Pick<RenderProps, 'type' | 'block'> & ProcessEventOptions
+>;
+
 export type ProcessStateChangeOptions = ProcessLayoutOptions;
-export type ProcessContentLayoutOptions = Partial<Pick<RenderProps, 'block'> & ProcessOptions>;
+export type ProcessContentLayoutOptions = Partial<Pick<RenderProps, 'block'> & ProcessEventOptions>;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) => {
     const nextElevation = type === 'elevated' ? 1 : 0;
@@ -44,10 +47,7 @@ const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) => {
     return nextElevation;
 };
 
-const processElevation = (
-    nextState: State,
-    {type = 'filled', setState}: ProcessElevationOptions,
-) => {
+const processElevation = (state: State, {type = 'filled', setState}: ProcessElevationOptions) => {
     const elevationType = ['elevated', 'filled', 'tonal'].includes(type);
 
     if (elevationType) {
@@ -64,7 +64,7 @@ const processElevation = (
         const correctionCoefficient = processCorrectionCoefficient({type});
 
         setState?.(draft => {
-            draft.elevation = (level[nextState] + correctionCoefficient) as ElevationLevel;
+            draft.elevation = (level[state] + correctionCoefficient) as ElevationLevel;
         });
     }
 };
@@ -93,12 +93,12 @@ const processContentLayout =
 
 const processStateChange =
     ({type, block, setState}: ProcessStateChangeOptions) =>
-    (nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
+    (state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         if (eventName === 'layout') {
             processLayout(event as LayoutChangeEvent, {block, setState});
         }
 
-        processElevation(nextState, {type, setState});
+        processElevation(state, {type, setState});
 
         setState?.(draft => {
             draft.eventName = eventName;

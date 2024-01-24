@@ -26,9 +26,8 @@ export const ThemeProvider: FC<ThemeProps> = ({adaptOptions, children, theme: th
                 colorScheme,
                 OS,
             }}>
-            {children}
-
             <ModalProvider />
+            {children}
         </StyledComponentThemeProvider>
     );
 };

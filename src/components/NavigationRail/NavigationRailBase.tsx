@@ -19,11 +19,11 @@ export interface RenderItemOptions {
     onActive: (key?: string) => void;
 }
 
-export interface ProcessOptions {
+export interface ProcessEventOptions {
     setState?: Updater<typeof initialState>;
 }
 
-export type ProcessActiveOptions = ProcessOptions & Pick<RenderProps, 'onActive'>;
+export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
 
 const renderItems = ({activeKey, block, data, defaultActiveKey, onActive}: RenderItemOptions) =>
     data.map(({key, ...props}) => (
@@ -92,13 +92,13 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
     );
 
     useEffect(() => {
-        if (dataSources && status === 'idle') {
+        if (dataSources) {
             setState(draft => {
                 draft.data = dataSources;
-                draft.status = 'succeeded';
+                draft.status === 'idle' && (draft.status = 'succeeded');
             });
         }
-    }, [dataSources, setState, status]);
+    }, [dataSources, setState]);
 
     if (status === 'idle') {
         return <></>;

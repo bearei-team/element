@@ -27,11 +27,11 @@ export const useAnimated = ({active, block, defaultActive}: UseAnimatedOptions) 
 
     useEffect(() => {
         if (!block && typeof active === 'boolean') {
-            requestAnimationFrame(() => {
+            requestAnimationFrame(() =>
                 animatedTiming(labelAnimated, {
                     toValue: active ? 1 : 0,
-                }).start();
-            });
+                }).start(),
+            );
         }
     }, [active, animatedTiming, block, labelAnimated]);
 

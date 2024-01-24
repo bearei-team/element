@@ -57,11 +57,11 @@ export const useAnimated = ({
             ? 1
             : closeIconValue;
 
-        requestAnimationFrame(() => {
+        requestAnimationFrame(() =>
             animatedTiming(trailingOpacityAnimated, {
                 toValue: close ? closeIconToValue : 1,
-            }).start();
-        });
+            }).start(),
+        );
     }, [animatedTiming, close, eventName, state, trailingEventName, trailingOpacityAnimated]);
 
     return [

@@ -29,13 +29,16 @@ export interface Data extends ListDataSource {
 
 export type RenderTextInputOptions = SearchProps;
 
-export interface ProcessOptions {
+export interface ProcessEventOptions {
     setState?: Updater<typeof initialState>;
 }
 
-export type ProcessListActiveOptions = Partial<Pick<RenderProps, 'data'> & ProcessOptions>;
-export type ProcessStateOptions = Partial<Pick<OnStateChangeOptions, 'eventName'> & ProcessOptions>;
-export type ProcessStateChangeOptions = Partial<{ref: RefObject<TextInput>} & ProcessOptions>;
+export type ProcessListActiveOptions = Partial<Pick<RenderProps, 'data'> & ProcessEventOptions>;
+export type ProcessStateOptions = Partial<
+    Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions
+>;
+
+export type ProcessStateChangeOptions = Partial<{ref: RefObject<TextInput>} & ProcessEventOptions>;
 
 const processListActive =
     ({data, setState}: ProcessListActiveOptions) =>
@@ -49,7 +52,7 @@ const processListActive =
         }
     };
 
-const processFocus = (inputRef?: RefObject<TextInput>) => inputRef?.current?.focus();
+const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
 const processState = (nextState: State, {eventName = 'none', setState}: ProcessStateOptions) => {
     setState?.(draft => {
         if (draft.state === 'focused') {
@@ -68,7 +71,7 @@ const processState = (nextState: State, {eventName = 'none', setState}: ProcessS
 
 const processStateChange =
     ({ref, setState}: ProcessStateChangeOptions) =>
-    (nextState: State, {eventName} = {} as OnStateChangeOptions) => {
+    (state: State, {eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
             pressOut: () => processFocus(ref),
             focus: () => processFocus(ref),
@@ -76,7 +79,7 @@ const processStateChange =
 
         nextEvent[eventName as keyof typeof nextEvent]?.();
 
-        processState(nextState, {eventName, setState});
+        processState(state, {eventName, setState});
     };
 
 const renderTextInput = (options: RenderTextInputOptions) => (

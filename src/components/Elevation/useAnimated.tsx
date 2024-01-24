@@ -36,9 +36,7 @@ export const useAnimated = ({level, defaultLevel = 0}: UseAnimatedOptions) => {
 
     useEffect(() => {
         if (typeof level === 'number') {
-            requestAnimationFrame(() => {
-                animatedTiming(opacityAnimated, {toValue: level}).start();
-            });
+            requestAnimationFrame(() => animatedTiming(opacityAnimated, {toValue: level}).start());
         }
     }, [animatedTiming, level, opacityAnimated]);
 

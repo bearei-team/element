@@ -8,7 +8,7 @@ export default {
 
 export const Filled: StoryObj<TextFieldProps> = {
     args: {
-        labelText: '姓名',
+        labelText: 'name',
         supportingText: 'supportingText',
     },
 };

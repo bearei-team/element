@@ -17,12 +17,12 @@ export interface SideSheetBaseProps extends SideSheetProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface ProcessOptions {
+export interface ProcessEventOptions {
     setState?: Updater<typeof initialState>;
 }
 
 export type ProcessAnimatedFinishedOptions = Partial<
-    Pick<RenderProps, 'visible' | 'onClose' | 'onBack'> & ProcessOptions
+    Pick<RenderProps, 'visible' | 'onClose' | 'onBack'> & ProcessEventOptions
 >;
 
 const processAnimatedFinished =
@@ -40,7 +40,7 @@ const processAnimatedFinished =
     };
 
 const processClose =
-    ({setState}: ProcessOptions) =>
+    ({setState}: ProcessEventOptions) =>
     () => {
         setState?.(draft => {
             draft.visible = false;
@@ -48,7 +48,7 @@ const processClose =
     };
 
 const processModalShow =
-    ({setState}: ProcessOptions) =>
+    ({setState}: ProcessEventOptions) =>
     () => {
         setState?.(draft => {
             draft.visible = true;

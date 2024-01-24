@@ -75,9 +75,11 @@ export const useAnimated = ({disabled, type = 'primary'}: UseAnimatedOptions) =>
     const color = colorAnimated.interpolate(colorConfig[type]);
 
     useEffect(() => {
-        requestAnimationFrame(() => {
-            animatedTiming(colorAnimated, {toValue: disabled ? 0 : 1}).start();
-        });
+        if (typeof disabled === 'boolean') {
+            requestAnimationFrame(() =>
+                animatedTiming(colorAnimated, {toValue: disabled ? 0 : 1}).start(),
+            );
+        }
     }, [animatedTiming, colorAnimated, disabled]);
 
     return [

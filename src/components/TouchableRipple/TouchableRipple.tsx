@@ -19,10 +19,11 @@ export interface TouchableRippleProps
     onRippleAnimatedEnd?: () => void;
 }
 
-const render = ({id, children, shape, onEvent, ...containerProps}: RenderProps) => (
+const render = ({id, children, shape, onEvent, ripples, ...containerProps}: RenderProps) => (
     <Container {...containerProps} {...onEvent} testID={`touchableRipple--${id}`}>
         <Content shape={shape} testID={`touchableRipple__content--${id}`}>
             {children}
+            {ripples}
         </Content>
     </Container>
 );

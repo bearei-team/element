@@ -10,10 +10,7 @@ export interface ValidateOptions {
 const validateRule = ({name, rules = [], validateFirst, value}: ValidateOptions) =>
     new Schema({[name]: rules}).validate(
         {[name]: value},
-        {
-            first: validateFirst,
-            suppressWarning: true,
-        },
+        {first: validateFirst, suppressWarning: true},
     );
 
 export const validate = async (options: ValidateOptions) => {

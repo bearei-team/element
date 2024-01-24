@@ -41,34 +41,39 @@ export interface TextFieldBaseProps extends TextFieldProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface ProcessOptions {
-    setState?: Updater<typeof initialState>;
-}
-
 export type RenderTextInputProps = TextFieldProps & {
     renderStyle: Animated.WithAnimatedObject<TextStyle>;
 };
 
-export type ProcessStateOptions = Partial<Pick<OnStateChangeOptions, 'eventName'> & ProcessOptions>;
-export type ProcessChangeTextOptions = Partial<Pick<RenderProps, 'onChangeText'> & ProcessOptions>;
+export interface ProcessEventOptions {
+    setState?: Updater<typeof initialState>;
+}
 
-const processFocus = (inputRef?: RefObject<TextInput>) => inputRef?.current?.focus();
-const processState = (nextState: State, {eventName = 'none', setState}: ProcessStateOptions) =>
+export type ProcessStateOptions = Partial<
+    Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions
+>;
+
+export type ProcessChangeTextOptions = Partial<
+    Pick<RenderProps, 'onChangeText'> & ProcessEventOptions
+>;
+
+const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
+const processState = (state: State, {eventName = 'none', setState}: ProcessStateOptions) =>
     setState?.(draft => {
         if (draft.state === 'focused') {
             if (eventName === 'blur') {
                 draft.eventName = eventName;
-                draft.state = nextState;
+                draft.state = state;
             }
 
             return;
         }
 
         draft.eventName = eventName;
-        draft.state = nextState;
+        draft.state = state;
     });
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState?.(draft => {
@@ -77,8 +82,8 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => 
 };
 
 const processStateChange =
-    ({setState}: ProcessOptions) =>
-    (nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
+    ({setState}: ProcessEventOptions) =>
+    (state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
             focus: () => processFocus(),
             layout: () => processLayout(event as LayoutChangeEvent, {setState}),
@@ -87,7 +92,7 @@ const processStateChange =
 
         nextEvent[eventName as keyof typeof nextEvent]?.();
 
-        processState(nextState, {eventName});
+        processState(state, {eventName});
     };
 
 const processChangeText =
@@ -197,11 +202,11 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
                 onBlur,
                 onChangeText,
                 onFocus,
+                placeholder,
                 placeholderTextColor,
                 ref: inputRef,
                 renderStyle: {color: inputColor},
                 testID: `textField__input--${id}`,
-                placeholder,
             }),
         [
             onChangeText,

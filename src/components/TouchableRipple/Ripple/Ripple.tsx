@@ -38,10 +38,10 @@ const render = ({
                 ...(typeof style === 'object' && style),
                 ...containerStyle,
             }}
-            testID={`ripple--${id}`}
-            width={width}
             locationX={locationX}
             locationY={locationY}
+            testID={`ripple--${id}`}
+            width={width}
         />
     );
 };

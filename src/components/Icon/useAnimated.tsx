@@ -18,11 +18,11 @@ export const useAnimated = ({eventName = 'none'}: UseAnimatedOptions) => {
     useEffect(() => {
         const toValue = ['pressIn', 'longPress'].includes(eventName) ? 0 : 1;
 
-        requestAnimationFrame(() => {
+        requestAnimationFrame(() =>
             animatedTiming(scaleAnimated, {
                 toValue: eventName === 'hoverIn' ? 2 : toValue,
-            }).start();
-        });
+            }).start(),
+        );
     }, [animatedTiming, eventName, scaleAnimated]);
 
     return [{scale}];

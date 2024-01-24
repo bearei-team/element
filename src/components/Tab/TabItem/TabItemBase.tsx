@@ -23,20 +23,20 @@ export interface TabItemBaseProps extends TabItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface ProcessOptions {
+export interface ProcessEventOptions {
     setState?: Updater<typeof initialState>;
 }
 
 export type ProcessPressOutOptions = Partial<
-    Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> & ProcessOptions
+    Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> & ProcessEventOptions
 >;
 
 export type ProcessStateChangeOptions = ProcessPressOutOptions;
 export type ProcessLabelTextLayoutOptions = Partial<
-    Pick<TabItemBaseProps, 'onLabelTextLayout' | 'indexKey' | 'id'> & ProcessOptions
+    Pick<TabItemBaseProps, 'onLabelTextLayout' | 'indexKey' | 'id'> & ProcessEventOptions
 >;
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState?.(draft => {
@@ -54,7 +54,7 @@ const processPressOut = ({activeKey, indexKey, onActive}: ProcessPressOutOptions
 
 const processStateChange =
     ({activeKey, indexKey, setState, onActive}: ProcessStateChangeOptions) =>
-    (_nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
+    (_state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
             layout: () => processLayout(event as LayoutChangeEvent, {setState}),
             pressOut: () => processPressOut({activeKey, indexKey, setState, onActive}),

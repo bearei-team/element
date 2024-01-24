@@ -36,12 +36,12 @@ export interface RenderItemOptions extends TabItemProps {
 }
 
 export type Data = (TabDataSource & {labelTextLayout?: LayoutRectangle})[];
-export interface ProcessOptions {
+export interface ProcessEventOptions {
     setState?: Updater<typeof initialState>;
 }
 
-export type ProcessLayoutOptions = Partial<Pick<RenderProps, 'onLayout'> & ProcessOptions>;
-export type ProcessActiveOptions = Partial<Pick<RenderProps, 'onActive'> & ProcessOptions>;
+export type ProcessLayoutOptions = Partial<Pick<RenderProps, 'onLayout'> & ProcessEventOptions>;
+export type ProcessActiveOptions = Partial<Pick<RenderProps, 'onActive'> & ProcessEventOptions>;
 
 const processLayout =
     ({setState, onLayout}: ProcessLayoutOptions) =>
@@ -56,7 +56,7 @@ const processLayout =
     };
 
 const processItemLayout =
-    ({setState}: ProcessOptions) =>
+    ({setState}: ProcessEventOptions) =>
     (event: LayoutChangeEvent) => {
         const nativeEventLayout = event.nativeEvent.layout;
 
@@ -68,7 +68,7 @@ const processItemLayout =
     };
 
 const processItemLabelTextLayout =
-    ({setState}: ProcessOptions) =>
+    ({setState}: ProcessEventOptions) =>
     (event: LayoutChangeEvent, key?: string) => {
         const nativeEventLayout = event.nativeEvent.layout;
 
@@ -107,14 +107,14 @@ const processActive =
     };
 
 const processTriggerIndicatorHoverIn =
-    ({setState}: ProcessOptions) =>
+    ({setState}: ProcessEventOptions) =>
     () =>
         setState?.(draft => {
             draft.headerVisible = true;
         });
 
 const processContentHoverIn =
-    ({setState}: ProcessOptions) =>
+    ({setState}: ProcessEventOptions) =>
     () =>
         setState?.(draft => {
             if (draft.headerVisible) {
@@ -216,13 +216,15 @@ export const TabBase: FC<TabBaseProps> = ({
     );
 
     const children = useMemo(() => {
-        if (typeof layout.width === 'number') {
-            return data.map(({content, key}, index) => (
-                <ContentItem key={key ?? index} width={layout.width}>
-                    {typeof content === 'string' ? <Text>{content}</Text> : content}
-                </ContentItem>
-            ));
+        if (typeof layout.width !== 'number') {
+            return <></>;
         }
+
+        return data.map(({content, key}, index) => (
+            <ContentItem key={key ?? index} width={layout.width}>
+                {typeof content === 'string' ? <Text>{content}</Text> : content}
+            </ContentItem>
+        ));
     }, [data, layout.width]);
 
     useEffect(() => {

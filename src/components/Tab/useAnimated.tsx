@@ -56,27 +56,27 @@ export const useAnimated = ({
         const index = data.findIndex(({key}) => key === activeKey);
         const toValue = index === -1 ? 0 : index;
 
-        requestAnimationFrame(() => {
+        requestAnimationFrame(() =>
             animatedTiming(activeAnimated, {
                 toValue,
                 duration: 'medium3',
                 easing: 'emphasizedDecelerate',
-            }).start();
-        });
+            }).start(),
+        );
 
-        requestAnimationFrame(() => {
-            animatedTiming(activeIndicatorWidthAnimated, {toValue}).start(() => {
-                requestAnimationFrame(() => {
-                    animatedTiming(activeIndicatorWidthAnimated, {toValue: 0}).start();
-                });
-            });
-        });
+        requestAnimationFrame(() =>
+            animatedTiming(activeIndicatorWidthAnimated, {toValue}).start(() =>
+                requestAnimationFrame(() =>
+                    animatedTiming(activeIndicatorWidthAnimated, {toValue: 0}).start(),
+                ),
+            ),
+        );
     }, [activeAnimated, activeIndicatorWidthAnimated, activeKey, animatedTiming, data]);
 
     useEffect(() => {
-        requestAnimationFrame(() => {
-            animatedTiming(headerAnimated, {toValue: headerVisible ? 1 : 0}).start();
-        });
+        requestAnimationFrame(() =>
+            animatedTiming(headerAnimated, {toValue: headerVisible ? 1 : 0}).start(),
+        );
     }, [animatedTiming, headerAnimated, headerVisible]);
 
     return [

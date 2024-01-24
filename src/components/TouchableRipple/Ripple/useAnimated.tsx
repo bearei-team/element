@@ -18,10 +18,10 @@ export interface EntryAnimatedOptions extends Pick<UseAnimatedOptions, 'minDurat
 }
 
 export interface ExitAnimatedOptions {
-    animatedTiming: AnimatedTiming;
-    scaleAnimated: Animated.Value;
-    opacityAnimated: Animated.Value;
     activeRipple: boolean;
+    animatedTiming: AnimatedTiming;
+    opacityAnimated: Animated.Value;
+    scaleAnimated: Animated.Value;
 }
 
 export type ProcessAnimatedTimingOptions = EntryAnimatedOptions &
@@ -62,19 +62,19 @@ const processExitAnimated =
 
 const processAnimatedTiming =
     ({
-        onEntryAnimatedEnd,
-        sequence,
-        animatedTiming,
         activeRipple,
+        animatedTiming,
+        minDuration,
+        onEntryAnimatedEnd,
         opacityAnimated,
         scaleAnimated,
-        minDuration,
+        sequence,
     }: ProcessAnimatedTimingOptions) =>
     () => {
         const entryAnimated = processEntryAnimated({scaleAnimated, minDuration, animatedTiming});
         const exitAnimated = processExitAnimated({
-            animatedTiming,
             activeRipple,
+            animatedTiming,
             opacityAnimated,
             scaleAnimated,
         });

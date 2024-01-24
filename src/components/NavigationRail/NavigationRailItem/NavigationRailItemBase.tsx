@@ -37,17 +37,17 @@ export interface NavigationRailItemBaseProps extends NavigationRailItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface ProcessOptions {
+export interface ProcessEventOptions {
     setState?: Updater<typeof initialState>;
 }
 
 export type ProcessPressOutOptions = Partial<
-    Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> & ProcessOptions
+    Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> & ProcessEventOptions
 >;
 
 export type ProcessStateChangeOptions = ProcessPressOutOptions;
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessOptions) => {
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState?.(draft => {
@@ -73,7 +73,7 @@ const processPressOut = (
 
 const processStateChange =
     ({setState, activeKey, indexKey, onActive}: ProcessStateChangeOptions) =>
-    (_nextState: State, {event, eventName} = {} as OnStateChangeOptions) => {
+    (_state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
             layout: () => processLayout(event as LayoutChangeEvent, {setState}),
             pressOut: () =>
@@ -165,7 +165,7 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     }, [active, setState, status]);
 
     useEffect(() => {
-        if (activeLocation) {
+        if (activeLocation?.locationX) {
             setState(draft => {
                 draft.rippleCentered = false;
             });

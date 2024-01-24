@@ -19,11 +19,11 @@ export const useAnimated = ({active, defaultActive}: UseAnimatedOptions) => {
 
     useEffect(() => {
         if (typeof active === 'boolean') {
-            requestAnimationFrame(() => {
+            requestAnimationFrame(() =>
                 animatedTiming(activeAnimated, {
                     toValue: active ? 1 : 0,
-                }).start();
-            });
+                }).start(),
+            );
         }
     }, [active, activeAnimated, animatedTiming]);
 

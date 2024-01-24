@@ -11,10 +11,10 @@ export interface UseAnimatedOptions extends Pick<RenderProps, 'visible' | 'posit
 }
 
 export interface ScreenAnimatedOptions {
-    containerAnimated: Animated.Value;
-    innerAnimated: Animated.Value;
     animatedTiming: AnimatedTiming;
+    containerAnimated: Animated.Value;
     finished?: () => void;
+    innerAnimated: Animated.Value;
 }
 
 const enterScreen = ({containerAnimated, innerAnimated, animatedTiming}: ScreenAnimatedOptions) => {
@@ -24,12 +24,12 @@ const enterScreen = ({containerAnimated, innerAnimated, animatedTiming}: ScreenA
         toValue: 1,
     } as AnimatedTimingOptions;
 
-    requestAnimationFrame(() => {
+    requestAnimationFrame(() =>
         Animated.parallel([
             animatedTiming(containerAnimated, animatedTimingOptions),
             animatedTiming(innerAnimated, animatedTimingOptions),
-        ]).start();
-    });
+        ]).start(),
+    );
 };
 
 const exitScreen = ({
@@ -44,12 +44,12 @@ const exitScreen = ({
         toValue: 0,
     } as AnimatedTimingOptions;
 
-    requestAnimationFrame(() => {
+    requestAnimationFrame(() =>
         Animated.parallel([
             animatedTiming(containerAnimated, animatedTimingOptions),
             animatedTiming(innerAnimated, animatedTimingOptions),
-        ]).start(finished);
-    });
+        ]).start(finished),
+    );
 };
 
 export const useAnimated = ({visible, finished, position}: UseAnimatedOptions) => {
