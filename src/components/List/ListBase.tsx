@@ -20,7 +20,7 @@ export interface RenderItemOptions extends ListRenderItemInfo<ListDataSource> {
 }
 
 export interface ProcessEventOptions {
-    setState?: Updater<typeof initialState>;
+    setState: Updater<typeof initialState>;
 }
 
 export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
@@ -29,7 +29,7 @@ export type ProcessCloseOptions = ProcessEventOptions & Pick<RenderProps, 'onClo
 const processActive =
     ({onActive, setState}: ProcessActiveOptions) =>
     (key?: string) => {
-        setState?.(draft => {
+        setState(draft => {
             if (draft.activeKey !== key) {
                 draft.activeKey = key;
             }
@@ -41,7 +41,7 @@ const processActive =
 const processClose =
     ({onClose, setState}: ProcessCloseOptions) =>
     (key?: string) => {
-        setState?.(draft => {
+        setState(draft => {
             draft.data = draft.data.filter(datum => datum.key !== key);
         });
 

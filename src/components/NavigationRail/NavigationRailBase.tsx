@@ -20,7 +20,7 @@ export interface RenderItemOptions {
 }
 
 export interface ProcessEventOptions {
-    setState?: Updater<typeof initialState>;
+    setState: Updater<typeof initialState>;
 }
 
 export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
@@ -49,7 +49,7 @@ const processFAB = (fab?: React.JSX.Element | undefined) => {
 const processActive =
     ({onActive, setState}: ProcessActiveOptions) =>
     (key?: string) => {
-        setState?.(draft => {
+        setState(draft => {
             if (draft.activeKey !== key) {
                 draft.activeKey = key;
             }

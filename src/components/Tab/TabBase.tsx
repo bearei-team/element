@@ -37,18 +37,18 @@ export interface RenderItemOptions extends TabItemProps {
 
 export type Data = (TabDataSource & {labelTextLayout?: LayoutRectangle})[];
 export interface ProcessEventOptions {
-    setState?: Updater<typeof initialState>;
+    setState: Updater<typeof initialState>;
 }
 
-export type ProcessLayoutOptions = Partial<Pick<RenderProps, 'onLayout'> & ProcessEventOptions>;
-export type ProcessActiveOptions = Partial<Pick<RenderProps, 'onActive'> & ProcessEventOptions>;
+export type ProcessLayoutOptions = Pick<RenderProps, 'onLayout'> & ProcessEventOptions;
+export type ProcessActiveOptions = Pick<RenderProps, 'onActive'> & ProcessEventOptions;
 
 const processLayout =
     ({setState, onLayout}: ProcessLayoutOptions) =>
     (event: LayoutChangeEvent) => {
         const nativeEventLayout = event.nativeEvent.layout;
 
-        setState?.(draft => {
+        setState(draft => {
             draft.layout = nativeEventLayout;
         });
 
@@ -60,7 +60,7 @@ const processItemLayout =
     (event: LayoutChangeEvent) => {
         const nativeEventLayout = event.nativeEvent.layout;
 
-        setState?.(draft => {
+        setState(draft => {
             if (!draft.itemLayout.width) {
                 draft.itemLayout = nativeEventLayout;
             }
@@ -72,7 +72,7 @@ const processItemLabelTextLayout =
     (event: LayoutChangeEvent, key?: string) => {
         const nativeEventLayout = event.nativeEvent.layout;
 
-        setState?.(draft => {
+        setState(draft => {
             const dataItem = draft.data.find(datum => datum.key === key);
 
             if (!dataItem) {
@@ -86,7 +86,7 @@ const processItemLabelTextLayout =
 const processActive =
     ({setState, onActive}: ProcessActiveOptions) =>
     (key?: string) => {
-        setState?.(draft => {
+        setState(draft => {
             if (draft.activeKey !== key) {
                 const draftActiveItemIndex = draft.data.findIndex(
                     datum => datum.key === draft.activeKey,
@@ -109,14 +109,14 @@ const processActive =
 const processTriggerIndicatorHoverIn =
     ({setState}: ProcessEventOptions) =>
     () =>
-        setState?.(draft => {
+        setState(draft => {
             draft.headerVisible = true;
         });
 
 const processContentHoverIn =
     ({setState}: ProcessEventOptions) =>
     () =>
-        setState?.(draft => {
+        setState(draft => {
             if (draft.headerVisible) {
                 draft.headerVisible = false;
             }

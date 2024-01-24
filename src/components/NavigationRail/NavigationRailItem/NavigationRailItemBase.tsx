@@ -38,19 +38,16 @@ export interface NavigationRailItemBaseProps extends NavigationRailItemProps {
 }
 
 export interface ProcessEventOptions {
-    setState?: Updater<typeof initialState>;
+    setState: Updater<typeof initialState>;
 }
 
-export type ProcessPressOutOptions = Partial<
-    Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> & ProcessEventOptions
->;
-
-export type ProcessStateChangeOptions = ProcessPressOutOptions;
+export type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
+    ProcessEventOptions;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
-    setState?.(draft => {
+    setState(draft => {
         draft.layout = nativeEventLayout;
     });
 };
@@ -63,7 +60,7 @@ const processPressOut = (
     const {locationX = 0, locationY = 0} = event.nativeEvent;
 
     if (responseActive) {
-        setState?.(draft => {
+        setState(draft => {
             draft.activeLocation = {locationX, locationY};
         });
 
@@ -72,7 +69,7 @@ const processPressOut = (
 };
 
 const processStateChange =
-    ({setState, activeKey, indexKey, onActive}: ProcessStateChangeOptions) =>
+    ({setState, activeKey, indexKey, onActive}: ProcessPressOutOptions) =>
     (_state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
             layout: () => processLayout(event as LayoutChangeEvent, {setState}),
@@ -87,7 +84,7 @@ const processStateChange =
 
         nextEvent[eventName as keyof typeof nextEvent]?.();
 
-        setState?.(draft => {
+        setState(draft => {
             draft.eventName = eventName;
         });
     };

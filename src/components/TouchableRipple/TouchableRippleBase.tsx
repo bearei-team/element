@@ -23,7 +23,7 @@ export interface Ripple extends Pick<RippleProps, 'location'> {
 export type RippleSequence = Record<string, Ripple>;
 
 export interface ProcessEventOptions {
-    setState?: Updater<typeof initialState>;
+    setState: Updater<typeof initialState>;
 }
 
 export interface AddRippleOptions {
@@ -49,7 +49,7 @@ export type ProcessRippleEntryAnimatedEndOptions = ProcessEventOptions &
 const processAddRipple =
     ({setState, activeRipple}: ProcessAddRippleOptions) =>
     ({locationX, locationY}: AddRippleOptions) =>
-        setState?.(draft => {
+        setState(draft => {
             const exist = activeRipple && Object.keys(draft.rippleSequence).length !== 0;
 
             if (exist) {
@@ -65,7 +65,7 @@ const processAddRipple =
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
-    setState?.(draft => {
+    setState(draft => {
         draft.layout = nativeEventLayout;
     });
 };
@@ -98,7 +98,7 @@ const processRippleExit =
     () => {
         const rippleExit = ([sequence, {exitAnimated}]: [string, Ripple]) =>
             exitAnimated?.(() => {
-                setState?.(draft => {
+                setState(draft => {
                     if (draft.rippleSequence[sequence]) {
                         delete draft.rippleSequence[sequence];
                     }
@@ -107,7 +107,7 @@ const processRippleExit =
                 onRippleAnimatedEnd?.();
             });
 
-        setState?.(draft => {
+        setState(draft => {
             Object.entries(draft.rippleSequence).forEach(rippleExit);
         });
     };
@@ -121,7 +121,7 @@ const processRippleEntryAnimatedEnd =
     ({activeRipple, setState, onRippleAnimatedEnd}: ProcessRippleEntryAnimatedEndOptions) =>
     (sequence: string, exitAnimated: (finished?: () => void) => void) => {
         if (activeRipple) {
-            return setState?.(draft => {
+            return setState(draft => {
                 draft.rippleSequence[sequence] &&
                     (draft.rippleSequence[sequence].exitAnimated = exitAnimated);
 
@@ -130,7 +130,7 @@ const processRippleEntryAnimatedEnd =
         }
 
         exitAnimated(() => {
-            setState?.(draft => {
+            setState(draft => {
                 if (draft.rippleSequence[sequence]) {
                     delete draft.rippleSequence[sequence];
                 }

@@ -26,12 +26,11 @@ export interface FABBaseProps extends FABProps {
 }
 
 export interface ProcessEventOptions {
-    setState?: Updater<typeof initialState>;
+    setState: Updater<typeof initialState>;
 }
 
-export type ProcessStateChangeOptions = Partial<
-    Pick<RenderProps, 'disabledElevation'> & ProcessEventOptions
->;
+export type ProcessStateChangeOptions = Pick<RenderProps, 'disabledElevation'> &
+    ProcessEventOptions;
 
 const processElevation = (nextState: State, {setState}: ProcessEventOptions) => {
     const level = {
@@ -44,7 +43,7 @@ const processElevation = (nextState: State, {setState}: ProcessEventOptions) => 
         pressIn: 0,
     };
 
-    setState?.(draft => {
+    setState(draft => {
         draft.elevation = (level[nextState] + 3) as ElevationLevel;
     });
 };
@@ -52,7 +51,7 @@ const processElevation = (nextState: State, {setState}: ProcessEventOptions) => 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
-    setState?.(draft => {
+    setState(draft => {
         draft.layout = nativeEventLayout;
     });
 };
@@ -68,7 +67,7 @@ const processStateChange =
             !disabledElevation && processElevation(state, {setState});
         }
 
-        setState?.(draft => {
+        setState(draft => {
             draft.eventName = eventName;
         });
     };

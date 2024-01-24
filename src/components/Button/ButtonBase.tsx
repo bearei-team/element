@@ -30,16 +30,12 @@ export interface ButtonBaseProps extends ButtonProps {
 }
 
 export interface ProcessEventOptions {
-    setState?: Updater<typeof initialState>;
+    setState: Updater<typeof initialState>;
 }
 
-export type ProcessElevationOptions = Partial<Pick<RenderProps, 'type'> & ProcessEventOptions>;
-export type ProcessLayoutOptions = Partial<
-    Pick<RenderProps, 'type' | 'block'> & ProcessEventOptions
->;
-
-export type ProcessStateChangeOptions = ProcessLayoutOptions;
-export type ProcessContentLayoutOptions = Partial<Pick<RenderProps, 'block'> & ProcessEventOptions>;
+export type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
+export type ProcessLayoutOptions = Pick<RenderProps, 'type' | 'block'> & ProcessEventOptions;
+export type ProcessContentLayoutOptions = Pick<RenderProps, 'block'> & ProcessEventOptions;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) => {
     const nextElevation = type === 'elevated' ? 1 : 0;
@@ -63,7 +59,7 @@ const processElevation = (state: State, {type = 'filled', setState}: ProcessElev
 
         const correctionCoefficient = processCorrectionCoefficient({type});
 
-        setState?.(draft => {
+        setState(draft => {
             draft.elevation = (level[state] + correctionCoefficient) as ElevationLevel;
         });
     }
@@ -73,7 +69,7 @@ const processLayout = (event: LayoutChangeEvent, {block, setState}: ProcessLayou
     const nativeEventLayout = event.nativeEvent.layout;
 
     if (block) {
-        setState?.(draft => {
+        setState(draft => {
             draft.layout = nativeEventLayout;
         });
     }
@@ -85,14 +81,14 @@ const processContentLayout =
         const nativeEventLayout = event.nativeEvent.layout;
 
         if (!block) {
-            setState?.(draft => {
+            setState(draft => {
                 draft.contentLayout = nativeEventLayout;
             });
         }
     };
 
 const processStateChange =
-    ({type, block, setState}: ProcessStateChangeOptions) =>
+    ({type, block, setState}: ProcessLayoutOptions) =>
     (state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         if (eventName === 'layout') {
             processLayout(event as LayoutChangeEvent, {block, setState});
@@ -100,7 +96,7 @@ const processStateChange =
 
         processElevation(state, {type, setState});
 
-        setState?.(draft => {
+        setState(draft => {
             draft.eventName = eventName;
         });
     };

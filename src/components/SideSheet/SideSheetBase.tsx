@@ -18,18 +18,17 @@ export interface SideSheetBaseProps extends SideSheetProps {
 }
 
 export interface ProcessEventOptions {
-    setState?: Updater<typeof initialState>;
+    setState: Updater<typeof initialState>;
 }
 
-export type ProcessAnimatedFinishedOptions = Partial<
-    Pick<RenderProps, 'visible' | 'onClose' | 'onBack'> & ProcessEventOptions
->;
+export type ProcessAnimatedFinishedOptions = Pick<RenderProps, 'visible' | 'onClose' | 'onBack'> &
+    ProcessEventOptions;
 
 const processAnimatedFinished =
     ({visible, setState, onClose, onBack}: ProcessAnimatedFinishedOptions) =>
     () => {
         if (visible) {
-            setState?.(draft => {
+            setState(draft => {
                 draft.modalVisible = false;
                 draft.visible = undefined;
             });
@@ -42,7 +41,7 @@ const processAnimatedFinished =
 const processClose =
     ({setState}: ProcessEventOptions) =>
     () => {
-        setState?.(draft => {
+        setState(draft => {
             draft.visible = false;
         });
     };
@@ -50,7 +49,7 @@ const processClose =
 const processModalShow =
     ({setState}: ProcessEventOptions) =>
     () => {
-        setState?.(draft => {
+        setState(draft => {
             draft.visible = true;
         });
     };

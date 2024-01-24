@@ -23,19 +23,16 @@ export interface CheckboxBaseProps extends CheckboxProps {
 }
 
 export interface ProcessEventOptions {
-    setState?: Updater<typeof initialState>;
+    setState: Updater<typeof initialState>;
 }
 
-export type ProcessPressOutOptions = Partial<
-    Pick<RenderProps, 'active' | 'indeterminate' | 'onActive'> & ProcessEventOptions
->;
-
-export type ProcessStateChangeOptions = ProcessPressOutOptions;
+export type ProcessPressOutOptions = Pick<RenderProps, 'active' | 'indeterminate' | 'onActive'> &
+    ProcessEventOptions;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
-    setState?.(draft => {
+    setState(draft => {
         draft.layout = nativeEventLayout;
     });
 };
@@ -44,7 +41,7 @@ const processPressOut = ({setState, active, indeterminate, onActive}: ProcessPre
     const nextActive = !active;
     const activeType = indeterminate ? 'indeterminate' : 'selected';
 
-    setState?.(draft => {
+    setState(draft => {
         draft.active = nextActive;
         draft.type = nextActive ? activeType : 'unselected';
     });
@@ -53,7 +50,7 @@ const processPressOut = ({setState, active, indeterminate, onActive}: ProcessPre
 };
 
 const processStateChange =
-    ({setState, onActive, active, indeterminate}: ProcessStateChangeOptions) =>
+    ({setState, onActive, active, indeterminate}: ProcessPressOutOptions) =>
     (_state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
             layout: () => processLayout(event as LayoutChangeEvent, {setState}),
@@ -62,7 +59,7 @@ const processStateChange =
 
         nextEvent[eventName as keyof typeof nextEvent]?.();
 
-        setState?.(draft => {
+        setState(draft => {
             draft.eventName = eventName;
         });
     };

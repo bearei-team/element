@@ -23,13 +23,13 @@ export interface ElevationBaseProps extends ElevationProps {
 }
 
 export interface ProcessEventOptions {
-    setState?: Updater<typeof initialState>;
+    setState: Updater<typeof initialState>;
 }
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
-    setState?.(draft => {
+    setState(draft => {
         draft.layout = nativeEventLayout;
     });
 };

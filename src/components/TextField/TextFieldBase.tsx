@@ -46,20 +46,15 @@ export type RenderTextInputProps = TextFieldProps & {
 };
 
 export interface ProcessEventOptions {
-    setState?: Updater<typeof initialState>;
+    setState: Updater<typeof initialState>;
 }
 
-export type ProcessStateOptions = Partial<
-    Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions
->;
-
-export type ProcessChangeTextOptions = Partial<
-    Pick<RenderProps, 'onChangeText'> & ProcessEventOptions
->;
+export type ProcessStateOptions = Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions;
+export type ProcessChangeTextOptions = Pick<RenderProps, 'onChangeText'> & ProcessEventOptions;
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
-const processState = (state: State, {eventName = 'none', setState}: ProcessStateOptions) =>
-    setState?.(draft => {
+const processState = (state: State, {eventName, setState}: ProcessStateOptions) =>
+    setState(draft => {
         if (draft.state === 'focused') {
             if (eventName === 'blur') {
                 draft.eventName = eventName;
@@ -76,7 +71,7 @@ const processState = (state: State, {eventName = 'none', setState}: ProcessState
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
-    setState?.(draft => {
+    setState(draft => {
         draft.layout = nativeEventLayout;
     });
 };
@@ -92,13 +87,13 @@ const processStateChange =
 
         nextEvent[eventName as keyof typeof nextEvent]?.();
 
-        processState(state, {eventName});
+        processState(state, {eventName, setState});
     };
 
 const processChangeText =
     ({setState, onChangeText}: ProcessChangeTextOptions) =>
     (text: string) => {
-        setState?.(draft => {
+        setState(draft => {
             draft.value = text;
         });
 

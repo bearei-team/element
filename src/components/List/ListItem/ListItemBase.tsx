@@ -39,25 +39,21 @@ export interface ListItemBaseProps extends ListItemProps {
 }
 
 export interface ProcessEventOptions {
-    setState?: Updater<typeof initialState>;
+    setState: Updater<typeof initialState>;
 }
 
-export type ProcessPressOutOptions = Partial<
-    Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> & ProcessEventOptions
->;
+export type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
+    ProcessEventOptions;
 
-export type ProcessStateChangeOptions = ProcessPressOutOptions;
-export type ProcessTrailingEventOptions = Partial<{callback?: () => void} & ProcessEventOptions>;
-export type ProcessTrailingPressOutOptions = Partial<
-    Pick<RenderProps, 'close' | 'indexKey' | 'onClose'> & {
-        onCloseAnimated: (finished?: (() => void) | undefined) => void;
-    } & ProcessEventOptions
->;
+export type ProcessTrailingEventOptions = {callback?: () => void} & ProcessEventOptions;
+export type ProcessTrailingPressOutOptions = Pick<RenderProps, 'close' | 'indexKey' | 'onClose'> & {
+    onCloseAnimated: (finished?: (() => void) | undefined) => void;
+} & ProcessEventOptions;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
-    setState?.(draft => {
+    setState(draft => {
         draft.layout = nativeEventLayout;
     });
 };
@@ -70,7 +66,7 @@ const processPressOut = (
     const {locationX = 0, locationY = 0} = event.nativeEvent;
 
     if (responseActive) {
-        setState?.(draft => {
+        setState(draft => {
             draft.activeLocation = {locationX, locationY};
         });
 
@@ -79,7 +75,7 @@ const processPressOut = (
 };
 
 const processStateChange =
-    ({activeKey, indexKey, onActive, setState}: ProcessStateChangeOptions) =>
+    ({activeKey, indexKey, onActive, setState}: ProcessPressOutOptions) =>
     (state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
             layout: () => processLayout(event as LayoutChangeEvent, {setState}),
@@ -94,7 +90,7 @@ const processStateChange =
 
         nextEvent[eventName as keyof typeof nextEvent]?.();
 
-        setState?.(draft => {
+        setState(draft => {
             draft.eventName = eventName;
             draft.state = state;
         });
@@ -104,7 +100,7 @@ const processTrailingEvent = (
     eventName: EventName,
     {callback, setState}: ProcessTrailingEventOptions,
 ) => {
-    setState?.(draft => {
+    setState(draft => {
         draft.trailingEventName = eventName;
     });
 
@@ -182,8 +178,8 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
     const onTrailingHoverIn = useMemo(() => processTrailingHoverIn({setState}), [setState]);
     const onTrailingHoverOut = useMemo(() => processTrailingHoverOut({setState}), [setState]);
     const onTrailingPressOut = useMemo(
-        () => processTrailingPressOut({close, indexKey, onCloseAnimated, onClose}),
-        [close, indexKey, onClose, onCloseAnimated],
+        () => processTrailingPressOut({close, indexKey, onCloseAnimated, onClose, setState}),
+        [close, indexKey, onClose, onCloseAnimated, setState],
     );
 
     const trailingElement = useMemo(

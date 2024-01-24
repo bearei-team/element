@@ -24,22 +24,21 @@ export interface TabItemBaseProps extends TabItemProps {
 }
 
 export interface ProcessEventOptions {
-    setState?: Updater<typeof initialState>;
+    setState: Updater<typeof initialState>;
 }
 
-export type ProcessPressOutOptions = Partial<
-    Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> & ProcessEventOptions
->;
+export type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
+    ProcessEventOptions;
 
-export type ProcessStateChangeOptions = ProcessPressOutOptions;
-export type ProcessLabelTextLayoutOptions = Partial<
-    Pick<TabItemBaseProps, 'onLabelTextLayout' | 'indexKey' | 'id'> & ProcessEventOptions
+export type ProcessLabelTextLayoutOptions = Pick<
+    TabItemBaseProps,
+    'onLabelTextLayout' | 'indexKey' | 'id'
 >;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
-    setState?.(draft => {
+    setState(draft => {
         draft.layout = nativeEventLayout;
     });
 };
@@ -53,7 +52,7 @@ const processPressOut = ({activeKey, indexKey, onActive}: ProcessPressOutOptions
 };
 
 const processStateChange =
-    ({activeKey, indexKey, setState, onActive}: ProcessStateChangeOptions) =>
+    ({activeKey, indexKey, setState, onActive}: ProcessPressOutOptions) =>
     (_state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
             layout: () => processLayout(event as LayoutChangeEvent, {setState}),
@@ -62,7 +61,7 @@ const processStateChange =
 
         nextEvent[eventName as keyof typeof nextEvent]?.();
 
-        setState?.(draft => {
+        setState(draft => {
             draft.eventName = eventName;
         });
     };

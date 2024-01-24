@@ -30,15 +30,12 @@ export interface Data extends ListDataSource {
 export type RenderTextInputOptions = SearchProps;
 
 export interface ProcessEventOptions {
-    setState?: Updater<typeof initialState>;
+    setState: Updater<typeof initialState>;
 }
 
-export type ProcessListActiveOptions = Partial<Pick<RenderProps, 'data'> & ProcessEventOptions>;
-export type ProcessStateOptions = Partial<
-    Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions
->;
-
-export type ProcessStateChangeOptions = Partial<{ref: RefObject<TextInput>} & ProcessEventOptions>;
+export type ProcessListActiveOptions = Pick<RenderProps, 'data'> & ProcessEventOptions;
+export type ProcessStateOptions = Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions;
+export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions;
 
 const processListActive =
     ({data, setState}: ProcessListActiveOptions) =>
@@ -46,7 +43,7 @@ const processListActive =
         const nextValue = data?.find(datum => datum.key === key)?.headline;
 
         if (nextValue) {
-            setState?.(draft => {
+            setState(draft => {
                 draft.value = nextValue;
             });
         }
@@ -54,7 +51,7 @@ const processListActive =
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
 const processState = (nextState: State, {eventName = 'none', setState}: ProcessStateOptions) => {
-    setState?.(draft => {
+    setState(draft => {
         if (draft.state === 'focused') {
             if (eventName === 'blur') {
                 draft.eventName = eventName;
