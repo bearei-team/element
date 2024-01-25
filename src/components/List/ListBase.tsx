@@ -79,6 +79,7 @@ const initialState = {
 };
 
 export const ListBase: FC<ListBaseProps> = ({
+    activeKey: activeKeySource,
     close,
     data: dataSources,
     defaultActiveKey,
@@ -120,6 +121,14 @@ export const ListBase: FC<ListBaseProps> = ({
             });
         }
     }, [dataSources, setState]);
+
+    useEffect(() => {
+        if (status === 'succeeded') {
+            setState(draft => {
+                draft.activeKey = activeKeySource;
+            });
+        }
+    }, [activeKeySource, setState, status]);
 
     if (status === 'idle') {
         return <></>;

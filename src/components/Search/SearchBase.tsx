@@ -34,19 +34,24 @@ export interface ProcessEventOptions {
     setState: Updater<typeof initialState>;
 }
 
-export type ProcessListActiveOptions = Pick<RenderProps, 'data'> & ProcessEventOptions;
+export type ProcessListActiveOptions = Pick<RenderProps, 'data' | 'onActive'> & ProcessEventOptions;
 export type ProcessStateOptions = Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions;
 export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions;
+export type ProcessChangeTextOptions = Pick<RenderProps, 'data' | 'onChangeText'> &
+    ProcessEventOptions;
 
 const processListActive =
-    ({data, setState}: ProcessListActiveOptions) =>
+    ({data, setState, onActive}: ProcessListActiveOptions) =>
     (key?: string) => {
         const nextValue = data?.find(datum => datum.key === key)?.headline;
 
         if (nextValue) {
             setState(draft => {
                 draft.value = nextValue;
+                draft.activeKey = key;
             });
+
+            onActive?.(key);
         }
     };
 
@@ -86,6 +91,28 @@ const processStateChange =
         processState(state, {eventName, setState});
     };
 
+const processChangeText =
+    ({setState, data = [], onChangeText}: ProcessChangeTextOptions) =>
+    (text: string) => {
+        const matchData = text
+            ? data.filter(({headline, supportingText}) => {
+                  const matchText = text.toLowerCase();
+                  const headlineMatch = headline?.toLowerCase().includes(matchText);
+                  const supportingTextMatch = supportingText?.toLowerCase().includes(matchText);
+
+                  return headlineMatch ?? supportingTextMatch;
+              })
+            : [];
+
+        setState(draft => {
+            draft.data = matchData;
+            draft.value = text;
+            draft.activeKey = '';
+        });
+
+        onChangeText?.(text);
+    };
+
 const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
     <TextField testID={`search__control--${id}`}>
         <Input
@@ -111,20 +138,24 @@ const initialState = {
     state: 'enabled' as State,
     value: undefined as string | undefined,
     status: 'idle' as ComponentStatus,
+    data: [] as ListDataSource[],
+    activeKey: undefined as string | undefined,
 };
 
 const AnimatedInner = Animated.createAnimatedComponent(Inner);
 export const SearchBase: FC<SearchBaseProps> = ({
-    data,
+    data: dataSources,
     leadingIcon,
     placeholder,
     ref,
     render,
-    value,
+    onActive,
     trailingIcon,
     ...textInputProps
 }) => {
-    const [{layout, listVisible, eventName, state, status}, setState] = useImmer(initialState);
+    const [{layout, listVisible, eventName, state, status, data, value, activeKey}, setState] =
+        useImmer(initialState);
+
     const [{innerHeight}] = useAnimated({listVisible});
     const containerRef = useRef<View>(null);
     const id = useId();
@@ -143,7 +174,16 @@ export const SearchBase: FC<SearchBaseProps> = ({
         onStateChange,
     });
 
-    const onListActive = useMemo(() => processListActive({data, setState}), [data, setState]);
+    const onListActive = useMemo(
+        () => processListActive({data, setState, onActive}),
+        [data, onActive, setState],
+    );
+
+    const onChangeText = useMemo(
+        () => processChangeText({data: dataSources, setState}),
+        [dataSources, setState],
+    );
+
     const input = useMemo(
         () =>
             renderTextInput({
@@ -155,8 +195,19 @@ export const SearchBase: FC<SearchBaseProps> = ({
                 ref: inputRef,
                 id,
                 value,
+                onChangeText,
             }),
-        [id, inputRef, onBlur, onFocus, placeholder, placeholderTextColor, textInputProps, value],
+        [
+            id,
+            inputRef,
+            onBlur,
+            onChangeText,
+            onFocus,
+            placeholder,
+            placeholderTextColor,
+            textInputProps,
+            value,
+        ],
     );
 
     const inner = useMemo(() => {
@@ -206,18 +257,19 @@ export const SearchBase: FC<SearchBaseProps> = ({
 
                 <Divider size="large" width={width} />
                 <List
-                    onActive={onListActive}
+                    activeKey={activeKey}
                     data={data}
+                    onActive={onListActive}
                     style={{backgroundColor: theme.color.rgba(theme.palette.surface.surface, 0)}}
                 />
             </AnimatedInner>
         );
     }, [
         layout,
-        onEvent,
         status,
         id,
         innerHeight,
+        onEvent,
         onBlur,
         onFocus,
         placeholder,
@@ -231,7 +283,16 @@ export const SearchBase: FC<SearchBaseProps> = ({
         data,
         theme.color,
         theme.palette.surface.surface,
+        activeKey,
     ]);
+
+    // useEffect(() => {
+    //     if (status === 'succeeded' && dataSources) {
+    //         setState(draft => {
+    //             draft.data = dataSources;
+    //         });
+    //     }
+    // }, [dataSources, setState, status]);
 
     useEffect(() => {
         setState(draft => {

@@ -65,6 +65,7 @@ const initialState = {
 };
 
 export const NavigationRailBase: FC<NavigationBaseProps> = ({
+    activeKey: activeKeySource,
     block,
     data: dataSources,
     defaultActiveKey,
@@ -99,6 +100,14 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
             });
         }
     }, [dataSources, setState]);
+
+    useEffect(() => {
+        if (status === 'succeeded') {
+            setState(draft => {
+                draft.activeKey = activeKeySource;
+            });
+        }
+    }, [activeKeySource, setState, status]);
 
     if (status === 'idle') {
         return <></>;

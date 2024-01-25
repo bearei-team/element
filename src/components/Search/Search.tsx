@@ -15,6 +15,7 @@ export interface SearchProps
     > {
     data?: ListDataSource[];
     leadingIcon?: React.JSX.Element;
+    onActive?: (key?: string) => void;
     trailingIcon?: React.JSX.Element;
 }
 

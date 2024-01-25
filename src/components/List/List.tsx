@@ -8,7 +8,7 @@ import {ListItemProps} from './ListItem/ListItem';
 export interface ListDataSource
     extends Pick<
         ListItemProps,
-        'headline' | 'leading' | 'supportingText' | 'supportingTextNumberOfLines'
+        'headline' | 'leading' | 'supportingText' | 'supportingTextNumberOfLines' | 'trailing'
     > {
     key?: string;
 }
