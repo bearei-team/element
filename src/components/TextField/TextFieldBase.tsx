@@ -12,7 +12,7 @@ import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {AnimatedInterpolation, EventName, State} from '../Common/interface';
 import {TextFieldProps} from './TextField';
-import {Input} from './TextField.styles';
+import {Input, TextField} from './TextField.styles';
 import {useAnimated} from './useAnimated';
 import {useIcon} from './useIcon';
 
@@ -103,20 +103,23 @@ const processChangeText =
     };
 
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-const renderTextInput = ({renderStyle, ...inputProps}: RenderTextInputProps) => (
-    <AnimatedTextInput
-        {...inputProps}
-        style={renderStyle}
-        /**
-         * enableFocusRing is used to disable the focus style in macOS,
-         * this parameter has been implemented and is available.
-         * However, react-native-macos does not have an official typescript declaration for this parameter,
-         * so using it directly in a typescript will result in an undefined parameter.
-         */
-        // @ts-ignore
-        enableFocusRing={false}
-        textAlignVertical="center"
-    />
+const renderTextInput = ({renderStyle, id, ...inputProps}: RenderTextInputProps) => (
+    <TextField testID={`textField__control--${id}`}>
+        <AnimatedTextInput
+            {...inputProps}
+            testID={`textField__input--${id}`}
+            style={renderStyle}
+            /**
+             * enableFocusRing is used to disable the focus style in macOS,
+             * this parameter has been implemented and is available.
+             * However, react-native-macos does not have an official typescript declaration for this parameter,
+             * so using it directly in a typescript will result in an undefined parameter.
+             */
+            // @ts-ignore
+            enableFocusRing={false}
+            textAlignVertical="center"
+        />
+    </TextField>
 );
 
 const initialState = {
@@ -207,7 +210,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
                 placeholderTextColor,
                 ref: inputRef,
                 renderStyle: {color: inputColor},
-                testID: `textField__input--${id}`,
+                id,
             }),
         [
             onChangeText,

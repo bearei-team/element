@@ -10,8 +10,9 @@ import {Divider} from '../Divider/Divider';
 import {Hovered} from '../Hovered/Hovered';
 import {Icon} from '../Icon/Icon';
 import {List, ListDataSource} from '../List/List';
+
 import {SearchProps} from './Search';
-import {Content, Header, Inner, Input, LeadingIcon, TrailingIcon} from './Search.styles';
+import {Content, Header, Inner, Input, LeadingIcon, TextField, TrailingIcon} from './Search.styles';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends SearchProps {
@@ -85,19 +86,22 @@ const processStateChange =
         processState(state, {eventName, setState});
     };
 
-const renderTextInput = (options: RenderTextInputOptions) => (
-    <Input
-        {...options}
-        /**
-         * enableFocusRing is used to disable the focus style in macOS,
-         * this parameter has been implemented and is available.
-         * However, react-native-macos does not have an official typescript declaration for this parameter,
-         * so using it directly in a typescript will result in an undefined parameter.
-         */
-        // @ts-ignore
-        enableFocusRing={false}
-        textAlignVertical="center"
-    />
+const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
+    <TextField testID={`search__control--${id}`}>
+        <Input
+            {...inputProps}
+            testID={`search__input--${id}`}
+            /**
+             * enableFocusRing is used to disable the focus style in macOS,
+             * this parameter has been implemented and is available.
+             * However, react-native-macos does not have an official typescript declaration for this parameter,
+             * so using it directly in a typescript will result in an undefined parameter.
+             */
+            // @ts-ignore
+            enableFocusRing={false}
+            textAlignVertical="center"
+        />
+    </TextField>
 );
 
 const initialState = {
@@ -149,7 +153,7 @@ export const SearchBase: FC<SearchBaseProps> = ({
                 placeholder,
                 placeholderTextColor,
                 ref: inputRef,
-                testID: `search__input--${id}`,
+                id,
                 value,
             }),
         [id, inputRef, onBlur, onFocus, placeholder, placeholderTextColor, textInputProps, value],
@@ -254,7 +258,7 @@ export const SearchBase: FC<SearchBaseProps> = ({
         containerRef,
         data,
         id,
-        onLayout,
         placeholder,
+        onEvent: {onLayout},
     });
 };

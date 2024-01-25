@@ -78,6 +78,17 @@ export const Content = styled.View`
         `};
 `;
 
+export const TextField = styled.View`
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    ${({theme}) => css`
+        height: ${theme.adaptFontSize(theme.typography.body.large.lineHeight)}px;
+    `};
+`;
+
 export const Input = styled(TextInput)`
     flex: 1;
 
@@ -86,7 +97,6 @@ export const Input = styled(TextInput)`
         font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
-        height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
     `};
 `;
