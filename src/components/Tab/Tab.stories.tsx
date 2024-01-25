@@ -33,33 +33,3 @@ export const TabHorizontal: StoryObj<TabProps> = {
         ],
     },
 };
-
-export const TabAutohide: StoryObj<TabProps> = {
-    args: {
-        autohide: true,
-        headerPosition: 'verticalEnd',
-        defaultActiveKey: 'A',
-        data: [
-            {
-                labelText: 'TabA',
-                content: 'A',
-                key: 'A',
-            },
-            {
-                labelText: 'Specifications',
-                content: 'B',
-                key: 'B',
-            },
-            {
-                labelText: 'TabC',
-                content: 'C',
-                key: 'C',
-            },
-            {
-                labelText: 'TabD',
-                content: 'D',
-                key: 'D',
-            },
-        ],
-    },
-};

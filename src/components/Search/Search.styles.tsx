@@ -5,6 +5,8 @@ import {Shape} from '../Common/Common.styles';
 
 export type InnerProps = {width: number; pageX: number; pageY: number};
 export const Container = styled(View)`
+    align-self: stretch;
+
     ${({theme}) =>
         css`
             height: ${theme.adaptSize(theme.spacing.small * 7)}px;
@@ -19,6 +21,12 @@ export const Inner = styled(Shape)<InnerProps>`
     overflow: hidden;
     position: absolute;
     z-index: 2048;
+
+    ${({theme}) =>
+        theme.OS === 'web' &&
+        css`
+            position: fixed;
+        `};
 
     ${({theme, width = 0, pageX = 0, pageY = 0}) =>
         css`

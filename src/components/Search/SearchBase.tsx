@@ -1,11 +1,11 @@
 import {FC, RefObject, useEffect, useId, useMemo, useRef} from 'react';
-import {Animated, LayoutRectangle, TextInput, View} from 'react-native';
+import {Animated, LayoutChangeEvent, LayoutRectangle, TextInput, View} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
 import {HOOK} from '../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
-import {EventName, State} from '../Common/interface';
+import {ComponentStatus, EventName, State} from '../Common/interface';
 import {Divider} from '../Divider/Divider';
 import {Hovered} from '../Hovered/Hovered';
 import {Icon} from '../Icon/Icon';
@@ -16,7 +16,7 @@ import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends SearchProps {
     containerRef: RefObject<View>;
-    onEvent: Omit<OnEvent, 'onBlur' | 'onFocus'>;
+    onEvent: Pick<OnEvent, 'onLayout'>;
 }
 
 export interface SearchBaseProps extends SearchProps {
@@ -50,28 +50,34 @@ const processListActive =
     };
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
-const processState = (nextState: State, {eventName = 'none', setState}: ProcessStateOptions) => {
+const processState = (state: State, {eventName, setState}: ProcessStateOptions) => {
     setState(draft => {
         if (draft.state === 'focused') {
             if (eventName === 'blur') {
                 draft.eventName = eventName;
-                draft.state = nextState;
+                draft.state = state;
             }
 
             return;
         }
 
         draft.eventName = eventName;
-        draft.state = nextState;
+        draft.state = state;
     });
 };
 
+const processLayout = (_event: LayoutChangeEvent, {setState}: ProcessEventOptions) =>
+    setState(draft => {
+        draft.status = 'succeeded';
+    });
+
 const processStateChange =
     ({ref, setState}: ProcessStateChangeOptions) =>
-    (state: State, {eventName} = {} as OnStateChangeOptions) => {
+    (state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
             pressOut: () => processFocus(ref),
             focus: () => processFocus(ref),
+            layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         };
 
         nextEvent[eventName as keyof typeof nextEvent]?.();
@@ -100,6 +106,7 @@ const initialState = {
     listVisible: false,
     state: 'enabled' as State,
     value: undefined as string | undefined,
+    status: 'idle' as ComponentStatus,
 };
 
 const AnimatedInner = Animated.createAnimatedComponent(Inner);
@@ -113,7 +120,7 @@ export const SearchBase: FC<SearchBaseProps> = ({
     trailingIcon,
     ...textInputProps
 }) => {
-    const [{layout, listVisible, eventName, state}, setState] = useImmer(initialState);
+    const [{layout, listVisible, eventName, state, status}, setState] = useImmer(initialState);
     const [{innerHeight}] = useAnimated({listVisible});
     const containerRef = useRef<View>(null);
     const id = useId();
@@ -127,7 +134,7 @@ export const SearchBase: FC<SearchBaseProps> = ({
         [setState],
     );
 
-    const [{onBlur, onFocus, ...onEvent}] = HOOK.useOnEvent({
+    const [{onBlur, onFocus, onLayout, ...onEvent}] = HOOK.useOnEvent({
         ...textInputProps,
         onStateChange,
     });
@@ -151,8 +158,10 @@ export const SearchBase: FC<SearchBaseProps> = ({
     const inner = useMemo(() => {
         const shape = 'extraLarge';
         const {width, pageX, pageY, height} = layout;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const {onLayout: _, ...onHeaderEvent} = onEvent;
+
+        if (status === 'idle') {
+            return <></>;
+        }
 
         return (
             <AnimatedInner
@@ -164,7 +173,7 @@ export const SearchBase: FC<SearchBaseProps> = ({
                 testID={`search__inner--${id}`}
                 width={width}>
                 <Header
-                    {...onHeaderEvent}
+                    {...onEvent}
                     onBlur={onBlur}
                     onFocus={onFocus}
                     accessibilityLabel={placeholder}
@@ -200,28 +209,30 @@ export const SearchBase: FC<SearchBaseProps> = ({
             </AnimatedInner>
         );
     }, [
-        data,
-        eventName,
-        onListActive,
+        layout,
+        onEvent,
+        status,
         id,
         innerHeight,
-        input,
-        layout,
-        leadingIcon,
-        listVisible,
         onBlur,
-        onEvent,
         onFocus,
         placeholder,
+        leadingIcon,
+        input,
+        trailingIcon,
+        eventName,
+        listVisible,
+        underlayColor,
+        onListActive,
+        data,
         theme.color,
         theme.palette.surface.surface,
-        trailingIcon,
-        underlayColor,
     ]);
 
     useEffect(() => {
         setState(draft => {
-            draft.listVisible = data?.length !== 0 && state === 'focused';
+            draft.listVisible =
+                typeof data?.length === 'number' && data?.length !== 0 && state === 'focused';
         });
     }, [data?.length, setState, state]);
 
@@ -237,13 +248,13 @@ export const SearchBase: FC<SearchBaseProps> = ({
 
     useEffect(() => {
         emitter.emit('sheet', {id, element: inner});
-    }, [id, inner]);
+    }, [id, inner, status]);
 
     return render({
         containerRef,
         data,
         id,
+        onLayout,
         placeholder,
-        onEvent,
     });
 };
