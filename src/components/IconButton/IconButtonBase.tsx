@@ -63,6 +63,7 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
     const onStateChange = useMemo(() => processStateChange({setState}), [setState]);
+    console.info(eventName, 'eventName');
     const [onEvent] = HOOK.useOnEvent({
         ...renderProps,
         disabled,
@@ -75,6 +76,7 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
 
     return render({
         ...renderProps,
+        disabled,
         eventName,
         icon: iconElement,
         id,

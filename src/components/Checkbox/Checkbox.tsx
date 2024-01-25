@@ -26,6 +26,7 @@ const render = ({
     onEvent,
     renderStyle,
     underlayColor,
+    disabled,
     ...contentProps
 }: RenderProps) => {
     const {height, width} = renderStyle;
@@ -36,6 +37,7 @@ const render = ({
         <Container accessibilityRole="checkbox" testID={`checkbox--${id}`}>
             <TouchableRipple
                 {...onTouchableRippleEvent}
+                disabled={disabled}
                 shape={shape}
                 underlayColor={underlayColor}>
                 <AnimatedContent

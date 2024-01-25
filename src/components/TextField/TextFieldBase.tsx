@@ -52,6 +52,8 @@ export interface ProcessEventOptions {
 export type ProcessStateOptions = Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions;
 export type ProcessChangeTextOptions = Pick<RenderProps, 'onChangeText'> & ProcessEventOptions;
 
+export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions;
+
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
 const processState = (state: State, {eventName, setState}: ProcessStateOptions) =>
     setState(draft => {
@@ -77,12 +79,12 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
 };
 
 const processStateChange =
-    ({setState}: ProcessEventOptions) =>
+    ({setState, ref}: ProcessStateChangeOptions) =>
     (state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
-            focus: () => processFocus(),
+            focus: () => processFocus(ref),
             layout: () => processLayout(event as LayoutChangeEvent, {setState}),
-            pressOut: () => processFocus(),
+            pressOut: () => processFocus(ref),
         };
 
         nextEvent[eventName as keyof typeof nextEvent]?.();
@@ -154,7 +156,11 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         [setState, textInputProps.onChangeText],
     );
 
-    const onStateChange = useMemo(() => processStateChange({setState}), [setState]);
+    const onStateChange = useMemo(
+        () => processStateChange({setState, ref: inputRef}),
+        [inputRef, setState],
+    );
+
     const [{onBlur, onFocus, ...onEvent}] = useOnEvent({
         ...textInputProps,
         onStateChange,

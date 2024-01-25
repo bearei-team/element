@@ -73,13 +73,16 @@ export const TrailingIcon = styled.View`
 
 export const LeadingIcon = styled(TrailingIcon)``;
 export const Content = styled.View`
-    flex: 1;
+    align-items: flex-end;
     display: flex;
     flex-direction: row;
-    align-items: flex-end;
+    flex: 1;
+    pointer-events: none;
 
     ${({theme}) => css`
         height: ${theme.adaptFontSize(theme.spacing.small * 6)}px;
+        padding: ${theme.adaptSize(theme.spacing.extraSmall)}px
+            ${theme.adaptSize(theme.spacing.none)}px;
     `};
 `;
 
@@ -90,6 +93,7 @@ export const Input = styled(TextInput)`
         font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
+        height: ${theme.adaptFontSize(theme.typography.body.large.lineHeight)}px;
         letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
     `};
 `;

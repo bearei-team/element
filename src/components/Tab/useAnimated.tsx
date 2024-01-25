@@ -7,7 +7,6 @@ import {Data} from './TabBase';
 
 export interface UseAnimatedOptions {
     data: Data;
-    headerVisible: boolean;
     itemLayout: LayoutRectangle;
     layout: LayoutRectangle;
     activeKey?: string;
@@ -18,25 +17,18 @@ export const useAnimated = ({
     data,
     itemLayout,
     layout,
-    headerVisible,
     activeKey,
     activeIndicatorBaseWidth,
 }: UseAnimatedOptions) => {
     const {width: layoutWidth = 0} = layout;
-    const {height: itemLayoutHeight = 0, width: itemLayoutWidth = 0} = itemLayout;
+    const {width: itemLayoutWidth = 0} = itemLayout;
     const dataIndexes = Array.from({length: data.length}, (_, index) => index);
     const defaultRange = dataIndexes.length <= 1;
     const range = defaultRange ? [0, 1] : dataIndexes;
-    const [headerAnimated] = useAnimatedValue(0);
     const [activeAnimated] = useAnimatedValue(0);
     const [activeIndicatorWidthAnimated] = useAnimatedValue(0);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
-    const headerTranslateY = headerAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [itemLayoutHeight, theme.adaptSize(theme.spacing.none)],
-    });
-
     const activeIndicatorLeft = activeAnimated.interpolate({
         inputRange: range,
         outputRange: defaultRange ? range : dataIndexes.map(index => index * itemLayoutWidth),
@@ -73,18 +65,11 @@ export const useAnimated = ({
         );
     }, [activeAnimated, activeIndicatorWidthAnimated, activeKey, animatedTiming, data]);
 
-    useEffect(() => {
-        requestAnimationFrame(() =>
-            animatedTiming(headerAnimated, {toValue: headerVisible ? 1 : 0}).start(),
-        );
-    }, [animatedTiming, headerAnimated, headerVisible]);
-
     return [
         {
             activeIndicatorLeft,
             activeIndicatorWidth,
             contentInnerLeft,
-            headerTranslateY,
         },
     ];
 };

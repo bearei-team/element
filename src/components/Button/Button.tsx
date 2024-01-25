@@ -56,9 +56,9 @@ const render = ({
             <Elevation defaultLevel={defaultElevation} level={elevation} shape={shape}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
+                    disabled={disabled}
                     shape={shape}
-                    underlayColor={underlayColor}
-                    disabled={disabled}>
+                    underlayColor={underlayColor}>
                     <AnimatedContent
                         {...contentProps}
                         iconShow={!!icon}

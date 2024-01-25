@@ -1,7 +1,6 @@
 import {FC, ReactNode, RefAttributes, forwardRef, memo} from 'react';
 import {Animated, View, ViewProps} from 'react-native';
 import {Divider} from '../Divider/Divider';
-import {Elevation} from '../Elevation/Elevation';
 import {
     ActiveIndicator,
     ActiveIndicatorInner,
@@ -11,7 +10,6 @@ import {
     Header,
     HeaderInner,
     HeaderScrollView,
-    TriggerIndicator,
 } from './Tab.styles';
 import {RenderProps, TabBase} from './TabBase';
 import {TabItemProps} from './TabItem/TabItem';
@@ -23,10 +21,10 @@ export interface TabDataSource extends Pick<TabItemProps, 'labelText'> {
 }
 
 export interface TabProps extends Partial<ViewProps & RefAttributes<View>> {
-    autohide?: boolean;
+    activeKey?: string;
     data?: TabDataSource[];
     defaultActiveKey?: string;
-    headerPosition?: 'verticalStart' | 'verticalEnd';
+    headerVisible?: boolean;
     onActive?: (key?: string) => void;
     type?: TabType;
 }
@@ -38,17 +36,14 @@ export interface TabProps extends Partial<ViewProps & RefAttributes<View>> {
 const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
 const AnimatedActiveIndicatorInner = Animated.createAnimatedComponent(ActiveIndicatorInner);
 const AnimatedContentInner = Animated.createAnimatedComponent(ContentInner);
-const AnimatedHeader = Animated.createAnimatedComponent(Header);
+
 const render = ({
     activeIndicatorOffsetPosition,
     children,
+    headerVisible,
     id,
     items,
     renderStyle,
-    autohide,
-    headerPosition,
-    onTriggerIndicatorHoverIn,
-    onContentHoverIn,
     ...containerProps
 }: RenderProps) => {
     const {
@@ -57,20 +52,13 @@ const render = ({
         activeIndicatorWidth,
         contentInnerLeft,
         itemWidth,
-        headerTranslateY,
         width,
     } = renderStyle;
 
     return (
         <Container {...containerProps} testID={`tab--${id}`}>
-            <AnimatedHeader
-                autohide={autohide}
-                headerPosition={headerPosition}
-                testID={`tab__header--${id}`}
-                style={{transform: [{translateY: headerTranslateY}]}}>
-                {headerPosition === 'verticalEnd' && <Divider size="large" width={width} />}
-
-                <Elevation defaultLevel={autohide ? 3 : 0}>
+            {headerVisible && (
+                <Header testID={`tab__header--${id}`}>
                     <HeaderScrollView
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
@@ -92,19 +80,12 @@ const render = ({
                             </AnimatedActiveIndicator>
                         </HeaderInner>
                     </HeaderScrollView>
-                </Elevation>
 
-                {headerPosition === 'verticalStart' && <Divider size="large" width={width} />}
-            </AnimatedHeader>
-
-            {autohide && (
-                <TriggerIndicator
-                    headerPosition={headerPosition}
-                    onHoverIn={onTriggerIndicatorHoverIn}
-                />
+                    <Divider size="large" width={width} />
+                </Header>
             )}
 
-            <Content testID={`tab__content--${id}`} onHoverIn={onContentHoverIn}>
+            <Content testID={`tab__content--${id}`}>
                 <AnimatedContentInner
                     style={{left: contentInnerLeft}}
                     testID={`tab__contentInner--${id}`}>

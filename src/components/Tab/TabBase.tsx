@@ -12,15 +12,12 @@ export type ActiveIndicatorOffsetPosition = 'horizontalStart' | 'horizontalEnd';
 export interface RenderProps extends TabProps {
     activeIndicatorOffsetPosition: ActiveIndicatorOffsetPosition;
     items: ReactNode;
-    onTriggerIndicatorHoverIn: () => void;
-    onContentHoverIn: () => void;
     headerVisible: boolean;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         activeIndicatorLeft: AnimatedInterpolation;
         activeIndicatorPaddingHorizontal: number;
         activeIndicatorWidth: AnimatedInterpolation;
         contentInnerLeft: AnimatedInterpolation;
-        headerTranslateY: AnimatedInterpolation;
         height: number;
         itemWidth: number;
         width: number;
@@ -106,22 +103,6 @@ const processActive =
         onActive?.(key);
     };
 
-const processTriggerIndicatorHoverIn =
-    ({setState}: ProcessEventOptions) =>
-    () =>
-        setState(draft => {
-            draft.headerVisible = true;
-        });
-
-const processContentHoverIn =
-    ({setState}: ProcessEventOptions) =>
-    () =>
-        setState(draft => {
-            if (draft.headerVisible) {
-                draft.headerVisible = false;
-            }
-        });
-
 const renderItem = ({
     data,
     onActive,
@@ -147,7 +128,6 @@ const initialState = {
     activeIndicatorOffsetPosition: 'horizontalStart' as ActiveIndicatorOffsetPosition,
     activeKey: undefined as string | undefined,
     data: [] as Data,
-    headerVisible: false,
     itemLayout: {} as LayoutRectangle,
     layout: {} as LayoutRectangle,
     status: 'idle' as ComponentStatus,
@@ -156,14 +136,12 @@ const initialState = {
 export const TabBase: FC<TabBaseProps> = ({
     data: dataSources,
     defaultActiveKey,
-    headerPosition = 'verticalStart',
+    headerVisible = true,
     render,
     ...renderProps
 }) => {
-    const [
-        {activeIndicatorOffsetPosition, activeKey, data, itemLayout, layout, status, headerVisible},
-        setState,
-    ] = useImmer(initialState);
+    const [{activeIndicatorOffsetPosition, activeKey, data, itemLayout, layout, status}, setState] =
+        useImmer(initialState);
 
     const id = useId();
     const theme = useTheme();
@@ -174,15 +152,13 @@ export const TabBase: FC<TabBaseProps> = ({
         ((itemLayout.width ?? 0) - activeDataLabelTextWidth) / 2 +
         (activeDataLabelTextWidth - activeIndicatorBaseWidth) / 2;
 
-    const [{activeIndicatorLeft, activeIndicatorWidth, contentInnerLeft, headerTranslateY}] =
-        useAnimated({
-            activeIndicatorBaseWidth,
-            activeKey,
-            data,
-            headerVisible,
-            itemLayout,
-            layout,
-        });
+    const [{activeIndicatorLeft, activeIndicatorWidth, contentInnerLeft}] = useAnimated({
+        activeIndicatorBaseWidth,
+        activeKey,
+        data,
+        itemLayout,
+        layout,
+    });
 
     const onActive = useMemo(
         () => processActive({setState, onActive: renderProps.onActive}),
@@ -194,13 +170,8 @@ export const TabBase: FC<TabBaseProps> = ({
         [renderProps.onLayout, setState],
     );
 
-    const onContentHoverIn = useMemo(() => processContentHoverIn({setState}), [setState]);
     const onItemLayout = useMemo(() => processItemLayout({setState}), [setState]);
     const onLabelTextLayout = useMemo(() => processItemLabelTextLayout({setState}), [setState]);
-    const onTriggerIndicatorHoverIn = useMemo(
-        () => processTriggerIndicatorHoverIn({setState}),
-        [setState],
-    );
 
     const items = useMemo(
         () =>
@@ -245,19 +216,16 @@ export const TabBase: FC<TabBaseProps> = ({
         activeIndicatorOffsetPosition,
         children,
         data,
-        headerPosition,
+
         headerVisible,
         id,
         items,
-        onContentHoverIn,
         onLayout,
-        onTriggerIndicatorHoverIn,
         renderStyle: {
             activeIndicatorLeft,
             activeIndicatorPaddingHorizontal,
             activeIndicatorWidth,
             contentInnerLeft,
-            headerTranslateY,
             height: layout.height,
             itemWidth: itemLayout.width,
             width: layout.width,

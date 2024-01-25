@@ -8,8 +8,6 @@ export interface ActiveIndicatorProps extends Pick<RenderProps, 'activeIndicator
     width: number;
 }
 
-export type HeaderProps = Pick<RenderProps, 'autohide' | 'headerPosition'>;
-
 export interface ContentItemProps {
     width: number;
 }
@@ -19,31 +17,11 @@ export const Container = styled(View)`
     display: flex;
     flex-direction: column;
     flex: 1;
-    position: relative;
     overflow: hidden;
+    position: relative;
 `;
 
-export const Header = styled.View<HeaderProps>`
-    ${({autohide, theme}) =>
-        autohide &&
-        css`
-            background-color: ${theme.palette.surface.surface};
-            left: ${theme.adaptSize(theme.spacing.none)}px;
-            position: absolute;
-            z-index: 2048;
-        `};
-
-    ${({headerPosition, theme}) =>
-        headerPosition &&
-        (headerPosition === 'verticalStart'
-            ? css`
-                  top: ${theme.adaptSize(theme.spacing.none)}px;
-              `
-            : css`
-                  bottom: ${theme.adaptSize(theme.spacing.none)}px;
-              `)};
-`;
-
+export const Header = styled.View``;
 export const HeaderScrollView = styled.ScrollView``;
 export const HeaderInner = styled.View<ContentItemProps>`
     align-self: stretch;
@@ -55,27 +33,6 @@ export const HeaderInner = styled.View<ContentItemProps>`
     ${({width = 0}) => css`
         width: ${width}px;
     `};
-`;
-
-export const TriggerIndicator = styled.Pressable<HeaderProps>`
-    background-color: black;
-    position: absolute;
-    width: 100%;
-    z-index: 1024;
-
-    ${({theme}) => css`
-        height: ${theme.adaptSize(theme.spacing.small)}px;
-    `};
-
-    ${({headerPosition, theme}) =>
-        headerPosition &&
-        (headerPosition === 'verticalStart'
-            ? css`
-                  top: ${theme.adaptSize(theme.spacing.none)}px;
-              `
-            : css`
-                  bottom: ${theme.adaptSize(theme.spacing.none)}px;
-              `)};
 `;
 
 export const ActiveIndicator = styled.View<ActiveIndicatorProps>`

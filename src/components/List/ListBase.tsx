@@ -78,16 +78,14 @@ const initialState = {
     status: 'idle' as ComponentStatus,
 };
 
-export const ListBase: FC<ListBaseProps> = props => {
-    const {
-        close,
-        data: dataSources,
-        defaultActiveKey,
-        render,
-        supportingTextNumberOfLines,
-        ...renderProps
-    } = props;
-
+export const ListBase: FC<ListBaseProps> = ({
+    close,
+    data: dataSources,
+    defaultActiveKey,
+    render,
+    supportingTextNumberOfLines,
+    ...renderProps
+}) => {
     const [{data, status, activeKey}, setState] = useImmer(initialState);
     const id = useId();
     const onActive = useMemo(

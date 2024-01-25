@@ -144,6 +144,7 @@ export const CheckboxBase: FC<CheckboxBaseProps> = ({
 
     return render({
         ...renderProps,
+        disabled,
         eventName,
         icon,
         id,
