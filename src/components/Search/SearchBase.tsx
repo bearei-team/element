@@ -10,7 +10,6 @@ import {Divider} from '../Divider/Divider';
 import {Hovered} from '../Hovered/Hovered';
 import {Icon} from '../Icon/Icon';
 import {List, ListDataSource} from '../List/List';
-
 import {SearchProps} from './Search';
 import {Content, Header, Inner, Input, LeadingIcon, TextField, TrailingIcon} from './Search.styles';
 import {useAnimated} from './useAnimated';
@@ -34,11 +33,12 @@ export interface ProcessEventOptions {
     setState: Updater<typeof initialState>;
 }
 
-export type ProcessListActiveOptions = Pick<RenderProps, 'data' | 'onActive'> & ProcessEventOptions;
-export type ProcessStateOptions = Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions;
-export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions;
 export type ProcessChangeTextOptions = Pick<RenderProps, 'data' | 'onChangeText'> &
     ProcessEventOptions;
+
+export type ProcessListActiveOptions = Pick<RenderProps, 'data' | 'onActive'> & ProcessEventOptions;
+export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions;
+export type ProcessStateOptions = Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions;
 
 const processListActive =
     ({data, setState, onActive}: ProcessListActiveOptions) =>
@@ -47,8 +47,8 @@ const processListActive =
 
         if (nextValue) {
             setState(draft => {
-                draft.value = nextValue;
                 draft.activeKey = key;
+                draft.value = nextValue;
             });
 
             onActive?.(key);
@@ -81,9 +81,9 @@ const processStateChange =
     ({ref, setState}: ProcessStateChangeOptions) =>
     (state: State, {event, eventName} = {} as OnStateChangeOptions) => {
         const nextEvent = {
-            pressOut: () => processFocus(ref),
             focus: () => processFocus(ref),
             layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+            pressOut: () => processFocus(ref),
         };
 
         nextEvent[eventName as keyof typeof nextEvent]?.();
@@ -97,17 +97,17 @@ const processChangeText =
         const matchData = text
             ? data.filter(({headline, supportingText}) => {
                   const matchText = text.toLowerCase();
-                  const headlineMatch = headline?.toLowerCase().includes(matchText);
-                  const supportingTextMatch = supportingText?.toLowerCase().includes(matchText);
+                  const headlineMatch = !!headline?.toLowerCase().includes(matchText);
+                  const supportingTextMatch = !!supportingText?.toLowerCase().includes(matchText);
 
-                  return headlineMatch ?? supportingTextMatch;
+                  return headlineMatch || supportingTextMatch;
               })
             : [];
 
         setState(draft => {
+            draft.activeKey = '';
             draft.data = matchData;
             draft.value = text;
-            draft.activeKey = '';
         });
 
         onChangeText?.(text);
@@ -132,36 +132,36 @@ const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
 );
 
 const initialState = {
+    activeKey: undefined as string | undefined,
+    data: [] as ListDataSource[],
     eventName: 'none' as EventName,
     layout: {} as LayoutRectangle & {pageX: number; pageY: number},
     listVisible: false,
     state: 'enabled' as State,
-    value: undefined as string | undefined,
     status: 'idle' as ComponentStatus,
-    data: [] as ListDataSource[],
-    activeKey: undefined as string | undefined,
+    value: undefined as string | undefined,
 };
 
 const AnimatedInner = Animated.createAnimatedComponent(Inner);
 export const SearchBase: FC<SearchBaseProps> = ({
     data: dataSources,
     leadingIcon,
+    onActive,
     placeholder,
     ref,
     render,
-    onActive,
     trailingIcon,
     ...textInputProps
 }) => {
-    const [{layout, listVisible, eventName, state, status, data, value, activeKey}, setState] =
+    const [{activeKey, data, eventName, layout, listVisible, state, status, value}, setState] =
         useImmer(initialState);
 
     const [{innerHeight}] = useAnimated({listVisible});
     const containerRef = useRef<View>(null);
     const id = useId();
-    const theme = useTheme();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
+    const theme = useTheme();
     const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
     const underlayColor = theme.palette.surface.onSurface;
     const onStateChange = useMemo(
@@ -188,14 +188,14 @@ export const SearchBase: FC<SearchBaseProps> = ({
         () =>
             renderTextInput({
                 ...textInputProps,
+                id,
                 onBlur,
+                onChangeText,
                 onFocus,
                 placeholder,
                 placeholderTextColor,
                 ref: inputRef,
-                id,
                 value,
-                onChangeText,
             }),
         [
             id,
@@ -212,7 +212,7 @@ export const SearchBase: FC<SearchBaseProps> = ({
 
     const inner = useMemo(() => {
         const shape = 'extraLarge';
-        const {width, pageX, pageY, height} = layout;
+        const {height, pageX, pageY, width} = layout;
 
         if (status === 'idle') {
             return <></>;
@@ -229,10 +229,10 @@ export const SearchBase: FC<SearchBaseProps> = ({
                 width={width}>
                 <Header
                     {...onEvent}
-                    onBlur={onBlur}
-                    onFocus={onFocus}
                     accessibilityLabel={placeholder}
                     accessibilityRole="keyboardkey"
+                    onBlur={onBlur}
+                    onFocus={onFocus}
                     testID={`search__header--${id}`}>
                     <LeadingIcon testID={`search__leadingIcon--${id}`}>
                         {leadingIcon ?? (
@@ -285,14 +285,6 @@ export const SearchBase: FC<SearchBaseProps> = ({
         theme.palette.surface.surface,
         activeKey,
     ]);
-
-    // useEffect(() => {
-    //     if (status === 'succeeded' && dataSources) {
-    //         setState(draft => {
-    //             draft.data = dataSources;
-    //         });
-    //     }
-    // }, [dataSources, setState, status]);
 
     useEffect(() => {
         setState(draft => {
