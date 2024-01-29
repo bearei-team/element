@@ -17,6 +17,7 @@ export interface ListItemProps extends TouchableRippleProps {
     activeKey?: string;
     close?: boolean;
     defaultActiveKey?: string;
+    gap?: number;
     headline?: string;
     indexKey?: string;
     leading?: React.JSX.Element;
@@ -36,6 +37,7 @@ const render = ({
     activeLocation,
     defaultActive,
     eventName,
+    gap,
     headline,
     id,
     leading,
@@ -46,6 +48,7 @@ const render = ({
     supportingTextNumberOfLines,
     trailing,
     underlayColor,
+    shape,
     ...innerProps
 }: RenderProps) => {
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
@@ -55,6 +58,8 @@ const render = ({
         <AnimatedContainer
             accessibilityLabel={headline}
             accessibilityRole="list"
+            gap={gap}
+            shape={shape}
             style={{height: containerHeight}}
             testID={`listItem--${id}`}>
             <TouchableRipple
@@ -63,6 +68,7 @@ const render = ({
                 activeLocation={activeLocation}
                 centered={rippleCentered}
                 defaultActive={defaultActive}
+                shape={shape}
                 underlayColor={activeColor}>
                 <AnimatedInner {...innerProps} onLayout={onLayout}>
                     {leading && <Leading testID={`listItem__leading--${id}`}>{leading}</Leading>}

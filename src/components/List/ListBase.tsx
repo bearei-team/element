@@ -10,14 +10,18 @@ export interface ListBaseProps extends ListProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface RenderItemOptions extends ListRenderItemInfo<ListDataSource> {
-    activeKey?: string;
-    close?: boolean;
-    defaultActiveKey?: string;
-    onActive: (key?: string) => void;
-    onClose?: (key?: string) => void;
-    supportingTextNumberOfLines?: ListDataSource['supportingTextNumberOfLines'];
-}
+export type RenderItemOptions = ListRenderItemInfo<ListDataSource> &
+    Pick<
+        RenderProps,
+        | 'activeKey'
+        | 'close'
+        | 'defaultActiveKey'
+        | 'gap'
+        | 'onActive'
+        | 'onClose'
+        | 'shape'
+        | 'supportingTextNumberOfLines'
+    >;
 
 export interface ProcessEventOptions {
     setState: Updater<typeof initialState>;
@@ -52,9 +56,11 @@ const renderItem = ({
     activeKey,
     close,
     defaultActiveKey,
+    gap,
     item,
     onActive,
     onClose,
+    shape,
     supportingTextNumberOfLines,
 }: RenderItemOptions) => (
     <ListItem
@@ -65,10 +71,12 @@ const renderItem = ({
         activeKey={activeKey}
         close={close}
         defaultActiveKey={defaultActiveKey}
+        gap={gap}
         indexKey={item.key}
         key={item.key}
         onActive={onActive}
         onClose={onClose}
+        shape={shape}
     />
 );
 
@@ -83,8 +91,10 @@ export const ListBase: FC<ListBaseProps> = ({
     close,
     data: dataSources,
     defaultActiveKey,
+    gap,
     render,
     supportingTextNumberOfLines,
+    shape,
     ...renderProps
 }) => {
     const [{data, status, activeKey}, setState] = useImmer(initialState);
@@ -106,11 +116,22 @@ export const ListBase: FC<ListBaseProps> = ({
                 activeKey,
                 close,
                 defaultActiveKey,
+                gap,
                 onActive,
                 onClose,
+                shape,
                 supportingTextNumberOfLines,
             }),
-        [activeKey, close, defaultActiveKey, onActive, onClose, supportingTextNumberOfLines],
+        [
+            activeKey,
+            close,
+            defaultActiveKey,
+            gap,
+            onActive,
+            onClose,
+            shape,
+            supportingTextNumberOfLines,
+        ],
     );
 
     useEffect(() => {

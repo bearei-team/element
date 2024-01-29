@@ -168,6 +168,14 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
         }
     }, [disabled, setState, type]);
 
+    useEffect(() => {
+        if (!disabled) {
+            setState(draft => {
+                draft.eventName = 'none';
+            });
+        }
+    }, [disabled, setState]);
+
     if (status === 'idle') {
         return <></>;
     }

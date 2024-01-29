@@ -1,4 +1,4 @@
-import {FC, useId, useMemo} from 'react';
+import {FC, useEffect, useId, useMemo} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
@@ -63,7 +63,6 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
     const onStateChange = useMemo(() => processStateChange({setState}), [setState]);
-    console.info(eventName, 'eventName');
     const [onEvent] = HOOK.useOnEvent({
         ...renderProps,
         disabled,
@@ -73,6 +72,14 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
     const [{backgroundColor, borderColor}] = useAnimated({disabled, type});
     const [iconElement] = useIcon({eventName, type, icon, disabled});
     const [border] = useBorder({borderColor});
+
+    useEffect(() => {
+        if (!disabled) {
+            setState(draft => {
+                draft.eventName = 'none';
+            });
+        }
+    }, [disabled, setState]);
 
     return render({
         ...renderProps,

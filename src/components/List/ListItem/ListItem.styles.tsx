@@ -1,13 +1,22 @@
-import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {Typography} from '../../Common/Common.styles';
+import {Shape, Typography} from '../../Common/Common.styles';
+import {RenderProps} from './ListItemBase';
 
+export type ContainerProps = Pick<RenderProps, 'gap'>;
 export interface ContentProps {
     supportingTextShow?: boolean;
 }
 
-export const Container = styled(View)`
+export const Container = styled(Shape)<ContainerProps>`
     overflow: hidden;
+
+    ${({theme}) => css`
+        background-color: ${theme.palette.surface.surface};
+    `};
+
+    ${({gap = 0}) => css`
+        margin-bottom: ${gap}px;
+    `};
 `;
 
 export const Inner = styled.View`
@@ -27,6 +36,11 @@ export const Inner = styled.View`
 `;
 
 export const Leading = styled.View`
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
     ${({theme}) => css`
         height: ${theme.adaptSize(theme.spacing.small * 5)}px;
         width: ${theme.adaptSize(theme.spacing.small * 5)}px;

@@ -116,6 +116,14 @@ export const FABBase: FC<FABBaseProps> = ({
         }
     }, [disabled, disabledElevation, setState]);
 
+    useEffect(() => {
+        if (!disabled) {
+            setState(draft => {
+                draft.eventName = 'none';
+            });
+        }
+    }, [disabled, setState]);
+
     return render({
         ...renderProps,
         defaultElevation: disabledElevation ? 0 : defaultElevation,
