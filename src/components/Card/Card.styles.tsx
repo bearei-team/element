@@ -1,7 +1,59 @@
 import {View} from 'react-native';
-import styled from 'styled-components/native';
-import {Shape} from '../Common/Common.styles';
+import styled, {css} from 'styled-components/native';
+import {Shape, Typography} from '../Common/Common.styles';
 
 export const Container = styled(View)``;
+export const Inner = styled(Shape)`
+    position: relative;
 
-export const Content = styled(Shape)``;
+    ${({theme}) =>
+        css`
+            width: ${theme.adaptSize(theme.spacing.small * 45)}px;
+        `}
+`;
+
+export const Media = styled(Shape)`
+    align-self: stretch;
+
+    ${({theme}) =>
+        css`
+            height: ${theme.adaptSize(theme.spacing.small * 24)}px;
+        `}
+`;
+
+export const Content = styled.View`
+    display: flex;
+    flex-direction: column;
+
+    ${({theme}) =>
+        css`
+            padding: ${theme.adaptSize(theme.spacing.medium)}px;
+            gap: ${theme.adaptSize(theme.spacing.extraLarge)}px;
+        `}
+`;
+
+export const ContentHeader = styled.View`
+    align-self: stretch;
+`;
+
+export const TitleText = styled(Typography)``;
+export const SubheadText = styled(Typography)``;
+export const SupportingText = styled(Typography)`
+    align-self: stretch;
+    height: auto;
+`;
+
+export const ContentFooter = styled.View`
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    ${({theme}) =>
+        css`
+            gap: ${theme.adaptSize(theme.spacing.small)}px;
+        `}
+`;
+
+export const Button = styled.View``;
+export const PrimaryButton = styled(Button)``;
+export const SecondaryButton = styled(Button)``;

@@ -10,5 +10,31 @@ export default {
 export const Filled: StoryObj<CardProps> = {
     args: {
         titleText: 'Title',
+        subheadText: 'SubheadText',
+        footer: true,
+        supportingText:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor',
+    },
+};
+
+export const Outlined: StoryObj<CardProps> = {
+    args: {
+        titleText: 'Title',
+        subheadText: 'SubheadText',
+        footer: true,
+        type: 'outlined',
+        supportingText:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor',
+    },
+};
+
+export const Elevated: StoryObj<CardProps> = {
+    args: {
+        titleText: 'Title',
+        subheadText: 'SubheadText',
+        footer: true,
+        type: 'elevated',
+        supportingText:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor',
     },
 };

@@ -47,56 +47,35 @@ export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedO
             inputRange: [0, 1],
             outputRange: [
                 disabledBackgroundColor,
-                theme.color.rgba(theme.palette.primary.primary, 1),
+                theme.color.rgba(theme.palette.surface.surfaceContainerHighest, 1),
             ],
         },
         outlined: {
             inputRange: [0, 1],
             outputRange: [
-                theme.color.rgba(theme.palette.primary.primary, 0),
-                theme.color.rgba(theme.palette.primary.primary, 0),
-            ],
-        },
-    };
-
-    const colorType = {
-        elevated: {
-            inputRange: [0, 1],
-            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.primary, 1)],
-        },
-        filled: {
-            inputRange: [0, 1],
-            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.onPrimary, 1)],
-        },
-        outlined: {
-            inputRange: [0, 1],
-            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.primary, 1)],
-        },
-        text: {
-            inputRange: [0, 1],
-            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.primary, 1)],
-        },
-        link: {
-            inputRange: [0, 1],
-            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.primary, 1)],
-        },
-        tonal: {
-            inputRange: [0, 1],
-            outputRange: [
-                disabledColor,
-                theme.color.rgba(theme.palette.secondary.onSecondaryContainer, 1),
+                theme.color.rgba(theme.palette.surface.surface, 1),
+                theme.color.rgba(theme.palette.surface.surface, 1),
             ],
         },
     };
 
     const backgroundColor = colorAnimated.interpolate(backgroundColorType[type]);
-    const color = colorAnimated.interpolate(colorType[type]);
+    const titleColor = colorAnimated.interpolate({
+        inputRange: [0, 1],
+        outputRange: [disabledColor, theme.color.rgba(theme.palette.surface.onSurface, 1)],
+    });
+
+    const subColor = colorAnimated.interpolate({
+        inputRange: [0, 1],
+        outputRange: [disabledColor, theme.color.rgba(theme.palette.surface.onSurfaceVariant, 1)],
+    });
+
     const borderColor = borderAnimated.interpolate({
         inputRange: borderInputRange,
         outputRange: [
             disabledBackgroundColor,
-            theme.color.rgba(theme.palette.outline.outline, 1),
-            theme.palette.primary.primary,
+            theme.color.rgba(theme.palette.outline.outlineVariant, 1),
+            theme.color.rgba(theme.palette.surface.onSurface, 1),
         ],
     });
 
@@ -134,7 +113,8 @@ export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedO
         {
             ...(type === 'outlined' && {borderColor}),
             backgroundColor,
-            color,
+            titleColor,
+            subColor,
         },
     ];
 };
