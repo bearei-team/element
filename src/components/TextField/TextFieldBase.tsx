@@ -51,17 +51,15 @@ export interface ProcessEventOptions {
 
 export type ProcessStateOptions = Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions;
 export type ProcessChangeTextOptions = Pick<RenderProps, 'onChangeText'> & ProcessEventOptions;
-
-export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions;
+export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
+    OnStateChangeOptions;
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
 const processState = (state: State, {eventName, setState}: ProcessStateOptions) =>
     setState(draft => {
-        if (draft.state === 'focused') {
-            if (eventName === 'blur') {
-                draft.eventName = eventName;
-                draft.state = state;
-            }
+        if (draft.state === 'focused' && eventName === 'blur') {
+            draft.eventName = eventName;
+            draft.state = state;
 
             return;
         }
@@ -80,7 +78,7 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
 
 const processStateChange = (
     state: State,
-    {event, eventName, setState, ref}: OnStateChangeOptions & ProcessStateChangeOptions,
+    {event, eventName, setState, ref}: ProcessStateChangeOptions,
 ) => {
     const nextEvent = {
         focus: () => processFocus(ref),
@@ -165,11 +163,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         [inputRef, setState],
     );
 
-    const [{onBlur, onFocus, ...onEvent}] = useOnEvent({
-        ...textInputProps,
-        onStateChange,
-    });
-
+    const [{onBlur, onFocus, ...onEvent}] = useOnEvent({...textInputProps, onStateChange});
     const [
         {
             activeIndicatorBackgroundColor,

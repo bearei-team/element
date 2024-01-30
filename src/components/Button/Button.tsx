@@ -40,10 +40,7 @@ const render = ({
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
     const link = type === 'link';
     const shape = link ? 'extraSmall' : 'full';
-    const hoveredLayout = {
-        height: height || contentHeight,
-        width: width || contentWidth,
-    };
+    const hoveredLayout = {height: height || contentHeight, width: width || contentWidth};
 
     return (
         <Container

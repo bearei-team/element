@@ -43,12 +43,17 @@ export const FormBase = <T extends Store = Store>({
     }, [onFinish, onFinishFailed, onValueChange, setCallback]);
 
     useEffect(() => {
-        if (status === 'idle') {
-            setInitialValue(initialValue, status !== 'idle');
-            setState(draft => {
-                draft.status = 'succeeded';
-            });
+        if (status !== 'idle') {
+            return;
         }
+
+        if (initialValue) {
+            setInitialValue(initialValue);
+        }
+
+        setState(draft => {
+            draft.status = 'succeeded';
+        });
     }, [initialValue, setInitialValue, setState, status]);
 
     return render({

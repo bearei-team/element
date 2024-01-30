@@ -83,9 +83,7 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
 
     useEffect(() => {
         signInField({
-            onFormStoreChange: () => {
-                setState({});
-            },
+            onFormStoreChange: () => setState({}),
             props: {name, rules, validateFirst},
             touched: false,
             validate,

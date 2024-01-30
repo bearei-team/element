@@ -30,7 +30,8 @@ export interface ProcessEventOptions {
 }
 
 export type ProcessStateChangeOptions = Pick<RenderProps, 'disabledElevation'> &
-    ProcessEventOptions;
+    ProcessEventOptions &
+    OnStateChangeOptions;
 
 const processElevation = (nextState: State, {setState}: ProcessEventOptions) => {
     const level = {
@@ -58,12 +59,7 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
 
 const processStateChange = (
     state: State,
-    {
-        event,
-        eventName,
-        disabledElevation,
-        setState,
-    }: OnStateChangeOptions & ProcessStateChangeOptions,
+    {event, eventName, disabledElevation, setState}: ProcessStateChangeOptions,
 ) => {
     if (eventName === 'layout') {
         processLayout(event as LayoutChangeEvent, {setState});
@@ -107,19 +103,23 @@ export const FABBase: FC<FABBaseProps> = ({
     const [iconElement] = useIcon({eventName, type, icon, disabled});
 
     useEffect(() => {
-        if (typeof disabled === 'boolean' && !disabledElevation) {
-            setState(draft => {
-                draft.elevation = disabled ? 0 : 3;
-            });
+        if (!(typeof disabled === 'boolean' && !disabledElevation)) {
+            return;
         }
+
+        setState(draft => {
+            draft.elevation = disabled ? 0 : 3;
+        });
     }, [disabled, disabledElevation, setState]);
 
     useEffect(() => {
-        if (disabled) {
-            setState(draft => {
-                draft.eventName = 'none';
-            });
+        if (!disabled) {
+            return;
         }
+
+        setState(draft => {
+            draft.eventName = 'none';
+        });
     }, [disabled, setState]);
 
     return render({

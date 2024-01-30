@@ -44,6 +44,8 @@ export interface ProcessEventOptions {
 export type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
     ProcessEventOptions;
 
+export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
+
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
@@ -75,7 +77,7 @@ const processStateChange = ({
     activeKey,
     indexKey,
     onActive,
-}: OnStateChangeOptions & ProcessPressOutOptions) => {
+}: ProcessStateChangeOptions) => {
     const nextEvent = {
         layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () =>
@@ -129,12 +131,7 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
         [activeKey, indexKey, onActive, setState],
     );
 
-    const [onEvent] = HOOK.useOnEvent({
-        ...renderProps,
-        disabled: false,
-        onStateChange,
-    });
-
+    const [onEvent] = HOOK.useOnEvent({...renderProps, disabled: false, onStateChange});
     const activeIconElement = useMemo(
         () => cloneElement(activeIcon, {eventName}),
         [activeIcon, eventName],
@@ -143,31 +140,39 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     const iconElement = useMemo(() => cloneElement(icon, {eventName}), [eventName, icon]);
 
     useEffect(() => {
-        if (status === 'idle') {
-            setState(draft => {
-                draft.rippleCentered = !!defaultActive;
-                draft.status = 'succeeded';
-            });
+        if (status !== 'idle') {
+            return;
         }
+
+        setState(draft => {
+            draft.rippleCentered = !!defaultActive;
+            draft.status = 'succeeded';
+        });
     }, [defaultActive, setState, status]);
 
     useEffect(() => {
-        if (status === 'succeeded' && active) {
-            setState(draft => {
-                if (!draft.activeLocation?.locationX) {
-                    draft.rippleCentered = true;
-                    draft.activeLocation = {locationX: 0, locationY: 0};
-                }
-            });
+        if (!(status === 'succeeded' && active)) {
+            return;
         }
+
+        setState(draft => {
+            if (draft.activeLocation?.locationX) {
+                return;
+            }
+
+            draft.rippleCentered = true;
+            draft.activeLocation = {locationX: 0, locationY: 0};
+        });
     }, [active, setState, status]);
 
     useEffect(() => {
-        if (activeLocation?.locationX) {
-            setState(draft => {
-                draft.rippleCentered = false;
-            });
+        if (!activeLocation?.locationX) {
+            return;
         }
+
+        setState(draft => {
+            draft.rippleCentered = false;
+        });
     }, [activeLocation, setState]);
 
     if (status === 'idle') {

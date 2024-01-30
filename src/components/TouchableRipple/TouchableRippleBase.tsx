@@ -39,7 +39,7 @@ export interface ProcessPressOutOptions extends ProcessEventOptions {
     activeRipple: boolean;
 }
 
-export type ProcessStateChangeOptions = ProcessPressOutOptions;
+export type ProcessStateChangeOptions = ProcessPressOutOptions & OnStateChangeOptions;
 export type ProcessRippleExitOptions = ProcessEventOptions &
     Pick<RenderProps, 'onRippleAnimatedEnd'>;
 
@@ -91,7 +91,7 @@ const processStateChange = ({
     eventName,
     setState,
     activeRipple,
-}: OnStateChangeOptions & ProcessStateChangeOptions) => {
+}: ProcessStateChangeOptions) => {
     const nextEvent = {
         layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () => processPressOut(event as GestureResponderEvent, {setState, activeRipple}),
@@ -182,12 +182,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
         [activeRipple, setState],
     );
 
-    const [onEvent] = HOOK.useOnEvent({
-        ...renderProps,
-        disabled,
-        onStateChange,
-    });
-
+    const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
     const onEntryAnimatedEnd = useCallback(
         (sequence: string, exitAnimated: (finished?: () => void) => void) =>
             processRippleEntryAnimatedEnd(sequence, {
@@ -239,23 +234,27 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
      * active by default. Initialize the default ripple here.
      */
     useEffect(() => {
+        if (status !== 'idle') {
+            return;
+        }
+
         const defaultRipple = activeRipple && defaultActive;
 
-        if (status === 'idle') {
-            if (defaultRipple) {
-                return addRipple({locationX: 0, locationY: 0});
-            }
-
-            setState(draft => {
-                draft.status = 'succeeded';
-            });
+        if (defaultRipple) {
+            return addRipple({locationX: 0, locationY: 0});
         }
+
+        setState(draft => {
+            draft.status = 'succeeded';
+        });
     }, [activeRipple, addRipple, defaultActive, setState, status]);
 
     useEffect(() => {
-        if (status === 'succeeded' && typeof active === 'boolean') {
-            active ? activeLocation && addRipple(activeLocation) : rippleExit();
+        if (!(status === 'succeeded' && typeof active === 'boolean')) {
+            return;
         }
+
+        active ? activeLocation && addRipple(activeLocation) : rippleExit();
     }, [active, activeLocation, addRipple, rippleExit, status]);
 
     return render({

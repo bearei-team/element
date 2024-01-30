@@ -47,15 +47,17 @@ const processFAB = (fab?: React.JSX.Element | undefined) => {
 };
 
 const processActive = ({onActive, setState}: ProcessActiveOptions, key?: string) => {
-    if (typeof key !== 'undefined') {
-        setState(draft => {
-            if (draft.activeKey !== key) {
-                draft.activeKey = key;
-            }
-        });
-
-        onActive?.(key);
+    if (typeof key === 'undefined') {
+        return;
     }
+
+    setState(draft => {
+        if (draft.activeKey !== key) {
+            draft.activeKey = key;
+        }
+    });
+
+    onActive?.(key);
 };
 
 const initialState = {
@@ -94,20 +96,24 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
     );
 
     useEffect(() => {
-        if (dataSources) {
-            setState(draft => {
-                draft.data = dataSources;
-                draft.status === 'idle' && (draft.status = 'succeeded');
-            });
+        if (!dataSources) {
+            return;
         }
+
+        setState(draft => {
+            draft.data = dataSources;
+            draft.status === 'idle' && (draft.status = 'succeeded');
+        });
     }, [dataSources, setState]);
 
     useEffect(() => {
-        if (status === 'succeeded') {
-            setState(draft => {
-                draft.activeKey = activeKeySource;
-            });
+        if (status !== 'succeeded') {
+            return;
         }
+
+        setState(draft => {
+            draft.activeKey = activeKeySource;
+        });
     }, [activeKeySource, setState, status]);
 
     if (status === 'idle') {

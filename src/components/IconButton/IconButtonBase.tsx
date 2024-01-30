@@ -27,6 +27,8 @@ export interface ProcessEventOptions {
     setState: Updater<typeof initialState>;
 }
 
+export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessEventOptions;
+
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
@@ -35,11 +37,7 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processStateChange = ({
-    event,
-    eventName,
-    setState,
-}: OnStateChangeOptions & ProcessEventOptions) => {
+const processStateChange = ({event, eventName, setState}: ProcessStateChangeOptions) => {
     if (eventName === 'layout') {
         processLayout(event as LayoutChangeEvent, {setState});
     }
@@ -69,22 +67,20 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
             processStateChange({...options, setState}),
         [setState],
     );
-    const [onEvent] = HOOK.useOnEvent({
-        ...renderProps,
-        disabled,
-        onStateChange,
-    });
 
+    const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
     const [{backgroundColor, borderColor}] = useAnimated({disabled, type});
     const [iconElement] = useIcon({eventName, type, icon, disabled});
     const [border] = useBorder({borderColor});
 
     useEffect(() => {
-        if (disabled) {
-            setState(draft => {
-                draft.eventName = 'none';
-            });
+        if (!disabled) {
+            return;
         }
+
+        setState(draft => {
+            draft.eventName = 'none';
+        });
     }, [disabled, setState]);
 
     return render({

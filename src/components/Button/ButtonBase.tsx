@@ -36,61 +36,65 @@ export interface ProcessEventOptions {
 export type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
 export type ProcessLayoutOptions = Pick<RenderProps, 'type' | 'block'> & ProcessEventOptions;
 export type ProcessContentLayoutOptions = Pick<RenderProps, 'block'> & ProcessEventOptions;
+export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
 
-const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) => {
-    const nextElevation = type === 'elevated' ? 1 : 0;
-
-    return nextElevation;
-};
+const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) =>
+    type === 'elevated' ? 1 : 0;
 
 const processElevation = (state: State, {type = 'filled', setState}: ProcessElevationOptions) => {
     const elevationType = ['elevated', 'filled', 'tonal'].includes(type);
 
-    if (elevationType) {
-        const level = {
-            disabled: 0,
-            enabled: 0,
-            error: 0,
-            focused: 0,
-            hovered: 1,
-            longPressIn: 0,
-            pressIn: 0,
-        };
-
-        const correctionCoefficient = processCorrectionCoefficient({type});
-
-        setState(draft => {
-            draft.elevation = (level[state] + correctionCoefficient) as ElevationLevel;
-        });
+    if (!elevationType) {
+        return;
     }
+
+    const level = {
+        disabled: 0,
+        enabled: 0,
+        error: 0,
+        focused: 0,
+        hovered: 1,
+        longPressIn: 0,
+        pressIn: 0,
+    };
+
+    const correctionCoefficient = processCorrectionCoefficient({type});
+
+    setState(draft => {
+        draft.elevation = (level[state] + correctionCoefficient) as ElevationLevel;
+    });
 };
 
 const processLayout = (event: LayoutChangeEvent, {block, setState}: ProcessLayoutOptions) => {
+    if (!block) {
+        return;
+    }
+
     const nativeEventLayout = event.nativeEvent.layout;
 
-    if (block) {
-        setState(draft => {
-            draft.layout = nativeEventLayout;
-        });
-    }
+    setState(draft => {
+        draft.layout = nativeEventLayout;
+    });
 };
 
 const processContentLayout = (
     event: LayoutChangeEvent,
     {block, setState}: ProcessContentLayoutOptions,
 ) => {
+    if (block) {
+        return;
+    }
+
     const nativeEventLayout = event.nativeEvent.layout;
 
-    if (!block) {
-        setState(draft => {
-            draft.contentLayout = nativeEventLayout;
-        });
-    }
+    setState(draft => {
+        draft.contentLayout = nativeEventLayout;
+    });
 };
 
 const processStateChange = (
     state: State,
-    {event, eventName, type, block, setState}: OnStateChangeOptions & ProcessLayoutOptions,
+    {event, eventName, type, block, setState}: ProcessStateChangeOptions,
 ) => {
     if (eventName === 'layout') {
         processLayout(event as LayoutChangeEvent, {block, setState});
@@ -137,46 +141,42 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
         [block, setState, type],
     );
 
-    const [onEvent] = HOOK.useOnEvent({
-        ...renderProps,
-        disabled,
-        onStateChange,
-    });
-
-    const [{backgroundColor, borderColor, color}] = useAnimated({
-        disabled,
-        eventName,
-        type,
-    });
-
+    const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
+    const [{backgroundColor, borderColor, color}] = useAnimated({disabled, eventName, type});
     const [iconElement] = useIcon({eventName, type, icon, disabled});
     const [border] = useBorder({type, borderColor});
 
     useEffect(() => {
-        if (status === 'idle') {
-            setState(draft => {
-                type === 'elevated' && (draft.defaultElevation = 1);
-                draft.status = 'succeeded';
-            });
+        if (status !== 'idle') {
+            return;
         }
+
+        setState(draft => {
+            type === 'elevated' && (draft.defaultElevation = 1);
+            draft.status = 'succeeded';
+        });
     }, [setState, status, type]);
 
     useEffect(() => {
         const setElevation = typeof disabled === 'boolean' && type === 'elevated';
 
-        if (setElevation) {
-            setState(draft => {
-                draft.elevation = disabled ? 0 : 1;
-            });
+        if (!setElevation) {
+            return;
         }
+
+        setState(draft => {
+            draft.elevation = disabled ? 0 : 1;
+        });
     }, [disabled, setState, type]);
 
     useEffect(() => {
-        if (disabled) {
-            setState(draft => {
-                draft.eventName = 'none';
-            });
+        if (!disabled) {
+            return;
         }
+
+        setState(draft => {
+            draft.eventName = 'none';
+        });
     }, [disabled, setState]);
 
     if (status === 'idle') {

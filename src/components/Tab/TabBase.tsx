@@ -39,6 +39,7 @@ export interface ProcessEventOptions {
 
 export type ProcessLayoutOptions = Pick<RenderProps, 'onLayout'> & ProcessEventOptions;
 export type ProcessActiveOptions = Pick<RenderProps, 'onActive'> & ProcessEventOptions;
+export type ProcessItemLabelTextLayoutOptions = ProcessEventOptions & {key?: string};
 
 const processLayout = (event: LayoutChangeEvent, {setState, onLayout}: ProcessLayoutOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -62,7 +63,7 @@ const processItemLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOpt
 
 const processItemLabelTextLayout = (
     event: LayoutChangeEvent,
-    {key, setState}: ProcessEventOptions & {key?: string},
+    {key, setState}: ProcessItemLabelTextLayoutOptions,
 ) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
@@ -204,12 +205,14 @@ export const TabBase: FC<TabBaseProps> = ({
     }, [data, layout.width]);
 
     useEffect(() => {
-        if (dataSources) {
-            setState(draft => {
-                draft.data = dataSources;
-                draft.status === 'idle' && (draft.status = 'succeeded');
-            });
+        if (!dataSources) {
+            return;
         }
+
+        setState(draft => {
+            draft.data = dataSources;
+            draft.status === 'idle' && (draft.status = 'succeeded');
+        });
     }, [dataSources, setState]);
 
     if (status === 'idle') {

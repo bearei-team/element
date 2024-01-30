@@ -26,13 +26,15 @@ export const useAnimated = ({active, block, defaultActive}: UseAnimatedOptions) 
     });
 
     useEffect(() => {
-        if (!block && typeof active === 'boolean') {
-            requestAnimationFrame(() =>
-                animatedTiming(labelAnimated, {
-                    toValue: active ? 1 : 0,
-                }).start(),
-            );
+        if (!(!block && typeof active === 'boolean')) {
+            return;
         }
+
+        requestAnimationFrame(() =>
+            animatedTiming(labelAnimated, {
+                toValue: active ? 1 : 0,
+            }).start(),
+        );
     }, [active, animatedTiming, block, labelAnimated]);
 
     return [{height, color}];

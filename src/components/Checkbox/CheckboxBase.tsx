@@ -29,6 +29,8 @@ export interface ProcessEventOptions {
 export type ProcessPressOutOptions = Pick<RenderProps, 'active' | 'indeterminate' | 'onActive'> &
     ProcessEventOptions;
 
+export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
+
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
@@ -56,7 +58,7 @@ const processStateChange = ({
     onActive,
     active,
     indeterminate,
-}: OnStateChangeOptions & ProcessPressOutOptions) => {
+}: ProcessStateChangeOptions) => {
     const nextEvent = {
         layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () => processPressOut({setState, onActive, active, indeterminate}),
@@ -95,53 +97,47 @@ export const CheckboxBase: FC<CheckboxBaseProps> = ({
             : theme.palette.primary.primary;
 
     const underlayColor = error ? theme.palette.error.error : checkUnderlayColor;
-    const [icon] = useIcon({
-        disabled,
-        error,
-        eventName,
-        type,
-    });
-
+    const [icon] = useIcon({disabled, error, eventName, type});
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
             processStateChange({...options, active, indeterminate, onActive, setState}),
         [active, indeterminate, onActive, setState],
     );
 
-    const [onEvent] = HOOK.useOnEvent({
-        ...renderProps,
-        disabled,
-        onStateChange,
-    });
+    const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
 
     useEffect(() => {
-        if (status === 'idle') {
-            setState(draft => {
-                if (typeof defaultActive === 'boolean') {
-                    const defaultType = defaultActive ? 'selected' : 'unselected';
-
-                    draft.active = defaultActive;
-                    draft.type = indeterminate ? 'indeterminate' : defaultType;
-                }
-
-                draft.status = 'succeeded';
-            });
+        if (status !== 'idle') {
+            return;
         }
+
+        setState(draft => {
+            if (typeof defaultActive === 'boolean') {
+                const defaultType = defaultActive ? 'selected' : 'unselected';
+
+                draft.active = defaultActive;
+                draft.type = indeterminate ? 'indeterminate' : defaultType;
+            }
+
+            draft.status = 'succeeded';
+        });
     }, [defaultActive, indeterminate, setState, status]);
 
     useEffect(() => {
-        if (typeof indeterminate === 'boolean') {
-            setState(draft => {
-                if (indeterminate) {
-                    draft.active = true;
-                    draft.type = 'indeterminate';
-
-                    return;
-                }
-
-                draft.type = draft.active ? 'selected' : 'unselected';
-            });
+        if (typeof indeterminate !== 'boolean') {
+            return;
         }
+
+        setState(draft => {
+            if (indeterminate) {
+                draft.active = true;
+                draft.type = 'indeterminate';
+
+                return;
+            }
+
+            draft.type = draft.active ? 'selected' : 'unselected';
+        });
     }, [indeterminate, setState]);
 
     if (status === 'idle') {

@@ -18,13 +18,13 @@ export const useAnimated = ({active, defaultActive}: UseAnimatedOptions) => {
     });
 
     useEffect(() => {
-        if (typeof active === 'boolean') {
-            requestAnimationFrame(() =>
-                animatedTiming(activeAnimated, {
-                    toValue: active ? 1 : 0,
-                }).start(),
-            );
+        if (typeof active !== 'boolean') {
+            return;
         }
+
+        requestAnimationFrame(() =>
+            animatedTiming(activeAnimated, {toValue: active ? 1 : 0}).start(),
+        );
     }, [active, activeAnimated, animatedTiming]);
 
     return [{color}];

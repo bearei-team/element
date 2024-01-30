@@ -30,6 +30,8 @@ export interface ProcessEventOptions {
 export type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
     ProcessEventOptions;
 
+export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
+
 export type ProcessLabelTextLayoutOptions = Pick<
     TabItemBaseProps,
     'onLabelTextLayout' | 'indexKey' | 'id'
@@ -51,10 +53,14 @@ const processPressOut = ({activeKey, indexKey, onActive}: ProcessPressOutOptions
     }
 };
 
-const processStateChange = (
-    {event, eventName, activeKey, indexKey, setState, onActive} = {} as OnStateChangeOptions &
-        ProcessPressOutOptions,
-) => {
+const processStateChange = ({
+    event,
+    eventName,
+    activeKey,
+    indexKey,
+    setState,
+    onActive,
+}: ProcessStateChangeOptions) => {
     const nextEvent = {
         layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () => processPressOut({activeKey, indexKey, setState, onActive}),
@@ -109,11 +115,7 @@ export const TabItemBase: FC<TabItemBaseProps> = ({
         [id, indexKey, onLabelTextLayout],
     );
 
-    const [onEvent] = HOOK.useOnEvent({
-        ...renderProps,
-        onStateChange,
-    });
-
+    const [onEvent] = HOOK.useOnEvent({...renderProps, onStateChange});
     const [{color}] = useAnimated({active, defaultActive});
 
     return render({

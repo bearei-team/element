@@ -26,6 +26,8 @@ export interface ProcessEventOptions {
     setState: Updater<typeof initialState>;
 }
 
+export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessEventOptions;
+
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
@@ -34,11 +36,7 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processStateChange = ({
-    event,
-    eventName,
-    setState,
-}: OnStateChangeOptions & ProcessEventOptions) => {
+const processStateChange = ({event, eventName, setState}: ProcessStateChangeOptions) => {
     if (eventName === 'layout') {
         processLayout(event as LayoutChangeEvent, {setState});
     }
@@ -56,21 +54,14 @@ export const ElevationBase: FC<ElevationBaseProps> = ({
 }) => {
     const [{layout}, setState] = useImmer(initialState);
     const id = useId();
-    const [{shadow0Opacity, shadow1Opacity}] = useAnimated({
-        defaultLevel,
-        level,
-    });
-
+    const [{shadow0Opacity, shadow1Opacity}] = useAnimated({defaultLevel, level});
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
             processStateChange({...options, setState}),
         [setState],
     );
 
-    const [onEvent] = HOOK.useOnEvent({
-        ...renderProps,
-        onStateChange: onStateChange,
-    });
+    const [onEvent] = HOOK.useOnEvent({...renderProps, onStateChange});
 
     return render({
         ...renderProps,

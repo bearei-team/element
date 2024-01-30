@@ -37,8 +37,10 @@ export type ProcessChangeTextOptions = Pick<RenderProps, 'data' | 'onChangeText'
     ProcessEventOptions;
 
 export type ProcessListActiveOptions = Pick<RenderProps, 'data' | 'onActive'> & ProcessEventOptions;
-export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions;
-export type ProcessStateOptions = Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions;
+export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
+    OnStateChangeOptions;
+
+export type ProcessStateOptions = ProcessEventOptions & Pick<OnStateChangeOptions, 'eventName'>;
 
 const processListActive = ({data, setState, onActive}: ProcessListActiveOptions, key?: string) => {
     if (!key) {
@@ -85,7 +87,7 @@ const processLayout = (_event: LayoutChangeEvent, {setState}: ProcessEventOption
 
 const processStateChange = (
     state: State,
-    {event, eventName, ref, setState} = {} as OnStateChangeOptions & ProcessStateChangeOptions,
+    {event, eventName, ref, setState}: ProcessStateChangeOptions,
 ) => {
     const nextEvent = {
         focus: () => processFocus(ref),
@@ -303,13 +305,15 @@ export const SearchBase: FC<SearchBaseProps> = ({
     }, [data?.length, setState, state]);
 
     useEffect(() => {
-        if (containerRef.current) {
-            containerRef.current.measure((x, y, width, height, pageX, pageY) => {
-                setState(draft => {
-                    draft.layout = {x, y, width, height, pageX, pageY};
-                });
-            });
+        if (!containerRef.current) {
+            return;
         }
+
+        containerRef.current.measure((x, y, width, height, pageX, pageY) => {
+            setState(draft => {
+                draft.layout = {x, y, width, height, pageX, pageY};
+            });
+        });
     }, [setState]);
 
     useEffect(() => {

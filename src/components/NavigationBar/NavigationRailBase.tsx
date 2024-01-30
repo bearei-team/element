@@ -38,7 +38,7 @@ const renderItems = ({activeKey, block, data, defaultActiveKey, onActive}: Rende
         />
     ));
 
-const processFAB = (fab?: React.JSX.Element | undefined) => {
+const processFAB = (fab?: React.JSX.Element) => {
     if (!fab) {
         return fab;
     }
@@ -46,10 +46,7 @@ const processFAB = (fab?: React.JSX.Element | undefined) => {
     return cloneElement(fab, {disabledElevation: true, size: 'medium'});
 };
 
-const processActive = (
-    key = undefined as string | undefined,
-    {onActive, setState}: ProcessActiveOptions,
-) => {
+const processActive = ({onActive, setState}: ProcessActiveOptions, key?: string) => {
     if (key) {
         setState(draft => {
             if (draft.activeKey !== key) {
@@ -78,7 +75,7 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
     const [{activeKey, data, status}, setState] = useImmer(initialState);
     const id = useId();
     const onActive = useCallback(
-        (key?: string) => processActive(key, {onActive: renderProps.onActive, setState}),
+        (key?: string) => processActive({onActive: renderProps.onActive, setState}, key),
         [renderProps.onActive, setState],
     );
 
@@ -95,12 +92,14 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
     );
 
     useEffect(() => {
-        if (dataSources) {
-            setState(draft => {
-                draft.data = dataSources;
-                draft.status === 'idle' && (draft.status = 'succeeded');
-            });
+        if (!dataSources) {
+            return;
         }
+
+        setState(draft => {
+            draft.data = dataSources;
+            draft.status === 'idle' && (draft.status = 'succeeded');
+        });
     }, [dataSources, setState]);
 
     if (status === 'idle') {

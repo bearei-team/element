@@ -44,6 +44,8 @@ export interface ProcessEventOptions {
 export type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
     ProcessEventOptions;
 
+export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
+
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
@@ -59,19 +61,25 @@ const processPressOut = (
     const responseActive = indexKey !== activeKey;
     const {locationX = 0, locationY = 0} = event.nativeEvent;
 
-    if (responseActive) {
-        setState(draft => {
-            draft.activeLocation = {locationX, locationY};
-        });
-
-        onActive?.(indexKey);
+    if (!responseActive) {
+        return;
     }
+
+    setState(draft => {
+        draft.activeLocation = {locationX, locationY};
+    });
+
+    onActive?.(indexKey);
 };
 
-const processStateChange = (
-    {event, eventName, setState, activeKey, indexKey, onActive} = {} as OnStateChangeOptions &
-        ProcessPressOutOptions,
-) => {
+const processStateChange = ({
+    event,
+    eventName,
+    setState,
+    activeKey,
+    indexKey,
+    onActive,
+}: ProcessStateChangeOptions) => {
     const nextEvent = {
         layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () =>
@@ -118,12 +126,7 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     const underlayColor = theme.palette.surface.onSurface;
     const active = typeof activeKey === 'string' ? activeKey === indexKey : undefined;
     const defaultActive = defaultActiveKey === indexKey;
-    const [{height, color}] = useAnimated({
-        active,
-        block,
-        defaultActive,
-    });
-
+    const [{height, color}] = useAnimated({active, block, defaultActive});
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
             processStateChange({...options, activeKey, indexKey, onActive, setState}),
@@ -144,31 +147,39 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     const iconElement = useMemo(() => cloneElement(icon, {eventName}), [eventName, icon]);
 
     useEffect(() => {
-        if (status === 'idle') {
-            setState(draft => {
-                draft.rippleCentered = !!defaultActive;
-                draft.status = 'succeeded';
-            });
+        if (status !== 'idle') {
+            return;
         }
+
+        setState(draft => {
+            draft.rippleCentered = !!defaultActive;
+            draft.status = 'succeeded';
+        });
     }, [defaultActive, setState, status]);
 
     useEffect(() => {
-        if (status === 'succeeded' && active) {
-            setState(draft => {
-                if (!draft.activeLocation?.locationX) {
-                    draft.rippleCentered = true;
-                    draft.activeLocation = {locationX: 0, locationY: 0};
-                }
-            });
+        if (!(status === 'succeeded' && active)) {
+            return;
         }
+
+        setState(draft => {
+            if (draft.activeLocation?.locationX) {
+                return;
+            }
+
+            draft.rippleCentered = true;
+            draft.activeLocation = {locationX: 0, locationY: 0};
+        });
     }, [active, setState, status]);
 
     useEffect(() => {
-        if (activeLocation?.locationX) {
-            setState(draft => {
-                draft.rippleCentered = false;
-            });
+        if (!activeLocation?.locationX) {
+            return;
         }
+
+        setState(draft => {
+            draft.rippleCentered = false;
+        });
     }, [activeLocation, setState]);
 
     if (status === 'idle') {

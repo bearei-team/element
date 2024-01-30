@@ -21,9 +21,7 @@ export const useAnimated = ({listVisible}: UseAnimatedOptions) => {
 
     useEffect(() => {
         requestAnimationFrame(() =>
-            animatedTiming(innerHeightAnimated, {
-                toValue: listVisible ? 1 : 0,
-            }).start(),
+            animatedTiming(innerHeightAnimated, {toValue: listVisible ? 1 : 0}).start(),
         );
     }, [animatedTiming, innerHeightAnimated, listVisible]);
 
