@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect, useId} from 'react';
+import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
@@ -126,6 +126,32 @@ export const CardBase: FC<CardBaseProps> = ({
 
     const [border] = useBorder({type, borderColor});
 
+    const primaryButtonElement = useMemo(
+        () =>
+            primaryButton ?? (
+                <Button
+                    disabled={disabled}
+                    labelText={primaryButtonLabelText}
+                    onPress={onPrimaryButtonPress}
+                    type="filled"
+                />
+            ),
+        [disabled, onPrimaryButtonPress, primaryButton, primaryButtonLabelText],
+    );
+
+    const secondaryButtonElement = useMemo(
+        () =>
+            secondaryButton ?? (
+                <Button
+                    disabled={disabled}
+                    labelText={secondaryButtonLabelText}
+                    onPress={onSecondaryButtonPress}
+                    type="outlined"
+                />
+            ),
+        [disabled, onSecondaryButtonPress, secondaryButton, secondaryButtonLabelText],
+    );
+
     useEffect(() => {
         if (status !== 'idle') {
             return;
@@ -171,23 +197,11 @@ export const CardBase: FC<CardBaseProps> = ({
         eventName,
         id,
         onEvent,
-        type,
+        primaryButton: primaryButtonElement,
+        secondaryButton: secondaryButtonElement,
         titleText,
+        type,
         underlayColor,
-        primaryButton: primaryButton ?? (
-            <Button
-                labelText={primaryButtonLabelText}
-                onPress={onPrimaryButtonPress}
-                type="filled"
-            />
-        ),
-        secondaryButton: secondaryButton ?? (
-            <Button
-                labelText={secondaryButtonLabelText}
-                onPress={onSecondaryButtonPress}
-                type="outlined"
-            />
-        ),
         renderStyle: {
             ...border,
             backgroundColor,

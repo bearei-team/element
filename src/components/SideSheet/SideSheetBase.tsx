@@ -92,64 +92,83 @@ export const SideSheetBase: FC<SideSheetBaseProps> = ({
     const [{backgroundColor, innerTranslateX}] = useAnimated({finished, position, visible});
     const onClose = useCallback(() => processClose({setState}), [setState]);
     const onShow = useCallback(() => processModalShow({setState}), [setState]);
+    const backIconElement = useMemo(
+        () =>
+            backIcon ?? (
+                <IconButton
+                    icon={<Icon type="filled" name="arrowBack" />}
+                    onPressOut={onClose}
+                    type="standard"
+                />
+            ),
+        [backIcon, onClose],
+    );
+
+    const closeIconElement = useMemo(
+        () =>
+            closeIcon ?? (
+                <IconButton
+                    icon={<Icon type="filled" name="close" />}
+                    onPressOut={onClose}
+                    type="standard"
+                />
+            ),
+        [closeIcon, onClose],
+    );
+
+    const primaryButtonElement = useMemo(
+        () =>
+            primaryButton ?? (
+                <Button
+                    labelText={primaryButtonLabelText}
+                    onPress={onPrimaryButtonPress}
+                    type="filled"
+                />
+            ),
+        [onPrimaryButtonPress, primaryButton, primaryButtonLabelText],
+    );
+
+    const secondaryButtonElement = useMemo(
+        () =>
+            secondaryButton ?? (
+                <Button
+                    labelText={secondaryButtonLabelText}
+                    onPress={onSecondaryButtonPress}
+                    type="outlined"
+                />
+            ),
+        [onSecondaryButtonPress, secondaryButton, secondaryButtonLabelText],
+    );
+
     const sheet = useMemo(
         () =>
             render({
                 ...renderProps,
-                backIcon: backIcon ?? (
-                    <IconButton
-                        icon={<Icon type="filled" name="arrowBack" />}
-                        onPressOut={onClose}
-                        type="standard"
-                    />
-                ),
-                closeIcon: closeIcon ?? (
-                    <IconButton
-                        icon={<Icon type="filled" name="close" />}
-                        onPressOut={onClose}
-                        type="standard"
-                    />
-                ),
+                backIcon: backIconElement,
+                closeIcon: closeIconElement,
                 headlineText,
                 id,
-                primaryButton: primaryButton ?? (
-                    <Button
-                        labelText={primaryButtonLabelText}
-                        onPress={onPrimaryButtonPress}
-                        type="filled"
-                    />
-                ),
-                secondaryButton: secondaryButton ?? (
-                    <Button
-                        labelText={secondaryButtonLabelText}
-                        onPress={onSecondaryButtonPress}
-                        type="outlined"
-                    />
-                ),
                 onShow,
                 position,
+                primaryButton: primaryButtonElement,
                 renderStyle: {backgroundColor, innerTranslateX},
+                secondaryButton: secondaryButtonElement,
                 visible: modalVisible,
             }),
         [
-            backIcon,
+            backIconElement,
             backgroundColor,
-            closeIcon,
+            closeIconElement,
             headlineText,
             id,
             innerTranslateX,
             modalVisible,
-            onClose,
-            onPrimaryButtonPress,
-            onSecondaryButtonPress,
             onShow,
             position,
-            primaryButton,
-            primaryButtonLabelText,
+            primaryButtonElement,
             render,
             renderProps,
-            secondaryButton,
-            secondaryButtonLabelText,
+            secondaryButtonElement,
         ],
     );
 
