@@ -1,4 +1,4 @@
-import {FC, cloneElement, useEffect, useId, useMemo} from 'react';
+import {FC, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
 import {Updater, useImmer} from 'use-immer';
 import {ComponentStatus} from '../Common/interface';
 import {ListDataSource} from '../List/List';
@@ -46,9 +46,8 @@ const processFAB = (fab?: React.JSX.Element | undefined) => {
     return cloneElement(fab, {disabledElevation: true, size: 'medium'});
 };
 
-const processActive =
-    ({onActive, setState}: ProcessActiveOptions) =>
-    (key?: string) => {
+const processActive = ({onActive, setState}: ProcessActiveOptions, key?: string) => {
+    if (typeof key !== 'undefined') {
         setState(draft => {
             if (draft.activeKey !== key) {
                 draft.activeKey = key;
@@ -56,7 +55,8 @@ const processActive =
         });
 
         onActive?.(key);
-    };
+    }
+};
 
 const initialState = {
     activeKey: undefined as string | undefined,
@@ -75,11 +75,12 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
 }) => {
     const [{activeKey, data, status}, setState] = useImmer(initialState);
     const id = useId();
-    const onActive = useMemo(
-        () => processActive({onActive: renderProps.onActive, setState}),
+    const onActive = useCallback(
+        (key?: string) => processActive({onActive: renderProps.onActive, setState}, key),
         [renderProps.onActive, setState],
     );
 
+    const fabElement = useMemo(() => processFAB(fab), [fab]);
     const children = useMemo(
         () =>
             renderItems({
@@ -116,7 +117,7 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
     return render({
         ...renderProps,
         children,
-        fab: processFAB(fab),
+        fab: fabElement,
         id,
     });
 };

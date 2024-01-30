@@ -1,4 +1,4 @@
-import {useEffect, useMemo} from 'react';
+import {useCallback, useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {HOOK} from '../../../hooks/hook';
@@ -19,11 +19,8 @@ export interface ProcessCloseAnimatedOptions {
     heightAnimated: Animated.Value;
 }
 
-const processCloseAnimated =
-    ({animatedTiming, heightAnimated}: ProcessCloseAnimatedOptions) =>
-    (finished?: () => void) => {
-        requestAnimationFrame(() => animatedTiming(heightAnimated, {toValue: 0}).start(finished));
-    };
+const processCloseAnimated = ({animatedTiming, heightAnimated}: ProcessCloseAnimatedOptions) =>
+    requestAnimationFrame(() => animatedTiming(heightAnimated, {toValue: 0}).start());
 
 export const useAnimated = ({
     close,
@@ -46,7 +43,7 @@ export const useAnimated = ({
         outputRange: [0, layoutHeight],
     });
 
-    const onCloseAnimated = useMemo(
+    const onCloseAnimated = useCallback(
         () => processCloseAnimated({animatedTiming, heightAnimated}),
         [animatedTiming, heightAnimated],
     );

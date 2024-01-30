@@ -1,4 +1,4 @@
-import {useEffect, useMemo} from 'react';
+import {useCallback, useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {HOOK} from '../../../hooks/hook';
@@ -60,27 +60,25 @@ const processExitAnimated =
         });
     };
 
-const processAnimatedTiming =
-    ({
+const processAnimatedTiming = ({
+    activeRipple,
+    animatedTiming,
+    minDuration,
+    onEntryAnimatedEnd,
+    opacityAnimated,
+    scaleAnimated,
+    sequence,
+}: ProcessAnimatedTimingOptions) => {
+    const entryAnimated = processEntryAnimated({scaleAnimated, minDuration, animatedTiming});
+    const exitAnimated = processExitAnimated({
         activeRipple,
         animatedTiming,
-        minDuration,
-        onEntryAnimatedEnd,
         opacityAnimated,
         scaleAnimated,
-        sequence,
-    }: ProcessAnimatedTimingOptions) =>
-    () => {
-        const entryAnimated = processEntryAnimated({scaleAnimated, minDuration, animatedTiming});
-        const exitAnimated = processExitAnimated({
-            activeRipple,
-            animatedTiming,
-            opacityAnimated,
-            scaleAnimated,
-        });
+    });
 
-        entryAnimated(() => onEntryAnimatedEnd?.(sequence, exitAnimated));
-    };
+    entryAnimated(() => onEntryAnimatedEnd?.(sequence, exitAnimated));
+};
 
 export const useAnimated = ({
     active,
@@ -107,12 +105,12 @@ export const useAnimated = ({
         outputRange: [0, 1],
     });
 
-    const exitAnimated = useMemo(
-        () => processExitAnimated({animatedTiming, activeRipple, opacityAnimated, scaleAnimated}),
+    const exitAnimated = useCallback(
+        () => processExitAnimated({animatedTiming, activeRipple, opacityAnimated, scaleAnimated})(),
         [activeRipple, animatedTiming, opacityAnimated, scaleAnimated],
     );
 
-    const processAnimated = useMemo(
+    const processAnimated = useCallback(
         () =>
             processAnimatedTiming({
                 activeRipple,

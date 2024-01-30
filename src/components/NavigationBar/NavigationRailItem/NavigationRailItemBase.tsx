@@ -1,4 +1,4 @@
-import {FC, cloneElement, useEffect, useId, useMemo} from 'react';
+import {FC, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -68,26 +68,27 @@ const processPressOut = (
     }
 };
 
-const processStateChange =
-    ({setState, activeKey, indexKey, onActive}: ProcessPressOutOptions) =>
-    (_state: State, {event, eventName} = {} as OnStateChangeOptions) => {
-        const nextEvent = {
-            layout: () => processLayout(event as LayoutChangeEvent, {setState}),
-            pressOut: () =>
-                processPressOut(event as GestureResponderEvent, {
-                    activeKey,
-                    indexKey,
-                    onActive,
-                    setState,
-                }),
-        };
-
-        nextEvent[eventName as keyof typeof nextEvent]?.();
-
-        setState(draft => {
-            draft.eventName = eventName;
-        });
+const processStateChange = (
+    {event, eventName, setState, activeKey, indexKey, onActive} = {} as OnStateChangeOptions &
+        ProcessPressOutOptions,
+) => {
+    const nextEvent = {
+        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+        pressOut: () =>
+            processPressOut(event as GestureResponderEvent, {
+                activeKey,
+                indexKey,
+                onActive,
+                setState,
+            }),
     };
+
+    nextEvent[eventName as keyof typeof nextEvent]?.();
+
+    setState(draft => {
+        draft.eventName = eventName;
+    });
+};
 
 const initialState = {
     activeLocation: undefined as Pick<NativeTouchEvent, 'locationX' | 'locationY'> | undefined,
@@ -123,8 +124,9 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
         defaultActive,
     });
 
-    const onStateChange = useMemo(
-        () => processStateChange({activeKey, indexKey, onActive, setState}),
+    const onStateChange = useCallback(
+        (_state: State, options = {} as OnStateChangeOptions) =>
+            processStateChange({...options, activeKey, indexKey, onActive, setState}),
         [activeKey, indexKey, onActive, setState],
     );
 

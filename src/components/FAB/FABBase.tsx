@@ -1,4 +1,4 @@
-import {FC, useEffect, useId, useMemo} from 'react';
+import {FC, useCallback, useEffect, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
@@ -56,21 +56,27 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processStateChange =
-    ({disabledElevation, setState}: ProcessStateChangeOptions) =>
-    (state: State, {event, eventName} = {} as OnStateChangeOptions) => {
-        if (eventName === 'layout') {
-            processLayout(event as LayoutChangeEvent, {setState});
-        }
+const processStateChange = (
+    state: State,
+    {
+        event,
+        eventName,
+        disabledElevation,
+        setState,
+    }: OnStateChangeOptions & ProcessStateChangeOptions,
+) => {
+    if (eventName === 'layout') {
+        processLayout(event as LayoutChangeEvent, {setState});
+    }
 
-        if (eventName !== 'layout') {
-            !disabledElevation && processElevation(state, {setState});
-        }
+    if (eventName !== 'layout') {
+        !disabledElevation && processElevation(state, {setState});
+    }
 
-        setState(draft => {
-            draft.eventName = eventName;
-        });
-    };
+    setState(draft => {
+        draft.eventName = eventName;
+    });
+};
 
 const initialState = {
     elevation: undefined as ElevationLevel,
@@ -90,22 +96,14 @@ export const FABBase: FC<FABBaseProps> = ({
     const [{elevation, layout, eventName}, setState] = useImmer(initialState);
     const [underlayColor] = useUnderlayColor({type});
     const id = useId();
-    const onStateChange = useMemo(
-        () => processStateChange({disabledElevation, setState}),
+    const onStateChange = useCallback(
+        (state: State, options = {} as OnStateChangeOptions) =>
+            processStateChange(state, {...options, disabledElevation, setState}),
         [disabledElevation, setState],
     );
 
-    const [onEvent] = HOOK.useOnEvent({
-        ...renderProps,
-        disabled,
-        onStateChange,
-    });
-
-    const [{backgroundColor, color}] = useAnimated({
-        disabled,
-        type,
-    });
-
+    const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
+    const [{backgroundColor, color}] = useAnimated({disabled, type});
     const [iconElement] = useIcon({eventName, type, icon, disabled});
 
     useEffect(() => {
@@ -117,7 +115,7 @@ export const FABBase: FC<FABBaseProps> = ({
     }, [disabled, disabledElevation, setState]);
 
     useEffect(() => {
-        if (!disabled) {
+        if (disabled) {
             setState(draft => {
                 draft.eventName = 'none';
             });

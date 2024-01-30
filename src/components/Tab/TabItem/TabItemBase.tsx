@@ -1,4 +1,4 @@
-import {FC, useId, useMemo} from 'react';
+import {FC, useCallback, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
@@ -51,25 +51,26 @@ const processPressOut = ({activeKey, indexKey, onActive}: ProcessPressOutOptions
     }
 };
 
-const processStateChange =
-    ({activeKey, indexKey, setState, onActive}: ProcessPressOutOptions) =>
-    (_state: State, {event, eventName} = {} as OnStateChangeOptions) => {
-        const nextEvent = {
-            layout: () => processLayout(event as LayoutChangeEvent, {setState}),
-            pressOut: () => processPressOut({activeKey, indexKey, setState, onActive}),
-        };
-
-        nextEvent[eventName as keyof typeof nextEvent]?.();
-
-        setState(draft => {
-            draft.eventName = eventName;
-        });
+const processStateChange = (
+    {event, eventName, activeKey, indexKey, setState, onActive} = {} as OnStateChangeOptions &
+        ProcessPressOutOptions,
+) => {
+    const nextEvent = {
+        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+        pressOut: () => processPressOut({activeKey, indexKey, setState, onActive}),
     };
 
-const processLabelTextLayout =
-    ({onLabelTextLayout, indexKey, id}: ProcessLabelTextLayoutOptions) =>
-    (event: LayoutChangeEvent) =>
-        onLabelTextLayout?.(event, (indexKey ?? id)!);
+    nextEvent[eventName as keyof typeof nextEvent]?.();
+
+    setState(draft => {
+        draft.eventName = eventName;
+    });
+};
+
+const processLabelTextLayout = (
+    event: LayoutChangeEvent,
+    {onLabelTextLayout, indexKey, id}: ProcessLabelTextLayoutOptions,
+) => onLabelTextLayout?.(event, (indexKey ?? id)!);
 
 const initialState = {
     layout: {} as LayoutRectangle,
@@ -96,13 +97,15 @@ export const TabItemBase: FC<TabItemBaseProps> = ({
     const underlayColor =
         active || defaultActive ? theme.palette.primary.primary : theme.palette.surface.onSurface;
 
-    const onStateChange = useMemo(
-        () => processStateChange({activeKey, indexKey, setState, onActive}),
+    const onStateChange = useCallback(
+        (_state: State, options = {} as OnStateChangeOptions) =>
+            processStateChange({...options, activeKey, indexKey, setState, onActive}),
         [activeKey, indexKey, onActive, setState],
     );
 
-    const onLabelLayout = useMemo(
-        () => processLabelTextLayout({indexKey, id, onLabelTextLayout}),
+    const onLabelLayout = useCallback(
+        (event: LayoutChangeEvent) =>
+            processLabelTextLayout(event, {indexKey, id, onLabelTextLayout}),
         [id, indexKey, onLabelTextLayout],
     );
 

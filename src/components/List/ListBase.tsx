@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, useCallback, useEffect, useId} from 'react';
 import {ListRenderItemInfo} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {ComponentStatus} from '../Common/interface';
@@ -30,9 +30,11 @@ export interface ProcessEventOptions {
 export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
 export type ProcessCloseOptions = ProcessEventOptions & Pick<RenderProps, 'onClose'>;
 
-const processActive =
-    ({onActive, setState}: ProcessActiveOptions) =>
-    (key?: string) => {
+const processActive = (
+    key = undefined as string | undefined,
+    {onActive, setState}: ProcessActiveOptions,
+) => {
+    if (typeof key !== 'undefined') {
         setState(draft => {
             if (draft.activeKey !== key) {
                 draft.activeKey = key;
@@ -40,17 +42,21 @@ const processActive =
         });
 
         onActive?.(key);
-    };
+    }
+};
 
-const processClose =
-    ({onClose, setState}: ProcessCloseOptions) =>
-    (key?: string) => {
+const processClose = (
+    key = undefined as string | undefined,
+    {onClose, setState}: ProcessCloseOptions,
+) => {
+    if (typeof key !== 'undefined') {
         setState(draft => {
             draft.data = draft.data.filter(datum => datum.key !== key);
         });
 
         onClose?.(key);
-    };
+    }
+};
 
 const renderItem = ({
     activeKey,
@@ -99,13 +105,13 @@ export const ListBase: FC<ListBaseProps> = ({
 }) => {
     const [{data, status, activeKey}, setState] = useImmer(initialState);
     const id = useId();
-    const onActive = useMemo(
-        () => processActive({onActive: renderProps.onActive, setState}),
+    const onActive = useCallback(
+        (key?: string) => processActive(key, {onActive: renderProps.onActive, setState}),
         [renderProps.onActive, setState],
     );
 
-    const onClose = useMemo(
-        () => processClose({onClose: renderProps.onClose, setState}),
+    const onClose = useCallback(
+        (key?: string) => processClose(key, {onClose: renderProps.onClose, setState}),
         [renderProps.onClose, setState],
     );
 

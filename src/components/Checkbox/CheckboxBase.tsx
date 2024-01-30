@@ -1,4 +1,4 @@
-import {FC, useEffect, useId, useMemo} from 'react';
+import {FC, useCallback, useEffect, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
@@ -49,20 +49,25 @@ const processPressOut = ({setState, active, indeterminate, onActive}: ProcessPre
     onActive?.(nextActive);
 };
 
-const processStateChange =
-    ({setState, onActive, active, indeterminate}: ProcessPressOutOptions) =>
-    (_state: State, {event, eventName} = {} as OnStateChangeOptions) => {
-        const nextEvent = {
-            layout: () => processLayout(event as LayoutChangeEvent, {setState}),
-            pressOut: () => processPressOut({setState, onActive, active, indeterminate}),
-        };
-
-        nextEvent[eventName as keyof typeof nextEvent]?.();
-
-        setState(draft => {
-            draft.eventName = eventName;
-        });
+const processStateChange = ({
+    event,
+    eventName,
+    setState,
+    onActive,
+    active,
+    indeterminate,
+}: OnStateChangeOptions & ProcessPressOutOptions) => {
+    const nextEvent = {
+        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+        pressOut: () => processPressOut({setState, onActive, active, indeterminate}),
     };
+
+    nextEvent[eventName as keyof typeof nextEvent]?.();
+
+    setState(draft => {
+        draft.eventName = eventName;
+    });
+};
 
 const initialState = {
     active: undefined as boolean | undefined,
@@ -97,8 +102,9 @@ export const CheckboxBase: FC<CheckboxBaseProps> = ({
         type,
     });
 
-    const onStateChange = useMemo(
-        () => processStateChange({active, indeterminate, onActive, setState}),
+    const onStateChange = useCallback(
+        (_state: State, options = {} as OnStateChangeOptions) =>
+            processStateChange({...options, active, indeterminate, onActive, setState}),
         [active, indeterminate, onActive, setState],
     );
 

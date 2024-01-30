@@ -1,4 +1,4 @@
-import {FC, RefObject, useId, useMemo, useRef} from 'react';
+import {FC, RefObject, useCallback, useId, useMemo, useRef} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
@@ -78,29 +78,28 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processStateChange =
-    ({setState, ref}: ProcessStateChangeOptions) =>
-    (state: State, {event, eventName} = {} as OnStateChangeOptions) => {
-        const nextEvent = {
-            focus: () => processFocus(ref),
-            layout: () => processLayout(event as LayoutChangeEvent, {setState}),
-            pressOut: () => processFocus(ref),
-        };
-
-        nextEvent[eventName as keyof typeof nextEvent]?.();
-
-        processState(state, {eventName, setState});
+const processStateChange = (
+    state: State,
+    {event, eventName, setState, ref}: OnStateChangeOptions & ProcessStateChangeOptions,
+) => {
+    const nextEvent = {
+        focus: () => processFocus(ref),
+        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+        pressOut: () => processFocus(ref),
     };
 
-const processChangeText =
-    ({setState, onChangeText}: ProcessChangeTextOptions) =>
-    (text: string) => {
-        setState(draft => {
-            draft.value = text;
-        });
+    nextEvent[eventName as keyof typeof nextEvent]?.();
 
-        onChangeText?.(text);
-    };
+    processState(state, {eventName, setState});
+};
+
+const processChangeText = (text: string, {setState, onChangeText}: ProcessChangeTextOptions) => {
+    setState(draft => {
+        draft.value = text;
+    });
+
+    onChangeText?.(text);
+};
 
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
 const renderTextInput = ({renderStyle, id, ...inputProps}: RenderTextInputProps) => (
@@ -154,13 +153,15 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
             : theme.palette.surface.onSurfaceVariant;
 
     const underlayColor = theme.palette.surface.onSurface;
-    const onChangeText = useMemo(
-        () => processChangeText({setState, onChangeText: textInputProps.onChangeText}),
+    const onChangeText = useCallback(
+        (text: string) =>
+            processChangeText(text, {setState, onChangeText: textInputProps.onChangeText}),
         [setState, textInputProps.onChangeText],
     );
 
-    const onStateChange = useMemo(
-        () => processStateChange({setState, ref: inputRef}),
+    const onStateChange = useCallback(
+        (nextState: State, options = {} as OnStateChangeOptions) =>
+            processStateChange(nextState, {...options, setState, ref: inputRef}),
         [inputRef, setState],
     );
 

@@ -1,5 +1,5 @@
 import {RuleItem} from 'async-validator';
-import {FC, useEffect, useId, useMemo} from 'react';
+import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {useImmer} from 'use-immer';
 import {UTIL} from '../../../utils/util';
 import {FormStore} from '../formStore';
@@ -21,28 +21,27 @@ export interface ProcessValidateOptions {
     rules?: RuleItem[];
 }
 
-const processValueChange =
-    ({name, setFieldValue}: ProcessValueChangeOptions) =>
-    (value?: unknown) => {
-        if (name) {
-            setFieldValue({[name]: value});
-        }
-    };
+const processValueChange = (value: unknown, {name, setFieldValue}: ProcessValueChangeOptions) => {
+    if (name) {
+        setFieldValue({[name]: value});
+    }
+};
 
-const processValidate =
-    ({rules, validateFirst, name}: ProcessValidateOptions) =>
-    async (value: unknown) => {
-        const isValidate = name && rules?.length !== 0;
+const processValidate = async (
+    value: unknown,
+    {rules, validateFirst, name}: ProcessValidateOptions,
+) => {
+    const isValidate = name && rules?.length !== 0;
 
-        if (isValidate) {
-            return UTIL.validate({
-                name,
-                rules,
-                validateFirst,
-                value,
-            });
-        }
-    };
+    if (isValidate) {
+        return UTIL.validate({
+            name,
+            rules,
+            validateFirst,
+            value,
+        });
+    }
+};
 
 const initialState = {};
 export const FormItemBase: FC<FormItemBaseProps> = ({
@@ -59,13 +58,13 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
     const errors = getFieldError(name)?.errors;
     const fieldValue = name ? getFieldValue(name) : name;
     const id = useId();
-    const onValueChange = useMemo(
-        () => processValueChange({name, setFieldValue}),
+    const onValueChange = useCallback(
+        (value: unknown) => processValueChange(value, {name, setFieldValue}),
         [name, setFieldValue],
     );
 
-    const validate = useMemo(
-        () => processValidate({name, rules, validateFirst}),
+    const validate = useCallback(
+        (value: unknown) => processValidate(value, {name, rules, validateFirst}),
         [name, rules, validateFirst],
     );
 

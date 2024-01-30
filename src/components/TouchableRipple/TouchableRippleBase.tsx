@@ -1,4 +1,4 @@
-import {FC, useEffect, useId, useMemo} from 'react';
+import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {GestureResponderEvent, LayoutChangeEvent, LayoutRectangle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
@@ -44,23 +44,28 @@ export type ProcessRippleExitOptions = ProcessEventOptions &
     Pick<RenderProps, 'onRippleAnimatedEnd'>;
 
 export type ProcessRippleEntryAnimatedEndOptions = ProcessEventOptions &
-    Pick<RenderProps, 'onRippleAnimatedEnd'> & {activeRipple: boolean};
+    Pick<RenderProps, 'onRippleAnimatedEnd'> & {activeRipple: boolean} & {
+        exitAnimated: (finished?: () => void) => void;
+    };
 
-const processAddRipple =
-    ({setState, activeRipple}: ProcessAddRippleOptions) =>
-    ({locationX, locationY}: AddRippleOptions) =>
-        setState(draft => {
-            const exist = activeRipple && Object.keys(draft.rippleSequence).length !== 0;
+const processAddRipple = ({
+    locationX,
+    locationY,
+    setState,
+    activeRipple,
+}: AddRippleOptions & ProcessAddRippleOptions) =>
+    setState(draft => {
+        const exist = activeRipple && Object.keys(draft.rippleSequence).length !== 0;
 
-            if (exist) {
-                return;
-            }
+        if (exist) {
+            return;
+        }
 
-            draft.rippleSequence[`${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`] = {
-                exitAnimated: undefined,
-                location: {locationX, locationY},
-            };
-        });
+        draft.rippleSequence[`${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`] = {
+            exitAnimated: undefined,
+            location: {locationX, locationY},
+        };
+    });
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -77,59 +82,27 @@ const processPressOut = (
     const {locationX, locationY} = event.nativeEvent;
 
     if (!activeRipple) {
-        processAddRipple({activeRipple, setState})({locationX, locationY});
+        processAddRipple({activeRipple, setState, locationX, locationY});
     }
 };
 
-const processStateChange =
-    ({setState, activeRipple}: ProcessStateChangeOptions) =>
-    (_state: State, {event, eventName} = {} as OnStateChangeOptions) => {
-        const nextEvent = {
-            layout: () => processLayout(event as LayoutChangeEvent, {setState}),
-            pressOut: () =>
-                processPressOut(event as GestureResponderEvent, {setState, activeRipple}),
-        };
-
-        nextEvent[eventName as keyof typeof nextEvent]?.();
+const processStateChange = ({
+    event,
+    eventName,
+    setState,
+    activeRipple,
+}: OnStateChangeOptions & ProcessStateChangeOptions) => {
+    const nextEvent = {
+        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+        pressOut: () => processPressOut(event as GestureResponderEvent, {setState, activeRipple}),
     };
 
-const processRippleExit =
-    ({setState, onRippleAnimatedEnd}: ProcessRippleExitOptions) =>
-    () => {
-        const rippleExit = ([sequence, {exitAnimated}]: [string, Ripple]) =>
-            exitAnimated?.(() => {
-                setState(draft => {
-                    if (draft.rippleSequence[sequence]) {
-                        delete draft.rippleSequence[sequence];
-                    }
-                });
+    nextEvent[eventName as keyof typeof nextEvent]?.();
+};
 
-                onRippleAnimatedEnd?.();
-            });
-
-        setState(draft => {
-            Object.entries(draft.rippleSequence).forEach(rippleExit);
-        });
-    };
-
-/**
- * Handle the event after the ripple entry animation is finished, if it is an active ripple,
- * then the ripple exit animation should be added to the ripple sequence to be used.
- * Otherwise, execute the ripple exit animation directly.
- */
-const processRippleEntryAnimatedEnd =
-    ({activeRipple, setState, onRippleAnimatedEnd}: ProcessRippleEntryAnimatedEndOptions) =>
-    (sequence: string, exitAnimated: (finished?: () => void) => void) => {
-        if (activeRipple) {
-            return setState(draft => {
-                draft.rippleSequence[sequence] &&
-                    (draft.rippleSequence[sequence].exitAnimated = exitAnimated);
-
-                draft.status === 'idle' && (draft.status = 'succeeded');
-            });
-        }
-
-        exitAnimated(() => {
+const processRippleExit = ({setState, onRippleAnimatedEnd}: ProcessRippleExitOptions) => {
+    const rippleExit = ([sequence, {exitAnimated}]: [string, Ripple]) =>
+        exitAnimated?.(() => {
             setState(draft => {
                 if (draft.rippleSequence[sequence]) {
                     delete draft.rippleSequence[sequence];
@@ -138,7 +111,45 @@ const processRippleEntryAnimatedEnd =
 
             onRippleAnimatedEnd?.();
         });
-    };
+
+    setState(draft => {
+        Object.entries(draft.rippleSequence).forEach(rippleExit);
+    });
+};
+
+/**
+ * Handle the event after the ripple entry animation is finished, if it is an active ripple,
+ * then the ripple exit animation should be added to the ripple sequence to be used.
+ * Otherwise, execute the ripple exit animation directly.
+ */
+const processRippleEntryAnimatedEnd = (
+    sequence: string,
+    {
+        activeRipple,
+        setState,
+        onRippleAnimatedEnd,
+        exitAnimated,
+    }: ProcessRippleEntryAnimatedEndOptions,
+) => {
+    if (activeRipple) {
+        return setState(draft => {
+            draft.rippleSequence[sequence] &&
+                (draft.rippleSequence[sequence].exitAnimated = exitAnimated);
+
+            draft.status === 'idle' && (draft.status = 'succeeded');
+        });
+    }
+
+    exitAnimated(() => {
+        setState(draft => {
+            if (draft.rippleSequence[sequence]) {
+                delete draft.rippleSequence[sequence];
+            }
+        });
+
+        onRippleAnimatedEnd?.();
+    });
+};
 
 const renderRipples = (rippleSequence: RippleSequence, props: Omit<RippleProps, 'sequence'>) =>
     Object.entries(rippleSequence).map(([sequence, {location}]) => (
@@ -165,8 +176,9 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
     const [{rippleSequence, status, layout}, setState] = useImmer(initialState);
     const id = useId();
     const activeRipple = [typeof defaultActive, typeof active].includes('boolean');
-    const onStateChange = useMemo(
-        () => processStateChange({setState, activeRipple}),
+    const onStateChange = useCallback(
+        (_state: State, options = {} as OnStateChangeOptions) =>
+            processStateChange({...options, setState, activeRipple}),
         [activeRipple, setState],
     );
 
@@ -176,17 +188,23 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
         onStateChange,
     });
 
-    const onEntryAnimatedEnd = useMemo(
-        () => processRippleEntryAnimatedEnd({activeRipple, setState, onRippleAnimatedEnd}),
+    const onEntryAnimatedEnd = useCallback(
+        (sequence: string, exitAnimated: (finished?: () => void) => void) =>
+            processRippleEntryAnimatedEnd(sequence, {
+                activeRipple,
+                exitAnimated,
+                onRippleAnimatedEnd,
+                setState,
+            }),
         [activeRipple, onRippleAnimatedEnd, setState],
     );
 
-    const addRipple = useMemo(
-        () => processAddRipple({activeRipple, setState}),
+    const addRipple = useCallback(
+        (options: AddRippleOptions) => processAddRipple({...options, activeRipple, setState}),
         [activeRipple, setState],
     );
 
-    const rippleExit = useMemo(
+    const rippleExit = useCallback(
         () => processRippleExit({onRippleAnimatedEnd, setState}),
         [onRippleAnimatedEnd, setState],
     );

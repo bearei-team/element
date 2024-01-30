@@ -1,4 +1,4 @@
-import {FC, useEffect, useId, useMemo} from 'react';
+import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -74,27 +74,29 @@ const processPressOut = (
     }
 };
 
-const processStateChange =
-    ({activeKey, indexKey, onActive, setState}: ProcessPressOutOptions) =>
-    (state: State, {event, eventName} = {} as OnStateChangeOptions) => {
-        const nextEvent = {
-            layout: () => processLayout(event as LayoutChangeEvent, {setState}),
-            pressOut: () =>
-                processPressOut(event as GestureResponderEvent, {
-                    activeKey,
-                    indexKey,
-                    onActive,
-                    setState,
-                }),
-        };
-
-        nextEvent[eventName as keyof typeof nextEvent]?.();
-
-        setState(draft => {
-            draft.eventName = eventName;
-            draft.state = state;
-        });
+const processStateChange = (
+    state: State,
+    {event, eventName, activeKey, indexKey, onActive, setState} = {} as OnStateChangeOptions &
+        ProcessPressOutOptions,
+) => {
+    const nextEvent = {
+        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+        pressOut: () =>
+            processPressOut(event as GestureResponderEvent, {
+                activeKey,
+                indexKey,
+                onActive,
+                setState,
+            }),
     };
+
+    nextEvent[eventName as keyof typeof nextEvent]?.();
+
+    setState(draft => {
+        draft.eventName = eventName;
+        draft.state = state;
+    });
+};
 
 const processTrailingEvent = (
     eventName: EventName,
@@ -107,23 +109,22 @@ const processTrailingEvent = (
     callback?.();
 };
 
-const processTrailingPressOut =
-    ({close, indexKey, onCloseAnimated, onClose}: ProcessTrailingPressOutOptions) =>
-    () => {
-        if (close) {
-            onCloseAnimated?.(() => onClose?.(indexKey));
-        }
-    };
+const processTrailingPressOut = ({
+    close,
+    indexKey,
+    onCloseAnimated,
+    onClose,
+}: ProcessTrailingPressOutOptions) => {
+    if (close) {
+        onCloseAnimated?.(() => onClose?.(indexKey));
+    }
+};
 
-const processTrailingHoverIn =
-    ({setState}: ProcessEventOptions) =>
-    () =>
-        processTrailingEvent('hoverIn', {setState});
+const processTrailingHoverIn = ({setState}: ProcessEventOptions) =>
+    processTrailingEvent('hoverIn', {setState});
 
-const processTrailingHoverOut =
-    ({setState}: ProcessEventOptions) =>
-    () =>
-        processTrailingEvent('hoverOut', {setState});
+const processTrailingHoverOut = ({setState}: ProcessEventOptions) =>
+    processTrailingEvent('hoverOut', {setState});
 
 const initialState = {
     activeLocation: undefined as Pick<NativeTouchEvent, 'locationX' | 'locationY'> | undefined,
@@ -165,8 +166,9 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
         trailingEventName,
     });
 
-    const onStateChange = useMemo(
-        () => processStateChange({activeKey, indexKey, setState, onActive}),
+    const onStateChange = useCallback(
+        (nextState: State, options = {} as OnStateChangeOptions) =>
+            processStateChange(nextState, {...options, activeKey, indexKey, setState, onActive}),
         [activeKey, indexKey, onActive, setState],
     );
 
@@ -175,9 +177,9 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
         onStateChange,
     });
 
-    const onTrailingHoverIn = useMemo(() => processTrailingHoverIn({setState}), [setState]);
-    const onTrailingHoverOut = useMemo(() => processTrailingHoverOut({setState}), [setState]);
-    const onTrailingPressOut = useMemo(
+    const onTrailingHoverIn = useCallback(() => processTrailingHoverIn({setState}), [setState]);
+    const onTrailingHoverOut = useCallback(() => processTrailingHoverOut({setState}), [setState]);
+    const onTrailingPressOut = useCallback(
         () => processTrailingPressOut({close, indexKey, onCloseAnimated, onClose, setState}),
         [close, indexKey, onClose, onCloseAnimated, setState],
     );

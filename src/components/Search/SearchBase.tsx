@@ -1,4 +1,4 @@
-import {FC, RefObject, useEffect, useId, useMemo, useRef} from 'react';
+import {FC, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextInput, View} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
@@ -40,29 +40,35 @@ export type ProcessListActiveOptions = Pick<RenderProps, 'data' | 'onActive'> & 
 export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions;
 export type ProcessStateOptions = Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions;
 
-const processListActive =
-    ({data, setState, onActive}: ProcessListActiveOptions) =>
-    (key?: string) => {
-        const nextValue = data?.find(datum => datum.key === key)?.headline;
+const processListActive = ({data, setState, onActive}: ProcessListActiveOptions, key?: string) => {
+    if (!key) {
+        return;
+    }
 
-        if (nextValue) {
-            setState(draft => {
-                draft.activeKey = key;
-                draft.value = nextValue;
-            });
+    const nextValue = data?.find(datum => datum.key === key)?.headline;
 
-            onActive?.(key);
-        }
-    };
+    if (!nextValue) {
+        return;
+    }
+
+    setState(draft => {
+        draft.activeKey = key;
+        draft.value = nextValue;
+    });
+
+    onActive?.(key);
+};
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
 const processState = (state: State, {eventName, setState}: ProcessStateOptions) => {
     setState(draft => {
         if (draft.state === 'focused') {
-            if (eventName === 'blur') {
-                draft.eventName = eventName;
-                draft.state = state;
+            if (eventName !== 'blur') {
+                return;
             }
+
+            draft.eventName = eventName;
+            draft.state = state;
 
             return;
         }
@@ -77,41 +83,43 @@ const processLayout = (_event: LayoutChangeEvent, {setState}: ProcessEventOption
         draft.status = 'succeeded';
     });
 
-const processStateChange =
-    ({ref, setState}: ProcessStateChangeOptions) =>
-    (state: State, {event, eventName} = {} as OnStateChangeOptions) => {
-        const nextEvent = {
-            focus: () => processFocus(ref),
-            layout: () => processLayout(event as LayoutChangeEvent, {setState}),
-            pressOut: () => processFocus(ref),
-        };
-
-        nextEvent[eventName as keyof typeof nextEvent]?.();
-
-        processState(state, {eventName, setState});
+const processStateChange = (
+    state: State,
+    {event, eventName, ref, setState} = {} as OnStateChangeOptions & ProcessStateChangeOptions,
+) => {
+    const nextEvent = {
+        focus: () => processFocus(ref),
+        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+        pressOut: () => processFocus(ref),
     };
 
-const processChangeText =
-    ({setState, data = [], onChangeText}: ProcessChangeTextOptions) =>
-    (text: string) => {
-        const matchData = text
-            ? data.filter(({headline, supportingText}) => {
-                  const matchText = text.toLowerCase();
-                  const headlineMatch = !!headline?.toLowerCase().includes(matchText);
-                  const supportingTextMatch = !!supportingText?.toLowerCase().includes(matchText);
+    nextEvent[eventName as keyof typeof nextEvent]?.();
 
-                  return headlineMatch || supportingTextMatch;
-              })
-            : [];
+    processState(state, {eventName, setState});
+};
 
-        setState(draft => {
-            draft.activeKey = '';
-            draft.data = matchData;
-            draft.value = text;
-        });
+const processChangeText = (
+    text: string,
+    {setState, data = [], onChangeText}: ProcessChangeTextOptions,
+) => {
+    const matchData = text
+        ? data.filter(({headline, supportingText}) => {
+              const matchText = text.toLowerCase();
+              const headlineMatch = !!headline?.toLowerCase().includes(matchText);
+              const supportingTextMatch = !!supportingText?.toLowerCase().includes(matchText);
 
-        onChangeText?.(text);
-    };
+              return headlineMatch || supportingTextMatch;
+          })
+        : [];
+
+    setState(draft => {
+        draft.activeKey = '';
+        draft.data = matchData;
+        draft.value = text;
+    });
+
+    onChangeText?.(text);
+};
 
 const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
     <TextField testID={`search__control--${id}`}>
@@ -164,8 +172,9 @@ export const SearchBase: FC<SearchBaseProps> = ({
     const theme = useTheme();
     const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
     const underlayColor = theme.palette.surface.onSurface;
-    const onStateChange = useMemo(
-        () => processStateChange({ref: textFieldRef, setState}),
+    const onStateChange = useCallback(
+        (nextState: State, options = {} as OnStateChangeOptions) =>
+            processStateChange(nextState, {...options, ref: textFieldRef, setState}),
         [setState],
     );
 
@@ -174,13 +183,13 @@ export const SearchBase: FC<SearchBaseProps> = ({
         onStateChange,
     });
 
-    const onListActive = useMemo(
-        () => processListActive({data, setState, onActive}),
+    const onListActive = useCallback(
+        (key?: string) => processListActive({data, setState, onActive}, key),
         [data, onActive, setState],
     );
 
-    const onChangeText = useMemo(
-        () => processChangeText({data: dataSources, setState}),
+    const onChangeText = useCallback(
+        (text: string) => processChangeText(text, {data: dataSources, setState}),
         [dataSources, setState],
     );
 

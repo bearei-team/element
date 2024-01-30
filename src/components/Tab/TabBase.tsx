@@ -1,4 +1,4 @@
-import {FC, ReactNode, useEffect, useId, useMemo} from 'react';
+import {FC, ReactNode, useCallback, useEffect, useId, useMemo} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, Text, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
@@ -40,68 +40,64 @@ export interface ProcessEventOptions {
 export type ProcessLayoutOptions = Pick<RenderProps, 'onLayout'> & ProcessEventOptions;
 export type ProcessActiveOptions = Pick<RenderProps, 'onActive'> & ProcessEventOptions;
 
-const processLayout =
-    ({setState, onLayout}: ProcessLayoutOptions) =>
-    (event: LayoutChangeEvent) => {
-        const nativeEventLayout = event.nativeEvent.layout;
+const processLayout = (event: LayoutChangeEvent, {setState, onLayout}: ProcessLayoutOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
 
-        setState(draft => {
-            draft.layout = nativeEventLayout;
-        });
+    setState(draft => {
+        draft.layout = nativeEventLayout;
+    });
 
-        onLayout?.(event);
-    };
+    onLayout?.(event);
+};
 
-const processItemLayout =
-    ({setState}: ProcessEventOptions) =>
-    (event: LayoutChangeEvent) => {
-        const nativeEventLayout = event.nativeEvent.layout;
+const processItemLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
 
-        setState(draft => {
-            if (!draft.itemLayout.width) {
-                draft.itemLayout = nativeEventLayout;
-            }
-        });
-    };
+    setState(draft => {
+        if (!draft.itemLayout.width) {
+            draft.itemLayout = nativeEventLayout;
+        }
+    });
+};
 
-const processItemLabelTextLayout =
-    ({setState}: ProcessEventOptions) =>
-    (event: LayoutChangeEvent, key?: string) => {
-        const nativeEventLayout = event.nativeEvent.layout;
+const processItemLabelTextLayout = (
+    event: LayoutChangeEvent,
+    {key, setState}: ProcessEventOptions & {key?: string},
+) => {
+    const nativeEventLayout = event.nativeEvent.layout;
 
-        setState(draft => {
-            const dataItem = draft.data.find(datum => datum.key === key);
+    setState(draft => {
+        const dataItem = draft.data.find(datum => datum.key === key);
 
-            if (!dataItem) {
-                return;
-            }
+        if (!dataItem) {
+            return;
+        }
 
-            dataItem.labelTextLayout = nativeEventLayout;
-        });
-    };
+        dataItem.labelTextLayout = nativeEventLayout;
+    });
+};
 
-const processActive =
-    ({setState, onActive}: ProcessActiveOptions) =>
-    (key?: string) => {
-        setState(draft => {
-            if (draft.activeKey !== key) {
-                const draftActiveItemIndex = draft.data.findIndex(
-                    datum => datum.key === draft.activeKey,
-                );
+const processActive = ({setState, onActive}: ProcessActiveOptions, key?: string) => {
+    if (!key) {
+        return;
+    }
 
-                const nextActiveItemIndex = draft.data.findIndex(datum => datum.key === key);
+    setState(draft => {
+        if (draft.activeKey !== key) {
+            return;
+        }
 
-                draft.activeIndicatorOffsetPosition =
-                    nextActiveItemIndex > draftActiveItemIndex
-                        ? 'horizontalEnd'
-                        : 'horizontalStart';
+        const draftActiveItemIndex = draft.data.findIndex(datum => datum.key === draft.activeKey);
+        const nextActiveItemIndex = draft.data.findIndex(datum => datum.key === key);
 
-                draft.activeKey = key;
-            }
-        });
+        draft.activeIndicatorOffsetPosition =
+            nextActiveItemIndex > draftActiveItemIndex ? 'horizontalEnd' : 'horizontalStart';
 
-        onActive?.(key);
-    };
+        draft.activeKey = key;
+    });
+
+    onActive?.(key);
+};
 
 const renderItem = ({
     data,
@@ -160,18 +156,27 @@ export const TabBase: FC<TabBaseProps> = ({
         layout,
     });
 
-    const onActive = useMemo(
-        () => processActive({setState, onActive: renderProps.onActive}),
+    const onActive = useCallback(
+        (key?: string) => processActive({setState, onActive: renderProps.onActive}, key),
         [renderProps.onActive, setState],
     );
 
-    const onLayout = useMemo(
-        () => processLayout({setState, onLayout: renderProps.onLayout}),
+    const onLayout = useCallback(
+        (event: LayoutChangeEvent) =>
+            processLayout(event, {setState, onLayout: renderProps.onLayout}),
         [renderProps.onLayout, setState],
     );
 
-    const onItemLayout = useMemo(() => processItemLayout({setState}), [setState]);
-    const onLabelTextLayout = useMemo(() => processItemLabelTextLayout({setState}), [setState]);
+    const onItemLayout = useCallback(
+        (event: LayoutChangeEvent) => processItemLayout(event, {setState}),
+        [setState],
+    );
+
+    const onLabelTextLayout = useCallback(
+        (event: LayoutChangeEvent, key?: string) =>
+            processItemLabelTextLayout(event, {key, setState}),
+        [setState],
+    );
 
     const items = useMemo(
         () =>
@@ -216,7 +221,6 @@ export const TabBase: FC<TabBaseProps> = ({
         activeIndicatorOffsetPosition,
         children,
         data,
-
         headerVisible,
         id,
         items,

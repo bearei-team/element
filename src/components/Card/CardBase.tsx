@@ -5,27 +5,23 @@ import {HOOK} from '../../hooks/hook';
 import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
 import {ComponentStatus, EventName, State} from '../Common/interface';
 import {ElevationLevel} from '../Elevation/Elevation';
-import {ButtonProps} from './Button';
+import {CardProps} from './Card';
 import {useAnimated} from './useAnimated';
 import {useBorder} from './useBorder';
-import {useIcon} from './useIcon';
 import {useUnderlayColor} from './useUnderlayColor';
 
-export interface RenderProps extends ButtonProps {
+export interface RenderProps extends CardProps {
     defaultElevation: ElevationLevel;
     elevation: ElevationLevel;
     eventName: EventName;
     onEvent: OnEvent;
-    onContentLayout: (event: LayoutChangeEvent) => void;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
         width: number;
-        contentWidth: number;
-        contentHeight: number;
     };
 }
 
-export interface ButtonBaseProps extends ButtonProps {
+export interface CardBaseProps extends CardProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
@@ -34,8 +30,7 @@ export interface ProcessEventOptions {
 }
 
 export type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
-export type ProcessLayoutOptions = Pick<RenderProps, 'type' | 'block'> & ProcessEventOptions;
-export type ProcessContentLayoutOptions = Pick<RenderProps, 'block'> & ProcessEventOptions;
+export type ProcessLayoutOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) => {
     const nextElevation = type === 'elevated' ? 1 : 0;
@@ -65,35 +60,20 @@ const processElevation = (state: State, {type = 'filled', setState}: ProcessElev
     }
 };
 
-const processLayout = (event: LayoutChangeEvent, {block, setState}: ProcessLayoutOptions) => {
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessLayoutOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
-    if (block) {
-        setState(draft => {
-            draft.layout = nativeEventLayout;
-        });
-    }
-};
-
-const processContentLayout = (
-    event: LayoutChangeEvent,
-    {block, setState}: ProcessContentLayoutOptions,
-) => {
-    const nativeEventLayout = event.nativeEvent.layout;
-
-    if (!block) {
-        setState(draft => {
-            draft.contentLayout = nativeEventLayout;
-        });
-    }
+    setState(draft => {
+        draft.layout = nativeEventLayout;
+    });
 };
 
 const processStateChange = (
     state: State,
-    {event, eventName, type, block, setState}: OnStateChangeOptions & ProcessLayoutOptions,
+    {event, eventName, type, setState}: OnStateChangeOptions & ProcessLayoutOptions,
 ) => {
     if (eventName === 'layout') {
-        processLayout(event as LayoutChangeEvent, {block, setState});
+        processLayout(event as LayoutChangeEvent, {setState});
     }
 
     processElevation(state, {type, setState});
@@ -104,7 +84,6 @@ const processStateChange = (
 };
 
 const initialState = {
-    contentLayout: {} as LayoutRectangle,
     defaultElevation: undefined as ElevationLevel,
     elevation: undefined as ElevationLevel,
     eventName: 'none' as EventName,
@@ -112,29 +91,22 @@ const initialState = {
     status: 'idle' as ComponentStatus,
 };
 
-export const ButtonBase: FC<ButtonBaseProps> = ({
-    block,
+export const CardBase: FC<CardBaseProps> = ({
     disabled,
-    icon,
-    labelText = 'Label',
+    titleText = 'Title',
     render,
     type = 'filled',
     ...renderProps
 }) => {
-    const [{contentLayout, defaultElevation, elevation, eventName, layout, status}, setState] =
+    const [{defaultElevation, elevation, eventName, layout, status}, setState] =
         useImmer(initialState);
 
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
-    const onContentLayout = useCallback(
-        (event: LayoutChangeEvent) => processContentLayout(event, {block, setState}),
-        [block, setState],
-    );
-
     const onStateChange = useCallback(
         (state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange(state, {...options, block, type, setState}),
-        [block, setState, type],
+            processStateChange(state, {...options, type, setState}),
+        [setState, type],
     );
 
     const [onEvent] = HOOK.useOnEvent({
@@ -149,7 +121,6 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
         type,
     });
 
-    const [iconElement] = useIcon({eventName, type, icon, disabled});
     const [border] = useBorder({type, borderColor});
 
     useEffect(() => {
@@ -185,24 +156,19 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
 
     return render({
         ...renderProps,
-        block,
         defaultElevation,
         disabled,
         elevation,
         eventName,
-        icon: iconElement,
         id,
-        labelText,
-        onContentLayout,
         onEvent,
         type,
+        titleText,
         underlayColor,
         renderStyle: {
             ...border,
             backgroundColor,
             color,
-            contentHeight: contentLayout.height,
-            contentWidth: contentLayout.width,
             height: layout.height,
             width: layout.width,
         },

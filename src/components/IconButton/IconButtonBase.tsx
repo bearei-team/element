@@ -1,4 +1,4 @@
-import {FC, useEffect, useId, useMemo} from 'react';
+import {FC, useCallback, useEffect, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
@@ -35,17 +35,19 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processStateChange =
-    ({setState}: ProcessEventOptions) =>
-    (_state: State, {event, eventName} = {} as OnStateChangeOptions) => {
-        if (eventName === 'layout') {
-            processLayout(event as LayoutChangeEvent, {setState});
-        }
+const processStateChange = ({
+    event,
+    eventName,
+    setState,
+}: OnStateChangeOptions & ProcessEventOptions) => {
+    if (eventName === 'layout') {
+        processLayout(event as LayoutChangeEvent, {setState});
+    }
 
-        setState(draft => {
-            draft.eventName = eventName;
-        });
-    };
+    setState(draft => {
+        draft.eventName = eventName;
+    });
+};
 
 const initialState = {
     eventName: 'none' as EventName,
@@ -62,7 +64,11 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
     const [{eventName, layout}, setState] = useImmer(initialState);
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
-    const onStateChange = useMemo(() => processStateChange({setState}), [setState]);
+    const onStateChange = useCallback(
+        (_state: State, options = {} as OnStateChangeOptions) =>
+            processStateChange({...options, setState}),
+        [setState],
+    );
     const [onEvent] = HOOK.useOnEvent({
         ...renderProps,
         disabled,
@@ -74,7 +80,7 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
     const [border] = useBorder({borderColor});
 
     useEffect(() => {
-        if (!disabled) {
+        if (disabled) {
             setState(draft => {
                 draft.eventName = 'none';
             });

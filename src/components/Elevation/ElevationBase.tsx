@@ -1,4 +1,4 @@
-import {FC, useId, useMemo} from 'react';
+import {FC, useCallback, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
@@ -34,13 +34,15 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processStateChange =
-    ({setState}: ProcessEventOptions) =>
-    (_state: State, {event, eventName} = {} as OnStateChangeOptions) => {
-        if (eventName === 'layout') {
-            processLayout(event as LayoutChangeEvent, {setState});
-        }
-    };
+const processStateChange = ({
+    event,
+    eventName,
+    setState,
+}: OnStateChangeOptions & ProcessEventOptions) => {
+    if (eventName === 'layout') {
+        processLayout(event as LayoutChangeEvent, {setState});
+    }
+};
 
 const initialState = {
     layout: {} as LayoutRectangle,
@@ -59,7 +61,12 @@ export const ElevationBase: FC<ElevationBaseProps> = ({
         level,
     });
 
-    const onStateChange = useMemo(() => processStateChange({setState}), [setState]);
+    const onStateChange = useCallback(
+        (_state: State, options = {} as OnStateChangeOptions) =>
+            processStateChange({...options, setState}),
+        [setState],
+    );
+
     const [onEvent] = HOOK.useOnEvent({
         ...renderProps,
         onStateChange: onStateChange,

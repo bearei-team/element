@@ -1,4 +1,4 @@
-import {useMemo} from 'react';
+import {useCallback} from 'react';
 import {
     GestureResponderEvent,
     LayoutChangeEvent,
@@ -70,99 +70,115 @@ export type ProcessBlurEventOptions = ProcessEventOptions & Pick<UseHandleEventO
 export type processLayoutEventEventOptions = ProcessEventOptions &
     Pick<UseHandleEventOptions, 'onLayout'>;
 
-const processStateChange =
-    ({disabled, onStateChange}: ProcessStateChangeOptions) =>
-    (state: State, {callback, event, eventName} = {} as ProcessStateOptions) => {
-        if (disabled && eventName !== 'layout') {
-            return;
-        }
+const processStateChange = (
+    state: State,
+    {
+        callback,
+        event,
+        eventName,
+        disabled,
+        onStateChange,
+    }: ProcessStateOptions & ProcessStateChangeOptions,
+) => {
+    if (disabled && eventName !== 'layout') {
+        return;
+    }
 
-        onStateChange?.(state, {event, eventName});
-        callback?.();
-    };
+    onStateChange?.(state, {event, eventName});
+    callback?.();
+};
 
-const processPressInEvent =
-    ({processState, onPressIn}: ProcessPressInEventOptions) =>
-    (event: GestureResponderEvent) =>
-        processState('pressIn', {
-            callback: () => onPressIn?.(event),
-            event,
-            eventName: 'pressIn',
-        });
+const processPressInEvent = (
+    event: GestureResponderEvent,
+    {processState, onPressIn}: ProcessPressInEventOptions,
+) =>
+    processState('pressIn', {
+        callback: () => onPressIn?.(event),
+        event,
+        eventName: 'pressIn',
+    });
 
-const processPressEvent =
-    ({processState, onPress, mobile}: ProcessPressEventOptions) =>
-    (event: GestureResponderEvent) =>
-        processState(mobile ? 'enabled' : 'hovered', {
-            callback: () => onPress?.(event),
-            event,
-            eventName: 'press',
-        });
+const processPressEvent = (
+    event: GestureResponderEvent,
+    {processState, onPress, mobile}: ProcessPressEventOptions,
+) =>
+    processState(mobile ? 'enabled' : 'hovered', {
+        callback: () => onPress?.(event),
+        event,
+        eventName: 'press',
+    });
 
-const processLongPressEvent =
-    ({processState, onLongPress}: processLongPressEventEventOptions) =>
-    (event: GestureResponderEvent) =>
-        processState('longPressIn', {
-            callback: () => onLongPress?.(event),
-            event,
-            eventName: 'longPress',
-        });
+const processLongPressEvent = (
+    event: GestureResponderEvent,
+    {processState, onLongPress}: processLongPressEventEventOptions,
+) =>
+    processState('longPressIn', {
+        callback: () => onLongPress?.(event),
+        event,
+        eventName: 'longPress',
+    });
 
-const processPressOutEvent =
-    ({processState, onPressOut, mobile}: processPressOutEventEventOptions) =>
-    (event: GestureResponderEvent) =>
-        processState(mobile ? 'enabled' : 'hovered', {
-            callback: () => onPressOut?.(event),
-            event,
-            eventName: 'pressOut',
-        });
+const processPressOutEvent = (
+    event: GestureResponderEvent,
+    {processState, onPressOut, mobile}: processPressOutEventEventOptions,
+) =>
+    processState(mobile ? 'enabled' : 'hovered', {
+        callback: () => onPressOut?.(event),
+        event,
+        eventName: 'pressOut',
+    });
 
-const processHoverIntEvent =
-    ({processState, onHoverIn}: processHoverIntEventEventOptions) =>
-    (event: MouseEvent) => {
-        processState('hovered', {
-            callback: () => onHoverIn?.(event),
-            event,
-            eventName: 'hoverIn',
-        });
-    };
+const processHoverIntEvent = (
+    event: MouseEvent,
+    {processState, onHoverIn}: processHoverIntEventEventOptions,
+) => {
+    processState('hovered', {
+        callback: () => onHoverIn?.(event),
+        event,
+        eventName: 'hoverIn',
+    });
+};
 
-const processHoverOutEvent =
-    ({processState, onHoverOut}: processHoverOutEventEventOptions) =>
-    (event: MouseEvent) => {
-        processState('enabled', {
-            callback: () => onHoverOut?.(event),
-            event,
-            eventName: 'hoverOut',
-        });
-    };
+const processHoverOutEvent = (
+    event: MouseEvent,
+    {processState, onHoverOut}: processHoverOutEventEventOptions,
+) => {
+    processState('enabled', {
+        callback: () => onHoverOut?.(event),
+        event,
+        eventName: 'hoverOut',
+    });
+};
 
-const processFocusEvent =
-    ({processState, onFocus}: processFocusEventEventOptions) =>
-    (event: NativeSyntheticEvent<TargetedEvent>) =>
-        processState('focused', {
-            callback: () => onFocus?.(event),
-            event,
-            eventName: 'focus',
-        });
+const processFocusEvent = (
+    event: NativeSyntheticEvent<TargetedEvent>,
+    {processState, onFocus}: processFocusEventEventOptions,
+) =>
+    processState('focused', {
+        callback: () => onFocus?.(event),
+        event,
+        eventName: 'focus',
+    });
 
-const processBlurEvent =
-    ({processState, onBlur}: ProcessBlurEventOptions) =>
-    (event: NativeSyntheticEvent<TargetedEvent>) =>
-        processState('enabled', {
-            callback: () => onBlur?.(event),
-            event,
-            eventName: 'blur',
-        });
+const processBlurEvent = (
+    event: NativeSyntheticEvent<TargetedEvent>,
+    {processState, onBlur}: ProcessBlurEventOptions,
+) =>
+    processState('enabled', {
+        callback: () => onBlur?.(event),
+        event,
+        eventName: 'blur',
+    });
 
-const processLayoutEvent =
-    ({processState, onLayout}: processLayoutEventEventOptions) =>
-    (event: LayoutChangeEvent) =>
-        processState('enabled', {
-            callback: () => onLayout?.(event),
-            event,
-            eventName: 'layout',
-        });
+const processLayoutEvent = (
+    event: LayoutChangeEvent,
+    {processState, onLayout}: processLayoutEventEventOptions,
+) =>
+    processState('enabled', {
+        callback: () => onLayout?.(event),
+        event,
+        eventName: 'layout',
+    });
 
 export const useOnEvent = ({
     disabled,
@@ -179,53 +195,57 @@ export const useOnEvent = ({
 }: UseHandleEventOptions) => {
     const theme = useTheme();
     const mobile = ['ios', 'android'].includes(theme.OS);
-    const processState = useMemo(
-        () => processStateChange({disabled, onStateChange}),
+    const processState = useCallback(
+        (state: State, options = {} as ProcessStateOptions) =>
+            processStateChange(state, {...options, disabled, onStateChange}),
         [disabled, onStateChange],
     );
 
-    const processPressIn = useMemo(
-        () => processPressInEvent({processState, onPressIn}),
+    const processPressIn = useCallback(
+        (event: GestureResponderEvent) => processPressInEvent(event, {processState, onPressIn}),
         [onPressIn, processState],
     );
 
-    const processPress = useMemo(
-        () => processPressEvent({processState, onPress, mobile}),
+    const processPress = useCallback(
+        (event: GestureResponderEvent) => processPressEvent(event, {processState, onPress, mobile}),
         [mobile, onPress, processState],
     );
 
-    const processLongPress = useMemo(
-        () => processLongPressEvent({processState, onLongPress}),
+    const processLongPress = useCallback(
+        (event: GestureResponderEvent) => processLongPressEvent(event, {processState, onLongPress}),
         [onLongPress, processState],
     );
 
-    const processPressOut = useMemo(
-        () => processPressOutEvent({processState, onPressOut, mobile}),
+    const processPressOut = useCallback(
+        (event: GestureResponderEvent) =>
+            processPressOutEvent(event, {processState, onPressOut, mobile}),
         [mobile, onPressOut, processState],
     );
 
-    const processHoverIn = useMemo(
-        () => processHoverIntEvent({processState, onHoverIn}),
+    const processHoverIn = useCallback(
+        (event: MouseEvent) => processHoverIntEvent(event, {processState, onHoverIn}),
         [onHoverIn, processState],
     );
 
-    const processHoverOut = useMemo(
-        () => processHoverOutEvent({processState, onHoverOut}),
+    const processHoverOut = useCallback(
+        (event: MouseEvent) => processHoverOutEvent(event, {processState, onHoverOut}),
         [onHoverOut, processState],
     );
 
-    const processFocus = useMemo(
-        () => processFocusEvent({processState, onFocus}),
+    const processFocus = useCallback(
+        (event: NativeSyntheticEvent<TargetedEvent>) =>
+            processFocusEvent(event, {processState, onFocus}),
         [onFocus, processState],
     );
 
-    const processBlur = useMemo(
-        () => processBlurEvent({processState, onBlur}),
+    const processBlur = useCallback(
+        (event: NativeSyntheticEvent<TargetedEvent>) =>
+            processBlurEvent(event, {processState, onBlur}),
         [onBlur, processState],
     );
 
-    const processLayout = useMemo(
-        () => processLayoutEvent({processState, onLayout}),
+    const processLayout = useCallback(
+        (event: LayoutChangeEvent) => processLayoutEvent(event, {processState, onLayout}),
         [onLayout, processState],
     );
 
