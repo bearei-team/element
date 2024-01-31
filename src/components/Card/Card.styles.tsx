@@ -1,14 +1,37 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
+import {RenderProps} from './CardBase';
 
-export const Container = styled(View)``;
-export const Inner = styled(Shape)`
+export interface ContainerProps extends Pick<RenderProps, 'block'> {
+    width?: number;
+}
+
+export type InnerProps = ContainerProps;
+
+export const Container = styled(View)<ContainerProps>`
+    ${({block, width = 0}) =>
+        block
+            ? css`
+                  width: 100%;
+              `
+            : css`
+                  width: ${width}px;
+              `}
+`;
+
+export const Inner = styled(Shape)<InnerProps>`
     position: relative;
 
     ${({theme}) =>
         css`
             width: ${theme.adaptSize(theme.spacing.small * 45)}px;
+        `}
+
+    ${({block, width = 0}) =>
+        block &&
+        css`
+            width: ${width}px;
         `}
 `;
 

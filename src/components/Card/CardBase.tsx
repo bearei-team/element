@@ -15,12 +15,15 @@ export interface RenderProps extends CardProps {
     defaultElevation: ElevationLevel;
     elevation: ElevationLevel;
     eventName: EventName;
+    onInnerLayout: (event: LayoutChangeEvent) => void;
     onEvent: OnEvent;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
         subColor: AnimatedInterpolation;
         titleColor: AnimatedInterpolation;
         width: number;
+        innerWidth: number;
+        innerHeight: number;
     };
 }
 
@@ -33,7 +36,9 @@ export interface ProcessEventOptions {
 }
 
 export type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
-export type ProcessLayoutOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
+export type ProcessLayoutOptions = Pick<RenderProps, 'block' | 'type'> & ProcessEventOptions;
+export type ProcessInnerLayoutOptions = Omit<ProcessLayoutOptions, 'type'>;
+export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) =>
     type === 'elevated' ? 1 : 0;
@@ -62,7 +67,11 @@ const processElevation = (state: State, {type = 'filled', setState}: ProcessElev
     });
 };
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessLayoutOptions) => {
+const processLayout = (event: LayoutChangeEvent, {block, setState}: ProcessLayoutOptions) => {
+    if (!block) {
+        return;
+    }
+
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState(draft => {
@@ -70,12 +79,27 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessLayoutOption
     });
 };
 
+const processInnerLayout = (
+    event: LayoutChangeEvent,
+    {block, setState}: ProcessInnerLayoutOptions,
+) => {
+    if (block) {
+        return;
+    }
+
+    const nativeEventLayout = event.nativeEvent.layout;
+
+    setState(draft => {
+        draft.innerLayout = nativeEventLayout;
+    });
+};
+
 const processStateChange = (
     state: State,
-    {event, eventName, type, setState}: OnStateChangeOptions & ProcessLayoutOptions,
+    {event, eventName, type, setState, block}: ProcessStateChangeOptions,
 ) => {
     if (eventName === 'layout') {
-        processLayout(event as LayoutChangeEvent, {setState});
+        processLayout(event as LayoutChangeEvent, {setState, block});
     }
 
     processElevation(state, {type, setState});
@@ -91,9 +115,11 @@ const initialState = {
     eventName: 'none' as EventName,
     layout: {} as LayoutRectangle,
     status: 'idle' as ComponentStatus,
+    innerLayout: {} as LayoutRectangle,
 };
 
 export const CardBase: FC<CardBaseProps> = ({
+    block,
     disabled,
     titleText = 'Title',
     render,
@@ -106,15 +132,20 @@ export const CardBase: FC<CardBaseProps> = ({
     onSecondaryButtonPress,
     ...renderProps
 }) => {
-    const [{defaultElevation, elevation, eventName, layout, status}, setState] =
+    const [{defaultElevation, elevation, eventName, layout, status, innerLayout}, setState] =
         useImmer(initialState);
 
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
+    const onInnerLayout = useCallback(
+        (event: LayoutChangeEvent) => processInnerLayout(event, {block, setState}),
+        [block, setState],
+    );
+
     const onStateChange = useCallback(
         (state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange(state, {...options, type, setState}),
-        [setState, type],
+            processStateChange(state, {...options, type, block, setState}),
+        [block, setState, type],
     );
 
     const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
@@ -125,7 +156,6 @@ export const CardBase: FC<CardBaseProps> = ({
     });
 
     const [border] = useBorder({type, borderColor});
-
     const primaryButtonElement = useMemo(
         () =>
             primaryButton ?? (
@@ -197,6 +227,7 @@ export const CardBase: FC<CardBaseProps> = ({
         eventName,
         id,
         onEvent,
+        onInnerLayout,
         primaryButton: primaryButtonElement,
         secondaryButton: secondaryButtonElement,
         titleText,
@@ -210,6 +241,8 @@ export const CardBase: FC<CardBaseProps> = ({
             subColor,
             titleColor,
             width: layout.width,
+            innerHeight: innerLayout.height,
+            innerWidth: innerLayout.width,
         },
     });
 };

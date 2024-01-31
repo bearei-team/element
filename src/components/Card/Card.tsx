@@ -32,6 +32,7 @@ export interface CardProps extends TouchableRippleProps {
     supportingText?: string;
     titleText?: string;
     type?: CardType;
+    block?: boolean;
 }
 
 const AnimatedInner = Animated.createAnimatedComponent(Inner);
@@ -54,26 +55,42 @@ const render = ({
     supportingText,
     titleText,
     underlayColor,
+    onInnerLayout,
+    block,
 }: RenderProps) => {
-    const {width, height, backgroundColor, titleColor, subColor, ...border} = renderStyle;
+    const {
+        width,
+        height,
+        backgroundColor,
+        titleColor,
+        subColor,
+        innerHeight,
+        innerWidth,
+        ...border
+    } = renderStyle;
     const shape = 'medium';
+    const hoveredLayout = {height: height || innerHeight, width: width || innerWidth};
+    const {onLayout, ...onTouchableRippleEvent} = onEvent;
 
     return (
-        <Container testID={`card--${id}`}>
+        <Container testID={`card--${id}`} block={block} width={innerWidth} onLayout={onLayout}>
             <Elevation defaultLevel={defaultElevation} level={elevation} shape={shape}>
                 <TouchableRipple
-                    {...onEvent}
+                    {...onTouchableRippleEvent}
                     disabled={disabled}
                     shape={shape}
                     underlayColor={underlayColor}>
                     <AnimatedInner
                         shape={shape}
+                        onLayout={onInnerLayout}
                         style={{
                             ...(typeof style === 'object' && style),
                             ...border,
                             backgroundColor,
                         }}
-                        testID={`card__inner--${id}`}>
+                        testID={`card__inner--${id}`}
+                        block={block}
+                        width={width}>
                         <Content testID={`card__content--${id}`}>
                             <ContentHeader testID={`card__contentHeader--${id}`}>
                                 {titleText && (
@@ -121,11 +138,11 @@ const render = ({
                         </Content>
 
                         <Hovered
-                            width={width}
-                            height={height}
                             eventName={eventName}
+                            height={hoveredLayout.height}
                             shape={shape}
                             underlayColor={underlayColor}
+                            width={hoveredLayout.width}
                         />
                     </AnimatedInner>
                 </TouchableRipple>
