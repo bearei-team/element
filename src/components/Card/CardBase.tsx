@@ -221,6 +221,7 @@ export const CardBase: FC<CardBaseProps> = ({
 
     return render({
         ...renderProps,
+        block,
         defaultElevation,
         disabled,
         elevation,

@@ -25,7 +25,7 @@ export const Inner = styled(Shape)<InnerProps>`
 
     ${({theme}) =>
         css`
-            width: ${theme.adaptSize(theme.spacing.small * 45)}px;
+            min-width: ${theme.adaptSize(theme.spacing.small * 45)}px;
         `}
 
     ${({block, width = 0}) =>

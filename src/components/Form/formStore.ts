@@ -41,7 +41,11 @@ export interface FormStore<T extends Store> {
         (name?: (keyof T)[]): T;
         (name?: keyof T): T[keyof T];
     };
-    getInitialValue: () => T;
+    getInitialValue: {
+        (): T;
+        (name?: (keyof T)[]): T;
+        (name?: keyof T): T[keyof T];
+    };
     isFieldTouched: (name?: NamePath<T>) => boolean;
     resetField: (name?: NamePath<T>) => void;
     setCallback: (callback: Callback<T>) => void;
@@ -198,18 +202,22 @@ export const formStore = <T extends Store>(): FormStore<T> => {
         }
 
         Object.assign(initialValue, value);
-
-        const names = getFieldEntitiesName();
-        const fieldValue = {} as T;
-
-        Object.entries(initialValue)
-            .filter(([key]) => names.includes(key))
-            .forEach(([key, nextValue]) => Object.assign(fieldValue, {[key]: nextValue}));
-
-        setFieldValue(fieldValue);
     };
 
-    const getInitialValue = () => initialValue;
+    function getInitialValue(): T;
+    function getInitialValue(name?: keyof T): T[keyof T];
+    function getInitialValue(name?: (keyof T)[]): T;
+    function getInitialValue(name?: NamePath<T>) {
+        const names = UTIL.namePath(name);
+        const value = {} as T;
+        const processValue = (entityName?: keyof T) =>
+            entityName && Object.assign(value, {[entityName]: initialValue[entityName]});
+
+        names ? names.forEach(processValue) : Object.assign(value, initialValue);
+
+        return !Array.isArray(name) && name ? value[name] : value;
+    }
+
     const setCallback = (callbackValue: Callback<T>) => Object.assign(callback, callbackValue);
     const setFieldTouched = (name?: keyof T, touched = false) => {
         if (!name) {
@@ -281,7 +289,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
             }
 
             setFieldValue({[entityName]: undefined} as T, {
-                response: false,
+                skipValidate: true,
             });
 
             setFieldError({[entityName]: undefined} as Error<T>);

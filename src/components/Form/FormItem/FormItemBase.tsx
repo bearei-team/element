@@ -2,6 +2,7 @@ import {RuleItem} from 'async-validator';
 import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {useImmer} from 'use-immer';
 import {UTIL} from '../../../utils/util';
+import {ComponentStatus} from '../../Common/interface';
 import {FormStore} from '../formStore';
 import {useFormContext} from '../useFormContext';
 import {FormItemProps} from './FormItem';
@@ -43,7 +44,7 @@ const processValidate = async (
     }
 };
 
-const initialState = {};
+const initialState = {status: 'idle' as ComponentStatus, shouldUpdate: {}};
 export const FormItemBase: FC<FormItemBaseProps> = ({
     labelText,
     name,
@@ -53,18 +54,30 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
     validateFirst,
     ...renderProps
 }) => {
-    const [, setState] = useImmer(initialState);
-    const {getFieldError, getFieldValue, setFieldValue, signInField} = useFormContext();
+    const [{status}, setState] = useImmer(initialState);
+    const {
+        getFieldError,
+        getFieldValue,
+        setFieldValue,
+        signInField,
+        getInitialValue,
+        isFieldTouched,
+    } = useFormContext();
+
     const errors = getFieldError(name)?.errors;
-    const fieldValue = name ? getFieldValue(name) : name;
+    const value = getFieldValue(name);
+    const initValue = getInitialValue(name);
+    const touched = isFieldTouched(name);
+    const touchedValue = touched ? value : initValue;
+    const fieldValue = status === 'idle' ? initValue ?? value : touchedValue;
     const id = useId();
     const onValueChange = useCallback(
-        (value: unknown) => processValueChange(value, {name, setFieldValue}),
+        (nextValue: unknown) => processValueChange(nextValue, {name, setFieldValue}),
         [name, setFieldValue],
     );
 
     const validate = useCallback(
-        (value: unknown) => processValidate(value, {name, rules, validateFirst}),
+        (nextValue: unknown) => processValidate(nextValue, {name, rules, validateFirst}),
         [name, rules, validateFirst],
     );
 
@@ -83,10 +96,18 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
 
     useEffect(() => {
         signInField({
-            onFormStoreChange: () => setState({}),
+            onFormStoreChange: () => {
+                setState(draft => {
+                    draft.shouldUpdate = {};
+                });
+            },
             props: {name, rules, validateFirst},
             touched: false,
             validate,
+        });
+
+        setState(draft => {
+            draft.status = 'succeeded';
         });
     }, [name, rules, setState, signInField, validate, validateFirst]);
 

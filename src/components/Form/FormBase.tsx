@@ -32,10 +32,14 @@ export const FormBase = <T extends Store = Store>({
     const id = useId();
     const children = useMemo(
         () =>
-            items?.map((item, index) => (
-                <FormItem {...item} key={(item.name ?? index).toString()} />
-            )),
-        [items],
+            status === 'succeeded' ? (
+                items?.map((item, index) => (
+                    <FormItem {...item} key={(item.name ?? index).toString()} />
+                ))
+            ) : (
+                <></>
+            ),
+        [items, status],
     );
 
     useEffect(() => {
