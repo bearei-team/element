@@ -32,13 +32,10 @@ export const FormBase = <T extends Store = Store>({
     const id = useId();
     const children = useMemo(
         () =>
-            status === 'succeeded' ? (
-                items?.map((item, index) => (
-                    <FormItem {...item} key={(item.name ?? index).toString()} />
-                ))
-            ) : (
-                <></>
-            ),
+            status === 'succeeded' &&
+            items?.map((item, index) => (
+                <FormItem {...item} key={(item.name ?? index).toString()} />
+            )),
         [items, status],
     );
 
@@ -59,6 +56,10 @@ export const FormBase = <T extends Store = Store>({
             draft.status = 'succeeded';
         });
     }, [initialValue, setInitialValue, setState, status]);
+
+    if (!children) {
+        return <></>;
+    }
 
     return render({
         ...renderProps,

@@ -5,13 +5,17 @@ import CheckBox from '@material-design-icons/svg/filled/check_box.svg';
 import CheckBoxOutlineBlank from '@material-design-icons/svg/filled/check_box_outline_blank.svg';
 import Circle from '@material-design-icons/svg/filled/circle.svg';
 import Close from '@material-design-icons/svg/filled/close.svg';
+import FolderSpecial from '@material-design-icons/svg/filled/folder_special.svg';
 import Fullscreen from '@material-design-icons/svg/filled/fullscreen.svg';
 import FullscreenExit from '@material-design-icons/svg/filled/fullscreen_exit.svg';
 import Home from '@material-design-icons/svg/filled/home.svg';
 import IndeterminateCheckBox from '@material-design-icons/svg/filled/indeterminate_check_box.svg';
+import Info from '@material-design-icons/svg/filled/info.svg';
 import Lens from '@material-design-icons/svg/filled/lens.svg';
+import Logout from '@material-design-icons/svg/filled/logout.svg';
 import Menu from '@material-design-icons/svg/filled/menu.svg';
 import MenuOpen from '@material-design-icons/svg/filled/menu_open.svg';
+import OpenInBrowser from '@material-design-icons/svg/filled/open_in_browser.svg';
 import RadioButtonChecked from '@material-design-icons/svg/filled/radio_button_checked.svg';
 import RadioButtonUnchecked from '@material-design-icons/svg/filled/radio_button_unchecked.svg';
 import Refresh from '@material-design-icons/svg/filled/refresh.svg';
@@ -19,6 +23,8 @@ import Remove from '@material-design-icons/svg/filled/remove.svg';
 import Search from '@material-design-icons/svg/filled/search.svg';
 import Settings from '@material-design-icons/svg/filled/settings.svg';
 import SpaceDashboard from '@material-design-icons/svg/filled/space_dashboard.svg';
+import Star from '@material-design-icons/svg/filled/star.svg';
+import StarBorder from '@material-design-icons/svg/filled/star_border.svg';
 
 export const filled = {
     svg: {
@@ -29,13 +35,17 @@ export const filled = {
         checkBoxOutlineBlank: CheckBoxOutlineBlank,
         circle: Circle,
         close: Close,
+        folderSpecial: FolderSpecial,
         fullscreen: Fullscreen,
         fullscreenExit: FullscreenExit,
         home: Home,
         indeterminateCheckBox: IndeterminateCheckBox,
+        info: Info,
         lens: Lens,
+        logout: Logout,
         menu: Menu,
         menuOpen: MenuOpen,
+        openInBrowser: OpenInBrowser,
         radioButtonChecked: RadioButtonChecked,
         radioButtonUnchecked: RadioButtonUnchecked,
         refresh: Refresh,
@@ -43,5 +53,7 @@ export const filled = {
         search: Search,
         settings: Settings,
         spaceDashboard: SpaceDashboard,
+        star: Star,
+        starBorder: StarBorder,
     },
 };

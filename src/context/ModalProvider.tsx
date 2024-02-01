@@ -15,6 +15,8 @@ const initialState = {
     sheets: [] as Sheet[],
 };
 
+const Item: FC<{element: React.JSX.Element}> = ({element}) => <>{element}</>;
+
 export const emitter = mitt<EmitterEvent>();
 export const ModalProvider: FC<unknown> = () => {
     const [{sheets}, setState] = useImmer(initialState);
@@ -37,5 +39,11 @@ export const ModalProvider: FC<unknown> = () => {
         });
     });
 
-    return <>{sheets.map(({element}) => element)}</>;
+    return (
+        <>
+            {sheets.map(({element, id}) => (
+                <Item key={id} element={element} />
+            ))}
+        </>
+    );
 };

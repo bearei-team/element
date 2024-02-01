@@ -1,5 +1,5 @@
 import {FC, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, TextInput, View} from 'react-native';
+import {Animated, LayoutRectangle, TextInput, View} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
@@ -80,18 +80,18 @@ const processState = (state: State, {eventName, setState}: ProcessStateOptions) 
     });
 };
 
-const processLayout = (_event: LayoutChangeEvent, {setState}: ProcessEventOptions) =>
+const processLayout = ({setState}: ProcessEventOptions) =>
     setState(draft => {
         draft.status = 'succeeded';
     });
 
 const processStateChange = (
     state: State,
-    {event, eventName, ref, setState}: ProcessStateChangeOptions,
+    {eventName, ref, setState}: ProcessStateChangeOptions,
 ) => {
     const nextEvent = {
         focus: () => processFocus(ref),
-        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+        layout: () => processLayout({setState}),
         pressOut: () => processFocus(ref),
     };
 
@@ -161,6 +161,7 @@ export const SearchBase: FC<SearchBaseProps> = ({
     ref,
     render,
     trailingIcon,
+    visible,
     ...textInputProps
 }) => {
     const [{activeKey, data, eventName, layout, listVisible, state, status, value}, setState] =
@@ -225,10 +226,6 @@ export const SearchBase: FC<SearchBaseProps> = ({
         const shape = 'extraLarge';
         const {height, pageX, pageY, width} = layout;
 
-        if (status === 'idle') {
-            return <></>;
-        }
-
         return (
             <AnimatedInner
                 key={`search__inner--${id}`}
@@ -277,24 +274,23 @@ export const SearchBase: FC<SearchBaseProps> = ({
         );
     }, [
         layout,
-        status,
         id,
         innerHeight,
         onEvent,
+        placeholder,
         onBlur,
         onFocus,
-        placeholder,
         leadingIcon,
         input,
         trailingIcon,
         eventName,
         listVisible,
         underlayColor,
-        onListActive,
+        activeKey,
         data,
+        onListActive,
         theme.color,
         theme.palette.surface.surface,
-        activeKey,
     ]);
 
     useEffect(() => {
@@ -317,8 +313,12 @@ export const SearchBase: FC<SearchBaseProps> = ({
     }, [setState]);
 
     useEffect(() => {
-        emitter.emit('sheet', {id, element: inner});
-    }, [id, inner, status]);
+        if (status !== 'succeeded') {
+            return;
+        }
+
+        emitter.emit('sheet', {id: `search__${id}`, element: visible ? inner : <></>});
+    }, [id, inner, status, visible]);
 
     return render({
         containerRef,

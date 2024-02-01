@@ -185,7 +185,7 @@ export const SideSheetBase: FC<SideSheetBaseProps> = ({
     }, [setState, sheetVisible]);
 
     useEffect(() => {
-        emitter.emit('sheet', {id, element: sheet});
+        emitter.emit('sheet', {id: `sideSheet__${id}`, element: sheet});
     }, [id, sheet]);
 
     return <></>;

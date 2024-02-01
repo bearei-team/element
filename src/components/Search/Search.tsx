@@ -17,6 +17,7 @@ export interface SearchProps
     leadingIcon?: React.JSX.Element;
     onActive?: (key?: string) => void;
     trailingIcon?: React.JSX.Element;
+    visible?: boolean;
 }
 
 const render = ({containerRef, id, onEvent, ...containerProps}: RenderProps) => (
