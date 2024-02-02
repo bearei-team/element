@@ -13,13 +13,11 @@ export interface UseAnimatedOptions
 }
 
 export interface EntryAnimatedOptions extends Pick<UseAnimatedOptions, 'minDuration'> {
-    animatedTiming: AnimatedTiming;
     scaleAnimated: Animated.Value;
 }
 
 export interface ExitAnimatedOptions {
     activeRipple: boolean;
-    animatedTiming: AnimatedTiming;
     opacityAnimated: Animated.Value;
     scaleAnimated: Animated.Value;
 }
@@ -28,8 +26,18 @@ export type ProcessAnimatedTimingOptions = EntryAnimatedOptions &
     ExitAnimatedOptions &
     Pick<UseAnimatedOptions, 'onEntryAnimatedEnd' | 'sequence'>;
 
+export type ProcessDefaultActiveOptions = Pick<
+    UseAnimatedOptions,
+    'sequence' | 'onEntryAnimatedEnd'
+> & {exitAnimated: () => void};
+
+export type ProcessActiveOptions = {
+    activeRipple: boolean;
+    processAnimated: () => void;
+};
+
 const processEntryAnimated =
-    ({scaleAnimated, minDuration, animatedTiming}: EntryAnimatedOptions) =>
+    (animatedTiming: AnimatedTiming, {scaleAnimated, minDuration}: EntryAnimatedOptions) =>
     (finished?: () => void) =>
         requestAnimationFrame(() =>
             animatedTiming(scaleAnimated, {
@@ -40,7 +48,10 @@ const processEntryAnimated =
         );
 
 const processExitAnimated =
-    ({activeRipple, opacityAnimated, scaleAnimated, animatedTiming}: ExitAnimatedOptions) =>
+    (
+        animatedTiming: AnimatedTiming,
+        {activeRipple, opacityAnimated, scaleAnimated}: ExitAnimatedOptions,
+    ) =>
     (finished?: () => void) => {
         const animatedTimingOptions = {
             duration: 'short3',
@@ -60,24 +71,40 @@ const processExitAnimated =
         });
     };
 
-const processAnimatedTiming = ({
-    activeRipple,
-    animatedTiming,
-    minDuration,
-    onEntryAnimatedEnd,
-    opacityAnimated,
-    scaleAnimated,
-    sequence,
-}: ProcessAnimatedTimingOptions) => {
-    const entryAnimated = processEntryAnimated({scaleAnimated, minDuration, animatedTiming});
-    const exitAnimated = processExitAnimated({
+const processAnimatedTiming = (
+    animatedTiming: AnimatedTiming,
+    {
         activeRipple,
-        animatedTiming,
+        minDuration,
+        onEntryAnimatedEnd,
+        opacityAnimated,
+        scaleAnimated,
+        sequence,
+    }: ProcessAnimatedTimingOptions,
+) => {
+    const entryAnimated = processEntryAnimated(animatedTiming, {
+        scaleAnimated,
+        minDuration,
+    });
+
+    const exitAnimated = processExitAnimated(animatedTiming, {
+        activeRipple,
         opacityAnimated,
         scaleAnimated,
     });
 
     entryAnimated(() => onEntryAnimatedEnd?.(sequence, exitAnimated));
+};
+
+const processDefaultActive = (
+    {onEntryAnimatedEnd, sequence, exitAnimated}: ProcessDefaultActiveOptions,
+    defaultActive?: boolean,
+) => defaultActive && onEntryAnimatedEnd?.(sequence, exitAnimated);
+
+const processActive = ({activeRipple, processAnimated}: ProcessActiveOptions, active?: boolean) => {
+    const runAnimated = !activeRipple || active;
+
+    runAnimated && processAnimated();
 };
 
 export const useAnimated = ({
@@ -87,11 +114,9 @@ export const useAnimated = ({
     onEntryAnimatedEnd,
     sequence,
 }: UseAnimatedOptions) => {
+    const setDefaultActive = defaultActive && typeof active !== 'boolean';
     const [opacityAnimated] = HOOK.useAnimatedValue(1);
-    const [scaleAnimated] = HOOK.useAnimatedValue(
-        defaultActive && typeof active !== 'boolean' ? 1 : 0,
-    );
-
+    const [scaleAnimated] = HOOK.useAnimatedValue(setDefaultActive ? 1 : 0);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
     const activeRipple = [typeof defaultActive, typeof active].includes('boolean');
@@ -106,15 +131,14 @@ export const useAnimated = ({
     });
 
     const exitAnimated = useCallback(
-        () => processExitAnimated({animatedTiming, activeRipple, opacityAnimated, scaleAnimated})(),
+        () => processExitAnimated(animatedTiming, {activeRipple, opacityAnimated, scaleAnimated})(),
         [activeRipple, animatedTiming, opacityAnimated, scaleAnimated],
     );
 
     const processAnimated = useCallback(
         () =>
-            processAnimatedTiming({
+            processAnimatedTiming(animatedTiming, {
                 activeRipple,
-                animatedTiming,
                 minDuration,
                 onEntryAnimatedEnd,
                 opacityAnimated,
@@ -133,17 +157,11 @@ export const useAnimated = ({
     );
 
     useEffect(() => {
-        if (defaultActive) {
-            onEntryAnimatedEnd?.(sequence, exitAnimated);
-        }
-    }, [defaultActive, exitAnimated, onEntryAnimatedEnd, sequence]);
+        processDefaultActive({sequence, onEntryAnimatedEnd, exitAnimated}, setDefaultActive);
+    }, [exitAnimated, onEntryAnimatedEnd, sequence, setDefaultActive]);
 
     useEffect(() => {
-        const runAnimated = !activeRipple || active;
-
-        if (runAnimated) {
-            processAnimated();
-        }
+        processActive({activeRipple, processAnimated}, active);
     }, [active, activeRipple, processAnimated]);
 
     return [{opacity, scale}];

@@ -36,11 +36,8 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processStateChange = ({event, eventName, setState}: ProcessStateChangeOptions) => {
-    if (eventName === 'layout') {
-        processLayout(event as LayoutChangeEvent, {setState});
-    }
-};
+const processStateChange = ({event, eventName, setState}: ProcessStateChangeOptions) =>
+    eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
 
 const initialState = {
     layout: {} as LayoutRectangle,

@@ -100,6 +100,13 @@ const processActive = ({setState, onActive}: ProcessActiveOptions, key?: string)
     onActive?.(key);
 };
 
+const processInit = ({setState}: ProcessEventOptions, dataSources?: TabDataSource[]) =>
+    dataSources &&
+    setState(draft => {
+        draft.data = dataSources;
+        draft.status === 'idle' && (draft.status = 'succeeded');
+    });
+
 const renderItem = ({
     data,
     onActive,
@@ -205,14 +212,7 @@ export const TabBase: FC<TabBaseProps> = ({
     }, [data, layout.width]);
 
     useEffect(() => {
-        if (!dataSources) {
-            return;
-        }
-
-        setState(draft => {
-            draft.data = dataSources;
-            draft.status === 'idle' && (draft.status = 'succeeded');
-        });
+        processInit({setState}, dataSources);
     }, [dataSources, setState]);
 
     if (status === 'idle') {

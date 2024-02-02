@@ -44,11 +44,11 @@ const render = ({
     onEvent,
     renderStyle,
     rippleCentered,
+    shape,
     supportingText,
     supportingTextNumberOfLines,
     trailing,
     underlayColor,
-    shape,
     ...innerProps
 }: RenderProps) => {
     const {onLayout, ...onTouchableRippleEvent} = onEvent;

@@ -29,9 +29,11 @@ export interface ProcessEventOptions {
     setState: Updater<typeof initialState>;
 }
 
-export type ProcessStateChangeOptions = Pick<RenderProps, 'disabledElevation'> &
+export type ProcessStateChangeOptions = Pick<RenderProps, 'elevated'> &
     ProcessEventOptions &
     OnStateChangeOptions;
+
+export type ProcessDisabledElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
 
 const processElevation = (nextState: State, {setState}: ProcessEventOptions) => {
     const level = {
@@ -59,20 +61,33 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
 
 const processStateChange = (
     state: State,
-    {event, eventName, disabledElevation, setState}: ProcessStateChangeOptions,
+    {event, eventName, elevated, setState}: ProcessStateChangeOptions,
 ) => {
-    if (eventName === 'layout') {
-        processLayout(event as LayoutChangeEvent, {setState});
-    }
-
-    if (eventName !== 'layout') {
-        !disabledElevation && processElevation(state, {setState});
-    }
+    eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
+    elevated && processElevation(state, {setState});
 
     setState(draft => {
         draft.eventName = eventName;
     });
 };
+
+const processDisabledElevation = (
+    {elevated, setState}: ProcessDisabledElevationOptions,
+    disabled?: boolean,
+) => {
+    const setElevated = typeof disabled === 'boolean' && elevated;
+
+    setElevated &&
+        setState(draft => {
+            draft.elevation = disabled ? 0 : 3;
+        });
+};
+
+const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
+    disabled &&
+    setState(draft => {
+        draft.eventName = 'none';
+    });
 
 const initialState = {
     elevation: undefined as ElevationLevel,
@@ -83,7 +98,7 @@ const initialState = {
 export const FABBase: FC<FABBaseProps> = ({
     defaultElevation = 3,
     disabled,
-    disabledElevation,
+    elevated = true,
     icon,
     render,
     type = 'primary',
@@ -94,8 +109,8 @@ export const FABBase: FC<FABBaseProps> = ({
     const id = useId();
     const onStateChange = useCallback(
         (state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange(state, {...options, disabledElevation, setState}),
-        [disabledElevation, setState],
+            processStateChange(state, {...options, elevated, setState}),
+        [elevated, setState],
     );
 
     const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
@@ -103,28 +118,16 @@ export const FABBase: FC<FABBaseProps> = ({
     const [iconElement] = useIcon({eventName, type, icon, disabled});
 
     useEffect(() => {
-        if (!(typeof disabled === 'boolean' && !disabledElevation)) {
-            return;
-        }
-
-        setState(draft => {
-            draft.elevation = disabled ? 0 : 3;
-        });
-    }, [disabled, disabledElevation, setState]);
+        processDisabledElevation({elevated, setState}, disabled);
+    }, [disabled, elevated, setState]);
 
     useEffect(() => {
-        if (!disabled) {
-            return;
-        }
-
-        setState(draft => {
-            draft.eventName = 'none';
-        });
+        processDisabled({setState}, disabled);
     }, [disabled, setState]);
 
     return render({
         ...renderProps,
-        defaultElevation: disabledElevation ? 0 : defaultElevation,
+        defaultElevation: elevated ? defaultElevation : 0,
         elevation,
         eventName,
         icon: iconElement,

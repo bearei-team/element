@@ -9,22 +9,52 @@ import {RenderProps} from './ChipBase';
 export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName' | 'elevated'>;
 
 export interface ProcessOutlinedAnimatedOptions extends UseAnimatedOptions {
-    animatedTiming: AnimatedTiming;
     borderAnimated: Animated.Value;
     borderInputRange: number[];
 }
 
-const processOutlinedAnimated = ({
-    animatedTiming,
-    borderAnimated,
-    borderInputRange,
-    disabled,
-    eventName,
-}: ProcessOutlinedAnimatedOptions) => {
+export interface ProcessAnimatedTimingOptions extends ProcessOutlinedAnimatedOptions {
+    colorAnimated: Animated.Value;
+}
+
+const processOutlinedAnimated = (
+    animatedTiming: AnimatedTiming,
+    {borderAnimated, borderInputRange, disabled, eventName}: ProcessOutlinedAnimatedOptions,
+) => {
     const value = disabled ? 0 : borderInputRange[borderInputRange.length - 2];
     const toValue = eventName === 'focus' ? borderInputRange[2] : value;
 
     return animatedTiming(borderAnimated, {toValue});
+};
+
+const processAnimatedTiming = (
+    animatedTiming: AnimatedTiming,
+    {
+        borderAnimated,
+        borderInputRange,
+        colorAnimated,
+        disabled,
+        elevated,
+        eventName,
+    }: ProcessAnimatedTimingOptions,
+) => {
+    const toValue = disabled ? 0 : 1;
+
+    requestAnimationFrame(() => {
+        if (!elevated) {
+            return Animated.parallel([
+                processOutlinedAnimated(animatedTiming, {
+                    borderAnimated,
+                    borderInputRange,
+                    disabled,
+                    eventName,
+                }),
+                animatedTiming(colorAnimated, {toValue}),
+            ]).start();
+        }
+
+        animatedTiming(colorAnimated, {toValue}).start();
+    });
 };
 
 export const useAnimated = ({
@@ -130,24 +160,13 @@ export const useAnimated = ({
     });
 
     useEffect(() => {
-        const toValue = disabled ? 0 : 1;
-
-        requestAnimationFrame(() => {
-            if (!elevated) {
-                return Animated.parallel([
-                    processOutlinedAnimated({
-                        disabled,
-                        type,
-                        eventName,
-                        borderInputRange,
-                        borderAnimated,
-                        animatedTiming,
-                    }),
-                    animatedTiming(colorAnimated, {toValue}),
-                ]).start();
-            }
-
-            animatedTiming(colorAnimated, {toValue}).start();
+        processAnimatedTiming(animatedTiming, {
+            borderAnimated,
+            borderInputRange,
+            colorAnimated,
+            disabled,
+            elevated,
+            eventName,
         });
     }, [
         animatedTiming,
@@ -157,7 +176,6 @@ export const useAnimated = ({
         disabled,
         elevated,
         eventName,
-        type,
     ]);
 
     return [

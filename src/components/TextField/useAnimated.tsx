@@ -44,6 +44,16 @@ export interface ProcessFocusedOptions extends Pick<UseAnimatedOptions, 'error'>
     labelAnimated: Animated.Value;
 }
 
+export interface ProcessStateAnimatedOptions {
+    stateAnimated: Record<State, () => void | undefined | number>;
+}
+
+export type ProcessNonerrorAnimatedOptions = ProcessStateAnimatedOptions &
+    Pick<UseAnimatedOptions, 'disabled' | 'error'>;
+
+export type ProcessDisabledAnimatedOptions = ProcessStateAnimatedOptions &
+    Pick<UseAnimatedOptions, 'disabled'>;
+
 const processEnabled = ({
     activeIndicatorAnimated,
     animatedTiming,
@@ -121,6 +131,23 @@ const processFocused = ({
 
     requestAnimationFrame(() => Animated.parallel(compositeAnimations).start());
 };
+
+const processStateAnimated = (state: State, {stateAnimated}: ProcessStateAnimatedOptions) =>
+    stateAnimated[state]?.();
+
+const processNonerrorAnimated = (
+    state: State,
+    {stateAnimated, error, disabled}: ProcessNonerrorAnimatedOptions,
+) => {
+    const nonerror = typeof error !== 'boolean' && disabled;
+
+    !nonerror && stateAnimated[error ? 'error' : state]?.();
+};
+
+const processDisabledAnimated = (
+    state: State,
+    {stateAnimated, disabled}: ProcessDisabledAnimatedOptions,
+) => typeof disabled === 'boolean' && stateAnimated[disabled ? 'disabled' : state]?.();
 
 export const useAnimated = ({
     type = 'filled',
@@ -313,25 +340,15 @@ export const useAnimated = ({
     );
 
     useEffect(() => {
-        stateAnimated[state]?.();
+        processStateAnimated(state, {stateAnimated});
     }, [state, stateAnimated]);
 
     useEffect(() => {
-        const nonerror = typeof error !== 'boolean' && disabled;
-
-        if (nonerror) {
-            return;
-        }
-
-        stateAnimated[error ? 'error' : state]?.();
+        processNonerrorAnimated(state, {stateAnimated, disabled, error});
     }, [disabled, error, state, stateAnimated]);
 
     useEffect(() => {
-        if (typeof disabled !== 'boolean') {
-            return;
-        }
-
-        stateAnimated[disabled ? 'disabled' : state]?.();
+        processDisabledAnimated(state, {disabled, stateAnimated});
     }, [disabled, state, stateAnimated]);
 
     return [

@@ -1,5 +1,5 @@
 import {useEffect, useId, useMemo} from 'react';
-import {useImmer} from 'use-immer';
+import {Updater, useImmer} from 'use-immer';
 import {ComponentStatus} from '../Common/interface';
 import {FormProps} from './Form';
 import {FormItem} from './FormItem/FormItem';
@@ -11,6 +11,28 @@ export type RenderProps<T extends Store> = FormProps<T>;
 export interface FormBaseProps<T extends Store> extends FormProps<T> {
     render: (props: RenderProps<T>) => React.JSX.Element;
 }
+
+export interface ProcessEventOptions {
+    setState: Updater<typeof initialState>;
+}
+
+export type ProcessInitOptions = ProcessEventOptions &
+    Pick<FormStore<any>, 'setInitialValue'> &
+    Pick<FormBaseProps<Store>, 'initialValue'>;
+
+const processInit = (
+    status: ComponentStatus,
+    {initialValue, setInitialValue, setState}: ProcessInitOptions,
+) => {
+    if (status !== 'idle') {
+        return;
+    }
+
+    initialValue && setInitialValue(initialValue);
+    setState(draft => {
+        draft.status = 'succeeded';
+    });
+};
 
 const initialState = {
     status: 'idle' as ComponentStatus,
@@ -44,17 +66,7 @@ export const FormBase = <T extends Store = Store>({
     }, [onFinish, onFinishFailed, onValueChange, setCallback]);
 
     useEffect(() => {
-        if (status !== 'idle') {
-            return;
-        }
-
-        if (initialValue) {
-            setInitialValue(initialValue);
-        }
-
-        setState(draft => {
-            draft.status = 'succeeded';
-        });
+        processInit(status, {initialValue, setInitialValue, setState});
     }, [initialValue, setInitialValue, setState, status]);
 
     if (!children) {

@@ -45,13 +45,8 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processPressOut = ({activeKey, indexKey, onActive}: ProcessPressOutOptions) => {
-    const responseActive = activeKey !== indexKey;
-
-    if (responseActive) {
-        onActive?.(indexKey);
-    }
-};
+const processPressOut = ({activeKey, indexKey, onActive}: ProcessPressOutOptions) =>
+    activeKey !== indexKey && onActive?.(indexKey);
 
 const processStateChange = ({
     event,

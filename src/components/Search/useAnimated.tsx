@@ -1,11 +1,25 @@
 import {useEffect} from 'react';
+import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {HOOK} from '../../hooks/hook';
+import {AnimatedTiming} from '../../utils/animatedTiming.utils';
 import {UTIL} from '../../utils/util';
 
 export interface UseAnimatedOptions {
     listVisible?: boolean;
 }
+
+export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+    innerHeightAnimated: Animated.Value;
+}
+
+const processAnimatedTiming = (
+    animatedTiming: AnimatedTiming,
+    {innerHeightAnimated, listVisible}: ProcessAnimatedTimingOptions,
+) =>
+    requestAnimationFrame(() =>
+        animatedTiming(innerHeightAnimated, {toValue: listVisible ? 1 : 0}).start(),
+    );
 
 export const useAnimated = ({listVisible}: UseAnimatedOptions) => {
     const [innerHeightAnimated] = HOOK.useAnimatedValue(0);
@@ -20,9 +34,7 @@ export const useAnimated = ({listVisible}: UseAnimatedOptions) => {
     });
 
     useEffect(() => {
-        requestAnimationFrame(() =>
-            animatedTiming(innerHeightAnimated, {toValue: listVisible ? 1 : 0}).start(),
-        );
+        processAnimatedTiming(animatedTiming, {innerHeightAnimated, listVisible});
     }, [animatedTiming, innerHeightAnimated, listVisible]);
 
     return [{innerHeight}];

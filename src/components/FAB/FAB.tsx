@@ -12,7 +12,7 @@ export type FABType = 'surface' | 'primary' | 'secondary' | 'tertiary';
 export interface FABProps extends TouchableRippleProps {
     defaultElevation?: ElevationLevel;
     disabled?: boolean;
-    disabledElevation?: boolean;
+    elevated?: boolean;
     icon?: React.JSX.Element;
     labelText?: string;
     size?: Size;

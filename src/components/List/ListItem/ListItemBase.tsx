@@ -51,6 +51,8 @@ export type ProcessTrailingPressOutOptions = Pick<RenderProps, 'close' | 'indexK
 } & ProcessEventOptions;
 
 export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
+export type ProcessInitOptions = ProcessEventOptions & Pick<RenderProps, 'defaultActive'>;
+export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'active'>;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -117,17 +119,35 @@ const processTrailingPressOut = ({
     indexKey,
     onCloseAnimated,
     onClose,
-}: ProcessTrailingPressOutOptions) => {
-    if (close) {
-        onCloseAnimated?.(() => onClose?.(indexKey));
-    }
-};
+}: ProcessTrailingPressOutOptions) => close && onCloseAnimated?.(() => onClose?.(indexKey));
 
 const processTrailingHoverIn = ({setState}: ProcessEventOptions) =>
     processTrailingEvent('hoverIn', {setState});
 
 const processTrailingHoverOut = ({setState}: ProcessEventOptions) =>
     processTrailingEvent('hoverOut', {setState});
+
+const processInit = (status: ComponentStatus, {defaultActive, setState}: ProcessInitOptions) => {
+    status === 'idle' &&
+        setState(draft => {
+            draft.rippleCentered = !!defaultActive;
+            draft.status = 'succeeded';
+        });
+};
+
+const processActive = (status: ComponentStatus, {setState, active}: ProcessActiveOptions) => {
+    const setActive = status === 'succeeded' && active;
+
+    setActive &&
+        setState(draft => {
+            if (draft.activeLocation?.locationX) {
+                return;
+            }
+
+            draft.rippleCentered = true;
+            draft.activeLocation = {locationX: 0, locationY: 0};
+        });
+};
 
 const initialState = {
     activeLocation: undefined as Pick<NativeTouchEvent, 'locationX' | 'locationY'> | undefined,
@@ -155,6 +175,7 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
         {activeLocation, eventName, layout, state, status, trailingEventName, rippleCentered},
         setState,
     ] = useImmer(initialState);
+
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
     const id = useId();
@@ -204,40 +225,12 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
     );
 
     useEffect(() => {
-        if (status !== 'idle') {
-            return;
-        }
-
-        setState(draft => {
-            draft.rippleCentered = !!defaultActive;
-            draft.status = 'succeeded';
-        });
+        processInit(status, {defaultActive, setState});
     }, [defaultActive, setState, status]);
 
     useEffect(() => {
-        if (!(status === 'succeeded' && active)) {
-            return;
-        }
-
-        setState(draft => {
-            if (draft.activeLocation?.locationX) {
-                return;
-            }
-
-            draft.rippleCentered = true;
-            draft.activeLocation = {locationX: 0, locationY: 0};
-        });
-    }, [active, indexKey, onActive, setState, status]);
-
-    useEffect(() => {
-        if (!activeLocation?.locationX) {
-            return;
-        }
-
-        setState(draft => {
-            draft.rippleCentered = false;
-        });
-    }, [activeLocation, setState]);
+        processActive(status, {active, setState});
+    }, [active, setState, status]);
 
     if (status === 'idle') {
         return <></>;

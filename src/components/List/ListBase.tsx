@@ -29,6 +29,7 @@ export interface ProcessEventOptions {
 
 export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
 export type ProcessCloseOptions = ProcessEventOptions & Pick<RenderProps, 'onClose'>;
+export type ProcessActiveKeyOptions = ProcessEventOptions & Pick<RenderProps, 'activeKey'>;
 
 const processActive = ({onActive, setState}: ProcessActiveOptions, key?: string) => {
     if (typeof key === 'undefined') {
@@ -55,6 +56,22 @@ const processClose = ({onClose, setState}: ProcessCloseOptions, key?: string) =>
 
     onClose?.(key);
 };
+
+const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSource[]) =>
+    dataSources &&
+    setState(draft => {
+        draft.data = dataSources;
+        draft.status === 'idle' && (draft.status = 'succeeded');
+    });
+
+const processActiveKey = (
+    status: ComponentStatus,
+    {activeKey, setState}: ProcessActiveKeyOptions,
+) =>
+    status === 'succeeded' &&
+    setState(draft => {
+        draft.activeKey = activeKey;
+    });
 
 const renderItem = ({
     activeKey,
@@ -139,24 +156,11 @@ export const ListBase: FC<ListBaseProps> = ({
     );
 
     useEffect(() => {
-        if (!dataSources) {
-            return;
-        }
-
-        setState(draft => {
-            draft.data = dataSources;
-            draft.status === 'idle' && (draft.status = 'succeeded');
-        });
+        processInit({setState}, dataSources);
     }, [dataSources, setState]);
 
     useEffect(() => {
-        if (status !== 'succeeded') {
-            return;
-        }
-
-        setState(draft => {
-            draft.activeKey = activeKeySource;
-        });
+        processActiveKey(status, {activeKey: activeKeySource, setState});
     }, [activeKeySource, setState, status]);
 
     if (status === 'idle') {

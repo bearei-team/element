@@ -41,6 +41,11 @@ export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEv
     OnStateChangeOptions;
 
 export type ProcessStateOptions = ProcessEventOptions & Pick<OnStateChangeOptions, 'eventName'>;
+export type ProcessListVisibleOptions = ProcessEventOptions & {state: State};
+export interface ProcessEmitOptions extends Pick<RenderProps, 'visible'> {
+    inner: React.JSX.Element;
+    id: string;
+}
 
 const processListActive = ({data, setState, onActive}: ProcessListActiveOptions, key?: string) => {
     if (!key) {
@@ -122,6 +127,26 @@ const processChangeText = (
 
     onChangeText?.(text);
 };
+
+const processListVisible = (
+    {setState, state}: ProcessListVisibleOptions,
+    data?: ListDataSource[],
+) =>
+    setState(draft => {
+        draft.listVisible =
+            typeof data?.length === 'number' && data?.length !== 0 && state === 'focused';
+    });
+
+const processContainerLayout = (containerRef: RefObject<View>, {setState}: ProcessEventOptions) =>
+    containerRef.current?.measure((x, y, width, height, pageX, pageY) => {
+        setState(draft => {
+            draft.layout = {x, y, width, height, pageX, pageY};
+        });
+    });
+
+const processEmit = (status: ComponentStatus, {visible, inner, id}: ProcessEmitOptions) =>
+    status === 'succeeded' &&
+    emitter.emit('sheet', {id: `search__${id}`, element: visible ? inner : <></>});
 
 const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
     <TextField testID={`search__control--${id}`}>
@@ -294,30 +319,15 @@ export const SearchBase: FC<SearchBaseProps> = ({
     ]);
 
     useEffect(() => {
-        setState(draft => {
-            draft.listVisible =
-                typeof data?.length === 'number' && data?.length !== 0 && state === 'focused';
-        });
-    }, [data?.length, setState, state]);
+        processListVisible({setState, state}, data);
+    }, [data, setState, state]);
 
     useEffect(() => {
-        if (!containerRef.current) {
-            return;
-        }
-
-        containerRef.current.measure((x, y, width, height, pageX, pageY) => {
-            setState(draft => {
-                draft.layout = {x, y, width, height, pageX, pageY};
-            });
-        });
+        processContainerLayout(containerRef, {setState});
     }, [setState]);
 
     useEffect(() => {
-        if (status !== 'succeeded') {
-            return;
-        }
-
-        emitter.emit('sheet', {id: `search__${id}`, element: visible ? inner : <></>});
+        processEmit(status, {id, inner, visible});
     }, [id, inner, status, visible]);
 
     return render({

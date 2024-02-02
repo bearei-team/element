@@ -2,10 +2,34 @@ import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {HOOK} from '../../hooks/hook';
+import {AnimatedTiming} from '../../utils/animatedTiming.utils';
 import {UTIL} from '../../utils/util';
 import {RenderProps} from './IconButtonBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type'>;
+
+export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+    colorAnimated: Animated.Value;
+    borderAnimated: Animated.Value;
+}
+
+const processAnimatedTiming = (
+    animatedTiming: AnimatedTiming,
+    {disabled, type = 'filled', colorAnimated, borderAnimated}: ProcessAnimatedTimingOptions,
+) => {
+    const toValue = disabled ? 0 : 1;
+
+    requestAnimationFrame(() => {
+        if (type === 'outlined') {
+            return Animated.parallel([
+                animatedTiming(borderAnimated, {toValue}),
+                animatedTiming(colorAnimated, {toValue}),
+            ]).start();
+        }
+
+        animatedTiming(colorAnimated, {toValue}).start();
+    });
+};
 
 export const useAnimated = ({disabled, type = 'filled'}: UseAnimatedOptions) => {
     const [borderAnimated] = HOOK.useAnimatedValue(1);
@@ -51,18 +75,7 @@ export const useAnimated = ({disabled, type = 'filled'}: UseAnimatedOptions) => 
     });
 
     useEffect(() => {
-        const toValue = disabled ? 0 : 1;
-
-        requestAnimationFrame(() => {
-            if (type === 'outlined') {
-                return Animated.parallel([
-                    animatedTiming(borderAnimated, {toValue}),
-                    animatedTiming(colorAnimated, {toValue}),
-                ]).start();
-            }
-
-            animatedTiming(colorAnimated, {toValue}).start();
-        });
+        processAnimatedTiming(animatedTiming, {borderAnimated, colorAnimated, disabled, type});
     }, [animatedTiming, borderAnimated, colorAnimated, disabled, type]);
 
     return [

@@ -48,6 +48,17 @@ export type ProcessRippleEntryAnimatedEndOptions = ProcessEventOptions &
         exitAnimated: (finished?: () => void) => void;
     };
 
+export type ProcessInitOptions = {
+    activeRipple: boolean;
+    addRipple: (options: AddRippleOptions) => void;
+} & Pick<RenderProps, 'defaultActive'> &
+    ProcessEventOptions;
+
+export type ProcessActiveOptions = Pick<RenderProps, 'active' | 'activeLocation'> & {
+    addRipple: (options: AddRippleOptions) => void;
+    rippleExit: () => void;
+};
+
 const processAddRipple = ({
     locationX,
     locationY,
@@ -57,14 +68,11 @@ const processAddRipple = ({
     setState(draft => {
         const exist = activeRipple && Object.keys(draft.rippleSequence).length !== 0;
 
-        if (exist) {
-            return;
-        }
-
-        draft.rippleSequence[`${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`] = {
-            exitAnimated: undefined,
-            location: {locationX, locationY},
-        };
+        !exist &&
+            (draft.rippleSequence[`${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`] = {
+                exitAnimated: undefined,
+                location: {locationX, locationY},
+            });
     });
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
@@ -81,9 +89,7 @@ const processPressOut = (
 ) => {
     const {locationX, locationY} = event.nativeEvent;
 
-    if (!activeRipple) {
-        processAddRipple({activeRipple, setState, locationX, locationY});
-    }
+    !activeRipple && processAddRipple({activeRipple, setState, locationX, locationY});
 };
 
 const processStateChange = ({
@@ -149,6 +155,34 @@ const processRippleEntryAnimatedEnd = (
 
         onRippleAnimatedEnd?.();
     });
+};
+
+const processInit = (
+    status: ComponentStatus,
+    {activeRipple, defaultActive, setState, addRipple}: ProcessInitOptions,
+) => {
+    if (status !== 'idle') {
+        return;
+    }
+
+    const defaultRipple = activeRipple && defaultActive;
+
+    if (defaultRipple) {
+        return addRipple({locationX: 0, locationY: 0});
+    }
+
+    setState(draft => {
+        draft.status = 'succeeded';
+    });
+};
+
+const processActive = (
+    status: ComponentStatus,
+    {active, activeLocation, addRipple, rippleExit}: ProcessActiveOptions,
+) => {
+    const setActive = status === 'succeeded' && typeof active === 'boolean';
+
+    setActive && (active ? activeLocation && addRipple(activeLocation) : rippleExit());
 };
 
 const renderRipples = (rippleSequence: RippleSequence, props: Omit<RippleProps, 'sequence'>) =>
@@ -234,27 +268,11 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
      * active by default. Initialize the default ripple here.
      */
     useEffect(() => {
-        if (status !== 'idle') {
-            return;
-        }
-
-        const defaultRipple = activeRipple && defaultActive;
-
-        if (defaultRipple) {
-            return addRipple({locationX: 0, locationY: 0});
-        }
-
-        setState(draft => {
-            draft.status = 'succeeded';
-        });
+        processInit(status, {activeRipple, addRipple, defaultActive, setState});
     }, [activeRipple, addRipple, defaultActive, setState, status]);
 
     useEffect(() => {
-        if (!(status === 'succeeded' && typeof active === 'boolean')) {
-            return;
-        }
-
-        active ? activeLocation && addRipple(activeLocation) : rippleExit();
+        processActive(status, {active, activeLocation, addRipple, rippleExit});
     }, [active, activeLocation, addRipple, rippleExit, status]);
 
     return render({

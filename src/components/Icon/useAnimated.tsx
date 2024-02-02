@@ -1,12 +1,31 @@
 import {useEffect} from 'react';
+import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {HOOK} from '../../hooks/hook';
+import {AnimatedTiming} from '../../utils/animatedTiming.utils';
 import {UTIL} from '../../utils/util';
 import {RenderProps} from './IconBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'eventName'>;
 
-export const useAnimated = ({eventName = 'none'}: UseAnimatedOptions) => {
+export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+    scaleAnimated: Animated.Value;
+}
+
+const processAnimatedTiming = (
+    animatedTiming: AnimatedTiming,
+    {scaleAnimated, eventName = 'none'}: ProcessAnimatedTimingOptions,
+) => {
+    const toValue = ['pressIn', 'longPress'].includes(eventName) ? 0 : 1;
+
+    requestAnimationFrame(() =>
+        animatedTiming(scaleAnimated, {
+            toValue: eventName === 'hoverIn' ? 2 : toValue,
+        }).start(),
+    );
+};
+
+export const useAnimated = ({eventName}: UseAnimatedOptions) => {
     const [scaleAnimated] = HOOK.useAnimatedValue(1);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);
@@ -16,13 +35,7 @@ export const useAnimated = ({eventName = 'none'}: UseAnimatedOptions) => {
     });
 
     useEffect(() => {
-        const toValue = ['pressIn', 'longPress'].includes(eventName) ? 0 : 1;
-
-        requestAnimationFrame(() =>
-            animatedTiming(scaleAnimated, {
-                toValue: eventName === 'hoverIn' ? 2 : toValue,
-            }).start(),
-        );
+        processAnimatedTiming(animatedTiming, {eventName, scaleAnimated});
     }, [animatedTiming, eventName, scaleAnimated]);
 
     return [{scale}];

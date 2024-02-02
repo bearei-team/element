@@ -36,7 +36,6 @@ export interface TabProps extends Partial<ViewProps & RefAttributes<View>> {
 const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
 const AnimatedActiveIndicatorInner = Animated.createAnimatedComponent(ActiveIndicatorInner);
 const AnimatedContentInner = Animated.createAnimatedComponent(ContentInner);
-
 const render = ({
     activeIndicatorOffsetPosition,
     children,

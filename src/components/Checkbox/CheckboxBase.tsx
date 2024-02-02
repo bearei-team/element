@@ -30,6 +30,8 @@ export type ProcessPressOutOptions = Pick<RenderProps, 'active' | 'indeterminate
     ProcessEventOptions;
 
 export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
+export type ProcessDefaultActiveOptions = Pick<RenderProps, 'defaultActive' | 'indeterminate'> &
+    ProcessEventOptions;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -71,6 +73,35 @@ const processStateChange = ({
     });
 };
 
+const processDefaultActive = (
+    status: ComponentStatus,
+    {defaultActive, indeterminate, setState}: ProcessDefaultActiveOptions,
+) =>
+    status === 'idle' &&
+    setState(draft => {
+        if (typeof defaultActive === 'boolean') {
+            const defaultType = defaultActive ? 'selected' : 'unselected';
+
+            draft.active = defaultActive;
+            draft.type = indeterminate ? 'indeterminate' : defaultType;
+        }
+
+        draft.status = 'succeeded';
+    });
+
+const processIndeterminate = ({setState}: ProcessEventOptions, indeterminate?: boolean) =>
+    typeof indeterminate === 'boolean' &&
+    setState(draft => {
+        if (indeterminate) {
+            draft.active = true;
+            draft.type = 'indeterminate';
+
+            return;
+        }
+
+        draft.type = draft.active ? 'selected' : 'unselected';
+    });
+
 const initialState = {
     active: undefined as boolean | undefined,
     eventName: 'none' as EventName,
@@ -107,37 +138,11 @@ export const CheckboxBase: FC<CheckboxBaseProps> = ({
     const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
 
     useEffect(() => {
-        if (status !== 'idle') {
-            return;
-        }
-
-        setState(draft => {
-            if (typeof defaultActive === 'boolean') {
-                const defaultType = defaultActive ? 'selected' : 'unselected';
-
-                draft.active = defaultActive;
-                draft.type = indeterminate ? 'indeterminate' : defaultType;
-            }
-
-            draft.status = 'succeeded';
-        });
+        processDefaultActive(status, {defaultActive, indeterminate, setState});
     }, [defaultActive, indeterminate, setState, status]);
 
     useEffect(() => {
-        if (typeof indeterminate !== 'boolean') {
-            return;
-        }
-
-        setState(draft => {
-            if (indeterminate) {
-                draft.active = true;
-                draft.type = 'indeterminate';
-
-                return;
-            }
-
-            draft.type = draft.active ? 'selected' : 'unselected';
-        });
+        processIndeterminate({setState}, indeterminate);
     }, [indeterminate, setState]);
 
     if (status === 'idle') {

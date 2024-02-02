@@ -4,7 +4,7 @@ import {Icon} from '../Icon/Icon';
 import {NavigationRail, NavigationRailProps} from './NavigationRail';
 
 export default {
-    title: 'components/NavigationRail',
+    title: 'components/NavigationBar',
     component: NavigationRail,
 } as Meta<typeof NavigationRail>;
 

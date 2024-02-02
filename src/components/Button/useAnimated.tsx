@@ -9,19 +9,18 @@ import {RenderProps} from './ButtonBase';
 export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName'>;
 
 export interface ProcessOutlinedAnimatedOptions extends UseAnimatedOptions {
-    animatedTiming: AnimatedTiming;
     borderAnimated: Animated.Value;
     borderInputRange: number[];
 }
 
-const processOutlinedAnimated = ({
-    animatedTiming,
-    borderAnimated,
-    borderInputRange,
-    disabled,
-    eventName,
-    type,
-}: ProcessOutlinedAnimatedOptions) => {
+export interface ProcessAnimatedTimingOptions extends ProcessOutlinedAnimatedOptions {
+    colorAnimated: Animated.Value;
+}
+
+const processOutlinedAnimated = (
+    animatedTiming: AnimatedTiming,
+    {borderAnimated, borderInputRange, disabled, eventName, type}: ProcessOutlinedAnimatedOptions,
+) => {
     const value = disabled ? 0 : borderInputRange[borderInputRange.length - 2];
     const responseEvent =
         type === 'link'
@@ -31,6 +30,37 @@ const processOutlinedAnimated = ({
     const toValue = responseEvent ? borderInputRange[2] : value;
 
     return animatedTiming(borderAnimated, {toValue});
+};
+
+const processAnimatedTiming = (
+    animatedTiming: AnimatedTiming,
+    {
+        disabled,
+        type = 'filled',
+        colorAnimated,
+        eventName,
+        borderInputRange,
+        borderAnimated,
+    }: ProcessAnimatedTimingOptions,
+) => {
+    const toValue = disabled ? 0 : 1;
+
+    requestAnimationFrame(() => {
+        if (['link', 'outlined'].includes(type)) {
+            return Animated.parallel([
+                processOutlinedAnimated(animatedTiming, {
+                    disabled,
+                    type,
+                    eventName,
+                    borderInputRange,
+                    borderAnimated,
+                }),
+                animatedTiming(colorAnimated, {toValue}),
+            ]).start();
+        }
+
+        animatedTiming(colorAnimated, {toValue}).start();
+    });
 };
 
 export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedOptions) => {
@@ -130,24 +160,13 @@ export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedO
     });
 
     useEffect(() => {
-        const toValue = disabled ? 0 : 1;
-
-        requestAnimationFrame(() => {
-            if (['link', 'outlined'].includes(type)) {
-                return Animated.parallel([
-                    processOutlinedAnimated({
-                        disabled,
-                        type,
-                        eventName,
-                        borderInputRange,
-                        borderAnimated,
-                        animatedTiming,
-                    }),
-                    animatedTiming(colorAnimated, {toValue}),
-                ]).start();
-            }
-
-            animatedTiming(colorAnimated, {toValue}).start();
+        processAnimatedTiming(animatedTiming, {
+            disabled,
+            type,
+            colorAnimated,
+            eventName,
+            borderInputRange,
+            borderAnimated,
         });
     }, [
         animatedTiming,

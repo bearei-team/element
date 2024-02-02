@@ -1,11 +1,28 @@
 import {useEffect, useMemo} from 'react';
+import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {HOOK} from '../../hooks/hook';
+import {AnimatedTiming} from '../../utils/animatedTiming.utils';
 import {UTIL} from '../../utils/util';
 import {EventName} from '../Common/interface';
 import {RenderProps} from './HoveredBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'eventName' | 'opacities'>;
+
+export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+    opacityAnimated: Animated.Value;
+    event: Record<EventName, number>;
+}
+
+const processAnimatedTiming = (
+    animatedTiming: AnimatedTiming,
+    {opacityAnimated, eventName = 'none', event}: ProcessAnimatedTimingOptions,
+) =>
+    requestAnimationFrame(() =>
+        animatedTiming(opacityAnimated, {
+            toValue: event[eventName] ?? 0,
+        }).start(),
+    );
 
 export const useAnimated = ({
     eventName = 'none',
@@ -37,11 +54,7 @@ export const useAnimated = ({
     });
 
     useEffect(() => {
-        requestAnimationFrame(() =>
-            animatedTiming(opacityAnimated, {
-                toValue: event[eventName] ?? 0,
-            }).start(),
-        );
+        processAnimatedTiming(animatedTiming, {event, eventName, opacityAnimated});
     }, [animatedTiming, event, eventName, opacityAnimated]);
 
     return [{opacity}];

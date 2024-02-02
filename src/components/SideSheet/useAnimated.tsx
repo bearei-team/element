@@ -11,13 +11,19 @@ export interface UseAnimatedOptions extends Pick<RenderProps, 'visible' | 'posit
 }
 
 export interface ScreenAnimatedOptions {
-    animatedTiming: AnimatedTiming;
     containerAnimated: Animated.Value;
     finished?: () => void;
     innerAnimated: Animated.Value;
 }
 
-const enterScreen = ({containerAnimated, innerAnimated, animatedTiming}: ScreenAnimatedOptions) => {
+export interface ProcessAnimatedTimingOptions extends ScreenAnimatedOptions {
+    visible?: boolean;
+}
+
+const enterScreen = (
+    animatedTiming: AnimatedTiming,
+    {containerAnimated, innerAnimated}: ScreenAnimatedOptions,
+) => {
     const animatedTimingOptions = {
         duration: 'medium3',
         easing: 'emphasizedDecelerate',
@@ -32,12 +38,10 @@ const enterScreen = ({containerAnimated, innerAnimated, animatedTiming}: ScreenA
     );
 };
 
-const exitScreen = ({
-    containerAnimated,
-    innerAnimated,
-    animatedTiming,
-    finished,
-}: ScreenAnimatedOptions) => {
+const exitScreen = (
+    animatedTiming: AnimatedTiming,
+    {containerAnimated, innerAnimated, finished}: ScreenAnimatedOptions,
+) => {
     const animatedTimingOptions = {
         duration: 'short3',
         easing: 'emphasizedAccelerate',
@@ -50,6 +54,21 @@ const exitScreen = ({
             animatedTiming(innerAnimated, animatedTimingOptions),
         ]).start(finished),
     );
+};
+
+const processAnimatedTiming = (
+    animatedTiming: AnimatedTiming,
+    {visible, containerAnimated, innerAnimated, finished}: ProcessAnimatedTimingOptions,
+) => {
+    if (typeof visible !== 'boolean') {
+        return;
+    }
+
+    const screenAnimatedOptions = {containerAnimated, innerAnimated};
+
+    visible
+        ? enterScreen(animatedTiming, screenAnimatedOptions)
+        : exitScreen(animatedTiming, {...screenAnimatedOptions, finished});
 };
 
 export const useAnimated = ({visible, finished, position}: UseAnimatedOptions) => {
@@ -76,13 +95,12 @@ export const useAnimated = ({visible, finished, position}: UseAnimatedOptions) =
     });
 
     useEffect(() => {
-        if (typeof visible === 'boolean') {
-            const screenAnimatedOptions = {containerAnimated, innerAnimated, animatedTiming};
-
-            visible
-                ? enterScreen(screenAnimatedOptions)
-                : exitScreen({...screenAnimatedOptions, finished});
-        }
+        processAnimatedTiming(animatedTiming, {
+            containerAnimated,
+            finished,
+            innerAnimated,
+            visible,
+        });
     }, [animatedTiming, containerAnimated, finished, innerAnimated, visible]);
 
     return [{backgroundColor, innerTranslateX}];

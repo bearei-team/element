@@ -1,9 +1,9 @@
 import {RuleItem} from 'async-validator';
 import {FC, useCallback, useEffect, useId, useMemo} from 'react';
-import {useImmer} from 'use-immer';
+import {Updater, useImmer} from 'use-immer';
 import {UTIL} from '../../../utils/util';
 import {ComponentStatus} from '../../Common/interface';
-import {FormStore} from '../formStore';
+import {FieldError, FormStore, Store} from '../formStore';
 import {useFormContext} from '../useFormContext';
 import {FormItemProps} from './FormItem';
 
@@ -12,7 +12,11 @@ export interface FormItemBaseProps extends FormItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface ProcessValueChangeOptions extends Pick<FormStore<any>, 'setFieldValue'> {
+export interface ProcessEventOptions {
+    setState: Updater<typeof initialState>;
+}
+
+export interface ProcessValueChangeOptions extends Pick<FormStore<Store>, 'setFieldValue'> {
     name?: string;
 }
 
@@ -22,11 +26,13 @@ export interface ProcessValidateOptions {
     rules?: RuleItem[];
 }
 
-const processValueChange = (value: unknown, {name, setFieldValue}: ProcessValueChangeOptions) => {
-    if (name) {
-        setFieldValue({[name]: value});
-    }
-};
+export type ProcessInitOptions = ProcessEventOptions &
+    Pick<FormItemBaseProps, 'name' | 'rules' | 'validateFirst'> & {
+        validate: (value?: unknown) => Promise<FieldError | undefined>;
+    };
+
+const processValueChange = (value: unknown, {name, setFieldValue}: ProcessValueChangeOptions) =>
+    name && setFieldValue({[name]: value});
 
 const processValidate = async (
     value: unknown,
@@ -42,6 +48,26 @@ const processValidate = async (
             value,
         });
     }
+};
+
+const processInit = (
+    signInField: FormStore<Store>['signInField'],
+    {name, rules, validateFirst, validate, setState}: ProcessInitOptions,
+) => {
+    signInField({
+        onFormStoreChange: () => {
+            setState(draft => {
+                draft.shouldUpdate = {};
+            });
+        },
+        props: {name, rules, validateFirst},
+        touched: false,
+        validate,
+    });
+
+    setState(draft => {
+        draft.status = 'succeeded';
+    });
 };
 
 const initialState = {status: 'idle' as ComponentStatus, shouldUpdate: {}};
@@ -95,20 +121,7 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
     );
 
     useEffect(() => {
-        signInField({
-            onFormStoreChange: () => {
-                setState(draft => {
-                    draft.shouldUpdate = {};
-                });
-            },
-            props: {name, rules, validateFirst},
-            touched: false,
-            validate,
-        });
-
-        setState(draft => {
-            draft.status = 'succeeded';
-        });
+        processInit(signInField, {name, rules, setState, validateFirst, validate});
     }, [name, rules, setState, signInField, validate, validateFirst]);
 
     return render({

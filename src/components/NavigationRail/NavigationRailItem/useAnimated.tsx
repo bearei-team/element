@@ -1,12 +1,32 @@
 import {useEffect} from 'react';
+import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {HOOK} from '../../../hooks/hook';
+import {AnimatedTiming} from '../../../utils/animatedTiming.utils';
 import {UTIL} from '../../../utils/util';
 import {RenderProps} from './NavigationRailItemBase';
 
 export interface UseAnimatedOptions extends Pick<RenderProps, 'active' | 'block'> {
     defaultActive?: boolean;
 }
+
+export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+    labelAnimated: Animated.Value;
+}
+
+const processAnimatedTiming = (
+    animatedTiming: AnimatedTiming,
+    {block, active, labelAnimated}: ProcessAnimatedTimingOptions,
+) => {
+    const runAnimated = !block && typeof active === 'boolean';
+
+    runAnimated &&
+        requestAnimationFrame(() =>
+            animatedTiming(labelAnimated, {
+                toValue: active ? 1 : 0,
+            }).start(),
+        );
+};
 
 export const useAnimated = ({active, block, defaultActive}: UseAnimatedOptions) => {
     const [labelAnimated] = HOOK.useAnimatedValue(block || defaultActive ? 1 : 0);
@@ -26,13 +46,7 @@ export const useAnimated = ({active, block, defaultActive}: UseAnimatedOptions) 
     });
 
     useEffect(() => {
-        if (!(!block && typeof active === 'boolean')) {
-            return;
-        }
-
-        requestAnimationFrame(() =>
-            animatedTiming(labelAnimated, {toValue: active ? 1 : 0}).start(),
-        );
+        processAnimatedTiming(animatedTiming, {active, block, labelAnimated});
     }, [active, animatedTiming, block, labelAnimated]);
 
     return [{height, color}];

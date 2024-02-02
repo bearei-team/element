@@ -24,6 +24,11 @@ export interface ProcessEventOptions {
 export type ProcessAnimatedFinishedOptions = Pick<RenderProps, 'visible' | 'onClose' | 'onBack'> &
     ProcessEventOptions;
 
+export interface ProcessEmitOptions extends Pick<RenderProps, 'visible'> {
+    sheet: React.JSX.Element;
+    id: string;
+}
+
 const processAnimatedFinished = ({
     visible,
     setState,
@@ -43,17 +48,29 @@ const processAnimatedFinished = ({
     onBack?.();
 };
 
-const processClose = ({setState}: ProcessEventOptions) => {
+const processClose = ({setState}: ProcessEventOptions) =>
     setState(draft => {
         draft.visible = false;
     });
-};
 
-const processModalShow = ({setState}: ProcessEventOptions) => {
+const processModalShow = ({setState}: ProcessEventOptions) =>
     setState(draft => {
         draft.visible = true;
     });
-};
+
+const processSheetVisible = (sheetVisible: boolean, {setState}: ProcessEventOptions) =>
+    setState(draft => {
+        if (draft.modalVisible) {
+            draft.visible = false;
+
+            return;
+        }
+
+        draft.modalVisible = sheetVisible;
+    });
+
+const processEmit = ({visible, sheet, id}: ProcessEmitOptions) =>
+    emitter.emit('sheet', {id: `search__${id}`, element: visible ? sheet : <></>});
 
 const initialState = {
     modalVisible: undefined as boolean | undefined,
@@ -173,20 +190,12 @@ export const SideSheetBase: FC<SideSheetBaseProps> = ({
     );
 
     useEffect(() => {
-        setState(draft => {
-            if (draft.modalVisible) {
-                draft.visible = false;
-
-                return;
-            }
-
-            draft.modalVisible = sheetVisible;
-        });
+        processSheetVisible(sheetVisible, {setState});
     }, [setState, sheetVisible]);
 
     useEffect(() => {
-        emitter.emit('sheet', {id: `sideSheet__${id}`, element: sheet});
-    }, [id, sheet]);
+        processEmit({id, sheet, visible: modalVisible});
+    }, [id, modalVisible, sheet]);
 
     return <></>;
 };

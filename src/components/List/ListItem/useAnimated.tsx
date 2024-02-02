@@ -15,12 +15,39 @@ export interface UseAnimatedOptions extends Pick<RenderProps, 'close'> {
 }
 
 export interface ProcessCloseAnimatedOptions {
-    animatedTiming: AnimatedTiming;
     heightAnimated: Animated.Value;
 }
 
-const processCloseAnimated = ({animatedTiming, heightAnimated}: ProcessCloseAnimatedOptions) =>
-    requestAnimationFrame(() => animatedTiming(heightAnimated, {toValue: 0}).start());
+const processCloseAnimated = (
+    animatedTiming: AnimatedTiming,
+    {heightAnimated}: ProcessCloseAnimatedOptions,
+) => requestAnimationFrame(() => animatedTiming(heightAnimated, {toValue: 0}).start());
+
+export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+    trailingOpacityAnimated: Animated.Value;
+}
+
+const processAnimatedTiming = (
+    animatedTiming: AnimatedTiming,
+    {
+        trailingOpacityAnimated,
+        eventName = 'none',
+        trailingEventName,
+        close,
+        state,
+    }: ProcessAnimatedTimingOptions,
+) => {
+    const closeIconValue = state !== 'enabled' ? 1 : 0;
+    const closeIconToValue = [eventName, trailingEventName].includes('hoverIn')
+        ? 1
+        : closeIconValue;
+
+    requestAnimationFrame(() =>
+        animatedTiming(trailingOpacityAnimated, {
+            toValue: close ? closeIconToValue : 1,
+        }).start(),
+    );
+};
 
 export const useAnimated = ({
     close,
@@ -44,28 +71,19 @@ export const useAnimated = ({
     });
 
     const onCloseAnimated = useCallback(
-        () => processCloseAnimated({animatedTiming, heightAnimated}),
+        () => processCloseAnimated(animatedTiming, {heightAnimated}),
         [animatedTiming, heightAnimated],
     );
 
     useEffect(() => {
-        const closeIconValue = state !== 'enabled' ? 1 : 0;
-        const closeIconToValue = [eventName, trailingEventName].includes('hoverIn')
-            ? 1
-            : closeIconValue;
-
-        requestAnimationFrame(() =>
-            animatedTiming(trailingOpacityAnimated, {
-                toValue: close ? closeIconToValue : 1,
-            }).start(),
-        );
+        processAnimatedTiming(animatedTiming, {
+            close,
+            eventName,
+            state,
+            trailingEventName,
+            trailingOpacityAnimated,
+        });
     }, [animatedTiming, close, eventName, state, trailingEventName, trailingOpacityAnimated]);
 
-    return [
-        {
-            height,
-            onCloseAnimated,
-            trailingOpacity,
-        },
-    ];
+    return [{height, onCloseAnimated, trailingOpacity}];
 };

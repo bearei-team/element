@@ -8,16 +8,22 @@ import {ChipBase, RenderProps} from './ChipBase';
 
 export type ChipType = 'input' | 'assist' | 'filter' | 'suggestion';
 export interface ChipProps extends TouchableRippleProps {
+    active?: boolean;
+    defaultActive?: boolean;
     elevated?: boolean;
     icon?: React.JSX.Element;
-    trailingIcon?: React.JSX.Element;
     labelText?: string;
+    trailingIcon?: React.JSX.Element;
     type?: ChipType;
 }
 
 const AnimatedContent = Animated.createAnimatedComponent(Content);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
+    active,
+    activeColor,
+    activeLocation,
+    defaultActive,
     defaultElevation,
     disabled,
     elevation,
@@ -27,11 +33,11 @@ const render = ({
     labelText,
     onEvent,
     renderStyle,
+    rippleCentered,
     style,
+    trailingIcon,
     type,
     underlayColor,
-    trailingIcon,
-    activeColor,
     ...contentProps
 }: RenderProps) => {
     const {backgroundColor, color, height, width, ...border} = renderStyle;
@@ -46,9 +52,13 @@ const render = ({
             <Elevation defaultLevel={defaultElevation} level={elevation} shape={shape}>
                 <TouchableRipple
                     {...onEvent}
+                    active={active}
+                    defaultActive={defaultActive}
                     disabled={disabled}
                     shape={shape}
-                    underlayColor={activeColor}>
+                    underlayColor={activeColor}
+                    centered={rippleCentered}
+                    activeLocation={activeLocation}>
                     <AnimatedContent
                         {...contentProps}
                         iconShow={!!icon}

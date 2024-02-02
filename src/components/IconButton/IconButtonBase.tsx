@@ -38,14 +38,18 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
 };
 
 const processStateChange = ({event, eventName, setState}: ProcessStateChangeOptions) => {
-    if (eventName === 'layout') {
-        processLayout(event as LayoutChangeEvent, {setState});
-    }
+    eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
 
     setState(draft => {
         draft.eventName = eventName;
     });
 };
+
+const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
+    disabled &&
+    setState(draft => {
+        draft.eventName = 'none';
+    });
 
 const initialState = {
     eventName: 'none' as EventName,
@@ -74,13 +78,7 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
     const [border] = useBorder({borderColor});
 
     useEffect(() => {
-        if (!disabled) {
-            return;
-        }
-
-        setState(draft => {
-            draft.eventName = 'none';
-        });
+        processDisabled({setState}, disabled);
     }, [disabled, setState]);
 
     return render({

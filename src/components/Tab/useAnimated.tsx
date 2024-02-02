@@ -1,7 +1,8 @@
 import {useEffect} from 'react';
-import {LayoutRectangle} from 'react-native';
+import {Animated, LayoutRectangle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {AnimatedTiming} from '../../utils/animatedTiming.utils';
 import {UTIL} from '../../utils/util';
 import {Data} from './TabBase';
 
@@ -12,6 +13,36 @@ export interface UseAnimatedOptions {
     activeKey?: string;
     activeIndicatorBaseWidth: number;
 }
+
+export interface ProcessAnimatedTimingOptions
+    extends Pick<UseAnimatedOptions, 'data' | 'activeKey'> {
+    activeAnimated: Animated.Value;
+    activeIndicatorWidthAnimated: Animated.Value;
+}
+
+const processAnimatedTiming = (
+    animatedTiming: AnimatedTiming,
+    {data, activeKey, activeAnimated, activeIndicatorWidthAnimated}: ProcessAnimatedTimingOptions,
+) => {
+    const index = data.findIndex(({key}) => key === activeKey);
+    const toValue = index === -1 ? 0 : index;
+
+    requestAnimationFrame(() =>
+        animatedTiming(activeAnimated, {
+            toValue,
+            duration: 'medium3',
+            easing: 'emphasizedDecelerate',
+        }).start(),
+    );
+
+    requestAnimationFrame(() =>
+        animatedTiming(activeIndicatorWidthAnimated, {toValue}).start(() =>
+            requestAnimationFrame(() =>
+                animatedTiming(activeIndicatorWidthAnimated, {toValue: 0}).start(),
+            ),
+        ),
+    );
+};
 
 export const useAnimated = ({
     data,
@@ -45,31 +76,13 @@ export const useAnimated = ({
     });
 
     useEffect(() => {
-        const index = data.findIndex(({key}) => key === activeKey);
-        const toValue = index === -1 ? 0 : index;
-
-        requestAnimationFrame(() =>
-            animatedTiming(activeAnimated, {
-                toValue,
-                duration: 'medium3',
-                easing: 'emphasizedDecelerate',
-            }).start(),
-        );
-
-        requestAnimationFrame(() =>
-            animatedTiming(activeIndicatorWidthAnimated, {toValue}).start(() =>
-                requestAnimationFrame(() =>
-                    animatedTiming(activeIndicatorWidthAnimated, {toValue: 0}).start(),
-                ),
-            ),
-        );
+        processAnimatedTiming(animatedTiming, {
+            activeAnimated,
+            activeIndicatorWidthAnimated,
+            activeKey,
+            data,
+        });
     }, [activeAnimated, activeIndicatorWidthAnimated, activeKey, animatedTiming, data]);
 
-    return [
-        {
-            activeIndicatorLeft,
-            activeIndicatorWidth,
-            contentInnerLeft,
-        },
-    ];
+    return [{activeIndicatorLeft, activeIndicatorWidth, contentInnerLeft}];
 };

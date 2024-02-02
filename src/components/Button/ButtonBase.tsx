@@ -37,6 +37,7 @@ export type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOp
 export type ProcessLayoutOptions = Pick<RenderProps, 'type' | 'block'> & ProcessEventOptions;
 export type ProcessContentLayoutOptions = Pick<RenderProps, 'block'> & ProcessEventOptions;
 export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
+export type ProcessDefaultElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) =>
     type === 'elevated' ? 1 : 0;
@@ -96,16 +97,40 @@ const processStateChange = (
     state: State,
     {event, eventName, type, block, setState}: ProcessStateChangeOptions,
 ) => {
-    if (eventName === 'layout') {
-        processLayout(event as LayoutChangeEvent, {block, setState});
-    }
-
+    eventName === 'layout' && processLayout(event as LayoutChangeEvent, {block, setState});
     processElevation(state, {type, setState});
-
     setState(draft => {
         draft.eventName = eventName;
     });
 };
+
+const processDefaultElevation = (
+    status: ComponentStatus,
+    {type, setState}: ProcessDefaultElevationOptions,
+) =>
+    status === 'idle' &&
+    setState(draft => {
+        type === 'elevated' && (draft.defaultElevation = 1);
+        draft.status = 'succeeded';
+    });
+
+const processDisabledElevation = (
+    {type, setState}: ProcessDefaultElevationOptions,
+    disabled?: boolean,
+) => {
+    const setElevation = typeof disabled === 'boolean' && type === 'elevated';
+
+    setElevation &&
+        setState(draft => {
+            draft.elevation = disabled ? 0 : 1;
+        });
+};
+
+const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
+    disabled &&
+    setState(draft => {
+        draft.eventName = 'none';
+    });
 
 const initialState = {
     contentLayout: {} as LayoutRectangle,
@@ -147,36 +172,15 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
     const [border] = useBorder({type, borderColor});
 
     useEffect(() => {
-        if (status !== 'idle') {
-            return;
-        }
-
-        setState(draft => {
-            type === 'elevated' && (draft.defaultElevation = 1);
-            draft.status = 'succeeded';
-        });
+        processDefaultElevation(status, {type, setState});
     }, [setState, status, type]);
 
     useEffect(() => {
-        const setElevation = typeof disabled === 'boolean' && type === 'elevated';
-
-        if (!setElevation) {
-            return;
-        }
-
-        setState(draft => {
-            draft.elevation = disabled ? 0 : 1;
-        });
+        processDisabledElevation({setState, type}, disabled);
     }, [disabled, setState, type]);
 
     useEffect(() => {
-        if (!disabled) {
-            return;
-        }
-
-        setState(draft => {
-            draft.eventName = 'none';
-        });
+        processDisabled({setState}, disabled);
     }, [disabled, setState]);
 
     if (status === 'idle') {

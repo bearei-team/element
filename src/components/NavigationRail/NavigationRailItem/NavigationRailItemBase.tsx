@@ -45,6 +45,8 @@ export type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' 
     ProcessEventOptions;
 
 export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
+export type ProcessInitOptions = ProcessEventOptions & Pick<RenderProps, 'defaultActive'>;
+export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'active'>;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -61,13 +63,15 @@ const processPressOut = (
     const responseActive = indexKey !== activeKey;
     const {locationX = 0, locationY = 0} = event.nativeEvent;
 
-    if (responseActive) {
-        setState(draft => {
-            draft.activeLocation = {locationX, locationY};
-        });
-
-        onActive?.(indexKey);
+    if (!responseActive) {
+        return;
     }
+
+    setState(draft => {
+        draft.activeLocation = {locationX, locationY};
+    });
+
+    onActive?.(indexKey);
 };
 
 const processStateChange = ({
@@ -94,6 +98,28 @@ const processStateChange = ({
     setState(draft => {
         draft.eventName = eventName;
     });
+};
+
+const processInit = (status: ComponentStatus, {defaultActive, setState}: ProcessInitOptions) => {
+    status === 'idle' &&
+        setState(draft => {
+            draft.rippleCentered = !!defaultActive;
+            draft.status = 'succeeded';
+        });
+};
+
+const processActive = (status: ComponentStatus, {setState, active}: ProcessActiveOptions) => {
+    const setActive = status === 'succeeded' && active;
+
+    setActive &&
+        setState(draft => {
+            if (draft.activeLocation?.locationX) {
+                return;
+            }
+
+            draft.rippleCentered = true;
+            draft.activeLocation = {locationX: 0, locationY: 0};
+        });
 };
 
 const initialState = {
@@ -131,7 +157,12 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
         [activeKey, indexKey, onActive, setState],
     );
 
-    const [onEvent] = HOOK.useOnEvent({...renderProps, disabled: false, onStateChange});
+    const [onEvent] = HOOK.useOnEvent({
+        ...renderProps,
+        disabled: false,
+        onStateChange,
+    });
+
     const activeIconElement = useMemo(
         () => cloneElement(activeIcon, {eventName}),
         [activeIcon, eventName],
@@ -140,40 +171,12 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     const iconElement = useMemo(() => cloneElement(icon, {eventName}), [eventName, icon]);
 
     useEffect(() => {
-        if (status !== 'idle') {
-            return;
-        }
-
-        setState(draft => {
-            draft.rippleCentered = !!defaultActive;
-            draft.status = 'succeeded';
-        });
+        processInit(status, {defaultActive, setState});
     }, [defaultActive, setState, status]);
 
     useEffect(() => {
-        if (!(status === 'succeeded' && active)) {
-            return;
-        }
-
-        setState(draft => {
-            if (draft.activeLocation?.locationX) {
-                return;
-            }
-
-            draft.rippleCentered = true;
-            draft.activeLocation = {locationX: 0, locationY: 0};
-        });
+        processActive(status, {active, setState});
     }, [active, setState, status]);
-
-    useEffect(() => {
-        if (!activeLocation?.locationX) {
-            return;
-        }
-
-        setState(draft => {
-            draft.rippleCentered = false;
-        });
-    }, [activeLocation, setState]);
 
     if (status === 'idle') {
         return <></>;

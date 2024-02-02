@@ -24,6 +24,7 @@ export interface ProcessEventOptions {
 }
 
 export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
+export type ProcessActiveKeyOptions = ProcessEventOptions & Pick<RenderProps, 'activeKey'>;
 
 const renderItems = ({activeKey, block, data, defaultActiveKey, onActive}: RenderItemOptions) =>
     data.map(({key, ...props}) => (
@@ -38,13 +39,8 @@ const renderItems = ({activeKey, block, data, defaultActiveKey, onActive}: Rende
         />
     ));
 
-const processFAB = (fab?: React.JSX.Element | undefined) => {
-    if (!fab) {
-        return fab;
-    }
-
-    return cloneElement(fab, {disabledElevation: true, size: 'medium'});
-};
+const processFAB = (fab?: React.JSX.Element) =>
+    fab ? cloneElement(fab, {disabledElevation: true, size: 'medium'}) : undefined;
 
 const processActive = ({onActive, setState}: ProcessActiveOptions, key?: string) => {
     if (typeof key === 'undefined') {
@@ -52,13 +48,27 @@ const processActive = ({onActive, setState}: ProcessActiveOptions, key?: string)
     }
 
     setState(draft => {
-        if (draft.activeKey !== key) {
-            draft.activeKey = key;
-        }
+        draft.activeKey !== key && (draft.activeKey = key);
     });
 
     onActive?.(key);
 };
+
+const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSource[]) =>
+    dataSources &&
+    setState(draft => {
+        draft.data = dataSources;
+        draft.status === 'idle' && (draft.status = 'succeeded');
+    });
+
+const processActiveKey = (
+    status: ComponentStatus,
+    {activeKey, setState}: ProcessActiveKeyOptions,
+) =>
+    status === 'succeeded' &&
+    setState(draft => {
+        draft.activeKey = activeKey;
+    });
 
 const initialState = {
     activeKey: undefined as string | undefined,
@@ -82,7 +92,6 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
         [renderProps.onActive, setState],
     );
 
-    const fabElement = useMemo(() => processFAB(fab), [fab]);
     const children = useMemo(
         () =>
             renderItems({
@@ -96,24 +105,11 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
     );
 
     useEffect(() => {
-        if (!dataSources) {
-            return;
-        }
-
-        setState(draft => {
-            draft.data = dataSources;
-            draft.status === 'idle' && (draft.status = 'succeeded');
-        });
+        processInit({setState}, dataSources);
     }, [dataSources, setState]);
 
     useEffect(() => {
-        if (status !== 'succeeded') {
-            return;
-        }
-
-        setState(draft => {
-            draft.activeKey = activeKeySource;
-        });
+        processActiveKey(status, {activeKey: activeKeySource, setState});
     }, [activeKeySource, setState, status]);
 
     if (status === 'idle') {
@@ -123,7 +119,7 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
     return render({
         ...renderProps,
         children,
-        fab: fabElement,
+        fab: processFAB(fab),
         id,
     });
 };

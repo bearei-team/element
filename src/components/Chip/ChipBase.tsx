@@ -1,5 +1,13 @@
 import {FC, useCallback, useEffect, useId} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
+import {
+    Animated,
+    GestureResponderEvent,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    NativeTouchEvent,
+    TextStyle,
+    ViewStyle,
+} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {HOOK} from '../../hooks/hook';
@@ -18,6 +26,8 @@ export interface RenderProps extends ChipProps {
     eventName: EventName;
     onEvent: OnEvent;
     activeColor: string;
+    activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
+    rippleCentered?: boolean;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
         width: number;
@@ -36,6 +46,11 @@ export type ProcessElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEve
 export type ProcessLayoutOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
 export type ProcessContentLayoutOptions = ProcessEventOptions;
 export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
+export type ProcessInitOptions = Pick<RenderProps, 'elevated' | 'defaultActive'> &
+    ProcessEventOptions;
+
+export type ProcessDisabledElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
+export type ProcessActiveOptions = Pick<RenderProps, 'active'> & ProcessEventOptions;
 
 const processCorrectionCoefficient = ({elevated}: Pick<RenderProps, 'elevated'>) =>
     elevated ? 1 : 0;
@@ -70,13 +85,27 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessLayoutOption
     });
 };
 
+const processPressOut = (event: GestureResponderEvent, {setState}: ProcessEventOptions) => {
+    const {locationX = 0, locationY = 0} = event.nativeEvent;
+
+    setState(draft => {
+        draft.activeLocation = {locationX, locationY};
+    });
+};
+
 const processStateChange = (
     state: State,
     {event, eventName, elevated, setState}: ProcessStateChangeOptions,
 ) => {
-    if (eventName === 'layout') {
-        processLayout(event as LayoutChangeEvent, {setState});
-    }
+    const nextEvent = {
+        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
+        pressOut: () =>
+            processPressOut(event as GestureResponderEvent, {
+                setState,
+            }),
+    };
+
+    nextEvent[eventName as keyof typeof nextEvent]?.();
 
     processElevation(state, {elevated, setState});
 
@@ -85,15 +114,71 @@ const processStateChange = (
     });
 };
 
+const processInit = (
+    status: ComponentStatus,
+    {defaultActive, elevated, setState}: ProcessInitOptions,
+) =>
+    status === 'idle' &&
+    setState(draft => {
+        elevated && (draft.defaultElevation = 1);
+
+        if (typeof defaultActive === 'boolean') {
+            draft.rippleCentered = defaultActive;
+            draft.defaultActive = defaultActive;
+        }
+
+        draft.status = 'succeeded';
+    });
+
+const processDisabledElevation = (
+    {elevated, setState}: ProcessDisabledElevationOptions,
+    disabled?: boolean,
+) => {
+    const setElevation = typeof disabled === 'boolean' && elevated;
+
+    setElevation &&
+        setState(draft => {
+            draft.elevation = disabled ? 0 : 1;
+        });
+};
+
+const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
+    disabled &&
+    setState(draft => {
+        draft.eventName = 'none';
+    });
+
+const processActive = (status: ComponentStatus, {active, setState}: ProcessActiveOptions) => {
+    const setActive = status === 'succeeded' && typeof active === 'boolean';
+
+    setActive &&
+        setState(draft => {
+            draft.active = active;
+
+            if (draft.activeLocation?.locationX) {
+                return;
+            }
+
+            draft.rippleCentered = true;
+            draft.activeLocation = {locationX: 0, locationY: 0};
+        });
+};
+
 const initialState = {
     defaultElevation: undefined as ElevationLevel,
     elevation: undefined as ElevationLevel,
     eventName: 'none' as EventName,
     layout: {} as LayoutRectangle,
     status: 'idle' as ComponentStatus,
+    activeLocation: undefined as Pick<NativeTouchEvent, 'locationX' | 'locationY'> | undefined,
+    active: undefined as boolean | undefined,
+    defaultActive: undefined as boolean | undefined,
+    rippleCentered: false,
 };
 
 export const ChipBase: FC<ChipBaseProps> = ({
+    active: activeSource,
+    defaultActive: defaultActiveSource,
     disabled,
     elevated = false,
     icon,
@@ -102,8 +187,20 @@ export const ChipBase: FC<ChipBaseProps> = ({
     type = 'filter',
     ...renderProps
 }) => {
-    const [{defaultElevation, elevation, eventName, layout, status}, setState] =
-        useImmer(initialState);
+    const [
+        {
+            active,
+            activeLocation,
+            defaultActive,
+            defaultElevation,
+            elevation,
+            eventName,
+            layout,
+            rippleCentered,
+            status,
+        },
+        setState,
+    ] = useImmer(initialState);
 
     const theme = useTheme();
     const id = useId();
@@ -121,37 +218,20 @@ export const ChipBase: FC<ChipBaseProps> = ({
     const [border] = useBorder({type, borderColor});
 
     useEffect(() => {
-        if (status !== 'idle') {
-            return;
-        }
-
-        setState(draft => {
-            elevated && (draft.defaultElevation = 1);
-            draft.status = 'succeeded';
-        });
-    }, [elevated, setState, status]);
+        processInit(status, {defaultActive: defaultActiveSource, elevated, setState});
+    }, [defaultActiveSource, elevated, setState, status]);
 
     useEffect(() => {
-        const setElevation = typeof disabled === 'boolean' && elevated;
-
-        if (!setElevation) {
-            return;
-        }
-
-        setState(draft => {
-            draft.elevation = disabled ? 0 : 1;
-        });
+        processDisabledElevation({elevated, setState}, disabled);
     }, [disabled, elevated, setState]);
 
     useEffect(() => {
-        if (!disabled) {
-            return;
-        }
-
-        setState(draft => {
-            draft.eventName = 'none';
-        });
+        processDisabled({setState}, disabled);
     }, [disabled, setState]);
+
+    useEffect(() => {
+        processActive(status, {active: activeSource, setState});
+    }, [activeSource, setState, status]);
 
     if (status === 'idle') {
         return <></>;
@@ -159,6 +239,10 @@ export const ChipBase: FC<ChipBaseProps> = ({
 
     return render({
         ...renderProps,
+        active,
+        activeColor,
+        activeLocation,
+        defaultActive,
         defaultElevation,
         disabled,
         elevation,
@@ -167,9 +251,9 @@ export const ChipBase: FC<ChipBaseProps> = ({
         id,
         labelText,
         onEvent,
+        rippleCentered,
         type,
         underlayColor,
-        activeColor,
         renderStyle: {
             ...border,
             backgroundColor,

@@ -1,10 +1,23 @@
 import {useEffect} from 'react';
+import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {HOOK} from '../../hooks/hook';
+import {AnimatedTiming} from '../../utils/animatedTiming.utils';
 import {UTIL} from '../../utils/util';
 import {ElevationProps} from './Elevation';
 
 export type UseAnimatedOptions = Pick<ElevationProps, 'level' | 'defaultLevel'>;
+
+export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+    opacityAnimated: Animated.Value;
+}
+
+const processAnimatedTiming = (
+    animatedTiming: AnimatedTiming,
+    {opacityAnimated, level}: ProcessAnimatedTimingOptions,
+) =>
+    typeof level === 'number' &&
+    requestAnimationFrame(() => animatedTiming(opacityAnimated, {toValue: level}).start());
 
 export const useAnimated = ({level, defaultLevel = 0}: UseAnimatedOptions) => {
     const [opacityAnimated] = HOOK.useAnimatedValue(defaultLevel);
@@ -35,11 +48,7 @@ export const useAnimated = ({level, defaultLevel = 0}: UseAnimatedOptions) => {
     });
 
     useEffect(() => {
-        if (typeof level !== 'number') {
-            return;
-        }
-
-        requestAnimationFrame(() => animatedTiming(opacityAnimated, {toValue: level}).start());
+        processAnimatedTiming(animatedTiming, {level, opacityAnimated});
     }, [animatedTiming, level, opacityAnimated]);
 
     return [{shadow0Opacity, shadow1Opacity}];
