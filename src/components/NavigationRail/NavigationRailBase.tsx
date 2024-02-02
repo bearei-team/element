@@ -40,7 +40,7 @@ const renderItems = ({activeKey, block, data, defaultActiveKey, onActive}: Rende
     ));
 
 const processFAB = (fab?: React.JSX.Element) =>
-    fab ? cloneElement(fab, {disabledElevation: true, size: 'medium'}) : undefined;
+    fab ? cloneElement(fab, {elevated: false, size: 'medium'}) : undefined;
 
 const processActive = ({onActive, setState}: ProcessActiveOptions, key?: string) => {
     if (typeof key === 'undefined') {

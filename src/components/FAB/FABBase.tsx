@@ -102,6 +102,7 @@ export const FABBase: FC<FABBaseProps> = ({
     icon,
     render,
     type = 'primary',
+    size,
     ...renderProps
 }) => {
     const [{elevation, layout, eventName}, setState] = useImmer(initialState);
@@ -115,7 +116,7 @@ export const FABBase: FC<FABBaseProps> = ({
 
     const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
     const [{backgroundColor, color}] = useAnimated({disabled, type});
-    const [iconElement] = useIcon({eventName, type, icon, disabled});
+    const [iconElement] = useIcon({eventName, type, icon, disabled, size});
 
     useEffect(() => {
         processDisabledElevation({elevated, setState}, disabled);
@@ -134,6 +135,7 @@ export const FABBase: FC<FABBaseProps> = ({
         id,
         onEvent,
         type,
+        size,
         underlayColor,
         renderStyle: {
             backgroundColor,

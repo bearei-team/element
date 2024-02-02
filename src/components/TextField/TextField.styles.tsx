@@ -4,12 +4,13 @@ import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './TextFieldBase';
 
 export type HeaderInnerProps = Pick<RenderProps, 'type'> & {
-    leadingIconShow: boolean;
-    trailingIconShow: boolean;
+    leadingShow: boolean;
+    trailingShow: boolean;
 };
 
 export type LabelTextProps = {
     scale?: boolean;
+    leadingShow: boolean;
 };
 
 export interface ActiveIndicatorProps {
@@ -41,15 +42,15 @@ export const HeaderInner = styled(Shape)<HeaderInnerProps>`
                 ${theme.adaptSize(theme.spacing.none)}px;
         `}
 
-    ${({theme, leadingIconShow}) =>
-        !leadingIconShow &&
+    ${({theme, leadingShow}) =>
+        !leadingShow &&
         css`
             padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
         `}
 
 
-    ${({theme, trailingIconShow}) =>
-        !trailingIconShow &&
+    ${({theme, trailingShow}) =>
+        !trailingShow &&
         css`
             padding-right: ${theme.adaptSize(theme.spacing.medium)}px;
         `}
@@ -61,17 +62,27 @@ export const LabelText = styled(Typography)<LabelTextProps>`
     ${({theme}) => css`
         left: ${theme.adaptSize(theme.spacing.medium)}px;
     `}
+
+    ${({theme, leadingShow}) =>
+        leadingShow &&
+        css`
+            left: ${theme.adaptSize(theme.spacing.small * 6)}px;
+        `}
 `;
 
-export const TrailingIcon = styled.View`
+export const Trailing = styled.View`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
     ${({theme}) => css`
         height: ${theme.adaptSize(theme.spacing.small * 6)}px;
         width: ${theme.adaptSize(theme.spacing.small * 6)}px;
-        padding: ${theme.adaptSize(theme.spacing.small)}px ${theme.adaptSize(theme.spacing.small)}px;
     `}
 `;
 
-export const LeadingIcon = styled(TrailingIcon)``;
+export const Leading = styled(Trailing)``;
 export const Content = styled.View`
     align-items: flex-end;
     display: flex;

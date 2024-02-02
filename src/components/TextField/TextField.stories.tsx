@@ -1,4 +1,5 @@
 import {Meta, StoryObj} from '@storybook/react';
+import {Icon} from '../Icon/Icon';
 import {TextField, TextFieldProps} from './TextField';
 
 export default {
@@ -10,5 +11,13 @@ export const Filled: StoryObj<TextFieldProps> = {
     args: {
         labelText: 'name',
         supportingText: 'supportingText',
+    },
+};
+
+export const IconTextField: StoryObj<TextFieldProps> = {
+    args: {
+        labelText: 'name',
+        supportingText: 'supportingText',
+        leadingIcon: <Icon />,
     },
 };

@@ -20,7 +20,7 @@ export const Container = styled(Shape)<ContainerProps>`
 `;
 
 export const Inner = styled.View`
-    align-items: center;
+    align-items: flex-start;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -48,6 +48,7 @@ export const Leading = styled.View`
 `;
 
 export const Content = styled.View<ContentProps>`
+    align-self: stretch;
     display: flex;
     flex-direction: column;
     flex: 1;

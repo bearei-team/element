@@ -58,7 +58,7 @@ const processModalShow = ({setState}: ProcessEventOptions) =>
         draft.visible = true;
     });
 
-const processSheetVisible = (sheetVisible: boolean, {setState}: ProcessEventOptions) =>
+const processSheetVisible = ({setState}: ProcessEventOptions, sheetVisible?: boolean) =>
     setState(draft => {
         if (draft.modalVisible) {
             draft.visible = false;
@@ -90,7 +90,7 @@ export const SideSheetBase: FC<SideSheetBaseProps> = ({
     render,
     secondaryButton,
     secondaryButtonLabelText = 'Cancel',
-    visible: sheetVisible = false,
+    visible: sheetVisible,
     ...renderProps
 }) => {
     const [{visible, modalVisible}, setState] = useImmer(initialState);
@@ -190,7 +190,7 @@ export const SideSheetBase: FC<SideSheetBaseProps> = ({
     );
 
     useEffect(() => {
-        processSheetVisible(sheetVisible, {setState});
+        processSheetVisible({setState}, sheetVisible);
     }, [setState, sheetVisible]);
 
     useEffect(() => {

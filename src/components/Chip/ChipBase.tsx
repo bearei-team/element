@@ -42,15 +42,15 @@ export interface ProcessEventOptions {
     setState: Updater<typeof initialState>;
 }
 
-export type ProcessElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
-export type ProcessLayoutOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
+export type ProcessActiveOptions = Pick<RenderProps, 'active'> & ProcessEventOptions;
 export type ProcessContentLayoutOptions = ProcessEventOptions;
-export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
+export type ProcessDisabledElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
+export type ProcessElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
 export type ProcessInitOptions = Pick<RenderProps, 'elevated' | 'defaultActive'> &
     ProcessEventOptions;
 
-export type ProcessDisabledElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
-export type ProcessActiveOptions = Pick<RenderProps, 'active'> & ProcessEventOptions;
+export type ProcessLayoutOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
+export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
 
 const processCorrectionCoefficient = ({elevated}: Pick<RenderProps, 'elevated'>) =>
     elevated ? 1 : 0;

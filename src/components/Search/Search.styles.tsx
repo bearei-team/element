@@ -52,7 +52,7 @@ export const Header = styled.Pressable`
         `};
 `;
 
-export const LeadingIcon = styled.View`
+export const Leading = styled.View`
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -60,9 +60,8 @@ export const LeadingIcon = styled.View`
 
     ${({theme}) =>
         css`
-            height: ${theme.adaptSize(theme.spacing.small * 5)}px;
-            padding: ${theme.adaptSize(theme.spacing.small)}px;
-            width: ${theme.adaptSize(theme.spacing.small * 5)}px;
+            height: ${theme.adaptSize(theme.spacing.small * 6)}px;
+            width: ${theme.adaptSize(theme.spacing.small * 6)}px;
         `};
 `;
 
@@ -101,4 +100,4 @@ export const Input = styled(TextInput)`
     `};
 `;
 
-export const TrailingIcon = styled(LeadingIcon)``;
+export const Trailing = styled(Leading)``;

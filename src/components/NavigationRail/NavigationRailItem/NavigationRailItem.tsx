@@ -33,11 +33,12 @@ const render = ({
     renderStyle,
     rippleCentered,
     underlayColor,
+    block,
     ...containerProps
 }: RenderProps) => {
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
     const {width, height, color, labelHeight} = renderStyle;
-    const shape = 'large';
+    const shape = block ? 'full' : 'large';
 
     return (
         <Container
@@ -55,7 +56,7 @@ const render = ({
                 onLayout={onLayout}
                 shape={shape}
                 underlayColor={activeColor}>
-                <Header testID={`navigationRailItem__header--${id}`}>
+                <Header testID={`navigationRailItem__header--${id}`} block={block}>
                     <Icon testID={`navigationRailItem__icon--${id}`}>
                         {active ? activeIcon : icon}
                     </Icon>
@@ -70,14 +71,16 @@ const render = ({
                 </Header>
             </TouchableRipple>
 
-            <AnimatedLabelText
-                active={active ?? defaultActive}
-                size="medium"
-                style={{color, height: labelHeight}}
-                testID={`navigationRailItem__labelText--${id}`}
-                type="label">
-                {labelText}
-            </AnimatedLabelText>
+            {!block && (
+                <AnimatedLabelText
+                    active={active ?? defaultActive}
+                    size="medium"
+                    style={{color, height: labelHeight}}
+                    testID={`navigationRailItem__labelText--${id}`}
+                    type="label">
+                    {labelText}
+                </AnimatedLabelText>
+            )}
         </Container>
     );
 };

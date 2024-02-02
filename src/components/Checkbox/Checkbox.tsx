@@ -13,20 +13,20 @@ export interface CheckboxProps extends TouchableRippleProps {
     error?: boolean;
     height?: number;
     indeterminate?: boolean;
+    onActive?: (active?: boolean) => void;
     type?: CheckboxType;
     width?: number;
-    onActive?: (active?: boolean) => void;
 }
 
 const AnimatedContent = Animated.createAnimatedComponent(Content);
 const render = ({
+    disabled,
     eventName,
     icon,
     id,
     onEvent,
     renderStyle,
     underlayColor,
-    disabled,
     ...contentProps
 }: RenderProps) => {
     const {height, width} = renderStyle;
@@ -34,7 +34,7 @@ const render = ({
     const shape = 'full';
 
     return (
-        <Container accessibilityRole="checkbox" testID={`checkbox--${id}`}>
+        <Container accessibilityRole="checkbox" testID={`checkbox--${id}`} width={width}>
             <TouchableRipple
                 {...onTouchableRippleEvent}
                 disabled={disabled}

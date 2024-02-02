@@ -14,7 +14,6 @@ import {AnimatedInterpolation, EventName, State} from '../Common/interface';
 import {TextFieldProps} from './TextField';
 import {Input, TextField} from './TextField.styles';
 import {useAnimated} from './useAnimated';
-import {useIcon} from './useIcon';
 
 export interface RenderProps extends TextFieldProps {
     eventName: EventName;
@@ -57,10 +56,7 @@ export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEv
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
 const processState = (state: State, {eventName, setState}: ProcessStateOptions) =>
     setState(draft => {
-        if (draft.state === 'focused' && eventName === 'blur') {
-            draft.eventName = eventName;
-            draft.state = state;
-
+        if (draft.state === 'focused' && eventName !== 'blur') {
             return;
         }
 
@@ -134,8 +130,8 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     type = 'filled',
     error,
     disabled,
-    leadingIcon,
-    trailingIcon,
+    leading,
+    trailing,
     placeholder,
     ...textInputProps
 }) => {
@@ -187,13 +183,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         filled: !!filled,
     });
 
-    const [{leadingIcon: leadingIconElement, trailingIcon: trailingIconElement}] = useIcon({
-        error,
-        disabled,
-        leadingIcon,
-        trailingIcon,
-    });
-
     const input = useMemo(
         () =>
             renderTextInput({
@@ -225,10 +214,10 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         id,
         input,
         labelText,
-        leadingIcon: leadingIconElement,
+        leading,
         onEvent: {...onEvent, onBlur, onFocus},
         state,
-        trailingIcon: trailingIconElement,
+        trailing,
         underlayColor,
         renderStyle: {
             activeIndicatorBackgroundColor,

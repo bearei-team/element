@@ -39,7 +39,7 @@ export type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOp
 export type ProcessLayoutOptions = Pick<RenderProps, 'block' | 'type'> & ProcessEventOptions;
 export type ProcessInnerLayoutOptions = Omit<ProcessLayoutOptions, 'type'>;
 export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
-export type ProcessDefaultElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
+export type ProcessInitOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) =>
     type === 'elevated' ? 1 : 0;
@@ -106,20 +106,14 @@ const processStateChange = (
     });
 };
 
-const processDefaultElevation = (
-    status: ComponentStatus,
-    {type, setState}: ProcessDefaultElevationOptions,
-) =>
+const processInit = (status: ComponentStatus, {type, setState}: ProcessInitOptions) =>
     status === 'idle' &&
     setState(draft => {
         type === 'elevated' && (draft.defaultElevation = 1);
         draft.status = 'succeeded';
     });
 
-const processDisabledElevation = (
-    {type, setState}: ProcessDefaultElevationOptions,
-    disabled?: boolean,
-) => {
+const processDisabledElevation = ({type, setState}: ProcessInitOptions, disabled?: boolean) => {
     const setElevation = typeof disabled === 'boolean' && type === 'elevated';
 
     setElevation &&
@@ -146,15 +140,15 @@ const initialState = {
 export const CardBase: FC<CardBaseProps> = ({
     block,
     disabled,
-    titleText = 'Title',
-    render,
-    type = 'filled',
-    primaryButtonLabelText = 'Save',
-    secondaryButtonLabelText = 'Cancel',
-    primaryButton,
-    secondaryButton,
     onPrimaryButtonPress,
     onSecondaryButtonPress,
+    primaryButton,
+    primaryButtonLabelText = 'Save',
+    render,
+    secondaryButton,
+    secondaryButtonLabelText = 'Cancel',
+    titleText = 'Title',
+    type = 'filled',
     ...renderProps
 }) => {
     const [{defaultElevation, elevation, eventName, layout, status, innerLayout}, setState] =
@@ -208,7 +202,7 @@ export const CardBase: FC<CardBaseProps> = ({
     );
 
     useEffect(() => {
-        processDefaultElevation(status, {setState, type});
+        processInit(status, {setState, type});
     }, [setState, status, type]);
 
     useEffect(() => {

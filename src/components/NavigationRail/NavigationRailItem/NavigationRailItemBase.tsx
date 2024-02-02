@@ -168,7 +168,15 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
         [activeIcon, eventName],
     );
 
-    const iconElement = useMemo(() => cloneElement(icon, {eventName}), [eventName, icon]);
+    const iconElement = useMemo(
+        () =>
+            cloneElement(icon, {
+                eventName,
+                width: theme.adaptSize(theme.spacing.large),
+                height: theme.adaptSize(theme.spacing.large),
+            }),
+        [eventName, icon, theme],
+    );
 
     useEffect(() => {
         processInit(status, {defaultActive, setState});
@@ -192,6 +200,7 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
         eventName,
         icon: iconElement,
         id,
+        block,
         onEvent,
         rippleCentered,
         renderStyle: {

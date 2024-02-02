@@ -2,11 +2,12 @@ import React, {cloneElement} from 'react';
 import {useTheme} from 'styled-components/native';
 import {RenderProps} from './FABBase';
 
-export interface UseIconOptions extends Pick<RenderProps, 'disabled' | 'type' | 'eventName'> {
+export interface UseIconOptions
+    extends Pick<RenderProps, 'size' | 'disabled' | 'type' | 'eventName'> {
     icon?: React.JSX.Element;
 }
 
-export const useIcon = ({disabled, icon, type, eventName}: UseIconOptions) => {
+export const useIcon = ({disabled, icon, type, eventName, size}: UseIconOptions) => {
     const theme = useTheme();
     const fillType = {
         primary: theme.palette.primary.onPrimaryContainer,
@@ -21,6 +22,15 @@ export const useIcon = ({disabled, icon, type, eventName}: UseIconOptions) => {
 
     return [
         cloneElement(icon, {
+            ...(size === 'large'
+                ? {
+                      width: theme.adaptSize(theme.spacing.extraLarge + theme.spacing.extraSmall),
+                      height: theme.adaptSize(theme.spacing.extraLarge + theme.spacing.extraSmall),
+                  }
+                : {
+                      width: theme.adaptSize(theme.spacing.large),
+                      height: theme.adaptSize(theme.spacing.large),
+                  }),
             eventName,
             fill: disabled
                 ? theme.color.rgba(theme.palette.surface.onSurface, 0.38)

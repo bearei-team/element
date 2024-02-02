@@ -5,6 +5,7 @@ import {RenderProps} from './NavigationRailItemBase';
 
 export type ContainerProps = Pick<RenderProps, 'active'>;
 export type LabelTextProps = Pick<RenderProps, 'active'>;
+export type HeaderProps = Pick<RenderProps, 'block'>;
 
 export const Container = styled(View)<ContainerProps>`
     align-items: center;
@@ -24,7 +25,7 @@ export const Container = styled(View)<ContainerProps>`
         `}
 `;
 
-export const Header = styled.View`
+export const Header = styled.View<HeaderProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -35,9 +36,17 @@ export const Header = styled.View`
         height: ${theme.adaptSize(theme.spacing.extraLarge)}px;
         width: ${theme.adaptSize(theme.spacing.small * 7)}px;
     `};
+
+    ${({theme, block}) =>
+        block &&
+        css`
+            height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+        `};
 `;
 
 export const Icon = styled.View`
+    overflow: hidden;
+
     ${({theme}) => css`
         height: ${theme.adaptSize(theme.spacing.large)}px;
         width: ${theme.adaptSize(theme.spacing.large)}px;

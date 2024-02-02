@@ -25,6 +25,8 @@ export const useIcon = ({disabled, error, eventName, type = 'unselected'}: UseIc
     return [
         cloneElement(icon[type], {
             eventName,
+            width: theme.adaptSize(theme.spacing.large),
+            height: theme.adaptSize(theme.spacing.large),
             fill: disabled ? theme.color.rgba(theme.palette.surface.onSurface, 0.38) : color,
         }),
     ];

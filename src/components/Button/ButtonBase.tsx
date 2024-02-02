@@ -37,7 +37,7 @@ export type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOp
 export type ProcessLayoutOptions = Pick<RenderProps, 'type' | 'block'> & ProcessEventOptions;
 export type ProcessContentLayoutOptions = Pick<RenderProps, 'block'> & ProcessEventOptions;
 export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
-export type ProcessDefaultElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
+export type ProcessInitOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) =>
     type === 'elevated' ? 1 : 0;
@@ -104,20 +104,14 @@ const processStateChange = (
     });
 };
 
-const processDefaultElevation = (
-    status: ComponentStatus,
-    {type, setState}: ProcessDefaultElevationOptions,
-) =>
+const processInit = (status: ComponentStatus, {type, setState}: ProcessInitOptions) =>
     status === 'idle' &&
     setState(draft => {
         type === 'elevated' && (draft.defaultElevation = 1);
         draft.status = 'succeeded';
     });
 
-const processDisabledElevation = (
-    {type, setState}: ProcessDefaultElevationOptions,
-    disabled?: boolean,
-) => {
+const processDisabledElevation = ({type, setState}: ProcessInitOptions, disabled?: boolean) => {
     const setElevation = typeof disabled === 'boolean' && type === 'elevated';
 
     setElevation &&
@@ -172,7 +166,7 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
     const [border] = useBorder({type, borderColor});
 
     useEffect(() => {
-        processDefaultElevation(status, {type, setState});
+        processInit(status, {type, setState});
     }, [setState, status, type]);
 
     useEffect(() => {

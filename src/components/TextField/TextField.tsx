@@ -10,9 +10,9 @@ import {
     HeaderInner,
     Inner,
     LabelText,
-    LeadingIcon,
+    Leading,
     SupportingText,
-    TrailingIcon,
+    Trailing,
 } from './TextField.styles';
 import {RenderProps, TextFieldBase} from './TextFieldBase';
 
@@ -25,9 +25,9 @@ export interface TextFieldProps extends InputProps {
     disabled?: boolean;
     error?: boolean;
     labelText?: string;
-    leadingIcon?: React.JSX.Element;
+    leading?: React.JSX.Element;
     supportingText?: string;
-    trailingIcon?: React.JSX.Element;
+    trailing?: React.JSX.Element;
     type?: TextFieldType;
 }
 
@@ -41,8 +41,8 @@ const render = ({
     id,
     onEvent,
     labelText,
-    leadingIcon,
-    trailingIcon,
+    leading,
+    trailing,
     input,
     renderStyle,
     underlayColor,
@@ -63,6 +63,7 @@ const render = ({
         height,
     } = renderStyle;
     const shape = 'extraSmallTop';
+    const leadingShow = !!leading;
 
     return (
         <Container
@@ -82,27 +83,24 @@ const render = ({
                     <AnimatedHeaderInner
                         shape={shape}
                         testID={`textfield__headerInner--${id}`}
-                        leadingIconShow={!!leadingIcon}
-                        trailingIconShow={!!trailingIcon}
+                        leadingShow={leadingShow}
+                        trailingShow={!!trailing}
                         style={{backgroundColor}}>
-                        {leadingIcon && (
-                            <LeadingIcon testID={`textfield__leadingIcon--${id}`}>
-                                {leadingIcon}
-                            </LeadingIcon>
+                        {leading && (
+                            <Leading testID={`textfield__leading--${id}`}>{leading}</Leading>
                         )}
 
                         <Content testID={`textfield__content--${id}`}>{input}</Content>
 
-                        {trailingIcon && (
-                            <TrailingIcon testID={`textfield__trailingIcon--${id}`}>
-                                {trailingIcon}
-                            </TrailingIcon>
+                        {trailing && (
+                            <Trailing testID={`textfield__trailing--${id}`}>{trailing}</Trailing>
                         )}
 
                         <AnimatedLabelText
                             testID={`textField__labelText--${id}`}
                             type="body"
                             size="large"
+                            leadingShow={leadingShow}
                             style={{
                                 color: labelTextColor,
                                 top: labelTextTop,

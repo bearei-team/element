@@ -16,6 +16,8 @@ export const useIcon = ({disabled, icon, eventName}: UseIconOptions) => {
     return [
         cloneElement(icon, {
             eventName,
+            width: theme.adaptSize(theme.spacing.large - 6),
+            height: theme.adaptSize(theme.spacing.large - 6),
             fill: disabled
                 ? theme.color.rgba(theme.palette.surface.onSurface, 0.38)
                 : theme.palette.primary.primary,

@@ -55,9 +55,7 @@ const processItemLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOpt
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState(draft => {
-        if (!draft.itemLayout.width) {
-            draft.itemLayout = nativeEventLayout;
-        }
+        !draft.itemLayout.width && (draft.itemLayout = nativeEventLayout);
     });
 };
 
@@ -70,11 +68,7 @@ const processItemLabelTextLayout = (
     setState(draft => {
         const dataItem = draft.data.find(datum => datum.key === key);
 
-        if (!dataItem) {
-            return;
-        }
-
-        dataItem.labelTextLayout = nativeEventLayout;
+        dataItem && (dataItem.labelTextLayout = nativeEventLayout);
     });
 };
 

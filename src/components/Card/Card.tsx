@@ -20,6 +20,7 @@ import {CardBase, RenderProps} from './CardBase';
 export type CardType = 'elevated' | 'filled' | 'outlined';
 
 export interface CardProps extends TouchableRippleProps {
+    block?: boolean;
     footer?: boolean;
     onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
     onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
@@ -32,7 +33,6 @@ export interface CardProps extends TouchableRippleProps {
     supportingText?: string;
     titleText?: string;
     type?: CardType;
-    block?: boolean;
 }
 
 const AnimatedInner = Animated.createAnimatedComponent(Inner);

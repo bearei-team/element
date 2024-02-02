@@ -68,6 +68,8 @@ const processAddRipple = ({
     setState(draft => {
         const exist = activeRipple && Object.keys(draft.rippleSequence).length !== 0;
 
+        console.info(activeRipple, Object.keys(draft.rippleSequence));
+
         !exist &&
             (draft.rippleSequence[`${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`] = {
                 exitAnimated: undefined,
@@ -107,19 +109,12 @@ const processStateChange = ({
 };
 
 const processRippleExit = ({setState, onRippleAnimatedEnd}: ProcessRippleExitOptions) => {
-    const rippleExit = ([sequence, {exitAnimated}]: [string, Ripple]) =>
-        exitAnimated?.(() => {
-            setState(draft => {
-                if (draft.rippleSequence[sequence]) {
-                    delete draft.rippleSequence[sequence];
-                }
-            });
-
-            onRippleAnimatedEnd?.();
-        });
+    const rippleExit = ([_sequence, {exitAnimated}]: [string, Ripple]) =>
+        exitAnimated?.(() => onRippleAnimatedEnd?.());
 
     setState(draft => {
         Object.entries(draft.rippleSequence).forEach(rippleExit);
+        draft.rippleSequence = {};
     });
 };
 
@@ -194,6 +189,7 @@ const initialState = {
     layout: {} as LayoutRectangle,
     rippleSequence: {} as RippleSequence,
     status: 'idle' as ComponentStatus,
+    shouldUpdate: {},
 };
 
 export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({

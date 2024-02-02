@@ -35,12 +35,12 @@ const processOutlinedAnimated = (
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {
-        disabled,
-        type = 'filled',
-        colorAnimated,
-        eventName,
-        borderInputRange,
         borderAnimated,
+        borderInputRange,
+        colorAnimated,
+        disabled,
+        eventName,
+        type = 'filled',
     }: ProcessAnimatedTimingOptions,
 ) => {
     const toValue = disabled ? 0 : 1;
@@ -49,11 +49,11 @@ const processAnimatedTiming = (
         if (['link', 'outlined'].includes(type)) {
             return Animated.parallel([
                 processOutlinedAnimated(animatedTiming, {
-                    disabled,
-                    type,
-                    eventName,
-                    borderInputRange,
                     borderAnimated,
+                    borderInputRange,
+                    disabled,
+                    eventName,
+                    type,
                 }),
                 animatedTiming(colorAnimated, {toValue}),
             ]).start();
@@ -161,12 +161,12 @@ export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedO
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
-            disabled,
-            type,
-            colorAnimated,
-            eventName,
-            borderInputRange,
             borderAnimated,
+            borderInputRange,
+            colorAnimated,
+            disabled,
+            eventName,
+            type,
         });
     }, [
         animatedTiming,

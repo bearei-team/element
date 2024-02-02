@@ -14,9 +14,9 @@ export interface SearchProps
         TextInputProps & PressableProps & TouchableWithoutFeedbackProps & RefAttributes<TextInput>
     > {
     data?: ListDataSource[];
-    leadingIcon?: React.JSX.Element;
+    leading?: React.JSX.Element;
     onActive?: (key?: string) => void;
-    trailingIcon?: React.JSX.Element;
+    trailing?: React.JSX.Element;
     visible?: boolean;
 }
 

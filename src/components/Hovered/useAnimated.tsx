@@ -24,10 +24,7 @@ const processAnimatedTiming = (
         }).start(),
     );
 
-export const useAnimated = ({
-    eventName = 'none',
-    opacities = [0, 0.08, 0.12],
-}: UseAnimatedOptions) => {
+export const useAnimated = ({eventName, opacities = [0, 0.08, 0.12]}: UseAnimatedOptions) => {
     const [opacityAnimated] = HOOK.useAnimatedValue(0);
     const theme = useTheme();
     const animatedTiming = UTIL.animatedTiming(theme);

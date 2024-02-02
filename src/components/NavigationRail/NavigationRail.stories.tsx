@@ -28,3 +28,25 @@ export const Rail: StoryObj<NavigationRailProps> = {
         ],
     },
 };
+
+export const BlockRail: StoryObj<NavigationRailProps> = {
+    args: {
+        defaultActiveKey: 'name',
+        fab: <FAB defaultElevation={0} icon={<Icon />} />,
+        block: true,
+        data: [
+            {
+                labelText: 'Label1',
+                key: 'name',
+            },
+            {
+                labelText: 'Label2',
+                key: 'age',
+            },
+            {
+                labelText: 'Label3',
+                key: 'sex',
+            },
+        ],
+    },
+};

@@ -1,6 +1,6 @@
 import {FC, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
 import {Animated, LayoutRectangle, TextInput, View} from 'react-native';
-import {useTheme} from 'styled-components/native';
+import {DefaultTheme, useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
 import {HOOK} from '../../hooks/hook';
@@ -11,7 +11,7 @@ import {Hovered} from '../Hovered/Hovered';
 import {Icon} from '../Icon/Icon';
 import {List, ListDataSource} from '../List/List';
 import {SearchProps} from './Search';
-import {Content, Header, Inner, Input, LeadingIcon, TextField, TrailingIcon} from './Search.styles';
+import {Content, Header, Inner, Input, Leading, TextField, Trailing} from './Search.styles';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends SearchProps {
@@ -28,6 +28,19 @@ export interface Data extends ListDataSource {
 }
 
 export type RenderTextInputOptions = SearchProps;
+export interface RenderInnerOptions extends SearchProps {
+    activeKey?: string;
+    data: ListDataSource[];
+    eventName: EventName;
+    innerHeight: Animated.AnimatedInterpolation<string | number>;
+    input: React.JSX.Element;
+    layout: LayoutRectangle & {pageX: number; pageY: number};
+    listVisible: boolean;
+    onEvent: Omit<OnEvent, 'onLayout' | 'onBlur' | 'onFocus'>;
+    onListActive: (key?: string) => void;
+    theme: DefaultTheme;
+    underlayColor: string;
+}
 
 export interface ProcessEventOptions {
     setState: Updater<typeof initialState>;
@@ -43,8 +56,8 @@ export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEv
 export type ProcessStateOptions = ProcessEventOptions & Pick<OnStateChangeOptions, 'eventName'>;
 export type ProcessListVisibleOptions = ProcessEventOptions & {state: State};
 export interface ProcessEmitOptions extends Pick<RenderProps, 'visible'> {
-    inner: React.JSX.Element;
     id: string;
+    inner: React.JSX.Element;
 }
 
 const processListActive = ({data, setState, onActive}: ProcessListActiveOptions, key?: string) => {
@@ -166,6 +179,71 @@ const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
     </TextField>
 );
 
+const renderInner = ({
+    activeKey,
+    data,
+    eventName,
+    id,
+    innerHeight,
+    input,
+    layout,
+    leading,
+    listVisible,
+    onBlur,
+    onEvent,
+    onFocus,
+    onListActive,
+    placeholder,
+    theme,
+    trailing,
+    underlayColor,
+}: RenderInnerOptions) => {
+    const shape = 'extraLarge';
+    const {height, pageX, pageY, width} = layout;
+
+    return (
+        <AnimatedInner
+            key={`search__inner--${id}`}
+            pageX={pageX}
+            pageY={pageY}
+            shape={shape}
+            style={{height: innerHeight}}
+            testID={`search__inner--${id}`}
+            width={width}>
+            <Header
+                {...onEvent}
+                accessibilityLabel={placeholder}
+                accessibilityRole="keyboardkey"
+                onBlur={onBlur}
+                onFocus={onFocus}
+                testID={`search__header--${id}`}>
+                <Leading testID={`search__leading--${id}`}>
+                    {leading ?? <Icon type="outlined" name="search" width={24} height={24} />}
+                </Leading>
+
+                <Content testID={`search__content--${id}`}>{input}</Content>
+                <Trailing testID={`search__trailing--${id}`}>{trailing}</Trailing>
+                <Hovered
+                    eventName={eventName}
+                    height={height}
+                    opacities={[0, 0.08]}
+                    shape={listVisible ? 'extraLargeTop' : shape}
+                    underlayColor={underlayColor}
+                    width={width}
+                />
+            </Header>
+
+            <Divider size="large" width={width} />
+            <List
+                activeKey={activeKey}
+                data={data}
+                onActive={onListActive}
+                style={{backgroundColor: theme.color.rgba(theme.palette.surface.surface, 0)}}
+            />
+        </AnimatedInner>
+    );
+};
+
 const initialState = {
     activeKey: undefined as string | undefined,
     data: [] as ListDataSource[],
@@ -180,12 +258,12 @@ const initialState = {
 const AnimatedInner = Animated.createAnimatedComponent(Inner);
 export const SearchBase: FC<SearchBaseProps> = ({
     data: dataSources,
-    leadingIcon,
+    leading,
     onActive,
     placeholder,
     ref,
     render,
-    trailingIcon,
+    trailing,
     visible,
     ...textInputProps
 }) => {
@@ -247,76 +325,43 @@ export const SearchBase: FC<SearchBaseProps> = ({
         ],
     );
 
-    const inner = useMemo(() => {
-        const shape = 'extraLarge';
-        const {height, pageX, pageY, width} = layout;
-
-        return (
-            <AnimatedInner
-                key={`search__inner--${id}`}
-                pageX={pageX}
-                pageY={pageY}
-                shape={shape}
-                style={{height: innerHeight}}
-                testID={`search__inner--${id}`}
-                width={width}>
-                <Header
-                    {...onEvent}
-                    accessibilityLabel={placeholder}
-                    accessibilityRole="keyboardkey"
-                    onBlur={onBlur}
-                    onFocus={onFocus}
-                    testID={`search__header--${id}`}>
-                    <LeadingIcon testID={`search__leadingIcon--${id}`}>
-                        {leadingIcon ?? (
-                            <Icon type="outlined" name="search" width={24} height={24} />
-                        )}
-                    </LeadingIcon>
-
-                    <Content testID={`search__content--${id}`}>{input}</Content>
-                    <TrailingIcon testID={`search__trailingIcon--${id}`}>
-                        {trailingIcon}
-                    </TrailingIcon>
-
-                    <Hovered
-                        eventName={eventName}
-                        height={height}
-                        opacities={[0, 0.08]}
-                        shape={listVisible ? 'extraLargeTop' : shape}
-                        underlayColor={underlayColor}
-                        width={width}
-                    />
-                </Header>
-
-                <Divider size="large" width={width} />
-                <List
-                    activeKey={activeKey}
-                    data={data}
-                    onActive={onListActive}
-                    style={{backgroundColor: theme.color.rgba(theme.palette.surface.surface, 0)}}
-                />
-            </AnimatedInner>
-        );
-    }, [
-        layout,
-        id,
-        innerHeight,
-        onEvent,
-        placeholder,
-        onBlur,
-        onFocus,
-        leadingIcon,
-        input,
-        trailingIcon,
-        eventName,
-        listVisible,
-        underlayColor,
-        activeKey,
-        data,
-        onListActive,
-        theme.color,
-        theme.palette.surface.surface,
-    ]);
+    const inner = useMemo(
+        () =>
+            renderInner({
+                activeKey,
+                data,
+                eventName,
+                innerHeight,
+                input,
+                layout,
+                leading,
+                listVisible,
+                onBlur,
+                onEvent,
+                onFocus,
+                onListActive,
+                theme,
+                trailing,
+                underlayColor,
+            }),
+        [
+            activeKey,
+            data,
+            eventName,
+            innerHeight,
+            input,
+            layout,
+            leading,
+            listVisible,
+            onBlur,
+            onEvent,
+            onFocus,
+            onListActive,
+            theme,
+            trailing,
+            underlayColor,
+        ],
+    );
 
     useEffect(() => {
         processListVisible({setState, state}, data);
