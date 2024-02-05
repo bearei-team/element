@@ -1,9 +1,9 @@
-import {TextInput} from 'react-native';
+import {TextInput, TextInputContentSizeChangeEventData} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './TextFieldBase';
 
-export type HeaderInnerProps = Pick<RenderProps, 'type'> & {
+export type HeaderInnerProps = Pick<RenderProps, 'type' | 'multiline'> & {
     leadingShow: boolean;
     trailingShow: boolean;
 };
@@ -16,6 +16,9 @@ export type LabelTextProps = {
 export interface ActiveIndicatorProps {
     width?: number;
 }
+
+export type ContentProps = Pick<RenderProps, 'multiline'>;
+export type InputProps = TextInputContentSizeChangeEventData['contentSize'];
 
 export const Container = styled.View``;
 export const Inner = styled.View`
@@ -32,7 +35,6 @@ export const HeaderInner = styled(Shape)<HeaderInnerProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
-    pointer-events: none;
     position: relative;
 
     ${({theme}) =>
@@ -54,9 +56,17 @@ export const HeaderInner = styled(Shape)<HeaderInnerProps>`
         css`
             padding-right: ${theme.adaptSize(theme.spacing.medium)}px;
         `}
+
+    ${({theme, multiline}) =>
+        multiline &&
+        css`
+            height: auto;
+            min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+        `}
 `;
 
 export const LabelText = styled(Typography)<LabelTextProps>`
+    pointer-events: none;
     position: absolute;
 
     ${({theme}) => css`
@@ -83,32 +93,26 @@ export const Trailing = styled.View`
 `;
 
 export const Leading = styled(Trailing)``;
-export const Content = styled.View`
-    align-items: flex-end;
+export const Content = styled.View<ContentProps>`
     display: flex;
     flex-direction: row;
     flex: 1;
-    pointer-events: none;
 
     ${({theme}) => css`
         height: ${theme.adaptFontSize(theme.spacing.small * 6)}px;
-        padding: ${theme.adaptSize(theme.spacing.extraSmall)}px
-            ${theme.adaptSize(theme.spacing.none)}px;
+        padding: ${theme.adaptSize(theme.spacing.extraSmall + theme.spacing.medium)}px
+            ${theme.adaptSize(theme.spacing.none)}px ${theme.adaptSize(theme.spacing.extraSmall)}px;
     `};
+
+    ${({theme, multiline}) =>
+        multiline &&
+        css`
+            height: auto;
+            min-height: ${theme.adaptFontSize(theme.spacing.small * 6)}px;
+        `}
 `;
 
-export const TextField = styled.View`
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-
-    ${({theme}) => css`
-        height: ${theme.adaptFontSize(theme.typography.body.large.lineHeight)}px;
-    `};
-`;
-
-export const Input = styled(TextInput)`
+export const Input = styled(TextInput)<InputProps>`
     flex: 1;
 
     ${({theme}) => css`
@@ -116,7 +120,15 @@ export const Input = styled(TextInput)`
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
         letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
+        height: ${theme.adaptFontSize(theme.typography.body.large.lineHeight)}px;
+        line-height: ${theme.adaptFontSize(theme.typography.body.large.lineHeight)}px;
     `};
+
+    ${({height}) =>
+        height &&
+        css`
+            height: ${height}px;
+        `};
 `;
 
 export const SupportingText = styled(Typography)`

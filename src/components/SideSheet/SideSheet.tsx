@@ -23,6 +23,7 @@ export interface SideSheetProps
     back?: boolean;
     backIcon?: React.JSX.Element;
     closeIcon?: React.JSX.Element;
+    content?: React.JSX.Element;
     footer?: boolean;
     headlineText?: string;
     onBack?: () => void;
@@ -43,7 +44,7 @@ const AnimatedInner = Animated.createAnimatedComponent(Inner);
 const render = ({
     back,
     backIcon,
-    children,
+    content,
     closeIcon,
     footer,
     headlineText,
@@ -93,11 +94,7 @@ const render = ({
                                 </CloseAffordance>
                             </Header>
 
-                            <Content
-                                testID={`sideSheet__content--${id}`}
-                                showsVerticalScrollIndicator={false}>
-                                {children}
-                            </Content>
+                            <Content testID={`sideSheet__content--${id}`}>{content}</Content>
 
                             {footer && (
                                 <>

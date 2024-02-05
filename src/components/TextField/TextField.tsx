@@ -47,6 +47,7 @@ const render = ({
     renderStyle,
     underlayColor,
     eventName,
+    multiline,
 }: RenderProps) => {
     const {
         activeIndicatorBackgroundColor,
@@ -81,6 +82,7 @@ const render = ({
                     })}
                     testID={`textfield__header--${id}`}>
                     <AnimatedHeaderInner
+                        multiline={multiline}
                         shape={shape}
                         testID={`textfield__headerInner--${id}`}
                         leadingShow={leadingShow}
@@ -90,7 +92,9 @@ const render = ({
                             <Leading testID={`textfield__leading--${id}`}>{leading}</Leading>
                         )}
 
-                        <Content testID={`textfield__content--${id}`}>{input}</Content>
+                        <Content multiline={multiline} testID={`textfield__content--${id}`}>
+                            {input}
+                        </Content>
 
                         {trailing && (
                             <Trailing testID={`textfield__trailing--${id}`}>{trailing}</Trailing>

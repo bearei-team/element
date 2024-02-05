@@ -21,3 +21,12 @@ export const IconTextField: StoryObj<TextFieldProps> = {
         leading: <Icon />,
     },
 };
+
+export const Text: StoryObj<TextFieldProps> = {
+    args: {
+        labelText: 'name',
+        supportingText: 'supportingText',
+        multiline: true,
+        maxLength: 200,
+    },
+};

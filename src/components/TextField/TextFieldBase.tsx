@@ -3,7 +3,9 @@ import {
     Animated,
     LayoutChangeEvent,
     LayoutRectangle,
+    NativeSyntheticEvent,
     TextInput,
+    TextInputContentSizeChangeEventData,
     TextStyle,
     ViewStyle,
 } from 'react-native';
@@ -12,7 +14,7 @@ import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {AnimatedInterpolation, EventName, State} from '../Common/interface';
 import {TextFieldProps} from './TextField';
-import {Input, TextField} from './TextField.styles';
+import {Input} from './TextField.styles';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends TextFieldProps {
@@ -42,6 +44,7 @@ export interface TextFieldBaseProps extends TextFieldProps {
 
 export type RenderTextInputProps = TextFieldProps & {
     renderStyle: Animated.WithAnimatedObject<TextStyle>;
+    contentSize?: TextInputContentSizeChangeEventData['contentSize'];
 };
 
 export interface ProcessEventOptions {
@@ -49,6 +52,9 @@ export interface ProcessEventOptions {
 }
 
 export type ProcessChangeTextOptions = Pick<RenderProps, 'onChangeText'> & ProcessEventOptions;
+export type ProcessContentSizeChangeOptions = Pick<RenderProps, 'onContentSizeChange'> &
+    ProcessEventOptions;
+
 export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
     OnStateChangeOptions;
 
@@ -96,24 +102,36 @@ const processChangeText = (text: string, {setState, onChangeText}: ProcessChange
     onChangeText?.(text);
 };
 
+const processContentSizeChange = (
+    event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>,
+    {setState, onContentSizeChange}: ProcessContentSizeChangeOptions,
+) => {
+    const contentSize = event.nativeEvent.contentSize;
+
+    setState(draft => {
+        draft.contentSize = contentSize;
+    });
+
+    onContentSizeChange?.(event);
+};
+
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-const renderTextInput = ({renderStyle, id, ...inputProps}: RenderTextInputProps) => (
-    <TextField testID={`textField__control--${id}`}>
-        <AnimatedTextInput
-            {...inputProps}
-            testID={`textField__input--${id}`}
-            style={renderStyle}
-            /**
-             * enableFocusRing is used to disable the focus style in macOS,
-             * this parameter has been implemented and is available.
-             * However, react-native-macos does not have an official typescript declaration for this parameter,
-             * so using it directly in a typescript will result in an undefined parameter.
-             */
-            // @ts-ignore
-            enableFocusRing={false}
-            textAlignVertical="center"
-        />
-    </TextField>
+const renderTextInput = ({renderStyle, id, contentSize, ...inputProps}: RenderTextInputProps) => (
+    <AnimatedTextInput
+        {...inputProps}
+        {...(contentSize && {height: contentSize.height})}
+        testID={`textField__input--${id}`}
+        style={renderStyle}
+        /**
+         * enableFocusRing is used to disable the focus style in macOS,
+         * this parameter has been implemented and is available.
+         * However, react-native-macos does not have an official typescript declaration for this parameter,
+         * so using it directly in a typescript will result in an undefined parameter.
+         */
+        // @ts-ignore
+        enableFocusRing={false}
+        textAlignVertical="top"
+    />
 );
 
 const initialState = {
@@ -121,6 +139,7 @@ const initialState = {
     layout: {} as LayoutRectangle,
     state: 'enabled' as State,
     value: undefined as string | undefined,
+    contentSize: undefined as TextInputContentSizeChangeEventData['contentSize'] | undefined,
 };
 
 export const TextFieldBase: FC<TextFieldBaseProps> = ({
@@ -136,9 +155,10 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     trailing,
     type = 'filled',
     value: valueSource,
+    multiline,
     ...textInputProps
 }) => {
-    const [{layout, value, eventName, state}, setState] = useImmer(initialState);
+    const [{layout, value, eventName, state, contentSize}, setState] = useImmer(initialState);
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
@@ -150,6 +170,16 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
             : theme.palette.surface.onSurfaceVariant;
 
     const underlayColor = theme.palette.surface.onSurface;
+
+    const onContentSizeChange = useCallback(
+        (event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>) =>
+            processContentSizeChange(event, {
+                setState,
+                onContentSizeChange: textInputProps.onContentSizeChange,
+            }),
+        [setState, textInputProps.onContentSizeChange],
+    );
+
     const onChangeText = useCallback(
         (text: string) =>
             processChangeText(text, {setState, onChangeText: textInputProps.onChangeText}),
@@ -190,10 +220,13 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         () =>
             renderTextInput({
                 ...textInputProps,
+                contentSize,
                 defaultValue,
                 id,
+                multiline,
                 onBlur,
                 onChangeText,
+                onContentSizeChange,
                 onFocus,
                 placeholder,
                 placeholderTextColor,
@@ -202,16 +235,19 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
                 value: valueSource,
             }),
         [
-            textInputProps,
+            contentSize,
             defaultValue,
             id,
+            inputColor,
+            inputRef,
+            multiline,
             onBlur,
             onChangeText,
+            onContentSizeChange,
             onFocus,
             placeholder,
             placeholderTextColor,
-            inputRef,
-            inputColor,
+            textInputProps,
             valueSource,
         ],
     );
@@ -226,6 +262,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         state,
         trailing,
         underlayColor,
+        multiline,
         renderStyle: {
             activeIndicatorBackgroundColor,
             activeIndicatorScale,
