@@ -151,6 +151,14 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     const active = typeof activeKey === 'string' ? activeKey === indexKey : undefined;
     const defaultActive = defaultActiveKey === indexKey;
     const [{height, color}] = useAnimated({active, block, defaultActive});
+    const iconLayout = useMemo(
+        () => ({
+            width: theme.adaptSize(theme.spacing.large),
+            height: theme.adaptSize(theme.spacing.large),
+        }),
+        [theme],
+    );
+
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
             processStateChange({...options, activeKey, indexKey, onActive, setState}),
@@ -164,18 +172,13 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     });
 
     const activeIconElement = useMemo(
-        () => cloneElement(activeIcon, {eventName}),
-        [activeIcon, eventName],
+        () => cloneElement(activeIcon, {...iconLayout, eventName}),
+        [activeIcon, eventName, iconLayout],
     );
 
     const iconElement = useMemo(
-        () =>
-            cloneElement(icon, {
-                eventName,
-                width: theme.adaptSize(theme.spacing.large),
-                height: theme.adaptSize(theme.spacing.large),
-            }),
-        [eventName, icon, theme],
+        () => cloneElement(icon, {...iconLayout, eventName}),
+        [eventName, icon, iconLayout],
     );
 
     useEffect(() => {

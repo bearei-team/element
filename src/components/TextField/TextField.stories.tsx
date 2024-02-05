@@ -18,6 +18,6 @@ export const IconTextField: StoryObj<TextFieldProps> = {
     args: {
         labelText: 'name',
         supportingText: 'supportingText',
-        leadingIcon: <Icon />,
+        leading: <Icon />,
     },
 };

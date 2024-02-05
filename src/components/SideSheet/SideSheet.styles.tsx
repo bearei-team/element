@@ -91,7 +91,7 @@ export const Icon = styled.View`
 
 export const BackAffordance = styled(Icon)``;
 export const CloseAffordance = styled(Icon)``;
-export const Content = styled.ScrollView`
+export const Content = styled.View`
     flex: 1;
 `;
 

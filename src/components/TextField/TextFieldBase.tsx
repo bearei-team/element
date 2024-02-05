@@ -48,10 +48,11 @@ export interface ProcessEventOptions {
     setState: Updater<typeof initialState>;
 }
 
-export type ProcessStateOptions = Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions;
 export type ProcessChangeTextOptions = Pick<RenderProps, 'onChangeText'> & ProcessEventOptions;
 export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
     OnStateChangeOptions;
+
+export type ProcessStateOptions = Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions;
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
 const processState = (state: State, {eventName, setState}: ProcessStateOptions) =>
@@ -123,16 +124,18 @@ const initialState = {
 };
 
 export const TextFieldBase: FC<TextFieldBaseProps> = ({
+    defaultValue,
+    disabled,
+    error,
     labelText = 'Label',
+    leading,
+    placeholder,
     ref,
     render,
     supportingText,
-    type = 'filled',
-    error,
-    disabled,
-    leading,
     trailing,
-    placeholder,
+    type = 'filled',
+    value: valueSource,
     ...textInputProps
 }) => {
     const [{layout, value, eventName, state}, setState] = useImmer(initialState);
@@ -140,7 +143,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const theme = useTheme();
-    const filled = value ?? placeholder;
+    const filled = defaultValue ?? valueSource ?? value ?? placeholder;
     const placeholderTextColor =
         state === 'disabled'
             ? theme.color.rgba(theme.palette.surface.onSurface, 0.38)
@@ -187,6 +190,8 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         () =>
             renderTextInput({
                 ...textInputProps,
+                defaultValue,
+                id,
                 onBlur,
                 onChangeText,
                 onFocus,
@@ -194,18 +199,20 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
                 placeholderTextColor,
                 ref: inputRef,
                 renderStyle: {color: inputColor},
-                id,
+                value: valueSource,
             }),
         [
-            onChangeText,
-            id,
-            inputColor,
-            inputRef,
-            onBlur,
-            onFocus,
-            placeholderTextColor,
             textInputProps,
+            defaultValue,
+            id,
+            onBlur,
+            onChangeText,
+            onFocus,
             placeholder,
+            placeholderTextColor,
+            inputRef,
+            inputColor,
+            valueSource,
         ],
     );
 
