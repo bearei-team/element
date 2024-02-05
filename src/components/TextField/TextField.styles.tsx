@@ -18,7 +18,10 @@ export interface ActiveIndicatorProps {
 }
 
 export type ContentProps = Pick<RenderProps, 'multiline'>;
-export type InputProps = TextInputContentSizeChangeEventData['contentSize'];
+
+export type InputProps = TextInputContentSizeChangeEventData['contentSize'] & {
+    multilineText?: boolean;
+};
 
 export const Container = styled.View``;
 export const Inner = styled.View`
@@ -124,8 +127,10 @@ export const Input = styled(TextInput)<InputProps>`
         line-height: ${theme.adaptFontSize(theme.typography.body.large.lineHeight)}px;
     `};
 
-    ${({height}) =>
-        height &&
+    ${({height, multilineText}) =>
+        multilineText &&
+        typeof height === 'number' &&
+        height !== 0 &&
         css`
             height: ${height}px;
         `};

@@ -116,12 +116,20 @@ const processContentSizeChange = (
 };
 
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-const renderTextInput = ({renderStyle, id, contentSize, ...inputProps}: RenderTextInputProps) => (
+const renderTextInput = ({
+    contentSize,
+    id,
+    multiline,
+    renderStyle,
+    ...inputProps
+}: RenderTextInputProps) => (
     <AnimatedTextInput
         {...inputProps}
         {...(contentSize && {height: contentSize.height})}
-        testID={`textField__input--${id}`}
+        multiline
+        multilineText={multiline}
         style={renderStyle}
+        testID={`textField__input--${id}`}
         /**
          * enableFocusRing is used to disable the focus style in macOS,
          * this parameter has been implemented and is available.
@@ -170,7 +178,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
             : theme.palette.surface.onSurfaceVariant;
 
     const underlayColor = theme.palette.surface.onSurface;
-
     const onContentSizeChange = useCallback(
         (event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>) =>
             processContentSizeChange(event, {
