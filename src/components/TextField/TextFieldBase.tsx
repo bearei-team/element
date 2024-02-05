@@ -23,6 +23,7 @@ export interface RenderProps extends TextFieldProps {
     underlayColor: string;
     input: React.JSX.Element;
     state: State;
+    contentSize?: Partial<TextInputContentSizeChangeEventData['contentSize']>;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         activeIndicatorBackgroundColor: AnimatedInterpolation;
         activeIndicatorScale: AnimatedInterpolation;
@@ -44,7 +45,6 @@ export interface TextFieldBaseProps extends TextFieldProps {
 
 export type RenderTextInputProps = TextFieldProps & {
     renderStyle: Animated.WithAnimatedObject<TextStyle>;
-    contentSize?: TextInputContentSizeChangeEventData['contentSize'];
 };
 
 export interface ProcessEventOptions {
@@ -116,20 +116,13 @@ const processContentSizeChange = (
 };
 
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-const renderTextInput = ({
-    contentSize,
-    id,
-    multiline,
-    renderStyle,
-    ...inputProps
-}: RenderTextInputProps) => (
+const renderTextInput = ({id, renderStyle, multiline, ...inputProps}: RenderTextInputProps) => (
     <AnimatedTextInput
         {...inputProps}
-        {...(contentSize && {height: contentSize.height})}
-        multiline
-        multilineText={multiline}
         style={renderStyle}
         testID={`textField__input--${id}`}
+        multiline={multiline}
+        multilineText={multiline}
         /**
          * enableFocusRing is used to disable the focus style in macOS,
          * this parameter has been implemented and is available.
@@ -227,7 +220,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         () =>
             renderTextInput({
                 ...textInputProps,
-                contentSize,
+
                 defaultValue,
                 id,
                 multiline,
@@ -242,7 +235,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
                 value: valueSource,
             }),
         [
-            contentSize,
             defaultValue,
             id,
             inputColor,
@@ -270,6 +262,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         trailing,
         underlayColor,
         multiline,
+        contentSize,
         renderStyle: {
             activeIndicatorBackgroundColor,
             activeIndicatorScale,

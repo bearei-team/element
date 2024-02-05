@@ -1,4 +1,4 @@
-import {TextInput, TextInputContentSizeChangeEventData} from 'react-native';
+import {TextInput} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './TextFieldBase';
@@ -18,10 +18,8 @@ export interface ActiveIndicatorProps {
 }
 
 export type ContentProps = Pick<RenderProps, 'multiline'>;
-
-export type InputProps = TextInputContentSizeChangeEventData['contentSize'] & {
-    multilineText?: boolean;
-};
+export type ControlProps = {height?: number} & ContentProps;
+export type TextInputProps = {multilineText?: boolean};
 
 export const Container = styled.View``;
 export const Inner = styled.View`
@@ -97,8 +95,6 @@ export const Trailing = styled.View`
 
 export const Leading = styled(Trailing)``;
 export const Content = styled.View<ContentProps>`
-    display: flex;
-    flex-direction: row;
     flex: 1;
 
     ${({theme}) => css`
@@ -115,7 +111,31 @@ export const Content = styled.View<ContentProps>`
         `}
 `;
 
-export const Input = styled(TextInput)<InputProps>`
+export const Control = styled.View<ControlProps>`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    ${({theme}) =>
+        theme.OS === 'macos' &&
+        css`
+            flex: 1;
+        `};
+
+    ${({theme}) => css`
+        height: ${theme.adaptFontSize(theme.typography.body.large.lineHeight)}px;
+    `};
+
+    ${({height, multiline}) =>
+        multiline &&
+        typeof height === 'number' &&
+        height !== 0 &&
+        css`
+            height: ${height}px;
+        `};
+`;
+
+export const Input = styled(TextInput)<TextInputProps>`
     flex: 1;
 
     ${({theme}) => css`
@@ -123,16 +143,14 @@ export const Input = styled(TextInput)<InputProps>`
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
         letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
-        height: ${theme.adaptFontSize(theme.typography.body.large.lineHeight)}px;
-        line-height: ${theme.adaptFontSize(theme.typography.body.large.lineHeight)}px;
+        padding: ${theme.spacing.none}px;
     `};
 
-    ${({height, multilineText}) =>
+    ${({multilineText, theme}) =>
         multilineText &&
-        typeof height === 'number' &&
-        height !== 0 &&
+        theme.OS === 'web' &&
         css`
-            height: ${height}px;
+            align-self: stretch;
         `};
 `;
 

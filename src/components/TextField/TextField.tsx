@@ -6,6 +6,7 @@ import {
     ActiveIndicator,
     Container,
     Content,
+    Control,
     Header,
     HeaderInner,
     Inner,
@@ -36,18 +37,19 @@ const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
 const render = ({
+    contentSize,
     error,
-    supportingText,
+    eventName,
     id,
-    onEvent,
+    input,
     labelText,
     leading,
-    trailing,
-    input,
-    renderStyle,
-    underlayColor,
-    eventName,
     multiline,
+    onEvent,
+    renderStyle,
+    supportingText,
+    trailing,
+    underlayColor,
 }: RenderProps) => {
     const {
         activeIndicatorBackgroundColor,
@@ -65,6 +67,8 @@ const render = ({
     } = renderStyle;
     const shape = 'extraSmallTop';
     const leadingShow = !!leading;
+
+    console.info(contentSize?.height, multiline);
 
     return (
         <Container
@@ -93,7 +97,12 @@ const render = ({
                         )}
 
                         <Content multiline={multiline} testID={`textfield__content--${id}`}>
-                            {input}
+                            <Control
+                                height={contentSize?.height}
+                                testID={`textField__control--${id}`}
+                                multiline={multiline}>
+                                {input}
+                            </Control>
                         </Content>
 
                         {trailing && (
