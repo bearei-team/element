@@ -3,6 +3,7 @@ import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './AvatarBase';
 
 export type ContainerProps = Pick<RenderProps, 'width' | 'height'>;
+
 export const Container = styled(Shape)<ContainerProps>`
     align-items: center;
     display: flex;

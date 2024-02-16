@@ -1,9 +1,12 @@
 import {useCallback, useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {HOOK} from '../../../hooks/hook';
-import {AnimatedTiming, AnimatedTimingOptions} from '../../../utils/animatedTiming.utils';
-import {UTIL} from '../../../utils/util';
+import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
+import {
+    AnimatedTiming,
+    AnimatedTimingOptions,
+    createAnimatedTiming,
+} from '../../../utils/animatedTiming.utils';
 import {RenderProps} from './RippleBase';
 
 export interface UseAnimatedOptions
@@ -115,10 +118,10 @@ export const useAnimated = ({
     sequence,
 }: UseAnimatedOptions) => {
     const setDefaultActive = defaultActive && typeof active !== 'boolean';
-    const [opacityAnimated] = HOOK.useAnimatedValue(1);
-    const [scaleAnimated] = HOOK.useAnimatedValue(setDefaultActive ? 1 : 0);
+    const [opacityAnimated] = useAnimatedValue(1);
+    const [scaleAnimated] = useAnimatedValue(setDefaultActive ? 1 : 0);
     const theme = useTheme();
-    const animatedTiming = UTIL.animatedTiming(theme);
+    const animatedTiming = createAnimatedTiming(theme);
     const activeRipple = [typeof defaultActive, typeof active].includes('boolean');
     const opacity = opacityAnimated.interpolate({
         inputRange: [0, 1],

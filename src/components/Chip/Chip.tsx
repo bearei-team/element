@@ -17,8 +17,6 @@ export interface ChipProps extends TouchableRippleProps {
     type?: ChipType;
 }
 
-const AnimatedContent = Animated.createAnimatedComponent(Content);
-const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     active,
     activeColor,
@@ -40,6 +38,8 @@ const render = ({
     underlayColor,
     ...contentProps
 }: RenderProps) => {
+    const AnimatedContent = Animated.createAnimatedComponent(Content);
+    const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
     const {backgroundColor, color, height, width, ...border} = renderStyle;
     const shape = 'extraSmall';
 

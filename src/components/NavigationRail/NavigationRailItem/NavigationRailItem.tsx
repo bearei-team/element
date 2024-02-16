@@ -18,7 +18,6 @@ export interface NavigationRailItemProps
     onActive?: (key?: string) => void;
 }
 
-const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     active,
     activeColor,
@@ -36,6 +35,7 @@ const render = ({
     block,
     ...containerProps
 }: RenderProps) => {
+    const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
     const {width, height, color, labelHeight} = renderStyle;
     const shape = block ? 'full' : 'large';

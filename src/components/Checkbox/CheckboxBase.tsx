@@ -22,8 +22,16 @@ export interface CheckboxBaseProps extends CheckboxProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface InitialState {
+    active?: boolean;
+    eventName: EventName;
+    layout: LayoutRectangle;
+    status: ComponentStatus;
+    type?: CheckboxType;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessPressOutOptions = Pick<RenderProps, 'active' | 'indeterminate' | 'onActive'> &
@@ -102,14 +110,6 @@ const processIndeterminate = ({setState}: ProcessEventOptions, indeterminate?: b
         draft.type = draft.active ? 'selected' : 'unselected';
     });
 
-const initialState = {
-    active: undefined as boolean | undefined,
-    eventName: 'none' as EventName,
-    layout: {} as LayoutRectangle,
-    status: 'idle' as ComponentStatus,
-    type: 'unselected' as CheckboxType,
-};
-
 export const CheckboxBase: FC<CheckboxBaseProps> = ({
     defaultActive,
     disabled = false,
@@ -119,7 +119,14 @@ export const CheckboxBase: FC<CheckboxBaseProps> = ({
     render,
     ...renderProps
 }) => {
-    const [{active, eventName, layout, status, type}, setState] = useImmer(initialState);
+    const [{active, eventName, layout, status, type}, setState] = useImmer<InitialState>({
+        active: undefined,
+        eventName: 'none',
+        layout: {} as LayoutRectangle,
+        status: 'idle',
+        type: 'unselected',
+    });
+
     const id = useId();
     const theme = useTheme();
     const checkUnderlayColor =

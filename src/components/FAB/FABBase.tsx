@@ -25,8 +25,14 @@ export interface FABBaseProps extends FABProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface InitialState {
+    elevation?: ElevationLevel;
+    eventName: EventName;
+    layout: LayoutRectangle;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessStateChangeOptions = Pick<RenderProps, 'elevated'> &
@@ -89,12 +95,6 @@ const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
         draft.eventName = 'none';
     });
 
-const initialState = {
-    elevation: undefined as ElevationLevel,
-    eventName: 'none' as EventName,
-    layout: {} as LayoutRectangle,
-};
-
 export const FABBase: FC<FABBaseProps> = ({
     defaultElevation = 3,
     disabled,
@@ -105,7 +105,12 @@ export const FABBase: FC<FABBaseProps> = ({
     size,
     ...renderProps
 }) => {
-    const [{elevation, layout, eventName}, setState] = useImmer(initialState);
+    const [{elevation, layout, eventName}, setState] = useImmer<InitialState>({
+        elevation: undefined,
+        eventName: 'none',
+        layout: {} as LayoutRectangle,
+    });
+
     const [underlayColor] = useUnderlayColor({type});
     const id = useId();
     const onStateChange = useCallback(
@@ -134,8 +139,8 @@ export const FABBase: FC<FABBaseProps> = ({
         icon: iconElement,
         id,
         onEvent,
-        type,
         size,
+        type,
         underlayColor,
         renderStyle: {
             backgroundColor,

@@ -10,8 +10,7 @@ import {
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
-import {HOOK} from '../../../hooks/hook';
-import {OnEvent, OnStateChangeOptions} from '../../../hooks/useOnEvent';
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../../hooks/useOnEvent';
 import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
 import {NavigationRailItemProps} from './NavigationRailItem';
@@ -37,8 +36,16 @@ export interface NavigationRailItemBaseProps extends NavigationRailItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface InitialState {
+    activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
+    eventName: EventName;
+    layout: LayoutRectangle;
+    rippleCentered: boolean;
+    status: ComponentStatus;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
@@ -122,14 +129,6 @@ const processActive = (status: ComponentStatus, {setState, active}: ProcessActiv
         });
 };
 
-const initialState = {
-    activeLocation: undefined as Pick<NativeTouchEvent, 'locationX' | 'locationY'> | undefined,
-    eventName: 'none' as EventName,
-    layout: {} as LayoutRectangle,
-    rippleCentered: false,
-    status: 'idle' as ComponentStatus,
-};
-
 export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     activeIcon = <Icon type="filled" name="circle" />,
     activeKey,
@@ -142,7 +141,13 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     ...renderProps
 }) => {
     const [{activeLocation, eventName, layout, rippleCentered, status}, setState] =
-        useImmer(initialState);
+        useImmer<InitialState>({
+            activeLocation: undefined,
+            eventName: 'none',
+            layout: {} as LayoutRectangle,
+            rippleCentered: false,
+            status: 'idle',
+        });
 
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
@@ -165,12 +170,7 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
         [activeKey, indexKey, onActive, setState],
     );
 
-    const [onEvent] = HOOK.useOnEvent({
-        ...renderProps,
-        disabled: false,
-        onStateChange,
-    });
-
+    const [onEvent] = useOnEvent({...renderProps, disabled: false, onStateChange});
     const activeIconElement = useMemo(
         () => cloneElement(activeIcon, {...iconLayout, eventName}),
         [activeIcon, eventName, iconLayout],

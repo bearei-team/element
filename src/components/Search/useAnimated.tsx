@@ -1,9 +1,8 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {HOOK} from '../../hooks/hook';
-import {AnimatedTiming} from '../../utils/animatedTiming.utils';
-import {UTIL} from '../../utils/util';
+import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.utils';
 
 export interface UseAnimatedOptions {
     listVisible?: boolean;
@@ -22,9 +21,9 @@ const processAnimatedTiming = (
     );
 
 export const useAnimated = ({listVisible}: UseAnimatedOptions) => {
-    const [innerHeightAnimated] = HOOK.useAnimatedValue(0);
+    const [innerHeightAnimated] = useAnimatedValue(0);
     const theme = useTheme();
-    const animatedTiming = UTIL.animatedTiming(theme);
+    const animatedTiming = createAnimatedTiming(theme);
     const innerHeight = innerHeightAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [

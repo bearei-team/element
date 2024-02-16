@@ -12,7 +12,7 @@ export type AnimatedTiming = (
     options: AnimatedTimingOptions,
 ) => Animated.CompositeAnimation;
 
-export const animatedTiming =
+export const createAnimatedTiming =
     (theme: Theme) =>
     (
         animation: Animated.Value,

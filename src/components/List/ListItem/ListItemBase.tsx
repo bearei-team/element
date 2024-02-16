@@ -9,8 +9,7 @@ import {
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
-import {HOOK} from '../../../hooks/hook';
-import {OnEvent, OnStateChangeOptions} from '../../../hooks/useOnEvent';
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../../hooks/useOnEvent';
 import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
 import {IconButton} from '../../IconButton/IconButton';
@@ -38,8 +37,18 @@ export interface ListItemBaseProps extends ListItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface InitialState {
+    activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
+    eventName: EventName;
+    layout: LayoutRectangle;
+    rippleCentered: boolean;
+    state: State;
+    status: ComponentStatus;
+    trailingEventName: EventName;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
@@ -149,16 +158,6 @@ const processActive = (status: ComponentStatus, {setState, active}: ProcessActiv
         });
 };
 
-const initialState = {
-    activeLocation: undefined as Pick<NativeTouchEvent, 'locationX' | 'locationY'> | undefined,
-    eventName: 'none' as EventName,
-    layout: {} as LayoutRectangle,
-    rippleCentered: false,
-    state: 'enabled' as State,
-    status: 'idle' as ComponentStatus,
-    trailingEventName: 'none' as EventName,
-};
-
 export const ListItemBase: FC<ListItemBaseProps> = ({
     activeKey,
     close,
@@ -174,7 +173,15 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
     const [
         {activeLocation, eventName, layout, state, status, trailingEventName, rippleCentered},
         setState,
-    ] = useImmer(initialState);
+    ] = useImmer<InitialState>({
+        activeLocation: undefined,
+        eventName: 'none',
+        layout: {} as LayoutRectangle,
+        rippleCentered: false,
+        state: 'enabled',
+        status: 'idle',
+        trailingEventName: 'none',
+    });
 
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
@@ -196,11 +203,7 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
         [activeKey, indexKey, onActive, setState],
     );
 
-    const [onEvent] = HOOK.useOnEvent({
-        ...renderProps,
-        onStateChange,
-    });
-
+    const [onEvent] = useOnEvent({...renderProps, onStateChange});
     const onTrailingHoverIn = useCallback(() => processTrailingHoverIn({setState}), [setState]);
     const onTrailingHoverOut = useCallback(() => processTrailingHoverOut({setState}), [setState]);
     const onTrailingPressOut = useCallback(

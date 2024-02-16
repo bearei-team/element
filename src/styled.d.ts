@@ -7,6 +7,6 @@ declare module 'styled-components/native' {
         adaptFontSize: (size: number) => number;
         adaptSize: (size: number) => number;
         colorScheme: ColorSchemeName;
-        OS: Platform.OS;
+        OS: RNPlatform.OS;
     }
 }

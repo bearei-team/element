@@ -14,7 +14,6 @@ export interface TabItemProps extends TouchableRippleProps {
     onLabelTextLayout: (event: LayoutChangeEvent, key: string) => void;
 }
 
-const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     eventName,
     id,
@@ -25,6 +24,7 @@ const render = ({
     underlayColor,
     ...innerProps
 }: RenderProps) => {
+    const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
     const {width, height, color} = renderStyle;
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
 

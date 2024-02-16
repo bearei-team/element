@@ -3,8 +3,7 @@ import {Animated, LayoutRectangle, TextInput, View} from 'react-native';
 import {DefaultTheme, useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
-import {HOOK} from '../../hooks/hook';
-import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ComponentStatus, EventName, State} from '../Common/interface';
 import {Divider} from '../Divider/Divider';
 import {Hovered} from '../Hovered/Hovered';
@@ -42,8 +41,19 @@ export interface RenderInnerOptions extends SearchProps {
     underlayColor: string;
 }
 
+export interface InitialState {
+    activeKey?: string;
+    data: ListDataSource[];
+    eventName: EventName;
+    layout: LayoutRectangle & {pageX: number; pageY: number};
+    listVisible: boolean;
+    state: State;
+    status: ComponentStatus;
+    value?: string;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessChangeTextOptions = Pick<RenderProps, 'data' | 'onChangeText'> &
@@ -198,6 +208,7 @@ const renderInner = ({
     trailing,
     underlayColor,
 }: RenderInnerOptions) => {
+    const AnimatedInner = Animated.createAnimatedComponent(Inner);
     const shape = 'extraLarge';
     const {height, pageX, pageY, width} = layout;
 
@@ -244,18 +255,6 @@ const renderInner = ({
     );
 };
 
-const initialState = {
-    activeKey: undefined as string | undefined,
-    data: [] as ListDataSource[],
-    eventName: 'none' as EventName,
-    layout: {} as LayoutRectangle & {pageX: number; pageY: number},
-    listVisible: false,
-    state: 'enabled' as State,
-    status: 'idle' as ComponentStatus,
-    value: undefined as string | undefined,
-};
-
-const AnimatedInner = Animated.createAnimatedComponent(Inner);
 export const SearchBase: FC<SearchBaseProps> = ({
     data: dataSources,
     leading,
@@ -268,7 +267,16 @@ export const SearchBase: FC<SearchBaseProps> = ({
     ...textInputProps
 }) => {
     const [{activeKey, data, eventName, layout, listVisible, state, status, value}, setState] =
-        useImmer(initialState);
+        useImmer<InitialState>({
+            activeKey: undefined,
+            data: [],
+            eventName: 'none',
+            layout: {} as InitialState['layout'],
+            listVisible: false,
+            state: 'enabled',
+            status: 'idle',
+            value: undefined,
+        });
 
     const [{innerHeight}] = useAnimated({listVisible});
     const containerRef = useRef<View>(null);
@@ -284,7 +292,7 @@ export const SearchBase: FC<SearchBaseProps> = ({
         [setState],
     );
 
-    const [{onBlur, onFocus, onLayout, ...onEvent}] = HOOK.useOnEvent({
+    const [{onBlur, onFocus, onLayout, ...onEvent}] = useOnEvent({
         ...textInputProps,
         onStateChange,
     });

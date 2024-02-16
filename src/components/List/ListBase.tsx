@@ -23,8 +23,14 @@ export type RenderItemOptions = ListRenderItemInfo<ListDataSource> &
         | 'supportingTextNumberOfLines'
     >;
 
+export interface InitialState {
+    activeKey?: string;
+    data: ListDataSource[];
+    status: ComponentStatus;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
@@ -101,12 +107,6 @@ const renderItem = ({
     />
 );
 
-const initialState = {
-    activeKey: undefined as string | undefined,
-    data: [] as ListDataSource[],
-    status: 'idle' as ComponentStatus,
-};
-
 export const ListBase: FC<ListBaseProps> = ({
     activeKey: activeKeySource,
     close,
@@ -118,7 +118,12 @@ export const ListBase: FC<ListBaseProps> = ({
     shape,
     ...renderProps
 }) => {
-    const [{data, status, activeKey}, setState] = useImmer(initialState);
+    const [{data, status, activeKey}, setState] = useImmer<InitialState>({
+        activeKey: undefined,
+        data: [],
+        status: 'idle',
+    });
+
     const id = useId();
     const onActive = useCallback(
         (key?: string) => processActive({onActive: renderProps.onActive, setState}, key),

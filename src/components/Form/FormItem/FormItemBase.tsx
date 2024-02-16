@@ -12,8 +12,14 @@ export interface FormItemBaseProps extends FormItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface InitialState {
+    shouldUpdate: {};
+    signOut?: () => void;
+    status: ComponentStatus;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export interface ProcessValueChangeOptions extends Pick<FormStore<Store>, 'setFieldValue'> {
@@ -54,23 +60,23 @@ const processInit = (
     signInField: FormStore<Store>['signInField'],
     {name, rules, validateFirst, validate, setState}: ProcessInitOptions,
 ) => {
-    signInField({
-        onFormStoreChange: () => {
-            setState(draft => {
-                draft.shouldUpdate = {};
-            });
-        },
-        props: {name, rules, validateFirst},
-        touched: false,
-        validate,
-    });
+    const {signOut} =
+        signInField({
+            onFormStoreChange: () =>
+                setState(draft => {
+                    draft.shouldUpdate = {};
+                }),
+            props: {name, rules, validateFirst},
+            touched: false,
+            validate,
+        }) ?? {};
 
     setState(draft => {
+        draft.signOut = signOut;
         draft.status = 'succeeded';
     });
 };
 
-const initialState = {status: 'idle' as ComponentStatus, shouldUpdate: {}};
 export const FormItemBase: FC<FormItemBaseProps> = ({
     labelText,
     name,
@@ -80,7 +86,12 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
     validateFirst,
     ...renderProps
 }) => {
-    const [{status}, setState] = useImmer(initialState);
+    const [{status, signOut}, setState] = useImmer<InitialState>({
+        shouldUpdate: {},
+        signOut: undefined,
+        status: 'idle',
+    });
+
     const {
         getFieldError,
         getFieldValue,
@@ -123,6 +134,8 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
     useEffect(() => {
         processInit(signInField, {name, rules, setState, validateFirst, validate});
     }, [name, rules, setState, signInField, validate, validateFirst]);
+
+    useEffect(() => () => signOut?.(), [signOut]);
 
     return render({
         ...renderProps,

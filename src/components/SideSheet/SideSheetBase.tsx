@@ -17,8 +17,13 @@ export interface SideSheetBaseProps extends SideSheetProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface InitialState {
+    modalVisible?: boolean;
+    visible?: boolean;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessAnimatedFinishedOptions = Pick<RenderProps, 'visible' | 'onClose' | 'onBack'> &
@@ -72,11 +77,6 @@ const processSheetVisible = ({setState}: ProcessEventOptions, sheetVisible?: boo
 const processEmit = ({visible, sheet, id}: ProcessEmitOptions) =>
     emitter.emit('sheet', {id: `search__${id}`, element: visible ? sheet : <></>});
 
-const initialState = {
-    modalVisible: undefined as boolean | undefined,
-    visible: undefined as boolean | undefined,
-};
-
 export const SideSheetBase: FC<SideSheetBaseProps> = ({
     backIcon,
     closeIcon,
@@ -93,7 +93,11 @@ export const SideSheetBase: FC<SideSheetBaseProps> = ({
     visible: sheetVisible,
     ...renderProps
 }) => {
-    const [{visible, modalVisible}, setState] = useImmer(initialState);
+    const [{visible, modalVisible}, setState] = useImmer<InitialState>({
+        modalVisible: undefined,
+        visible: undefined,
+    });
+
     const id = useId();
     const finished = useCallback(
         () =>

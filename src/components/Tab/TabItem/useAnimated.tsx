@@ -1,9 +1,8 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {HOOK} from '../../../hooks/hook';
-import {AnimatedTiming} from '../../../utils/animatedTiming.utils';
-import {UTIL} from '../../../utils/util';
+import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
+import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTiming.utils';
 
 export interface UseAnimatedOptions {
     active?: boolean;
@@ -22,9 +21,9 @@ const processAnimatedTiming = (
     requestAnimationFrame(() => animatedTiming(activeAnimated, {toValue: active ? 1 : 0}).start());
 
 export const useAnimated = ({active, defaultActive}: UseAnimatedOptions) => {
-    const [activeAnimated] = HOOK.useAnimatedValue(defaultActive ? 1 : 0);
+    const [activeAnimated] = useAnimatedValue(defaultActive ? 1 : 0);
     const theme = useTheme();
-    const animatedTiming = UTIL.animatedTiming(theme);
+    const animatedTiming = createAnimatedTiming(theme);
     const color = activeAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [theme.palette.surface.onSurface, theme.palette.primary.primary],

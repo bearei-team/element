@@ -47,8 +47,16 @@ export type RenderTextInputProps = TextFieldProps & {
     renderStyle: Animated.WithAnimatedObject<TextStyle>;
 };
 
+export interface InitialState {
+    contentSize?: TextInputContentSizeChangeEventData['contentSize'];
+    eventName: EventName;
+    layout: LayoutRectangle;
+    state: State;
+    value?: string;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessChangeTextOptions = Pick<RenderProps, 'onChangeText'> & ProcessEventOptions;
@@ -115,32 +123,27 @@ const processContentSizeChange = (
     onContentSizeChange?.(event);
 };
 
-const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-const renderTextInput = ({id, renderStyle, multiline, ...inputProps}: RenderTextInputProps) => (
-    <AnimatedTextInput
-        {...inputProps}
-        style={renderStyle}
-        testID={`textField__input--${id}`}
-        multiline={multiline}
-        multilineText={multiline}
-        /**
-         * enableFocusRing is used to disable the focus style in macOS,
-         * this parameter has been implemented and is available.
-         * However, react-native-macos does not have an official typescript declaration for this parameter,
-         * so using it directly in a typescript will result in an undefined parameter.
-         */
-        // @ts-ignore
-        enableFocusRing={false}
-        textAlignVertical="top"
-    />
-);
+const renderTextInput = ({id, renderStyle, multiline, ...inputProps}: RenderTextInputProps) => {
+    const AnimatedTextInput = Animated.createAnimatedComponent(Input);
 
-const initialState = {
-    eventName: 'none' as EventName,
-    layout: {} as LayoutRectangle,
-    state: 'enabled' as State,
-    value: undefined as string | undefined,
-    contentSize: undefined as TextInputContentSizeChangeEventData['contentSize'] | undefined,
+    return (
+        <AnimatedTextInput
+            {...inputProps}
+            style={renderStyle}
+            testID={`textField__input--${id}`}
+            multiline={multiline}
+            multilineText={multiline}
+            /**
+             * enableFocusRing is used to disable the focus style in macOS,
+             * this parameter has been implemented and is available.
+             * However, react-native-macos does not have an official typescript declaration for this parameter,
+             * so using it directly in a typescript will result in an undefined parameter.
+             */
+            // @ts-ignore
+            enableFocusRing={false}
+            textAlignVertical="top"
+        />
+    );
 };
 
 export const TextFieldBase: FC<TextFieldBaseProps> = ({
@@ -149,6 +152,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     error,
     labelText = 'Label',
     leading,
+    multiline,
     placeholder,
     ref,
     render,
@@ -156,10 +160,16 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     trailing,
     type = 'filled',
     value: valueSource,
-    multiline,
     ...textInputProps
 }) => {
-    const [{layout, value, eventName, state, contentSize}, setState] = useImmer(initialState);
+    const [{layout, value, eventName, state, contentSize}, setState] = useImmer<InitialState>({
+        eventName: 'none',
+        layout: {} as LayoutRectangle,
+        state: 'enabled',
+        value: undefined,
+        contentSize: undefined,
+    });
+
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
@@ -220,7 +230,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         () =>
             renderTextInput({
                 ...textInputProps,
-
                 defaultValue,
                 id,
                 multiline,
@@ -253,16 +262,16 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
 
     return render({
         eventName,
+        contentSize,
         id,
         input,
         labelText,
         leading,
+        multiline,
         onEvent: {...onEvent, onBlur, onFocus},
         state,
         trailing,
         underlayColor,
-        multiline,
-        contentSize,
         renderStyle: {
             activeIndicatorBackgroundColor,
             activeIndicatorScale,

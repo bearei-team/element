@@ -1,8 +1,8 @@
 import {FC, useCallback, useEffect, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
-import {HOOK} from '../../hooks/hook';
-import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
+
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ComponentStatus, EventName, State} from '../Common/interface';
 import {ElevationLevel} from '../Elevation/Elevation';
 import {ButtonProps} from './Button';
@@ -15,13 +15,13 @@ export interface RenderProps extends ButtonProps {
     defaultElevation: ElevationLevel;
     elevation: ElevationLevel;
     eventName: EventName;
-    onEvent: OnEvent;
     onContentLayout: (event: LayoutChangeEvent) => void;
+    onEvent: OnEvent;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
+        contentHeight: number;
+        contentWidth: number;
         height: number;
         width: number;
-        contentWidth: number;
-        contentHeight: number;
     };
 }
 
@@ -29,15 +29,24 @@ export interface ButtonBaseProps extends ButtonProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+export interface InitialState {
+    contentLayout: LayoutRectangle;
+    defaultElevation?: ElevationLevel;
+    elevation?: ElevationLevel;
+    eventName: EventName;
+    layout: LayoutRectangle;
+    status: ComponentStatus;
 }
 
-export type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
-export type ProcessLayoutOptions = Pick<RenderProps, 'type' | 'block'> & ProcessEventOptions;
+export interface ProcessEventOptions {
+    setState: Updater<InitialState>;
+}
+
 export type ProcessContentLayoutOptions = Pick<RenderProps, 'block'> & ProcessEventOptions;
-export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
+export type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
 export type ProcessInitOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
+export type ProcessLayoutOptions = Pick<RenderProps, 'type' | 'block'> & ProcessEventOptions;
+export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) =>
     type === 'elevated' ? 1 : 0;
@@ -126,15 +135,6 @@ const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
         draft.eventName = 'none';
     });
 
-const initialState = {
-    contentLayout: {} as LayoutRectangle,
-    defaultElevation: undefined as ElevationLevel,
-    elevation: undefined as ElevationLevel,
-    eventName: 'none' as EventName,
-    layout: {} as LayoutRectangle,
-    status: 'idle' as ComponentStatus,
-};
-
 export const ButtonBase: FC<ButtonBaseProps> = ({
     block,
     disabled,
@@ -145,7 +145,14 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
     ...renderProps
 }) => {
     const [{contentLayout, defaultElevation, elevation, eventName, layout, status}, setState] =
-        useImmer(initialState);
+        useImmer<InitialState>({
+            contentLayout: {} as LayoutRectangle,
+            defaultElevation: undefined,
+            elevation: undefined,
+            eventName: 'none',
+            layout: {} as LayoutRectangle,
+            status: 'idle',
+        });
 
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
@@ -160,7 +167,7 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
         [block, setState, type],
     );
 
-    const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
+    const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
     const [{backgroundColor, borderColor, color}] = useAnimated({disabled, eventName, type});
     const [iconElement] = useIcon({eventName, type, icon, disabled});
     const [border] = useBorder({type, borderColor});

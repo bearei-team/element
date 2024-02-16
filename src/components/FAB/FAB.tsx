@@ -19,8 +19,6 @@ export interface FABProps extends TouchableRippleProps {
     type?: FABType;
 }
 
-const AnimatedContent = Animated.createAnimatedComponent(Content);
-const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     accessibilityLabel,
     defaultElevation,
@@ -36,6 +34,8 @@ const render = ({
     underlayColor,
     ...contentProps
 }: RenderProps) => {
+    const AnimatedContent = Animated.createAnimatedComponent(Content);
+    const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
     const {backgroundColor, color, height, width} = renderStyle;
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
     const shape = 'medium';

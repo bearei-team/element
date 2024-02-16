@@ -1,9 +1,8 @@
 import {useEffect, useMemo} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {HOOK} from '../../hooks/hook';
-import {AnimatedTiming} from '../../utils/animatedTiming.utils';
-import {UTIL} from '../../utils/util';
+import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.utils';
 import {RenderProps} from './ButtonBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName'>;
@@ -64,11 +63,11 @@ const processAnimatedTiming = (
 };
 
 export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedOptions) => {
-    const [borderAnimated] = HOOK.useAnimatedValue(1);
-    const [colorAnimated] = HOOK.useAnimatedValue(1);
+    const [borderAnimated] = useAnimatedValue(1);
+    const [colorAnimated] = useAnimatedValue(1);
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
-    const animatedTiming = UTIL.animatedTiming(theme);
+    const animatedTiming = createAnimatedTiming(theme);
     const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
     const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
     const backgroundColorType = {

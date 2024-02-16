@@ -1,8 +1,7 @@
 import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
-import {HOOK} from '../../hooks/hook';
-import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {Button} from '../Button/Button';
 import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../Common/interface';
 import {ElevationLevel} from '../Elevation/Elevation';
@@ -15,15 +14,15 @@ export interface RenderProps extends CardProps {
     defaultElevation: ElevationLevel;
     elevation: ElevationLevel;
     eventName: EventName;
-    onInnerLayout: (event: LayoutChangeEvent) => void;
     onEvent: OnEvent;
+    onInnerLayout: (event: LayoutChangeEvent) => void;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
+        innerHeight: number;
+        innerWidth: number;
         subColor: AnimatedInterpolation;
         titleColor: AnimatedInterpolation;
         width: number;
-        innerWidth: number;
-        innerHeight: number;
     };
 }
 
@@ -31,15 +30,24 @@ export interface CardBaseProps extends CardProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface InitialState {
+    defaultElevation?: ElevationLevel;
+    elevation?: ElevationLevel;
+    eventName: EventName;
+    innerLayout: LayoutRectangle;
+    layout: LayoutRectangle;
+    status: ComponentStatus;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
-export type ProcessLayoutOptions = Pick<RenderProps, 'block' | 'type'> & ProcessEventOptions;
-export type ProcessInnerLayoutOptions = Omit<ProcessLayoutOptions, 'type'>;
-export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
 export type ProcessInitOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
+export type ProcessInnerLayoutOptions = Omit<ProcessLayoutOptions, 'type'>;
+export type ProcessLayoutOptions = Pick<RenderProps, 'block' | 'type'> & ProcessEventOptions;
+export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) =>
     type === 'elevated' ? 1 : 0;
@@ -128,15 +136,6 @@ const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
         draft.eventName = 'none';
     });
 
-const initialState = {
-    defaultElevation: undefined as ElevationLevel,
-    elevation: undefined as ElevationLevel,
-    eventName: 'none' as EventName,
-    layout: {} as LayoutRectangle,
-    status: 'idle' as ComponentStatus,
-    innerLayout: {} as LayoutRectangle,
-};
-
 export const CardBase: FC<CardBaseProps> = ({
     block,
     disabled,
@@ -152,7 +151,14 @@ export const CardBase: FC<CardBaseProps> = ({
     ...renderProps
 }) => {
     const [{defaultElevation, elevation, eventName, layout, status, innerLayout}, setState] =
-        useImmer(initialState);
+        useImmer<InitialState>({
+            defaultElevation: undefined,
+            elevation: undefined,
+            eventName: 'none',
+            innerLayout: {} as LayoutRectangle,
+            layout: {} as LayoutRectangle,
+            status: 'idle',
+        });
 
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
@@ -167,7 +173,7 @@ export const CardBase: FC<CardBaseProps> = ({
         [block, setState, type],
     );
 
-    const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
+    const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
     const [{backgroundColor, borderColor, titleColor, subColor}] = useAnimated({
         disabled,
         eventName,

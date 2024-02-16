@@ -19,8 +19,14 @@ export interface RenderItemOptions {
     onActive: (key?: string) => void;
 }
 
+export interface InitialState {
+    activeKey?: string;
+    data: ListDataSource[];
+    status: ComponentStatus;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
@@ -70,12 +76,6 @@ const processActiveKey = (
         draft.activeKey = activeKey;
     });
 
-const initialState = {
-    activeKey: undefined as string | undefined,
-    data: [] as ListDataSource[],
-    status: 'idle' as ComponentStatus,
-};
-
 export const NavigationRailBase: FC<NavigationBaseProps> = ({
     activeKey: activeKeySource,
     block,
@@ -85,7 +85,12 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
     render,
     ...renderProps
 }) => {
-    const [{activeKey, data, status}, setState] = useImmer(initialState);
+    const [{activeKey, data, status}, setState] = useImmer<InitialState>({
+        activeKey: undefined,
+        data: [],
+        status: 'idle',
+    });
+
     const id = useId();
     const onActive = useCallback(
         (key?: string) => processActive({onActive: renderProps.onActive, setState}, key),

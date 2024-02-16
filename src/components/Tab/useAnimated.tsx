@@ -2,8 +2,7 @@ import {useEffect} from 'react';
 import {Animated, LayoutRectangle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
-import {AnimatedTiming} from '../../utils/animatedTiming.utils';
-import {UTIL} from '../../utils/util';
+import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.utils';
 import {Data} from './TabBase';
 
 export interface UseAnimatedOptions {
@@ -59,7 +58,7 @@ export const useAnimated = ({
     const [activeAnimated] = useAnimatedValue(0);
     const [activeIndicatorWidthAnimated] = useAnimatedValue(0);
     const theme = useTheme();
-    const animatedTiming = UTIL.animatedTiming(theme);
+    const animatedTiming = createAnimatedTiming(theme);
     const activeIndicatorLeft = activeAnimated.interpolate({
         inputRange: range,
         outputRange: defaultRange ? range : dataIndexes.map(index => index * itemLayoutWidth),

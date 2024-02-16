@@ -28,9 +28,6 @@ export interface ListItemProps extends TouchableRippleProps {
     trailing?: React.JSX.Element;
 }
 
-const AnimatedContainer = Animated.createAnimatedComponent(Container);
-const AnimatedInner = Animated.createAnimatedComponent(Inner);
-const AnimatedTrailing = Animated.createAnimatedComponent(Trailing);
 const render = ({
     active,
     activeColor,
@@ -51,6 +48,9 @@ const render = ({
     underlayColor,
     ...innerProps
 }: RenderProps) => {
+    const AnimatedContainer = Animated.createAnimatedComponent(Container);
+    const AnimatedInner = Animated.createAnimatedComponent(Inner);
+    const AnimatedTrailing = Animated.createAnimatedComponent(Trailing);
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
     const {containerHeight, height, trailingOpacity, width} = renderStyle;
 

@@ -14,7 +14,6 @@ export interface RippleProps extends Partial<ViewProps & React.RefAttributes<Vie
     underlayColor?: string;
 }
 
-const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const render = ({
     active,
     defaultActive,
@@ -25,6 +24,7 @@ const render = ({
     locationY,
     ...containerProps
 }: RenderProps) => {
+    const AnimatedContainer = Animated.createAnimatedComponent(Container);
     const {height, width, ...containerStyle} = renderStyle;
     const activeRipple = [typeof active, typeof defaultActive].includes('boolean');
 

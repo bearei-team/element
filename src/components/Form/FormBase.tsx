@@ -12,13 +12,23 @@ export interface FormBaseProps<T extends Store> extends FormProps<T> {
     render: (props: RenderProps<T>) => React.JSX.Element;
 }
 
+export interface InitialState {
+    status: ComponentStatus;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessInitOptions = ProcessEventOptions &
     Pick<FormStore<any>, 'setInitialValue'> &
     Pick<FormBaseProps<Store>, 'initialValue'>;
+
+export type ProcessCallbackOptions = Pick<
+    FormProps<any>,
+    'onFinish' | 'onFinishFailed' | 'onValueChange'
+> &
+    Pick<FormStore<Store>, 'setCallback'>;
 
 const processInit = (
     status: ComponentStatus,
@@ -34,9 +44,10 @@ const processInit = (
     });
 };
 
-const initialState = {
-    status: 'idle' as ComponentStatus,
-};
+const processCallback = (
+    status: ComponentStatus,
+    {onFinish, onFinishFailed, onValueChange, setCallback}: ProcessCallbackOptions,
+) => status === 'idle' && setCallback({onFinish, onFinishFailed, onValueChange});
 
 export const FormBase = <T extends Store = Store>({
     form,
@@ -48,7 +59,7 @@ export const FormBase = <T extends Store = Store>({
     render,
     ...renderProps
 }: FormBaseProps<T>) => {
-    const [{status}, setState] = useImmer(initialState);
+    const [{status}, setState] = useImmer<InitialState>({status: 'idle'});
     const [formStore] = useForm<T>(form);
     const {setCallback, setInitialValue} = formStore;
     const id = useId();
@@ -62,8 +73,8 @@ export const FormBase = <T extends Store = Store>({
     );
 
     useEffect(() => {
-        setCallback({onFinish, onFinishFailed, onValueChange});
-    }, [onFinish, onFinishFailed, onValueChange, setCallback]);
+        processCallback(status, {onFinish, onFinishFailed, onValueChange, setCallback});
+    }, [onFinish, onFinishFailed, onValueChange, setCallback, status]);
 
     useEffect(() => {
         processInit(status, {initialValue, setInitialValue, setState});

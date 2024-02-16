@@ -1,9 +1,12 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {HOOK} from '../../hooks/hook';
-import {AnimatedTiming, AnimatedTimingOptions} from '../../utils/animatedTiming.utils';
-import {UTIL} from '../../utils/util';
+import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {
+    AnimatedTiming,
+    AnimatedTimingOptions,
+    createAnimatedTiming,
+} from '../../utils/animatedTiming.utils';
 import {RenderProps} from './SideSheetBase';
 
 export interface UseAnimatedOptions extends Pick<RenderProps, 'visible' | 'position'> {
@@ -72,10 +75,10 @@ const processAnimatedTiming = (
 };
 
 export const useAnimated = ({visible, finished, position}: UseAnimatedOptions) => {
-    const [containerAnimated] = HOOK.useAnimatedValue(0);
-    const [innerAnimated] = HOOK.useAnimatedValue(0);
+    const [containerAnimated] = useAnimatedValue(0);
+    const [innerAnimated] = useAnimatedValue(0);
     const theme = useTheme();
-    const animatedTiming = UTIL.animatedTiming(theme);
+    const animatedTiming = createAnimatedTiming(theme);
     const backgroundColor = containerAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [

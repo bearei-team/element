@@ -126,13 +126,17 @@ export const Control = styled.View<ControlProps>`
         height: ${theme.adaptFontSize(theme.typography.body.large.lineHeight)}px;
     `};
 
-    ${({height, multiline}) =>
-        multiline &&
-        typeof height === 'number' &&
-        height !== 0 &&
-        css`
-            height: ${height}px;
-        `};
+    ${({height, multiline, theme}) => {
+        const multilineText = multiline && typeof height === 'number' && height !== 0;
+
+        return (
+            multilineText &&
+            height > theme.adaptFontSize(theme.typography.body.large.lineHeight) &&
+            css`
+                height: ${height}px;
+            `
+        );
+    }};
 `;
 
 export const Input = styled(TextInput)<TextInputProps>`

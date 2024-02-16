@@ -15,8 +15,6 @@ export interface ButtonProps extends TouchableRippleProps {
     type?: ButtonType;
 }
 
-const AnimatedContent = Animated.createAnimatedComponent(Content);
-const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     block,
     defaultElevation,
@@ -34,6 +32,8 @@ const render = ({
     underlayColor,
     ...contentProps
 }: RenderProps) => {
+    const AnimatedContent = Animated.createAnimatedComponent(Content);
+    const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
     const {backgroundColor, color, height, width, contentWidth, contentHeight, ...border} =
         renderStyle;
 

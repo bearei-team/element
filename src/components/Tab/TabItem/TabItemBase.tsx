@@ -2,8 +2,7 @@ import {FC, useCallback, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
-import {HOOK} from '../../../hooks/hook';
-import {OnEvent, OnStateChangeOptions} from '../../../hooks/useOnEvent';
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../../hooks/useOnEvent';
 import {EventName, State} from '../../Common/interface';
 import {TabItemProps} from './TabItem';
 import {useAnimated} from './useAnimated';
@@ -23,8 +22,13 @@ export interface TabItemBaseProps extends TabItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface InitialState {
+    layout: LayoutRectangle;
+    eventName: EventName;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
@@ -73,11 +77,6 @@ const processLabelTextLayout = (
     {onLabelTextLayout, indexKey, id}: ProcessLabelTextLayoutOptions,
 ) => onLabelTextLayout?.(event, (indexKey ?? id)!);
 
-const initialState = {
-    layout: {} as LayoutRectangle,
-    eventName: 'none' as EventName,
-};
-
 export const TabItemBase: FC<TabItemBaseProps> = ({
     activeKey,
     defaultActiveKey,
@@ -87,7 +86,11 @@ export const TabItemBase: FC<TabItemBaseProps> = ({
     render,
     ...renderProps
 }) => {
-    const [{layout, eventName}, setState] = useImmer(initialState);
+    const [{layout, eventName}, setState] = useImmer<InitialState>({
+        layout: {} as LayoutRectangle,
+        eventName: 'none',
+    });
+
     const id = useId();
     const theme = useTheme();
     const active = typeof activeKey === 'string' ? activeKey === indexKey : undefined;
@@ -110,7 +113,7 @@ export const TabItemBase: FC<TabItemBaseProps> = ({
         [id, indexKey, onLabelTextLayout],
     );
 
-    const [onEvent] = HOOK.useOnEvent({...renderProps, onStateChange});
+    const [onEvent] = useOnEvent({...renderProps, onStateChange});
     const [{color}] = useAnimated({active, defaultActive});
 
     return render({

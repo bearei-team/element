@@ -35,10 +35,6 @@ export interface CardProps extends TouchableRippleProps {
     type?: CardType;
 }
 
-const AnimatedInner = Animated.createAnimatedComponent(Inner);
-const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
-const AnimatedSubheadText = Animated.createAnimatedComponent(SubheadText);
-const AnimatedTitleText = Animated.createAnimatedComponent(TitleText);
 const render = ({
     defaultElevation,
     disabled,
@@ -58,6 +54,10 @@ const render = ({
     onInnerLayout,
     block,
 }: RenderProps) => {
+    const AnimatedInner = Animated.createAnimatedComponent(Inner);
+    const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
+    const AnimatedSubheadText = Animated.createAnimatedComponent(SubheadText);
+    const AnimatedTitleText = Animated.createAnimatedComponent(TitleText);
     const {
         width,
         height,

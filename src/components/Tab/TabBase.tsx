@@ -33,8 +33,17 @@ export interface RenderItemOptions extends TabItemProps {
 }
 
 export type Data = (TabDataSource & {labelTextLayout?: LayoutRectangle})[];
+
+export interface InitialState {
+    activeIndicatorOffsetPosition: ActiveIndicatorOffsetPosition;
+    activeKey?: string;
+    data: Data;
+    itemLayout: LayoutRectangle;
+    layout: LayoutRectangle;
+    status: ComponentStatus;
+}
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessLayoutOptions = Pick<RenderProps, 'onLayout'> & ProcessEventOptions;
@@ -122,15 +131,6 @@ const renderItem = ({
         />
     ));
 
-const initialState = {
-    activeIndicatorOffsetPosition: 'horizontalStart' as ActiveIndicatorOffsetPosition,
-    activeKey: undefined as string | undefined,
-    data: [] as Data,
-    itemLayout: {} as LayoutRectangle,
-    layout: {} as LayoutRectangle,
-    status: 'idle' as ComponentStatus,
-};
-
 export const TabBase: FC<TabBaseProps> = ({
     data: dataSources,
     defaultActiveKey,
@@ -139,7 +139,14 @@ export const TabBase: FC<TabBaseProps> = ({
     ...renderProps
 }) => {
     const [{activeIndicatorOffsetPosition, activeKey, data, itemLayout, layout, status}, setState] =
-        useImmer(initialState);
+        useImmer<InitialState>({
+            activeIndicatorOffsetPosition: 'horizontalStart',
+            activeKey: undefined,
+            data: [],
+            itemLayout: {} as LayoutRectangle,
+            layout: {} as LayoutRectangle,
+            status: 'idle',
+        });
 
     const id = useId();
     const theme = useTheme();

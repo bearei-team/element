@@ -1,8 +1,7 @@
 import {FC, useCallback, useEffect, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
-import {HOOK} from '../../hooks/hook';
-import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {EventName, State} from '../Common/interface';
 import {IconButtonProps} from './IconButton';
 import {useAnimated} from './useAnimated';
@@ -23,8 +22,13 @@ export interface IconButtonBaseProps extends IconButtonProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface InitialState {
+    eventName: EventName;
+    layout: LayoutRectangle;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessEventOptions;
@@ -51,11 +55,6 @@ const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
         draft.eventName = 'none';
     });
 
-const initialState = {
-    eventName: 'none' as EventName,
-    layout: {} as LayoutRectangle,
-};
-
 export const IconButtonBase: FC<IconButtonBaseProps> = ({
     disabled = false,
     icon,
@@ -63,7 +62,11 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
     type = 'filled',
     ...renderProps
 }) => {
-    const [{eventName, layout}, setState] = useImmer(initialState);
+    const [{eventName, layout}, setState] = useImmer<InitialState>({
+        eventName: 'none',
+        layout: {} as LayoutRectangle,
+    });
+
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
     const onStateChange = useCallback(
@@ -72,7 +75,7 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
         [setState],
     );
 
-    const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
+    const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
     const [{backgroundColor, borderColor}] = useAnimated({disabled, type});
     const [iconElement] = useIcon({eventName, type, icon, disabled});
     const [border] = useBorder({borderColor});

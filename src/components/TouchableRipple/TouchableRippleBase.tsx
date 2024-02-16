@@ -1,8 +1,7 @@
 import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {GestureResponderEvent, LayoutChangeEvent, LayoutRectangle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
-import {HOOK} from '../../hooks/hook';
-import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ComponentStatus, State} from '../Common/interface';
 import {Ripple, RippleProps} from './Ripple/Ripple';
 import {TouchableRippleProps} from './TouchableRipple';
@@ -22,8 +21,15 @@ export interface Ripple extends Pick<RippleProps, 'location'> {
 
 export type RippleSequence = Record<string, Ripple>;
 
+export interface InitialState {
+    layout: LayoutRectangle;
+    rippleSequence: RippleSequence;
+    status: ComponentStatus;
+    shouldUpdate: Record<string, unknown>;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export interface AddRippleOptions {
@@ -67,8 +73,6 @@ const processAddRipple = ({
 }: AddRippleOptions & ProcessAddRippleOptions) =>
     setState(draft => {
         const exist = activeRipple && Object.keys(draft.rippleSequence).length !== 0;
-
-        console.info(activeRipple, Object.keys(draft.rippleSequence));
 
         !exist &&
             (draft.rippleSequence[`${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`] = {
@@ -185,13 +189,6 @@ const renderRipples = (rippleSequence: RippleSequence, props: Omit<RippleProps, 
         <Ripple {...props} key={sequence} location={location} sequence={sequence} />
     ));
 
-const initialState = {
-    layout: {} as LayoutRectangle,
-    rippleSequence: {} as RippleSequence,
-    status: 'idle' as ComponentStatus,
-    shouldUpdate: {},
-};
-
 export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
     active,
     activeLocation,
@@ -203,7 +200,13 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
     underlayColor,
     ...renderProps
 }) => {
-    const [{rippleSequence, status, layout}, setState] = useImmer(initialState);
+    const [{rippleSequence, status, layout}, setState] = useImmer<InitialState>({
+        layout: {} as LayoutRectangle,
+        rippleSequence: {} as RippleSequence,
+        shouldUpdate: {},
+        status: 'idle',
+    });
+
     const id = useId();
     const activeRipple = [typeof defaultActive, typeof active].includes('boolean');
     const onStateChange = useCallback(
@@ -212,7 +215,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
         [activeRipple, setState],
     );
 
-    const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
+    const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
     const onEntryAnimatedEnd = useCallback(
         (sequence: string, exitAnimated: (finished?: () => void) => void) =>
             processRippleEntryAnimatedEnd(sequence, {

@@ -1,9 +1,8 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {HOOK} from '../../hooks/hook';
-import {AnimatedTiming} from '../../utils/animatedTiming.utils';
-import {UTIL} from '../../utils/util';
+import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.utils';
 import {RenderProps} from './IconButtonBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type'>;
@@ -32,10 +31,10 @@ const processAnimatedTiming = (
 };
 
 export const useAnimated = ({disabled, type = 'filled'}: UseAnimatedOptions) => {
-    const [borderAnimated] = HOOK.useAnimatedValue(1);
-    const [colorAnimated] = HOOK.useAnimatedValue(1);
+    const [borderAnimated] = useAnimatedValue(1);
+    const [colorAnimated] = useAnimatedValue(1);
     const theme = useTheme();
-    const animatedTiming = UTIL.animatedTiming(theme);
+    const animatedTiming = createAnimatedTiming(theme);
     const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
     const backgroundColorConfig = {
         filled: {

@@ -10,8 +10,7 @@ import {
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
-import {HOOK} from '../../hooks/hook';
-import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ComponentStatus, EventName, State} from '../Common/interface';
 import {ElevationLevel} from '../Elevation/Elevation';
 import {ChipProps} from './Chip';
@@ -38,8 +37,20 @@ export interface ChipBaseProps extends ChipProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export interface InitialState {
+    active?: boolean;
+    activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
+    defaultActive?: boolean;
+    defaultElevation?: ElevationLevel;
+    elevation?: ElevationLevel;
+    eventName: EventName;
+    layout: LayoutRectangle;
+    rippleCentered: boolean;
+    status: ComponentStatus;
+}
+
 export interface ProcessEventOptions {
-    setState: Updater<typeof initialState>;
+    setState: Updater<InitialState>;
 }
 
 export type ProcessActiveOptions = Pick<RenderProps, 'active'> & ProcessEventOptions;
@@ -99,10 +110,7 @@ const processStateChange = (
 ) => {
     const nextEvent = {
         layout: () => processLayout(event as LayoutChangeEvent, {setState}),
-        pressOut: () =>
-            processPressOut(event as GestureResponderEvent, {
-                setState,
-            }),
+        pressOut: () => processPressOut(event as GestureResponderEvent, {setState}),
     };
 
     nextEvent[eventName as keyof typeof nextEvent]?.();
@@ -164,18 +172,6 @@ const processActive = (status: ComponentStatus, {active, setState}: ProcessActiv
         });
 };
 
-const initialState = {
-    defaultElevation: undefined as ElevationLevel,
-    elevation: undefined as ElevationLevel,
-    eventName: 'none' as EventName,
-    layout: {} as LayoutRectangle,
-    status: 'idle' as ComponentStatus,
-    activeLocation: undefined as Pick<NativeTouchEvent, 'locationX' | 'locationY'> | undefined,
-    active: undefined as boolean | undefined,
-    defaultActive: undefined as boolean | undefined,
-    rippleCentered: false,
-};
-
 export const ChipBase: FC<ChipBaseProps> = ({
     active: activeSource,
     defaultActive: defaultActiveSource,
@@ -200,7 +196,17 @@ export const ChipBase: FC<ChipBaseProps> = ({
             status,
         },
         setState,
-    ] = useImmer(initialState);
+    ] = useImmer<InitialState>({
+        active: undefined,
+        activeLocation: undefined,
+        defaultActive: undefined,
+        defaultElevation: undefined,
+        elevation: undefined,
+        eventName: 'none',
+        layout: {} as LayoutRectangle,
+        rippleCentered: false,
+        status: 'idle',
+    });
 
     const theme = useTheme();
     const id = useId();
@@ -212,7 +218,7 @@ export const ChipBase: FC<ChipBaseProps> = ({
         [setState, elevated],
     );
 
-    const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
+    const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
     const [{backgroundColor, borderColor, color}] = useAnimated({disabled, eventName, type});
     const [iconElement] = useIcon({eventName, type, icon, disabled});
     const [border] = useBorder({type, borderColor});

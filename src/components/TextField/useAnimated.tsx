@@ -1,9 +1,8 @@
 import {useCallback, useEffect, useMemo} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {HOOK} from '../../hooks/hook';
-import {AnimatedTiming} from '../../utils/animatedTiming.utils';
-import {UTIL} from '../../utils/util';
+import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.utils';
 import {EventName, State} from '../Common/interface';
 import {RenderProps} from './TextFieldBase';
 
@@ -157,16 +156,16 @@ export const useAnimated = ({
     filled,
 }: UseAnimatedOptions) => {
     const theme = useTheme();
-    const animatedTiming = UTIL.animatedTiming(theme);
-    const [backgroundColorAnimated] = HOOK.useAnimatedValue(1);
-    const [inputAnimated] = HOOK.useAnimatedValue(1);
-    const [colorAnimated] = HOOK.useAnimatedValue(1);
-    const [activeIndicatorAnimated] = HOOK.useAnimatedValue(0);
-    const filledToValue = filled ? 0 : 1;
-    const [labelAnimated] = HOOK.useAnimatedValue(filledToValue);
-    const [supportingTextAnimated] = HOOK.useAnimatedValue(1);
+    const [activeIndicatorAnimated] = useAnimatedValue(0);
+    const [backgroundColorAnimated] = useAnimatedValue(1);
+    const [colorAnimated] = useAnimatedValue(1);
+    const [inputAnimated] = useAnimatedValue(1);
+    const [supportingTextAnimated] = useAnimatedValue(1);
+    const animatedTiming = createAnimatedTiming(theme);
     const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
     const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
+    const filledToValue = filled ? 0 : 1;
+    const [labelAnimated] = useAnimatedValue(filledToValue);
     const backgroundColorConfig = {
         filled: {
             inputRange: [0, 1],

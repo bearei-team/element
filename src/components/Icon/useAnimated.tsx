@@ -1,9 +1,8 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {HOOK} from '../../hooks/hook';
-import {AnimatedTiming} from '../../utils/animatedTiming.utils';
-import {UTIL} from '../../utils/util';
+import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.utils';
 import {RenderProps} from './IconBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'eventName'>;
@@ -26,9 +25,9 @@ const processAnimatedTiming = (
 };
 
 export const useAnimated = ({eventName}: UseAnimatedOptions) => {
-    const [scaleAnimated] = HOOK.useAnimatedValue(1);
+    const [scaleAnimated] = useAnimatedValue(1);
     const theme = useTheme();
-    const animatedTiming = UTIL.animatedTiming(theme);
+    const animatedTiming = createAnimatedTiming(theme);
     const scale = scaleAnimated.interpolate({
         inputRange: [0, 1, 2],
         outputRange: [0.97, 1, 1.03],
