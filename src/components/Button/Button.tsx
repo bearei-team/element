@@ -7,7 +7,6 @@ import {Container, Content, Icon, LabelText} from './Button.styles';
 import {ButtonBase, RenderProps} from './ButtonBase';
 
 export type ButtonType = 'elevated' | 'filled' | 'link' | 'outlined' | 'text' | 'tonal';
-
 export interface ButtonProps extends TouchableRippleProps {
     block?: boolean;
     icon?: React.JSX.Element;

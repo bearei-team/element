@@ -6,9 +6,11 @@ export interface AdaptOptions {
     designWidth?: number;
 }
 
-export const adapt = (
-    {designWidth = 750, designHeight = 1334, designDensity = 2} = {} as AdaptOptions,
-) => {
+export const adapt = ({
+    designWidth = 750,
+    designHeight = 1334,
+    designDensity = 2,
+}: AdaptOptions = {}) => {
     const {width: screenWidth, height: screenHeight} = Dimensions.get('window');
     const fontScale = PixelRatio.getFontScale();
     const heightScale = screenHeight / (designHeight / designDensity);
