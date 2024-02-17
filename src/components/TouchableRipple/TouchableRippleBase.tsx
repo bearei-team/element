@@ -20,7 +20,6 @@ export interface Ripple extends Pick<RippleProps, 'location'> {
 }
 
 export type RippleSequence = Record<string, Ripple>;
-
 export interface InitialState {
     layout: LayoutRectangle;
     rippleSequence: RippleSequence;

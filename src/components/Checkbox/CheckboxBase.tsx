@@ -2,8 +2,7 @@ import {FC, useCallback, useEffect, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
-import {HOOK} from '../../hooks/hook';
-import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ComponentStatus, EventName, State} from '../Common/interface';
 import {CheckboxProps, CheckboxType} from './Checkbox';
 import {useIcon} from './useIcon';
@@ -142,7 +141,7 @@ export const CheckboxBase: FC<CheckboxBaseProps> = ({
         [active, indeterminate, onActive, setState],
     );
 
-    const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
+    const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
 
     useEffect(() => {
         processDefaultActive(status, {defaultActive, indeterminate, setState});

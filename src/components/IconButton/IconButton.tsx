@@ -52,7 +52,6 @@ const render = ({
                     }}
                     testID={`iconButton__content--${id}`}>
                     <Icon testID={`iconButton__icon--${id}`}>{icon}</Icon>
-
                     <Hovered
                         eventName={eventName}
                         height={height}

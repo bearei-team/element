@@ -5,7 +5,6 @@ import {FormProps} from './Form';
 import {FormItem} from './FormItem/FormItem';
 import {FormStore, Store} from './formStore';
 import {useForm} from './useForm';
-import {FormContext} from './useFormContext';
 
 export type RenderProps<T extends Store> = FormProps<T>;
 export interface FormBaseProps<T extends Store> extends FormProps<T> {
@@ -49,6 +48,10 @@ const processCallback = (
     {onFinish, onFinishFailed, onValueChange, setCallback}: ProcessCallbackOptions,
 ) => status === 'idle' && setCallback({onFinish, onFinishFailed, onValueChange});
 
+const renderChildren = (status: ComponentStatus, {items}: Pick<FormBaseProps<{}>, 'items'>) =>
+    status === 'succeeded' &&
+    items?.map((item, index) => <FormItem {...item} key={(item.name ?? index).toString()} />);
+
 export const FormBase = <T extends Store = Store>({
     form,
     initialValue,
@@ -63,14 +66,7 @@ export const FormBase = <T extends Store = Store>({
     const [formStore] = useForm<T>(form);
     const {setCallback, setInitialValue} = formStore;
     const id = useId();
-    const children = useMemo(
-        () =>
-            status === 'succeeded' &&
-            items?.map((item, index) => (
-                <FormItem {...item} key={(item.name ?? index).toString()} />
-            )),
-        [items, status],
-    );
+    const children = useMemo(() => renderChildren(status, {items}), [items, status]);
 
     useEffect(() => {
         processCallback(status, {onFinish, onFinishFailed, onValueChange, setCallback});
@@ -86,11 +82,8 @@ export const FormBase = <T extends Store = Store>({
 
     return render({
         ...renderProps,
-        children: (
-            <FormContext.Provider value={formStore as FormStore<Store>}>
-                {children}
-            </FormContext.Provider>
-        ),
+        children,
+        form: formStore,
         id,
     });
 };

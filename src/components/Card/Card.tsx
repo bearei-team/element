@@ -18,7 +18,6 @@ import {
 import {CardBase, RenderProps} from './CardBase';
 
 export type CardType = 'elevated' | 'filled' | 'outlined';
-
 export interface CardProps extends TouchableRippleProps {
     block?: boolean;
     footer?: boolean;
@@ -68,6 +67,7 @@ const render = ({
         innerWidth,
         ...border
     } = renderStyle;
+
     const shape = 'medium';
     const hoveredLayout = {height: height || innerHeight, width: width || innerWidth};
     const {onLayout, ...onTouchableRippleEvent} = onEvent;

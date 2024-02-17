@@ -9,15 +9,14 @@ export interface FieldError extends Pick<ValidateOptions, 'rules'> {
 }
 
 export type Error<T> = Record<keyof T, FieldError | undefined>;
-
 export interface Callback<T extends Store> {
     onFinish?: (value: T) => void;
     onFinishFailed?: (error: Error<T>) => void;
     onValueChange?: (changedValue: T, value: T) => void;
 }
 
-export interface FieldEntity<T extends Store> {
-    onFormStoreChange: (name?: keyof T) => void;
+export interface FieldEntity {
+    onFormStoreChange: () => void;
     props: FormItemProps;
     touched: boolean;
     validate: (value?: unknown) => Promise<FieldError | undefined>;
@@ -29,7 +28,7 @@ export interface SetFieldValueOptions {
 }
 
 export interface FormStore<T extends Store> {
-    getFieldEntities: (signOut?: boolean) => FieldEntity<T>[];
+    getFieldEntities: (signOut?: boolean) => FieldEntity[];
     getFieldEntitiesName: (names?: (keyof T)[], signOut?: boolean) => (keyof T | undefined)[];
     getFieldError: {
         (): Error<T>;
@@ -45,7 +44,7 @@ export interface FormStore<T extends Store> {
     setFieldTouched: (name?: keyof T, touched?: boolean) => void;
     setFieldValue: (value?: T, options?: SetFieldValueOptions) => void;
     setInitialValue: (value?: T, init?: boolean) => void;
-    signInField: (entity: FieldEntity<T>) => {signOut: () => void} | undefined;
+    signInField: (entity: FieldEntity) => {signOut: () => void} | undefined;
     signOutField: (name?: NamePath<T>) => void;
     submit: (skipValidate?: boolean) => void;
     validateField: {
@@ -58,7 +57,7 @@ export interface FormStore<T extends Store> {
 const createFormContext = <T extends Store>() => ({
     callback: {} as Callback<T>,
     error: {} as Error<T>,
-    fieldEntities: [] as FieldEntity<T>[],
+    fieldEntities: [] as FieldEntity[],
     initialValue: {} as T,
     store: {} as T,
 });
@@ -159,6 +158,18 @@ export const formStore = <T extends Store>(): FormStore<T> => {
     ) => {
         const {onValueChange} = callback;
         const entities = getFieldEntities();
+        const processValidateResult = (entity: FieldEntity, err?: FieldError) => {
+            const name = entity.props.name;
+
+            if (!name) {
+                return;
+            }
+
+            setFieldError({[name]: err} as Error<T>);
+            setFieldTouched(name, true);
+            entity.onFormStoreChange();
+        };
+
         const processResponse = async (name: keyof T) => {
             const entity = entities.find(({props}) => props.name === name);
 
@@ -166,23 +177,17 @@ export const formStore = <T extends Store>(): FormStore<T> => {
                 return;
             }
 
-            const processValidateResult = (err?: FieldError) => {
-                setFieldError({[name]: err} as Error<T>);
-                setFieldTouched(name, true);
-
-                entity.onFormStoreChange(name);
-            };
-
             skipValidate
-                ? processValidateResult()
-                : await entity.validate(value[entity.props.name!]).then(processValidateResult);
+                ? processValidateResult(entity)
+                : await entity
+                      .validate(value[entity.props.name!])
+                      .then(err => processValidateResult(entity, err));
         };
 
-        if (response) {
+        response &&
             Promise.all(Object.keys(value).map(processResponse)).then(() =>
                 onValueChange?.(value, store),
             );
-        }
 
         store = {...store, ...value};
     };
@@ -195,7 +200,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
         initialValue = {...initialValue, ...value};
     };
 
-    const signInField = (entity: FieldEntity<T>) => {
+    const signInField = (entity: FieldEntity) => {
         const {name} = entity.props;
 
         if (!name) {
@@ -247,15 +252,15 @@ export const formStore = <T extends Store>(): FormStore<T> => {
 
     const submit = (skipValidate = false) => {
         const {onFinish, onFinishFailed} = callback;
-        const handleFailed = (err: Error<T>) => onFinishFailed?.(err);
-        const handleFinish = () => onFinish?.(store);
+        const processFailed = (err: Error<T>) => onFinishFailed?.(err);
+        const processFinish = () => onFinish?.(store);
 
         skipValidate
-            ? handleFinish()
+            ? processFinish()
             : validateField().then(err => {
                   Object.entries(err).some(([, value]) => value)
-                      ? handleFailed(err)
-                      : handleFinish();
+                      ? processFailed(err)
+                      : processFinish();
               });
     };
 

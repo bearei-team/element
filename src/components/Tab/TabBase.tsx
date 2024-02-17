@@ -33,7 +33,6 @@ export interface RenderItemOptions extends TabItemProps {
 }
 
 export type Data = (TabDataSource & {labelTextLayout?: LayoutRectangle})[];
-
 export interface InitialState {
     activeIndicatorOffsetPosition: ActiveIndicatorOffsetPosition;
     activeKey?: string;
@@ -131,6 +130,18 @@ const renderItem = ({
         />
     ));
 
+const renderChildren = (data: Data, {layout}: Pick<InitialState, 'layout'>) => {
+    if (typeof layout.width !== 'number') {
+        return <></>;
+    }
+
+    return data.map(({content, key}, index) => (
+        <ContentItem key={key ?? index} width={layout.width}>
+            {typeof content === 'string' ? <Text>{content}</Text> : content}
+        </ContentItem>
+    ));
+};
+
 export const TabBase: FC<TabBaseProps> = ({
     data: dataSources,
     defaultActiveKey,
@@ -200,17 +211,7 @@ export const TabBase: FC<TabBaseProps> = ({
         [activeKey, data, defaultActiveKey, onActive, onItemLayout, onLabelTextLayout],
     );
 
-    const children = useMemo(() => {
-        if (typeof layout.width !== 'number') {
-            return <></>;
-        }
-
-        return data.map(({content, key}, index) => (
-            <ContentItem key={key ?? index} width={layout.width}>
-                {typeof content === 'string' ? <Text>{content}</Text> : content}
-            </ContentItem>
-        ));
-    }, [data, layout.width]);
+    const children = useMemo(() => renderChildren(data, {layout}), [data, layout]);
 
     useEffect(() => {
         processInit({setState}, dataSources);

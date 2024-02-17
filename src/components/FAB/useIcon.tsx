@@ -33,7 +33,7 @@ export const useIcon = ({disabled, icon, type, eventName, size}: UseIconOptions)
                   }),
             eventName,
             fill: disabled
-                ? theme.color.rgba(theme.palette.surface.onSurface, 0.38)
+                ? theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38)
                 : fillType[type as keyof typeof fillType],
         }),
     ];

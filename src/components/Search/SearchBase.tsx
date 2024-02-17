@@ -249,7 +249,9 @@ const renderInner = ({
                 activeKey={activeKey}
                 data={data}
                 onActive={onListActive}
-                style={{backgroundColor: theme.color.rgba(theme.palette.surface.surface, 0)}}
+                style={{
+                    backgroundColor: theme.color.convertHexToRGBA(theme.palette.surface.surface, 0),
+                }}
             />
         </AnimatedInner>
     );

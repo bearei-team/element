@@ -82,8 +82,8 @@ export const useAnimated = ({visible, finished, position}: UseAnimatedOptions) =
     const backgroundColor = containerAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
-            theme.color.rgba(theme.palette.scrim.scrim, 0),
-            theme.color.rgba(theme.palette.scrim.scrim, 0.32),
+            theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0),
+            theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0.32),
         ],
     });
 

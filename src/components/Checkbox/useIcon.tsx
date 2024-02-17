@@ -27,7 +27,9 @@ export const useIcon = ({disabled, error, eventName, type = 'unselected'}: UseIc
             eventName,
             width: theme.adaptSize(theme.spacing.large),
             height: theme.adaptSize(theme.spacing.large),
-            fill: disabled ? theme.color.rgba(theme.palette.surface.onSurface, 0.38) : color,
+            fill: disabled
+                ? theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38)
+                : color,
         }),
     ];
 };

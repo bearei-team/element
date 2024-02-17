@@ -6,7 +6,6 @@ import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.u
 import {RenderProps} from './IconBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'eventName'>;
-
 export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
     scaleAnimated: Animated.Value;
 }

@@ -162,8 +162,12 @@ export const useAnimated = ({
     const [inputAnimated] = useAnimatedValue(1);
     const [supportingTextAnimated] = useAnimatedValue(1);
     const animatedTiming = createAnimatedTiming(theme);
-    const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
-    const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
+    const disabledBackgroundColor = theme.color.convertHexToRGBA(
+        theme.palette.surface.onSurface,
+        0.12,
+    );
+
+    const disabledColor = theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38);
     const filledToValue = filled ? 0 : 1;
     const [labelAnimated] = useAnimatedValue(filledToValue);
     const backgroundColorConfig = {
@@ -171,14 +175,14 @@ export const useAnimated = ({
             inputRange: [0, 1],
             outputRange: [
                 disabledBackgroundColor,
-                theme.color.rgba(theme.palette.surface.surfaceContainerHighest, 1),
+                theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerHighest, 1),
             ],
         },
         outlined: {
             inputRange: [0, 1],
             outputRange: [
-                theme.color.rgba(theme.palette.surface.surface, 0),
-                theme.color.rgba(theme.palette.surface.surface, 0),
+                theme.color.convertHexToRGBA(theme.palette.surface.surface, 0),
+                theme.color.convertHexToRGBA(theme.palette.surface.surface, 0),
             ],
         },
     };
@@ -187,7 +191,10 @@ export const useAnimated = ({
         () =>
             inputAnimated.interpolate({
                 inputRange: [0, 1],
-                outputRange: [disabledColor, theme.color.rgba(theme.palette.surface.onSurface, 1)],
+                outputRange: [
+                    disabledColor,
+                    theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 1),
+                ],
             }),
         [disabledColor, inputAnimated, theme.color, theme.palette.surface.onSurface],
     );
@@ -196,9 +203,9 @@ export const useAnimated = ({
         inputRange: [0, 1, 2, 3],
         outputRange: [
             disabledColor,
-            theme.color.rgba(theme.palette.surface.onSurfaceVariant, 1),
-            theme.color.rgba(theme.palette.primary.primary, 1),
-            theme.color.rgba(theme.palette.error.error, 1),
+            theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
+            theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
+            theme.color.convertHexToRGBA(theme.palette.error.error, 1),
         ],
     });
 
@@ -206,9 +213,9 @@ export const useAnimated = ({
         inputRange: [0, 1, 2, 3],
         outputRange: [
             disabledColor,
-            theme.color.rgba(theme.palette.surface.onSurfaceVariant, 1),
-            theme.color.rgba(theme.palette.primary.primary, 1),
-            theme.color.rgba(theme.palette.error.error, 1),
+            theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
+            theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
+            theme.color.convertHexToRGBA(theme.palette.error.error, 1),
         ],
     });
 
@@ -259,8 +266,8 @@ export const useAnimated = ({
         inputRange: [0, 1, 2],
         outputRange: [
             disabledColor,
-            theme.color.rgba(theme.palette.surface.onSurfaceVariant, 1),
-            theme.color.rgba(theme.palette.error.error, 1),
+            theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
+            theme.color.convertHexToRGBA(theme.palette.error.error, 1),
         ],
     });
 

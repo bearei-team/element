@@ -15,18 +15,18 @@ export interface UseAnimatedOptions
     sequence: string;
 }
 
-export interface EntryAnimatedOptions extends Pick<UseAnimatedOptions, 'minDuration'> {
+export interface CreateEntryAnimatedOptions extends Pick<UseAnimatedOptions, 'minDuration'> {
     scaleAnimated: Animated.Value;
 }
 
-export interface ExitAnimatedOptions {
+export interface CreateExitAnimatedOptions {
     activeRipple: boolean;
     opacityAnimated: Animated.Value;
     scaleAnimated: Animated.Value;
 }
 
-export type ProcessAnimatedTimingOptions = EntryAnimatedOptions &
-    ExitAnimatedOptions &
+export type ProcessAnimatedTimingOptions = CreateEntryAnimatedOptions &
+    CreateExitAnimatedOptions &
     Pick<UseAnimatedOptions, 'onEntryAnimatedEnd' | 'sequence'>;
 
 export type ProcessDefaultActiveOptions = Pick<
@@ -39,8 +39,8 @@ export type ProcessActiveOptions = {
     processAnimated: () => void;
 };
 
-const processEntryAnimated =
-    (animatedTiming: AnimatedTiming, {scaleAnimated, minDuration}: EntryAnimatedOptions) =>
+const createEntryAnimated =
+    (animatedTiming: AnimatedTiming, {scaleAnimated, minDuration}: CreateEntryAnimatedOptions) =>
     (finished?: () => void) =>
         requestAnimationFrame(() =>
             animatedTiming(scaleAnimated, {
@@ -50,10 +50,10 @@ const processEntryAnimated =
             }).start(finished),
         );
 
-const processExitAnimated =
+const createExitAnimated =
     (
         animatedTiming: AnimatedTiming,
-        {activeRipple, opacityAnimated, scaleAnimated}: ExitAnimatedOptions,
+        {activeRipple, opacityAnimated, scaleAnimated}: CreateExitAnimatedOptions,
     ) =>
     (finished?: () => void) => {
         const animatedTimingOptions = {
@@ -85,12 +85,12 @@ const processAnimatedTiming = (
         sequence,
     }: ProcessAnimatedTimingOptions,
 ) => {
-    const entryAnimated = processEntryAnimated(animatedTiming, {
+    const entryAnimated = createEntryAnimated(animatedTiming, {
         scaleAnimated,
         minDuration,
     });
 
-    const exitAnimated = processExitAnimated(animatedTiming, {
+    const exitAnimated = createExitAnimated(animatedTiming, {
         activeRipple,
         opacityAnimated,
         scaleAnimated,
@@ -134,7 +134,7 @@ export const useAnimated = ({
     });
 
     const exitAnimated = useCallback(
-        () => processExitAnimated(animatedTiming, {activeRipple, opacityAnimated, scaleAnimated})(),
+        () => createExitAnimated(animatedTiming, {activeRipple, opacityAnimated, scaleAnimated})(),
         [activeRipple, animatedTiming, opacityAnimated, scaleAnimated],
     );
 

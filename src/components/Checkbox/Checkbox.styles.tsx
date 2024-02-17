@@ -4,7 +4,6 @@ import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './CheckboxBase';
 
 export type ContainerProps = Pick<RenderProps, 'width'>;
-
 export type ContentProps = Pick<RenderProps, 'width' | 'height'>;
 
 export const Container = styled(View)<ContainerProps>`

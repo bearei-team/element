@@ -8,7 +8,6 @@ import {filled} from './icons/filled';
 
 export type IconName = keyof (typeof filled)['svg'];
 export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
-
 export interface IconProps
     extends Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps> {
     eventName?: EventName;

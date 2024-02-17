@@ -6,7 +6,6 @@ import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.u
 import {RenderProps} from './ButtonBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName'>;
-
 export interface ProcessOutlinedAnimatedOptions extends UseAnimatedOptions {
     borderAnimated: Animated.Value;
     borderInputRange: number[];
@@ -68,49 +67,53 @@ export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedO
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
-    const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
-    const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
+    const disabledBackgroundColor = theme.color.convertHexToRGBA(
+        theme.palette.surface.onSurface,
+        0.12,
+    );
+
+    const disabledColor = theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38);
     const backgroundColorType = {
         elevated: {
             inputRange: [0, 1],
             outputRange: [
                 disabledBackgroundColor,
-                theme.color.rgba(theme.palette.surface.surfaceContainerLow, 1),
+                theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 1),
             ],
         },
         filled: {
             inputRange: [0, 1],
             outputRange: [
                 disabledBackgroundColor,
-                theme.color.rgba(theme.palette.primary.primary, 1),
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
             ],
         },
         outlined: {
             inputRange: [0, 1],
             outputRange: [
-                theme.color.rgba(theme.palette.primary.primary, 0),
-                theme.color.rgba(theme.palette.primary.primary, 0),
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 0),
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 0),
             ],
         },
         text: {
             inputRange: [0, 1],
             outputRange: [
-                theme.color.rgba(theme.palette.primary.primary, 0),
-                theme.color.rgba(theme.palette.primary.primary, 0),
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 0),
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 0),
             ],
         },
         link: {
             inputRange: [0, 1],
             outputRange: [
-                theme.color.rgba(theme.palette.primary.primary, 0),
-                theme.color.rgba(theme.palette.primary.primary, 0),
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 0),
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 0),
             ],
         },
         tonal: {
             inputRange: [0, 1],
             outputRange: [
                 disabledBackgroundColor,
-                theme.color.rgba(theme.palette.secondary.secondaryContainer, 1),
+                theme.color.convertHexToRGBA(theme.palette.secondary.secondaryContainer, 1),
             ],
         },
     };
@@ -118,29 +121,44 @@ export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedO
     const colorType = {
         elevated: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.primary, 1)],
+            outputRange: [
+                disabledColor,
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
+            ],
         },
         filled: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.onPrimary, 1)],
+            outputRange: [
+                disabledColor,
+                theme.color.convertHexToRGBA(theme.palette.primary.onPrimary, 1),
+            ],
         },
         outlined: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.primary, 1)],
+            outputRange: [
+                disabledColor,
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
+            ],
         },
         text: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.primary, 1)],
+            outputRange: [
+                disabledColor,
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
+            ],
         },
         link: {
             inputRange: [0, 1],
-            outputRange: [disabledColor, theme.color.rgba(theme.palette.primary.primary, 1)],
+            outputRange: [
+                disabledColor,
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
+            ],
         },
         tonal: {
             inputRange: [0, 1],
             outputRange: [
                 disabledColor,
-                theme.color.rgba(theme.palette.secondary.onSecondaryContainer, 1),
+                theme.color.convertHexToRGBA(theme.palette.secondary.onSecondaryContainer, 1),
             ],
         },
     };
@@ -152,8 +170,8 @@ export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedO
         outputRange: [
             disabledBackgroundColor,
             type === 'link'
-                ? theme.color.rgba(theme.palette.outline.outline, 0)
-                : theme.color.rgba(theme.palette.outline.outline, 1),
+                ? theme.color.convertHexToRGBA(theme.palette.outline.outline, 0)
+                : theme.color.convertHexToRGBA(theme.palette.outline.outline, 1),
             theme.palette.primary.primary,
         ],
     });

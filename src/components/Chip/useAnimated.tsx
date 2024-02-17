@@ -6,7 +6,6 @@ import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.u
 import {RenderProps} from './ChipBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName' | 'elevated'>;
-
 export interface ProcessOutlinedAnimatedOptions extends UseAnimatedOptions {
     borderAnimated: Animated.Value;
     borderInputRange: number[];
@@ -67,14 +66,18 @@ export const useAnimated = ({
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
-    const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
-    const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
+    const disabledBackgroundColor = theme.color.convertHexToRGBA(
+        theme.palette.surface.onSurface,
+        0.12,
+    );
+
+    const disabledColor = theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38);
     const backgroundColorType = {
         input: {
             inputRange: [0, 1],
             outputRange: [
                 disabledBackgroundColor,
-                theme.color.rgba(theme.palette.surface.surfaceContainerLow, 0),
+                theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
             ],
         },
         assist: {
@@ -82,10 +85,10 @@ export const useAnimated = ({
             outputRange: [
                 elevated
                     ? disabledBackgroundColor
-                    : theme.color.rgba(theme.palette.surface.surfaceContainerLow, 0),
+                    : theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
                 elevated
-                    ? theme.color.rgba(theme.palette.surface.surfaceContainerLow, 1)
-                    : theme.color.rgba(theme.palette.surface.surfaceContainerLow, 0),
+                    ? theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 1)
+                    : theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
             ],
         },
         filter: {
@@ -93,10 +96,10 @@ export const useAnimated = ({
             outputRange: [
                 elevated
                     ? disabledBackgroundColor
-                    : theme.color.rgba(theme.palette.surface.surfaceContainerLow, 0),
+                    : theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
                 elevated
-                    ? theme.color.rgba(theme.palette.surface.surfaceContainerLow, 1)
-                    : theme.color.rgba(theme.palette.surface.surfaceContainerLow, 0),
+                    ? theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 1)
+                    : theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
             ],
         },
         suggestion: {
@@ -104,10 +107,10 @@ export const useAnimated = ({
             outputRange: [
                 elevated
                     ? disabledBackgroundColor
-                    : theme.color.rgba(theme.palette.surface.surfaceContainerLow, 0),
+                    : theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
                 elevated
-                    ? theme.color.rgba(theme.palette.surface.surfaceContainerLow, 1)
-                    : theme.color.rgba(theme.palette.surface.surfaceContainerLow, 0),
+                    ? theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 1)
+                    : theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
             ],
         },
     };
@@ -117,32 +120,32 @@ export const useAnimated = ({
             inputRange: [0, 1, 2],
             outputRange: [
                 disabledColor,
-                theme.color.rgba(theme.palette.surface.onSurfaceVariant, 1),
-                theme.color.rgba(theme.palette.secondary.onSecondaryContainer, 1),
+                theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
+                theme.color.convertHexToRGBA(theme.palette.secondary.onSecondaryContainer, 1),
             ],
         },
         assist: {
             inputRange: [0, 1, 2],
             outputRange: [
                 disabledColor,
-                theme.color.rgba(theme.palette.surface.onSurface, 1),
-                theme.color.rgba(theme.palette.surface.onSurface, 1),
+                theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 1),
+                theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 1),
             ],
         },
         filter: {
             inputRange: [0, 1, 2],
             outputRange: [
                 disabledColor,
-                theme.color.rgba(theme.palette.surface.onSurfaceVariant, 1),
-                theme.color.rgba(theme.palette.secondary.onSecondaryContainer, 1),
+                theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
+                theme.color.convertHexToRGBA(theme.palette.secondary.onSecondaryContainer, 1),
             ],
         },
         suggestion: {
             inputRange: [0, 1, 2],
             outputRange: [
                 disabledColor,
-                theme.color.rgba(theme.palette.surface.onSurfaceVariant, 1),
-                theme.color.rgba(theme.palette.secondary.onSecondaryContainer, 1),
+                theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
+                theme.color.convertHexToRGBA(theme.palette.secondary.onSecondaryContainer, 1),
             ],
         },
     };
@@ -153,8 +156,8 @@ export const useAnimated = ({
         inputRange: borderInputRange,
         outputRange: [
             disabledBackgroundColor,
-            theme.color.rgba(theme.palette.outline.outline, 1),
-            theme.color.rgba(theme.palette.surface.surface, 1),
+            theme.color.convertHexToRGBA(theme.palette.outline.outline, 1),
+            theme.color.convertHexToRGBA(theme.palette.surface.surface, 1),
         ],
     });
 

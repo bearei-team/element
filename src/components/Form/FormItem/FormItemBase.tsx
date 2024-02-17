@@ -1,7 +1,7 @@
 import {RuleItem} from 'async-validator';
 import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {Updater, useImmer} from 'use-immer';
-import {UTIL} from '../../../utils/util';
+import {validate} from '../../../utils/validate.utils';
 import {ComponentStatus} from '../../Common/interface';
 import {FieldError, FormStore, Store} from '../formStore';
 import {useFormContext} from '../useFormContext';
@@ -13,7 +13,7 @@ export interface FormItemBaseProps extends FormItemProps {
 }
 
 export interface InitialState {
-    shouldUpdate: {};
+    shouldUpdate: Record<string, unknown>;
     signOut?: () => void;
     status: ComponentStatus;
 }
@@ -28,8 +28,8 @@ export interface ProcessValueChangeOptions extends Pick<FormStore<Store>, 'setFi
 
 export interface ProcessValidateOptions {
     name?: string;
-    validateFirst?: boolean;
     rules?: RuleItem[];
+    validateFirst?: boolean;
 }
 
 export type ProcessInitOptions = ProcessEventOptions &
@@ -47,7 +47,7 @@ const processValidate = async (
     const isValidate = name && rules?.length !== 0;
 
     if (isValidate) {
-        return UTIL.validate({
+        return validate({
             name,
             rules,
             validateFirst,
@@ -58,7 +58,7 @@ const processValidate = async (
 
 const processInit = (
     signInField: FormStore<Store>['signInField'],
-    {name, rules, validateFirst, validate, setState}: ProcessInitOptions,
+    {name, rules, validateFirst, validate: fieldValidate, setState}: ProcessInitOptions,
 ) => {
     const {signOut} =
         signInField({
@@ -68,7 +68,7 @@ const processInit = (
                 }),
             props: {name, rules, validateFirst},
             touched: false,
-            validate,
+            validate: fieldValidate,
         }) ?? {};
 
     setState(draft => {
@@ -113,7 +113,7 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
         [name, setFieldValue],
     );
 
-    const validate = useCallback(
+    const fieldValidate = useCallback(
         (nextValue: unknown) => processValidate(nextValue, {name, rules, validateFirst}),
         [name, rules, validateFirst],
     );
@@ -132,8 +132,8 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
     );
 
     useEffect(() => {
-        processInit(signInField, {name, rules, setState, validateFirst, validate});
-    }, [name, rules, setState, signInField, validate, validateFirst]);
+        processInit(signInField, {name, rules, setState, validateFirst, validate: fieldValidate});
+    }, [fieldValidate, name, rules, setState, signInField, validateFirst]);
 
     useEffect(() => () => signOut?.(), [signOut]);
 

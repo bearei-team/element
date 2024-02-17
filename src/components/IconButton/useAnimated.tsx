@@ -35,34 +35,38 @@ export const useAnimated = ({disabled, type = 'filled'}: UseAnimatedOptions) => 
     const [colorAnimated] = useAnimatedValue(1);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
-    const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
+    const disabledBackgroundColor = theme.color.convertHexToRGBA(
+        theme.palette.surface.onSurface,
+        0.12,
+    );
+
     const backgroundColorConfig = {
         filled: {
             inputRange: [0, 1],
             outputRange: [
                 disabledBackgroundColor,
-                theme.color.rgba(theme.palette.primary.primary, 1),
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
             ],
         },
         outlined: {
             inputRange: [0, 1],
             outputRange: [
-                theme.color.rgba(theme.palette.primary.primary, 0),
-                theme.color.rgba(theme.palette.primary.primary, 0),
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 0),
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 0),
             ],
         },
         standard: {
             inputRange: [0, 1],
             outputRange: [
-                theme.color.rgba(theme.palette.primary.primary, 0),
-                theme.color.rgba(theme.palette.primary.primary, 0),
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 0),
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 0),
             ],
         },
         tonal: {
             inputRange: [0, 1],
             outputRange: [
                 disabledBackgroundColor,
-                theme.color.rgba(theme.palette.secondary.secondaryContainer, 1),
+                theme.color.convertHexToRGBA(theme.palette.secondary.secondaryContainer, 1),
             ],
         },
     };

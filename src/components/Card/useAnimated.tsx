@@ -63,28 +63,32 @@ export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedO
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
-    const disabledBackgroundColor = theme.color.rgba(theme.palette.surface.onSurface, 0.12);
-    const disabledColor = theme.color.rgba(theme.palette.surface.onSurface, 0.38);
+    const disabledBackgroundColor = theme.color.convertHexToRGBA(
+        theme.palette.surface.onSurface,
+        0.12,
+    );
+
+    const disabledColor = theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38);
     const backgroundColorType = {
         elevated: {
             inputRange: [0, 1],
             outputRange: [
                 disabledBackgroundColor,
-                theme.color.rgba(theme.palette.surface.surfaceContainerLow, 1),
+                theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 1),
             ],
         },
         filled: {
             inputRange: [0, 1],
             outputRange: [
                 disabledBackgroundColor,
-                theme.color.rgba(theme.palette.surface.surfaceContainerHighest, 1),
+                theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerHighest, 1),
             ],
         },
         outlined: {
             inputRange: [0, 1],
             outputRange: [
-                theme.color.rgba(theme.palette.surface.surface, 1),
-                theme.color.rgba(theme.palette.surface.surface, 1),
+                theme.color.convertHexToRGBA(theme.palette.surface.surface, 1),
+                theme.color.convertHexToRGBA(theme.palette.surface.surface, 1),
             ],
         },
     };
@@ -92,20 +96,26 @@ export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedO
     const backgroundColor = colorAnimated.interpolate(backgroundColorType[type]);
     const titleColor = colorAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [disabledColor, theme.color.rgba(theme.palette.surface.onSurface, 1)],
+        outputRange: [
+            disabledColor,
+            theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 1),
+        ],
     });
 
     const subColor = colorAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [disabledColor, theme.color.rgba(theme.palette.surface.onSurfaceVariant, 1)],
+        outputRange: [
+            disabledColor,
+            theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
+        ],
     });
 
     const borderColor = borderAnimated.interpolate({
         inputRange: borderInputRange,
         outputRange: [
             disabledBackgroundColor,
-            theme.color.rgba(theme.palette.outline.outlineVariant, 1),
-            theme.color.rgba(theme.palette.surface.onSurface, 1),
+            theme.color.convertHexToRGBA(theme.palette.outline.outlineVariant, 1),
+            theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 1),
         ],
     });
 

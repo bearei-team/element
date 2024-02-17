@@ -5,6 +5,7 @@ import {FormBase, RenderProps} from './FormBase';
 import {FormItemProps} from './FormItem/FormItem';
 import {Callback, FormStore, Store} from './formStore';
 import {useForm} from './useForm';
+import {FormContext} from './useFormContext';
 
 export type FormComponent = typeof MemoForm & {
     useForm: typeof useForm;
@@ -21,9 +22,9 @@ export interface FormProps<T extends Store = Store>
     layout?: 'horizontal' | 'vertical';
 }
 
-const render = <T extends Store>({id, children, ...containerProps}: RenderProps<T>) => (
+const render = <T extends Store>({id, children, form, ...containerProps}: RenderProps<T>) => (
     <Container {...containerProps} testID={`form--${id}`}>
-        {children}
+        <FormContext.Provider value={form as FormStore<Store>}> {children}</FormContext.Provider>
     </Container>
 );
 

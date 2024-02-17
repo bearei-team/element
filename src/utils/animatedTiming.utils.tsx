@@ -1,9 +1,9 @@
-import {Theme, TransitionOptions} from '@bearei/theme';
+import {CreateTransitionOptions, Theme} from '@bearei/theme';
 import {Animated, Easing} from 'react-native';
 
 export interface AnimatedTimingOptions
     extends Partial<
-        Omit<Animated.TimingAnimationConfig, 'easing' | 'duration'> & TransitionOptions
+        Omit<Animated.TimingAnimationConfig, 'easing' | 'duration'> & CreateTransitionOptions
     > {
     toValue: number;
 }
@@ -24,7 +24,7 @@ export const createAnimatedTiming =
             ...animatedConfig
         }: AnimatedTimingOptions,
     ) => {
-        const {bezier, duration: transitionDuration} = theme.transition({
+        const {bezier, duration: transitionDuration} = theme.createTransition({
             duration,
             easing,
         });

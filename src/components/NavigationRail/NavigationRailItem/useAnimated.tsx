@@ -39,8 +39,8 @@ export const useAnimated = ({active, block, defaultActive}: UseAnimatedOptions) 
     const color = labelAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
-            theme.color.rgba(theme.palette.surface.onSurfaceVariant, 1),
-            theme.color.rgba(theme.palette.surface.onSurface, 1),
+            theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
+            theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 1),
         ],
     });
 

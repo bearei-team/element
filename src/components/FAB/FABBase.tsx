@@ -1,8 +1,7 @@
 import {FC, useCallback, useEffect, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
-import {HOOK} from '../../hooks/hook';
-import {OnEvent, OnStateChangeOptions} from '../../hooks/useOnEvent';
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {EventName, State} from '../Common/interface';
 import {ElevationLevel} from '../Elevation/Elevation';
 import {FABProps} from './FAB';
@@ -119,7 +118,7 @@ export const FABBase: FC<FABBaseProps> = ({
         [elevated, setState],
     );
 
-    const [onEvent] = HOOK.useOnEvent({...renderProps, disabled, onStateChange});
+    const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
     const [{backgroundColor, color}] = useAnimated({disabled, type});
     const [iconElement] = useIcon({eventName, type, icon, disabled, size});
 
