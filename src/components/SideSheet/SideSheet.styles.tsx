@@ -10,7 +10,7 @@ export const Modal = styled.View`
     height: 100%;
     position: absolute;
     width: 100%;
-    z-index: 2048;
+    z-index: 4096;
 
     ${({theme}) =>
         css`
