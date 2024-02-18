@@ -16,8 +16,8 @@ export interface HoveredProps
     width?: number;
 }
 
+const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const render = ({id, renderStyle, style, underlayColor, ...containerProps}: RenderProps) => {
-    const AnimatedContainer = Animated.createAnimatedComponent(Container);
     const {width, height, ...containerStyle} = renderStyle;
 
     return (

@@ -17,8 +17,8 @@ export interface IconProps
     width?: number;
 }
 
+const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const render = ({id, renderStyle, children, style, ...containerProps}: RenderProps) => {
-    const AnimatedContainer = Animated.createAnimatedComponent(Container);
     const {height, width, ...containerStyle} = renderStyle;
 
     return (

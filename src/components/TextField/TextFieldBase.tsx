@@ -123,28 +123,25 @@ const processContentSizeChange = (
     onContentSizeChange?.(event);
 };
 
-const renderTextInput = ({id, renderStyle, multiline, ...inputProps}: RenderTextInputProps) => {
-    const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-
-    return (
-        <AnimatedTextInput
-            {...inputProps}
-            style={renderStyle}
-            testID={`textField__input--${id}`}
-            multiline={multiline}
-            multilineText={multiline}
-            /**
-             * enableFocusRing is used to disable the focus style in macOS,
-             * this parameter has been implemented and is available.
-             * However, react-native-macos does not have an official typescript declaration for this parameter,
-             * so using it directly in a typescript will result in an undefined parameter.
-             */
-            // @ts-ignore
-            enableFocusRing={false}
-            textAlignVertical="top"
-        />
-    );
-};
+const AnimatedTextInput = Animated.createAnimatedComponent(Input);
+const renderTextInput = ({id, renderStyle, multiline, ...inputProps}: RenderTextInputProps) => (
+    <AnimatedTextInput
+        {...inputProps}
+        style={renderStyle}
+        testID={`textField__input--${id}`}
+        multiline={multiline}
+        multilineText={multiline}
+        /**
+         * enableFocusRing is used to disable the focus style in macOS,
+         * this parameter has been implemented and is available.
+         * However, react-native-macos does not have an official typescript declaration for this parameter,
+         * so using it directly in a typescript will result in an undefined parameter.
+         */
+        // @ts-ignore
+        enableFocusRing={false}
+        textAlignVertical="top"
+    />
+);
 
 export const TextFieldBase: FC<TextFieldBaseProps> = ({
     defaultValue,

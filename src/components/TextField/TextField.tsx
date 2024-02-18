@@ -32,6 +32,10 @@ export interface TextFieldProps extends InputProps {
     type?: TextFieldType;
 }
 
+const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner);
+const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
+const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
+const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
 const render = ({
     contentSize,
     error,
@@ -47,10 +51,6 @@ const render = ({
     trailing,
     underlayColor,
 }: RenderProps) => {
-    const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner);
-    const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
-    const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
-    const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
     const {
         activeIndicatorBackgroundColor,
         supportingTextColor,

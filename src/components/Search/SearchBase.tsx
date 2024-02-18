@@ -189,6 +189,7 @@ const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
     </TextField>
 );
 
+const AnimatedInner = Animated.createAnimatedComponent(Inner);
 const renderInner = ({
     activeKey,
     data,
@@ -208,7 +209,6 @@ const renderInner = ({
     trailing,
     underlayColor,
 }: RenderInnerOptions) => {
-    const AnimatedInner = Animated.createAnimatedComponent(Inner);
     const shape = 'extraLarge';
     const {height, pageX, pageY, width} = layout;
 

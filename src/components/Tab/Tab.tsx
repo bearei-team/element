@@ -33,6 +33,9 @@ export interface TabProps extends Partial<ViewProps & RefAttributes<View>> {
  * TODO: secondary and icon,Autohide Head
  */
 
+const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
+const AnimatedActiveIndicatorInner = Animated.createAnimatedComponent(ActiveIndicatorInner);
+const AnimatedContentInner = Animated.createAnimatedComponent(ContentInner);
 const render = ({
     activeIndicatorOffsetPosition,
     children,
@@ -42,9 +45,6 @@ const render = ({
     renderStyle,
     ...containerProps
 }: RenderProps) => {
-    const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
-    const AnimatedActiveIndicatorInner = Animated.createAnimatedComponent(ActiveIndicatorInner);
-    const AnimatedContentInner = Animated.createAnimatedComponent(ContentInner);
     const {
         activeIndicatorLeft,
         activeIndicatorPaddingHorizontal,

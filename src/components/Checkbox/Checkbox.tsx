@@ -18,6 +18,7 @@ export interface CheckboxProps extends TouchableRippleProps {
     width?: number;
 }
 
+const AnimatedContent = Animated.createAnimatedComponent(Content);
 const render = ({
     disabled,
     eventName,
@@ -28,7 +29,6 @@ const render = ({
     underlayColor,
     ...contentProps
 }: RenderProps) => {
-    const AnimatedContent = Animated.createAnimatedComponent(Content);
     const {height, width} = renderStyle;
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
     const shape = 'full';

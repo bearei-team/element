@@ -39,6 +39,8 @@ export interface SideSheetProps
     visible?: boolean;
 }
 
+const AnimatedContainer = Animated.createAnimatedComponent(Container);
+const AnimatedInner = Animated.createAnimatedComponent(Inner);
 const render = ({
     back,
     backIcon,
@@ -56,8 +58,6 @@ const render = ({
     visible,
     ...innerProps
 }: RenderProps) => {
-    const AnimatedContainer = Animated.createAnimatedComponent(Container);
-    const AnimatedInner = Animated.createAnimatedComponent(Inner);
     const {backgroundColor, innerTranslateX} = renderStyle;
     const shape = position === 'horizontalStart' ? 'largeEnd' : 'largeStart';
 

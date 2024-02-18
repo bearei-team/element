@@ -18,6 +18,7 @@ export interface IconButtonProps extends TouchableRippleProps {
  * TODO: Selected
  */
 
+const AnimatedContent = Animated.createAnimatedComponent(Content);
 const render = ({
     eventName,
     icon,
@@ -29,7 +30,6 @@ const render = ({
     disabled,
     ...contentProps
 }: RenderProps) => {
-    const AnimatedContent = Animated.createAnimatedComponent(Content);
     const {backgroundColor, height, width, ...border} = renderStyle;
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
     const shape = 'full';

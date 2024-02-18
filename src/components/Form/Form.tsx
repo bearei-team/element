@@ -24,7 +24,7 @@ export interface FormProps<T extends Store = Store>
 
 const render = <T extends Store>({id, children, form, ...containerProps}: RenderProps<T>) => (
     <Container {...containerProps} testID={`form--${id}`}>
-        <FormContext.Provider value={form as FormStore<Store>}> {children}</FormContext.Provider>
+        <FormContext.Provider value={form as FormStore<Store>}>{children}</FormContext.Provider>
     </Container>
 );
 

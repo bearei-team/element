@@ -12,6 +12,7 @@ export interface ElevationProps
     defaultLevel?: ElevationLevel;
 }
 
+const AnimatedShadow = Animated.createAnimatedComponent(Shadow);
 const render = ({
     children,
     id,
@@ -21,7 +22,6 @@ const render = ({
     shape,
     ...contentProps
 }: RenderProps) => {
-    const AnimatedShadow = Animated.createAnimatedComponent(Shadow);
     const {onLayout} = onEvent;
     const {height, opacity0, opacity1, width} = renderStyle;
 
