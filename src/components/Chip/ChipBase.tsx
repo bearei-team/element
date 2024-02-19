@@ -20,17 +20,17 @@ import {useIcon} from './useIcon';
 import {useUnderlayColor} from './useUnderlayColor';
 
 export interface RenderProps extends ChipProps {
+    activeColor: string;
+    activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     defaultElevation: ElevationLevel;
     elevation: ElevationLevel;
     eventName: EventName;
     onEvent: OnEvent;
-    activeColor: string;
-    activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
-    rippleCentered?: boolean;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
         width: number;
     };
+    rippleCentered?: boolean;
 }
 
 export interface ChipBaseProps extends ChipProps {

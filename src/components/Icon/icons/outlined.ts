@@ -1,6 +1,7 @@
 import AddHome from '@material-design-icons/svg/outlined/add_home.svg';
 import ArrowBack from '@material-design-icons/svg/outlined/arrow_back.svg';
 import ArrowForward from '@material-design-icons/svg/outlined/arrow_forward.svg';
+import BookmarkBorder from '@material-design-icons/svg/outlined/bookmark_border.svg';
 import CheckBox from '@material-design-icons/svg/outlined/check_box.svg';
 import CheckBoxOutlineBlank from '@material-design-icons/svg/outlined/check_box_outline_blank.svg';
 import Circle from '@material-design-icons/svg/outlined/circle.svg';
@@ -31,6 +32,7 @@ export const outlined = {
         addHome: AddHome,
         arrowBack: ArrowBack,
         arrowForward: ArrowForward,
+        bookmarkBorder: BookmarkBorder,
         checkBox: CheckBox,
         checkBoxOutlineBlank: CheckBoxOutlineBlank,
         circle: Circle,

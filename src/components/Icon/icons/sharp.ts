@@ -1,6 +1,7 @@
 import AddHome from '@material-design-icons/svg/sharp/add_home.svg';
 import ArrowBack from '@material-design-icons/svg/sharp/arrow_back.svg';
 import ArrowForward from '@material-design-icons/svg/sharp/arrow_forward.svg';
+import BookmarkBorder from '@material-design-icons/svg/sharp/bookmark_border.svg';
 import CheckBox from '@material-design-icons/svg/sharp/check_box.svg';
 import CheckBoxOutlineBlank from '@material-design-icons/svg/sharp/check_box_outline_blank.svg';
 import Circle from '@material-design-icons/svg/sharp/circle.svg';
@@ -31,6 +32,7 @@ export const sharp = {
         addHome: AddHome,
         arrowBack: ArrowBack,
         arrowForward: ArrowForward,
+        bookmarkBorder: BookmarkBorder,
         checkBox: CheckBox,
         checkBoxOutlineBlank: CheckBoxOutlineBlank,
         circle: Circle,
