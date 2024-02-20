@@ -57,6 +57,7 @@ const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
 
 export const IconButtonBase: FC<IconButtonBaseProps> = ({
     disabled = false,
+    fill,
     icon,
     render,
     type = 'filled',
@@ -77,7 +78,7 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
 
     const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
     const [{backgroundColor, borderColor}] = useAnimated({disabled, type});
-    const [iconElement] = useIcon({eventName, type, icon, disabled});
+    const [iconElement] = useIcon({eventName, type, icon, disabled, fill});
     const [border] = useBorder({borderColor});
 
     useEffect(() => {

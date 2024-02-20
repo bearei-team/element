@@ -3,11 +3,12 @@ import {useTheme} from 'styled-components/native';
 import {Icon} from '../Icon/Icon';
 import {RenderProps} from './IconButtonBase';
 
-export interface UseIconOptions extends Pick<RenderProps, 'disabled' | 'type' | 'eventName'> {
+export interface UseIconOptions
+    extends Pick<RenderProps, 'disabled' | 'type' | 'eventName' | 'fill'> {
     icon?: React.JSX.Element;
 }
 
-export const useIcon = ({disabled, icon, type, eventName}: UseIconOptions) => {
+export const useIcon = ({disabled, icon, type, eventName, fill}: UseIconOptions) => {
     const theme = useTheme();
     const fillType = {
         filled: theme.palette.primary.onPrimary,
@@ -23,7 +24,7 @@ export const useIcon = ({disabled, icon, type, eventName}: UseIconOptions) => {
             height: theme.adaptSize(theme.spacing.large),
             fill: disabled
                 ? theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38)
-                : fillType[type as keyof typeof fillType],
+                : fill ?? fillType[type as keyof typeof fillType],
         }),
     ];
 };

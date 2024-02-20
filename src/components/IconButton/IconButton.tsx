@@ -6,8 +6,8 @@ import {Container, Content, Icon} from './IconButton.styles';
 import {IconButtonBase, RenderProps} from './IconButtonBase';
 
 export type IconButtonType = 'filled' | 'outlined' | 'standard' | 'tonal';
-
 export interface IconButtonProps extends TouchableRippleProps {
+    fill?: string;
     height?: number;
     icon?: React.JSX.Element;
     type?: IconButtonType;
