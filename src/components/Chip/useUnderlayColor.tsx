@@ -16,6 +16,9 @@ export const useUnderlayColor = ({type, elevated}: UseUnderlayColorOptions) => {
         suggestion: elevated
             ? theme.palette.surface.surfaceContainerLow
             : theme.palette.surface.onSurfaceVariant,
+        text: elevated
+            ? theme.palette.surface.surfaceContainerLow
+            : theme.palette.surface.onSurfaceVariant,
     };
 
     return [underlay[type]];

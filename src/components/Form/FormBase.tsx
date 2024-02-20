@@ -43,10 +43,12 @@ const processInit = (
     });
 };
 
-const processCallback = (
-    status: ComponentStatus,
-    {onFinish, onFinishFailed, onValueChange, setCallback}: ProcessCallbackOptions,
-) => status === 'idle' && setCallback({onFinish, onFinishFailed, onValueChange});
+const processCallback = ({
+    onFinish,
+    onFinishFailed,
+    onValueChange,
+    setCallback,
+}: ProcessCallbackOptions) => setCallback({onFinish, onFinishFailed, onValueChange});
 
 const renderChildren = (status: ComponentStatus, {items}: Pick<FormBaseProps<{}>, 'items'>) =>
     status === 'succeeded' &&
@@ -69,8 +71,8 @@ export const FormBase = <T extends Store = Store>({
     const children = useMemo(() => renderChildren(status, {items}), [items, status]);
 
     useEffect(() => {
-        processCallback(status, {onFinish, onFinishFailed, onValueChange, setCallback});
-    }, [onFinish, onFinishFailed, onValueChange, setCallback, status]);
+        processCallback({onFinish, onFinishFailed, onValueChange, setCallback});
+    }, [onFinish, onFinishFailed, onValueChange, setCallback]);
 
     useEffect(() => {
         processInit(status, {initialValue, setInitialValue, setState});

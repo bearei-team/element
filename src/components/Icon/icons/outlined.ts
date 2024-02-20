@@ -6,6 +6,8 @@ import CheckBox from '@material-design-icons/svg/outlined/check_box.svg';
 import CheckBoxOutlineBlank from '@material-design-icons/svg/outlined/check_box_outline_blank.svg';
 import Circle from '@material-design-icons/svg/outlined/circle.svg';
 import Close from '@material-design-icons/svg/outlined/close.svg';
+import Delete from '@material-design-icons/svg/outlined/delete.svg';
+import Edit from '@material-design-icons/svg/outlined/edit.svg';
 import FolderSpecial from '@material-design-icons/svg/outlined/folder_special.svg';
 import Fullscreen from '@material-design-icons/svg/outlined/fullscreen.svg';
 import FullscreenExit from '@material-design-icons/svg/outlined/fullscreen_exit.svg';
@@ -30,7 +32,6 @@ import StarBorder from '@material-design-icons/svg/outlined/star_border.svg';
 
 export const outlined = {
     svg: {
-        newLabel: NewLabel,
         addHome: AddHome,
         arrowBack: ArrowBack,
         arrowForward: ArrowForward,
@@ -39,6 +40,8 @@ export const outlined = {
         checkBoxOutlineBlank: CheckBoxOutlineBlank,
         circle: Circle,
         close: Close,
+        delete: Delete,
+        edit: Edit,
         folderSpecial: FolderSpecial,
         fullscreen: Fullscreen,
         fullscreenExit: FullscreenExit,
@@ -49,6 +52,7 @@ export const outlined = {
         logout: Logout,
         menu: Menu,
         menuOpen: MenuOpen,
+        newLabel: NewLabel,
         openInBrowser: OpenInBrowser,
         radioButtonChecked: RadioButtonChecked,
         radioButtonUnchecked: RadioButtonUnchecked,

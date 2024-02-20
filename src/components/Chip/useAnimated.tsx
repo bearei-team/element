@@ -113,6 +113,17 @@ export const useAnimated = ({
                     : theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
             ],
         },
+        text: {
+            inputRange: [0, 1],
+            outputRange: [
+                elevated
+                    ? disabledBackgroundColor
+                    : theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
+                elevated
+                    ? theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 1)
+                    : theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
+            ],
+        },
     };
 
     const colorType = {
@@ -141,6 +152,14 @@ export const useAnimated = ({
             ],
         },
         suggestion: {
+            inputRange: [0, 1, 2],
+            outputRange: [
+                disabledColor,
+                theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
+                theme.color.convertHexToRGBA(theme.palette.secondary.onSecondaryContainer, 1),
+            ],
+        },
+        text: {
             inputRange: [0, 1, 2],
             outputRange: [
                 disabledColor,
@@ -182,7 +201,7 @@ export const useAnimated = ({
 
     return [
         {
-            ...(!elevated && {borderColor}),
+            ...(!elevated && type !== 'text' && {borderColor}),
             backgroundColor,
             color,
         },

@@ -181,6 +181,7 @@ export const ChipBase: FC<ChipBaseProps> = ({
     labelText = 'Label',
     render,
     type = 'filter',
+    fill,
     ...renderProps
 }) => {
     const [
@@ -220,7 +221,7 @@ export const ChipBase: FC<ChipBaseProps> = ({
 
     const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
     const [{backgroundColor, borderColor, color}] = useAnimated({disabled, eventName, type});
-    const [iconElement] = useIcon({eventName, type, icon, disabled});
+    const [iconElement] = useIcon({eventName, type, icon, disabled, fill});
     const [border] = useBorder({type, borderColor});
 
     useEffect(() => {

@@ -6,6 +6,8 @@ import CheckBox from '@material-design-icons/svg/two-tone/check_box.svg';
 import CheckBoxOutlineBlank from '@material-design-icons/svg/two-tone/check_box_outline_blank.svg';
 import Circle from '@material-design-icons/svg/two-tone/circle.svg';
 import Close from '@material-design-icons/svg/two-tone/close.svg';
+import Delete from '@material-design-icons/svg/two-tone/delete.svg';
+import Edit from '@material-design-icons/svg/two-tone/edit.svg';
 import FolderSpecial from '@material-design-icons/svg/two-tone/folder_special.svg';
 import Fullscreen from '@material-design-icons/svg/two-tone/fullscreen.svg';
 import FullscreenExit from '@material-design-icons/svg/two-tone/fullscreen_exit.svg';
@@ -30,7 +32,6 @@ import StarBorder from '@material-design-icons/svg/two-tone/star_border.svg';
 
 export const twoTone = {
     svg: {
-        newLabel: NewLabel,
         addHome: AddHome,
         arrowBack: ArrowBack,
         arrowForward: ArrowForward,
@@ -39,6 +40,8 @@ export const twoTone = {
         checkBoxOutlineBlank: CheckBoxOutlineBlank,
         circle: Circle,
         close: Close,
+        delete: Delete,
+        edit: Edit,
         folderSpecial: FolderSpecial,
         fullscreen: Fullscreen,
         fullscreenExit: FullscreenExit,
@@ -49,6 +52,7 @@ export const twoTone = {
         logout: Logout,
         menu: Menu,
         menuOpen: MenuOpen,
+        newLabel: NewLabel,
         openInBrowser: OpenInBrowser,
         radioButtonChecked: RadioButtonChecked,
         radioButtonUnchecked: RadioButtonUnchecked,

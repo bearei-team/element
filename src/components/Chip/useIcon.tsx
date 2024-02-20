@@ -2,11 +2,12 @@ import React, {cloneElement} from 'react';
 import {useTheme} from 'styled-components/native';
 import {RenderProps} from './ChipBase';
 
-export interface UseIconOptions extends Pick<RenderProps, 'disabled' | 'type' | 'eventName'> {
+export interface UseIconOptions
+    extends Pick<RenderProps, 'disabled' | 'type' | 'eventName' | 'fill'> {
     icon?: React.JSX.Element;
 }
 
-export const useIcon = ({disabled, icon, eventName}: UseIconOptions) => {
+export const useIcon = ({disabled, icon, eventName, fill}: UseIconOptions) => {
     const theme = useTheme();
 
     if (!icon) {
@@ -20,7 +21,7 @@ export const useIcon = ({disabled, icon, eventName}: UseIconOptions) => {
             height: theme.adaptSize(theme.spacing.large - 6),
             fill: disabled
                 ? theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38)
-                : theme.palette.primary.primary,
+                : fill ?? theme.palette.primary.primary,
         }),
     ];
 };

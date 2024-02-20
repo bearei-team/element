@@ -6,6 +6,8 @@ import CheckBox from '@material-design-icons/svg/round/check_box.svg';
 import CheckBoxOutlineBlank from '@material-design-icons/svg/round/check_box_outline_blank.svg';
 import Circle from '@material-design-icons/svg/round/circle.svg';
 import Close from '@material-design-icons/svg/round/close.svg';
+import Delete from '@material-design-icons/svg/round/delete.svg';
+import Edit from '@material-design-icons/svg/round/edit.svg';
 import FolderSpecial from '@material-design-icons/svg/round/folder_special.svg';
 import Fullscreen from '@material-design-icons/svg/round/fullscreen.svg';
 import FullscreenExit from '@material-design-icons/svg/round/fullscreen_exit.svg';
@@ -30,7 +32,6 @@ import StarBorder from '@material-design-icons/svg/round/star_border.svg';
 
 export const round = {
     svg: {
-        newLabel: NewLabel,
         addHome: AddHome,
         arrowBack: ArrowBack,
         arrowForward: ArrowForward,
@@ -39,6 +40,8 @@ export const round = {
         checkBoxOutlineBlank: CheckBoxOutlineBlank,
         circle: Circle,
         close: Close,
+        delete: Delete,
+        edit: Edit,
         folderSpecial: FolderSpecial,
         fullscreen: Fullscreen,
         fullscreenExit: FullscreenExit,
@@ -49,6 +52,7 @@ export const round = {
         logout: Logout,
         menu: Menu,
         menuOpen: MenuOpen,
+        newLabel: NewLabel,
         openInBrowser: OpenInBrowser,
         radioButtonChecked: RadioButtonChecked,
         radioButtonUnchecked: RadioButtonUnchecked,

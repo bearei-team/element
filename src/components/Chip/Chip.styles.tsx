@@ -50,6 +50,11 @@ export const Content = styled(Shape)<ContentProps>`
                 padding: ${theme.adaptSize(theme.spacing.extraSmall + 2)}px
                     ${theme.adaptSize(theme.spacing.medium)}px;
             `,
+            text: css`
+                min-width: ${theme.adaptSize(theme.spacing.small * 8 + 3)}px;
+                padding: ${theme.adaptSize(theme.spacing.extraSmall + 2)}px
+                    ${theme.adaptSize(theme.spacing.medium)}px;
+            `,
         };
 
         return contentType[type];

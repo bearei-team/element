@@ -6,11 +6,12 @@ import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/Touchabl
 import {Container, Content, Icon, LabelText} from './Chip.styles';
 import {ChipBase, RenderProps} from './ChipBase';
 
-export type ChipType = 'input' | 'assist' | 'filter' | 'suggestion';
+export type ChipType = 'input' | 'assist' | 'filter' | 'suggestion' | 'text';
 export interface ChipProps extends TouchableRippleProps {
     active?: boolean;
     defaultActive?: boolean;
     elevated?: boolean;
+    fill?: string;
     icon?: React.JSX.Element;
     labelText?: string;
     trailingIcon?: React.JSX.Element;
@@ -44,11 +45,7 @@ const render = ({
     const shape = 'extraSmall';
 
     return (
-        <Container
-            accessibilityLabel={labelText}
-            // accessibilityRole="chip"
-            // onLayout={onLayout}
-            testID={`chip--${id}`}>
+        <Container accessibilityLabel={labelText} testID={`chip--${id}`}>
             <Elevation defaultLevel={defaultElevation} level={elevation} shape={shape}>
                 <TouchableRipple
                     {...onEvent}

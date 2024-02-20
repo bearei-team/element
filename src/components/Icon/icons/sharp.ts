@@ -6,6 +6,8 @@ import CheckBox from '@material-design-icons/svg/sharp/check_box.svg';
 import CheckBoxOutlineBlank from '@material-design-icons/svg/sharp/check_box_outline_blank.svg';
 import Circle from '@material-design-icons/svg/sharp/circle.svg';
 import Close from '@material-design-icons/svg/sharp/close.svg';
+import Delete from '@material-design-icons/svg/sharp/delete.svg';
+import Edit from '@material-design-icons/svg/sharp/edit.svg';
 import FolderSpecial from '@material-design-icons/svg/sharp/folder_special.svg';
 import Fullscreen from '@material-design-icons/svg/sharp/fullscreen.svg';
 import FullscreenExit from '@material-design-icons/svg/sharp/fullscreen_exit.svg';
@@ -30,7 +32,6 @@ import StarBorder from '@material-design-icons/svg/sharp/star_border.svg';
 
 export const sharp = {
     svg: {
-        newLabel: NewLabel,
         addHome: AddHome,
         arrowBack: ArrowBack,
         arrowForward: ArrowForward,
@@ -39,6 +40,8 @@ export const sharp = {
         checkBoxOutlineBlank: CheckBoxOutlineBlank,
         circle: Circle,
         close: Close,
+        delete: Delete,
+        edit: Edit,
         folderSpecial: FolderSpecial,
         fullscreen: Fullscreen,
         fullscreenExit: FullscreenExit,
@@ -49,6 +52,7 @@ export const sharp = {
         logout: Logout,
         menu: Menu,
         menuOpen: MenuOpen,
+        newLabel: NewLabel,
         openInBrowser: OpenInBrowser,
         radioButtonChecked: RadioButtonChecked,
         radioButtonUnchecked: RadioButtonUnchecked,
