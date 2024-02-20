@@ -16,6 +16,7 @@ import Lens from '@material-design-icons/svg/filled/lens.svg';
 import Logout from '@material-design-icons/svg/filled/logout.svg';
 import Menu from '@material-design-icons/svg/filled/menu.svg';
 import MenuOpen from '@material-design-icons/svg/filled/menu_open.svg';
+import NewLabel from '@material-design-icons/svg/filled/new_label.svg';
 import OpenInBrowser from '@material-design-icons/svg/filled/open_in_browser.svg';
 import RadioButtonChecked from '@material-design-icons/svg/filled/radio_button_checked.svg';
 import RadioButtonUnchecked from '@material-design-icons/svg/filled/radio_button_unchecked.svg';
@@ -29,6 +30,7 @@ import StarBorder from '@material-design-icons/svg/filled/star_border.svg';
 
 export const filled = {
     svg: {
+        newLabel: NewLabel,
         addHome: AddHome,
         arrowBack: ArrowBack,
         arrowForward: ArrowForward,

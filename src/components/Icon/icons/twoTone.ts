@@ -16,6 +16,7 @@ import Lens from '@material-design-icons/svg/two-tone/lens.svg';
 import Logout from '@material-design-icons/svg/two-tone/logout.svg';
 import Menu from '@material-design-icons/svg/two-tone/menu.svg';
 import MenuOpen from '@material-design-icons/svg/two-tone/menu_open.svg';
+import NewLabel from '@material-design-icons/svg/two-tone/new_label.svg';
 import OpenInBrowser from '@material-design-icons/svg/two-tone/open_in_browser.svg';
 import RadioButtonChecked from '@material-design-icons/svg/two-tone/radio_button_checked.svg';
 import RadioButtonUnchecked from '@material-design-icons/svg/two-tone/radio_button_unchecked.svg';
@@ -29,6 +30,7 @@ import StarBorder from '@material-design-icons/svg/two-tone/star_border.svg';
 
 export const twoTone = {
     svg: {
+        newLabel: NewLabel,
         addHome: AddHome,
         arrowBack: ArrowBack,
         arrowForward: ArrowForward,

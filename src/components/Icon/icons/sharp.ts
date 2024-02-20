@@ -16,6 +16,7 @@ import Lens from '@material-design-icons/svg/sharp/lens.svg';
 import Logout from '@material-design-icons/svg/sharp/logout.svg';
 import Menu from '@material-design-icons/svg/sharp/menu.svg';
 import MenuOpen from '@material-design-icons/svg/sharp/menu_open.svg';
+import NewLabel from '@material-design-icons/svg/sharp/new_label.svg';
 import OpenInBrowser from '@material-design-icons/svg/sharp/open_in_browser.svg';
 import RadioButtonChecked from '@material-design-icons/svg/sharp/radio_button_checked.svg';
 import RadioButtonUnchecked from '@material-design-icons/svg/sharp/radio_button_unchecked.svg';
@@ -29,6 +30,7 @@ import StarBorder from '@material-design-icons/svg/sharp/star_border.svg';
 
 export const sharp = {
     svg: {
+        newLabel: NewLabel,
         addHome: AddHome,
         arrowBack: ArrowBack,
         arrowForward: ArrowForward,

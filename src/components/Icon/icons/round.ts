@@ -16,6 +16,7 @@ import Lens from '@material-design-icons/svg/round/lens.svg';
 import Logout from '@material-design-icons/svg/round/logout.svg';
 import Menu from '@material-design-icons/svg/round/menu.svg';
 import MenuOpen from '@material-design-icons/svg/round/menu_open.svg';
+import NewLabel from '@material-design-icons/svg/round/new_label.svg';
 import OpenInBrowser from '@material-design-icons/svg/round/open_in_browser.svg';
 import RadioButtonChecked from '@material-design-icons/svg/round/radio_button_checked.svg';
 import RadioButtonUnchecked from '@material-design-icons/svg/round/radio_button_unchecked.svg';
@@ -29,6 +30,7 @@ import StarBorder from '@material-design-icons/svg/round/star_border.svg';
 
 export const round = {
     svg: {
+        newLabel: NewLabel,
         addHome: AddHome,
         arrowBack: ArrowBack,
         arrowForward: ArrowForward,
