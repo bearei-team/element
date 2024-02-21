@@ -23,6 +23,7 @@ export * from './components/Search/Search';
 export * from './components/SideSheet/SideSheet';
 export * from './components/Tab/Tab';
 export * from './components/TextField/TextField';
+export * from './components/Tooltip/Tooltip';
 export * from './components/TouchableRipple/TouchableRipple';
 export * from './context/ModalProvider';
 export * from './context/ThemeProvider';

@@ -1,6 +1,7 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Hovered} from '../Hovered/Hovered';
+import {Tooltip} from '../Tooltip/Tooltip';
 import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon} from './IconButton.styles';
 import {IconButtonBase, RenderProps} from './IconButtonBase';
@@ -10,6 +11,7 @@ export interface IconButtonProps extends TouchableRippleProps {
     fill?: string;
     height?: number;
     icon?: React.JSX.Element;
+    supportingText?: string;
     type?: IconButtonType;
     width?: number;
 }
@@ -20,14 +22,16 @@ export interface IconButtonProps extends TouchableRippleProps {
 
 const AnimatedContent = Animated.createAnimatedComponent(Content);
 const render = ({
+    disabled,
     eventName,
     icon,
     id,
     onEvent,
     renderStyle,
     style,
+    supportingText,
+    tooltipVisible,
     underlayColor,
-    disabled,
     ...contentProps
 }: RenderProps) => {
     const {backgroundColor, height, width, ...border} = renderStyle;
@@ -35,32 +39,38 @@ const render = ({
     const shape = 'full';
 
     return (
-        <Container accessibilityRole="button" testID={`iconButton--${id}`}>
-            <TouchableRipple
-                {...onTouchableRippleEvent}
-                disabled={disabled}
-                shape={shape}
-                underlayColor={underlayColor}>
-                <AnimatedContent
-                    {...contentProps}
-                    onLayout={onLayout}
+        <Container
+            accessibilityRole="button"
+            testID={`iconButton--${id}`}
+            width={width}
+            height={height}>
+            <Tooltip type="plain" visible={tooltipVisible} supportingText={supportingText}>
+                <TouchableRipple
+                    {...onTouchableRippleEvent}
+                    disabled={disabled}
                     shape={shape}
-                    style={{
-                        ...(typeof style === 'object' && style),
-                        ...border,
-                        backgroundColor,
-                    }}
-                    testID={`iconButton__content--${id}`}>
-                    <Icon testID={`iconButton__icon--${id}`}>{icon}</Icon>
-                    <Hovered
-                        eventName={eventName}
-                        height={height}
+                    underlayColor={underlayColor}>
+                    <AnimatedContent
+                        {...contentProps}
+                        onLayout={onLayout}
                         shape={shape}
-                        underlayColor={underlayColor}
-                        width={width}
-                    />
-                </AnimatedContent>
-            </TouchableRipple>
+                        style={{
+                            ...(typeof style === 'object' && style),
+                            ...border,
+                            backgroundColor,
+                        }}
+                        testID={`iconButton__content--${id}`}>
+                        <Icon testID={`iconButton__icon--${id}`}>{icon}</Icon>
+                        <Hovered
+                            eventName={eventName}
+                            height={height}
+                            shape={shape}
+                            underlayColor={underlayColor}
+                            width={width}
+                        />
+                    </AnimatedContent>
+                </TouchableRipple>
+            </Tooltip>
         </Container>
     );
 };

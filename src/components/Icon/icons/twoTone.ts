@@ -1,6 +1,7 @@
 import AddHome from '@material-design-icons/svg/two-tone/add_home.svg';
 import ArrowBack from '@material-design-icons/svg/two-tone/arrow_back.svg';
 import ArrowForward from '@material-design-icons/svg/two-tone/arrow_forward.svg';
+import BookmarkAdd from '@material-design-icons/svg/two-tone/bookmark_add.svg';
 import BookmarkBorder from '@material-design-icons/svg/two-tone/bookmark_border.svg';
 import CheckBox from '@material-design-icons/svg/two-tone/check_box.svg';
 import CheckBoxOutlineBlank from '@material-design-icons/svg/two-tone/check_box_outline_blank.svg';
@@ -32,6 +33,7 @@ import StarBorder from '@material-design-icons/svg/two-tone/star_border.svg';
 
 export const twoTone = {
     svg: {
+        bookmarkAdd: BookmarkAdd,
         addHome: AddHome,
         arrowBack: ArrowBack,
         arrowForward: ArrowForward,

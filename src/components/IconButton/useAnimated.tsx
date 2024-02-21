@@ -6,7 +6,6 @@ import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.u
 import {RenderProps} from './IconButtonBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type'>;
-
 export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
     colorAnimated: Animated.Value;
     borderAnimated: Animated.Value;

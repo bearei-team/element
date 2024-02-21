@@ -11,6 +11,7 @@ import {useUnderlayColor} from './useUnderlayColor';
 
 export interface RenderProps extends IconButtonProps {
     onEvent: OnEvent;
+    tooltipVisible: boolean;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
         width: number;
@@ -25,13 +26,21 @@ export interface IconButtonBaseProps extends IconButtonProps {
 export interface InitialState {
     eventName: EventName;
     layout: LayoutRectangle;
+    tooltipVisible: boolean;
 }
 
 export interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessEventOptions;
+export type ProcessStateChangeOptions = OnStateChangeOptions &
+    ProcessEventOptions & {
+        supportingText?: string;
+    };
+
+export interface ProcessTooltipVisibleOptions extends ProcessEventOptions {
+    eventName: EventName;
+}
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -41,8 +50,26 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processStateChange = ({event, eventName, setState}: ProcessStateChangeOptions) => {
+const processTooltipVisible = (
+    {setState, eventName}: ProcessTooltipVisibleOptions,
+    supportingText?: string,
+) => {
+    supportingText &&
+        setState(draft => {
+            draft.tooltipVisible = eventName === 'hoverIn';
+        });
+};
+
+const processStateChange = ({
+    event,
+    eventName,
+    setState,
+    supportingText,
+}: ProcessStateChangeOptions) => {
     eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
+
+    ['hoverIn', 'hoverOut'].includes(eventName) &&
+        processTooltipVisible({setState, eventName}, supportingText);
 
     setState(draft => {
         draft.eventName = eventName;
@@ -60,20 +87,22 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
     fill,
     icon,
     render,
+    supportingText,
     type = 'filled',
     ...renderProps
 }) => {
-    const [{eventName, layout}, setState] = useImmer<InitialState>({
+    const [{eventName, layout, tooltipVisible}, setState] = useImmer<InitialState>({
         eventName: 'none',
         layout: {} as LayoutRectangle,
+        tooltipVisible: false,
     });
 
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange({...options, setState}),
-        [setState],
+            processStateChange({...options, setState, supportingText}),
+        [setState, supportingText],
     );
 
     const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
@@ -92,6 +121,8 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
         icon: iconElement,
         id,
         onEvent,
+        supportingText,
+        tooltipVisible,
         type,
         underlayColor,
         renderStyle: {

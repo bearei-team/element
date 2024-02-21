@@ -8,7 +8,9 @@ export default {
 } as Meta<typeof IconButton>;
 
 export const Filled: StoryObj<IconButtonProps> = {
-    args: {},
+    args: {
+        supportingText: '1',
+    },
 };
 
 export const Outlined: StoryObj<IconButtonProps> = {

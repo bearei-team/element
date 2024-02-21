@@ -3,9 +3,16 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './IconButtonBase';
 
-export interface ContentProps extends Pick<RenderProps, 'width' | 'height'> {}
+export type ContainerProps = Pick<RenderProps, 'width' | 'height'>;
+export type ContentProps = ContainerProps;
 
-export const Container = styled(View)``;
+export const Container = styled(View)<ContainerProps>`
+    ${({width, height, theme}) => css`
+        height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
+        width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
+    `};
+`;
+
 export const Content = styled(Shape)<ContentProps>`
     align-items: center;
     display: flex;
