@@ -9,10 +9,11 @@ export const Container = styled(View)<ContainerProps>`
     display: flex;
     flex-direction: row;
     justify-content: center;
-    flex: 1;
 
     ${({width, height, theme}) => css`
-        max-height: ${height ?? theme.adaptSize(theme.spacing.small * 6)}px;
-        max-width: ${width ?? theme.adaptSize(theme.spacing.small * 6)}px;
+        height: ${height ?? theme.adaptSize(theme.spacing.large)}px;
+        max-height: ${theme.adaptSize(theme.spacing.small * 6)}px;
+        max-width: ${theme.adaptSize(theme.spacing.small * 6)}px;
+        width: ${width ?? theme.adaptSize(theme.spacing.large)}px;
     `}
 `;

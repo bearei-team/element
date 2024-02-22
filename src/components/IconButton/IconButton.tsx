@@ -1,19 +1,19 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Hovered} from '../Hovered/Hovered';
-import {Tooltip} from '../Tooltip/Tooltip';
+import {Tooltip, TooltipProps} from '../Tooltip/Tooltip';
 import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon} from './IconButton.styles';
 import {IconButtonBase, RenderProps} from './IconButtonBase';
 
 export type IconButtonType = 'filled' | 'outlined' | 'standard' | 'tonal';
-export interface IconButtonProps extends TouchableRippleProps {
+export interface IconButtonProps extends Partial<TouchableRippleProps> {
     fill?: string;
-    height?: number;
     icon?: React.JSX.Element;
-    supportingText?: string;
     type?: IconButtonType;
     width?: number;
+    height?: number;
+    tooltip?: TooltipProps;
 }
 
 /**
@@ -29,13 +29,14 @@ const render = ({
     onEvent,
     renderStyle,
     style,
-    supportingText,
+    tooltip = {},
     tooltipVisible,
     underlayColor,
     ...contentProps
 }: RenderProps) => {
     const {backgroundColor, height, width, ...border} = renderStyle;
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
+    const {supportingText, position} = tooltip;
     const shape = 'full';
 
     return (
@@ -44,7 +45,11 @@ const render = ({
             testID={`iconButton--${id}`}
             width={width}
             height={height}>
-            <Tooltip type="plain" visible={tooltipVisible} supportingText={supportingText}>
+            <Tooltip
+                type="plain"
+                visible={tooltipVisible}
+                supportingText={supportingText}
+                position={position}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
                     disabled={disabled}

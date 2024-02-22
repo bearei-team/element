@@ -2,27 +2,37 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './TooltipBase';
 
-export interface ContentProps extends Pick<RenderProps, 'type'> {
-    height: number;
-    width: number;
+export interface ContainerProps {
+    height?: number;
+    width?: number;
 }
 
-export const Container = styled.View`
+export interface SupportingProps extends Pick<RenderProps, 'type' | 'position'> {
+    height?: number;
+    width?: number;
+}
+
+export const Container = styled.View<ContainerProps>`
     position: relative;
+
+    ${({width, height}) =>
+        typeof width === 'number' &&
+        css`
+            width: ${width}px;
+            height: ${height}px;
+        `}
 `;
 
-export const Content = styled(Shape)<ContentProps>`
+export const Supporting = styled(Shape)<SupportingProps>`
     position: absolute;
+    z-index: 1024;
 
-    ${({theme, height = 0}) => css`
-        left: 50%;
+    ${({theme}) => css`
         min-width: ${theme.adaptSize(theme.spacing.small * 8)}px;
-        top: ${-(height + theme.adaptSize(theme.spacing.extraSmall))}px;
-        z-index: 1024;
     `}
 
     ${({theme, type = 'plain'}) => {
-        const contentType = {
+        const supportingType = {
             plain: css`
                 background-color: ${theme.palette.inverse.inverseSurface};
                 min-height: ${theme.adaptSize(theme.spacing.large)}px;
@@ -32,11 +42,33 @@ export const Content = styled(Shape)<ContentProps>`
             rich: css``,
         };
 
-        return contentType[type];
+        return supportingType[type];
+    }}
+
+    ${({theme, height = 0, width = 0, position = 'verticalStart'}) => {
+        const supportingPosition = {
+            verticalStart: css`
+                left: 50%;
+                top: ${-(height + theme.adaptSize(theme.spacing.extraSmall))}px;
+            `,
+            verticalEnd: css`
+                left: 50%;
+                bottom: ${-(height + theme.adaptSize(theme.spacing.extraSmall))}px;
+            `,
+            horizontalStart: css`
+                top: 50%;
+                left: ${-(width + theme.adaptSize(theme.spacing.extraSmall))}px;
+            `,
+            horizontalEnd: css`
+                top: 50%;
+                right: ${-(width + theme.adaptSize(theme.spacing.extraSmall))}px;
+            `,
+        };
+
+        return supportingPosition[position];
     }}
 `;
 
-export const ContentInner = styled.Pressable``;
 export const SupportingText = styled(Typography)`
     text-align: center;
     user-select: none;

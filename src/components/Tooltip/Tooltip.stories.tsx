@@ -1,5 +1,5 @@
 import {Meta, StoryObj} from '@storybook/react';
-import {IconButton} from '../IconButton/IconButton';
+import {Icon} from '../Icon/Icon';
 import {Tooltip, TooltipProps} from './Tooltip';
 
 export default {
@@ -8,9 +8,38 @@ export default {
     component: Tooltip,
 } as Meta<typeof Tooltip>;
 
-export const Plain: StoryObj<TooltipProps> = {
+export const PlainVerticalEnd: StoryObj<TooltipProps> = {
     args: {
-        children: <IconButton />,
+        children: <Icon name="addHome" />,
         supportingText: 'Supporting Text',
+        visible: true,
+        position: 'verticalEnd',
+    },
+};
+
+export const PlainVerticalStart: StoryObj<TooltipProps> = {
+    args: {
+        children: <Icon name="addHome" />,
+        supportingText: 'Supporting Text',
+        visible: true,
+        position: 'verticalStart',
+    },
+};
+
+export const PlainHorizontalStart: StoryObj<TooltipProps> = {
+    args: {
+        children: <Icon name="addHome" />,
+        supportingText: 'Supporting Text',
+        visible: true,
+        position: 'horizontalStart',
+    },
+};
+
+export const PlainHorizontalEnd: StoryObj<TooltipProps> = {
+    args: {
+        children: <Icon name="addHome" />,
+        supportingText: 'Supporting Text',
+        visible: true,
+        position: 'horizontalEnd',
     },
 };

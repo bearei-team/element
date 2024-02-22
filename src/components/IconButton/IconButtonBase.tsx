@@ -87,7 +87,7 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
     fill,
     icon,
     render,
-    supportingText,
+    tooltip,
     type = 'filled',
     ...renderProps
 }) => {
@@ -101,8 +101,8 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
     const [underlayColor] = useUnderlayColor({type});
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange({...options, setState, supportingText}),
-        [setState, supportingText],
+            processStateChange({...options, setState, supportingText: tooltip?.supportingText}),
+        [setState, tooltip?.supportingText],
     );
 
     const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
@@ -121,7 +121,7 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
         icon: iconElement,
         id,
         onEvent,
-        supportingText,
+        tooltip,
         tooltipVisible,
         type,
         underlayColor,

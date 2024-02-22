@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect, useId} from 'react';
+import {FC, cloneElement, useCallback, useEffect, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
@@ -11,6 +11,8 @@ export interface RenderProps extends TooltipProps {
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
         opacity: AnimatedInterpolation;
+        supportingHeight: number;
+        supportingWidth: number;
         width: number;
     };
 }
@@ -22,6 +24,7 @@ export interface TooltipBaseProps extends TooltipProps {
 export interface InitialState {
     eventName: EventName;
     layout: LayoutRectangle;
+    supportingLayout: LayoutRectangle;
     visible: boolean;
 }
 
@@ -34,6 +37,14 @@ export type ProcessStateChangeOptions = OnStateChangeOptions &
         onVisible: (visible: boolean) => void;
     };
 
+const processSupportingLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
+
+    setState(draft => {
+        draft.supportingLayout = nativeEventLayout;
+    });
+};
+
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
@@ -43,7 +54,7 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
 };
 
 const processStateChange = ({event, eventName, setState, onVisible}: ProcessStateChangeOptions) => {
-    eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
+    eventName === 'layout' && processSupportingLayout(event as LayoutChangeEvent, {setState});
 
     ['hoverIn', 'hoverOut'].includes(eventName) && onVisible(eventName === 'hoverIn');
 
@@ -62,11 +73,13 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
     render,
     type = 'plain',
     visible: visibleSource = false,
+    children,
     ...renderProps
 }) => {
-    const [{layout, visible}, setState] = useImmer<InitialState>({
+    const [{supportingLayout, visible, layout}, setState] = useImmer<InitialState>({
         eventName: 'none',
         layout: {} as LayoutRectangle,
+        supportingLayout: {} as LayoutRectangle,
         visible: false,
     });
 
@@ -82,6 +95,11 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
         [onVisible, setState],
     );
 
+    const onLayout = useCallback(
+        (event: LayoutChangeEvent) => processLayout(event, {setState}),
+        [setState],
+    );
+
     const [onEvent] = useOnEvent({...renderProps, onStateChange});
     const [{opacity}] = useAnimated({visible});
 
@@ -94,10 +112,13 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
         id,
         onEvent,
         type,
+        children: cloneElement(children ?? <></>, {onLayout}),
         renderStyle: {
-            height: layout?.height,
-            width: layout?.width,
+            height: layout.height,
             opacity,
+            supportingHeight: supportingLayout?.height,
+            supportingWidth: supportingLayout?.width,
+            width: layout.width,
         },
     });
 };

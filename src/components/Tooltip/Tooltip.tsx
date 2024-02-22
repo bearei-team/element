@@ -1,11 +1,12 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
-import {Container, Content, SupportingText} from './Tooltip.styles';
+import {Container, Supporting, SupportingText} from './Tooltip.styles';
 import {RenderProps, TooltipBase} from './TooltipBase';
 
 export type TooltipType = 'plain' | 'rich';
 export interface TooltipProps extends TouchableRippleProps {
+    position?: 'horizontalStart' | 'horizontalEnd' | 'verticalStart' | 'verticalEnd';
     supportingText?: string;
     type?: TooltipType;
     visible?: boolean;
@@ -14,7 +15,7 @@ export interface TooltipProps extends TouchableRippleProps {
 /**
  * TODO: "rich"
  */
-const AnimatedContent = Animated.createAnimatedComponent(Content);
+const AnimatedSupporting = Animated.createAnimatedComponent(Supporting);
 const render = ({
     children,
     id,
@@ -23,36 +24,42 @@ const render = ({
     style,
     supportingText,
     type,
+    position,
     ...contentProps
 }: RenderProps) => {
-    const {opacity, width, height} = renderStyle;
+    const {opacity, supportingWidth, supportingHeight, width, height} = renderStyle;
 
     return (
-        <Container testID={`tooltip--${id}`}>
+        <Container testID={`tooltip--${id}`} width={width} height={height}>
             {children}
 
-            <AnimatedContent
+            <AnimatedSupporting
                 {...contentProps}
                 {...onEvent}
-                testID={`tooltip__content--${id}`}
+                testID={`tooltip__supporting--${id}`}
                 type={type}
                 style={{
                     ...(typeof style === 'object' && style),
                     opacity,
-                    transform: [{translateX: -(width / 2)}],
+                    transform: position?.startsWith('vertical')
+                        ? [{translateX: -((supportingWidth ?? 0) / 2)}]
+                        : [{translateY: -((supportingHeight ?? 0) / 2)}],
                 }}
-                height={height}
+                height={supportingHeight}
+                position={position}
                 shape="extraSmall"
-                width={width}>
+                width={supportingWidth}>
                 {type === 'plain' && supportingText && (
                     <SupportingText
-                        testID={`tooltip__supportingText--${id}`}
+                        ellipsizeMode="tail"
                         numberOfLines={1}
-                        ellipsizeMode="tail">
+                        size="small"
+                        testID={`tooltip__supportingText--${id}`}
+                        type="body">
                         {supportingText}
                     </SupportingText>
                 )}
-            </AnimatedContent>
+            </AnimatedSupporting>
         </Container>
     );
 };
