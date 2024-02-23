@@ -1,19 +1,26 @@
-import {FC, cloneElement, useCallback, useEffect, useId} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
+import {FC, RefObject, cloneElement, useCallback, useEffect, useId, useMemo, useRef} from 'react';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    TextStyle,
+    View,
+    ViewStyle,
+} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
+import {emitter} from '../../context/ModalProvider';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
-import {AnimatedInterpolation, EventName, State} from '../Common/interface';
+import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../Common/interface';
 import {TooltipProps} from './Tooltip';
+import {Supporting, SupportingText} from './Tooltip.styles';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends TooltipProps {
     onEvent: OnEvent;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        height: number;
-        opacity: AnimatedInterpolation;
-        supportingHeight: number;
-        supportingWidth: number;
-        width: number;
+        height?: number;
+        opacity?: AnimatedInterpolation;
+        width?: number;
     };
 }
 
@@ -22,8 +29,10 @@ export interface TooltipBaseProps extends TooltipProps {
 }
 
 export interface InitialState {
+    containerLayout: LayoutRectangle & {pageX: number; pageY: number};
     eventName: EventName;
     layout: LayoutRectangle;
+    status: ComponentStatus;
     supportingLayout: LayoutRectangle;
     visible: boolean;
 }
@@ -32,18 +41,29 @@ export interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
+export interface ProcessEmitOptions extends Pick<RenderProps, 'visible'> {
+    id: string;
+    supporting: React.JSX.Element;
+}
+
 export type ProcessStateChangeOptions = OnStateChangeOptions &
     ProcessEventOptions & {
         onVisible: (visible: boolean) => void;
     };
 
-const processSupportingLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
-    const nativeEventLayout = event.nativeEvent.layout;
+export interface RenderSupportingOptions extends RenderProps {
+    containerLayout: InitialState['containerLayout'];
+    onSupportingLayout: (event: LayoutChangeEvent) => void;
+    supportingLayout: LayoutRectangle;
+}
 
-    setState(draft => {
-        draft.supportingLayout = nativeEventLayout;
-    });
-};
+const processContainerLayout = (containerRef: RefObject<View>, {setState}: ProcessEventOptions) =>
+    containerRef.current?.measure((x, y, width, height, pageX, pageY) =>
+        setState(draft => {
+            draft.containerLayout = {x, y, width, height, pageX, pageY};
+            draft.status = 'succeeded';
+        }),
+    );
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -53,9 +73,15 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processStateChange = ({event, eventName, setState, onVisible}: ProcessStateChangeOptions) => {
-    eventName === 'layout' && processSupportingLayout(event as LayoutChangeEvent, {setState});
+const processSupportingLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
 
+    setState(draft => {
+        draft.supportingLayout = nativeEventLayout;
+    });
+};
+
+const processStateChange = ({eventName, setState, onVisible}: ProcessStateChangeOptions) => {
     ['hoverIn', 'hoverOut'].includes(eventName) && onVisible(eventName === 'hoverIn');
 
     setState(draft => {
@@ -69,20 +95,79 @@ const processVisible = (value: boolean, {setState}: ProcessEventOptions) => {
     });
 };
 
+const processEmit = (status: ComponentStatus, {supporting, id}: ProcessEmitOptions) =>
+    status === 'succeeded' && emitter.emit('modal', {id: `tooltip__${id}`, element: supporting});
+
+const AnimatedSupporting = Animated.createAnimatedComponent(Supporting);
+const renderSupporting = ({
+    containerLayout,
+    id,
+    onSupportingLayout,
+    renderStyle,
+    supportingLayout,
+    supportingPosition,
+    supportingText,
+    type,
+    visible,
+}: RenderSupportingOptions) => {
+    const {opacity} = renderStyle;
+    const {pageX, pageY, width: containerWidth, height: containerHeight} = containerLayout;
+    const {width = 0, height = 0} = supportingLayout;
+
+    return (
+        <AnimatedSupporting
+            visible={visible}
+            testID={`tooltip__supporting--${id}`}
+            type={type}
+            onLayout={onSupportingLayout}
+            style={{
+                opacity,
+                transform: supportingPosition?.startsWith('vertical')
+                    ? [{translateX: -(width / 2)}]
+                    : [{translateY: -(height / 2)}],
+            }}
+            containerHeight={containerHeight}
+            containerWidth={containerWidth}
+            height={height}
+            pageX={pageX}
+            pageY={pageY}
+            shape="extraSmall"
+            supportingPosition={supportingPosition}
+            width={width}>
+            <SupportingText
+                ellipsizeMode="tail"
+                numberOfLines={1}
+                size="small"
+                testID={`tooltip__supportingText--${id}`}
+                type="body">
+                {supportingText}
+            </SupportingText>
+        </AnimatedSupporting>
+    );
+};
+
 export const TooltipBase: FC<TooltipBaseProps> = ({
+    children,
+    ref,
     render,
+    supportingPosition,
+    supportingText,
     type = 'plain',
     visible: visibleSource = false,
-    children,
     ...renderProps
 }) => {
-    const [{supportingLayout, visible, layout}, setState] = useImmer<InitialState>({
-        eventName: 'none',
-        layout: {} as LayoutRectangle,
-        supportingLayout: {} as LayoutRectangle,
-        visible: false,
-    });
+    const [{visible, layout, status, containerLayout, supportingLayout}, setState] =
+        useImmer<InitialState>({
+            containerLayout: {} as InitialState['containerLayout'],
+            eventName: 'none',
+            layout: {} as LayoutRectangle,
+            status: 'idle',
+            supportingLayout: {} as LayoutRectangle,
+            visible: false,
+        });
 
+    const containerRef = useRef<View>(null);
+    const relRef = ref ?? containerRef;
     const id = useId();
     const onVisible = useCallback(
         (value: boolean) => processVisible(value, {setState}),
@@ -100,25 +185,61 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
         [setState],
     );
 
+    const onSupportingLayout = useCallback(
+        (event: LayoutChangeEvent) => processSupportingLayout(event, {setState}),
+        [setState],
+    );
+
     const [onEvent] = useOnEvent({...renderProps, onStateChange});
     const [{opacity}] = useAnimated({visible});
+    const supporting = useMemo(
+        () =>
+            renderSupporting({
+                containerLayout,
+                id,
+                onEvent,
+                onSupportingLayout,
+                renderStyle: {opacity},
+                supportingLayout,
+                supportingPosition,
+                supportingText,
+                type,
+                visible,
+            }),
+        [
+            containerLayout,
+            id,
+            onEvent,
+            onSupportingLayout,
+            opacity,
+            supportingLayout,
+            supportingPosition,
+            supportingText,
+            type,
+            visible,
+        ],
+    );
 
     useEffect(() => {
         onVisible(visibleSource);
     }, [onVisible, visibleSource]);
 
+    useEffect(() => {
+        processContainerLayout(containerRef, {setState});
+    }, [setState]);
+
+    useEffect(() => {
+        processEmit(status, {id, supporting});
+    }, [id, status, supporting]);
+
     return render({
         ...renderProps,
+        children: cloneElement(children ?? <></>, {onLayout}),
         id,
         onEvent,
+        ref: relRef,
+        renderStyle: {width: layout.width, height: layout.height},
         type,
-        children: cloneElement(children ?? <></>, {onLayout}),
-        renderStyle: {
-            height: layout.height,
-            opacity,
-            supportingHeight: supportingLayout?.height,
-            supportingWidth: supportingLayout?.width,
-            width: layout.width,
-        },
+        visible,
     });
 };

@@ -13,7 +13,7 @@ export const PlainVerticalEnd: StoryObj<TooltipProps> = {
         children: <Icon name="addHome" />,
         supportingText: 'Supporting Text',
         visible: true,
-        position: 'verticalEnd',
+        supportingPosition: 'verticalEnd',
     },
 };
 
@@ -22,7 +22,7 @@ export const PlainVerticalStart: StoryObj<TooltipProps> = {
         children: <Icon name="addHome" />,
         supportingText: 'Supporting Text',
         visible: true,
-        position: 'verticalStart',
+        supportingPosition: 'verticalStart',
     },
 };
 
@@ -31,7 +31,7 @@ export const PlainHorizontalStart: StoryObj<TooltipProps> = {
         children: <Icon name="addHome" />,
         supportingText: 'Supporting Text',
         visible: true,
-        position: 'horizontalStart',
+        supportingPosition: 'horizontalStart',
     },
 };
 
@@ -40,6 +40,6 @@ export const PlainHorizontalEnd: StoryObj<TooltipProps> = {
         children: <Icon name="addHome" />,
         supportingText: 'Supporting Text',
         visible: true,
-        position: 'horizontalEnd',
+        supportingPosition: 'horizontalEnd',
     },
 };

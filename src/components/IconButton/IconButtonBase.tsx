@@ -66,10 +66,9 @@ const processStateChange = ({
     setState,
     supportingText,
 }: ProcessStateChangeOptions) => {
-    eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
-
-    ['hoverIn', 'hoverOut'].includes(eventName) &&
-        processTooltipVisible({setState, eventName}, supportingText);
+    eventName === 'layout'
+        ? processLayout(event as LayoutChangeEvent, {setState})
+        : processTooltipVisible({setState, eventName}, supportingText);
 
     setState(draft => {
         draft.eventName = eventName;

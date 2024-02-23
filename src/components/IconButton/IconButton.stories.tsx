@@ -9,7 +9,10 @@ export default {
 
 export const Filled: StoryObj<IconButtonProps> = {
     args: {
-        supportingText: '1',
+        tooltip: {
+            supportingText: 'supportingText',
+            supportingPosition: 'horizontalEnd',
+        },
     },
 };
 

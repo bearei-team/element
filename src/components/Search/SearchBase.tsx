@@ -169,7 +169,7 @@ const processContainerLayout = (containerRef: RefObject<View>, {setState}: Proce
 
 const processEmit = (status: ComponentStatus, {visible, inner, id}: ProcessEmitOptions) =>
     status === 'succeeded' &&
-    emitter.emit('sheet', {id: `search__${id}`, element: visible ? inner : <></>});
+    emitter.emit('modal', {id: `search__${id}`, element: visible ? inner : <></>});
 
 const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
     <TextField testID={`search__control--${id}`}>

@@ -2,36 +2,36 @@ import mitt from 'mitt';
 import React, {FC} from 'react';
 import {Updater, useImmer} from 'use-immer';
 
-export interface Sheet {
+export interface Modal {
     element: React.JSX.Element;
     id: string;
 }
 
 export type EmitterEvent = {
-    sheet: Sheet;
+    modal: Modal;
 };
 
 export interface InitialState {
-    sheets: Sheet[];
+    modals: Modal[];
 }
 
-export interface ProcessSheetEventOptions {
+export interface ProcessModalEventOptions {
     setState: Updater<InitialState>;
 }
 
-const processSheet = (sheet: Sheet, {setState}: ProcessSheetEventOptions) => {
-    const {id, element} = sheet;
+const processModal = (modal: Modal, {setState}: ProcessModalEventOptions) => {
+    const {id, element} = modal;
 
     setState(draft => {
-        const exist = draft.sheets.some(item => item.id === id);
+        const exist = draft.modals.some(item => item.id === id);
 
         if (exist) {
-            draft.sheets = draft.sheets.map(item => (item.id === id ? {...item, element} : item));
+            draft.modals = draft.modals.map(item => (item.id === id ? {...item, element} : item));
 
             return;
         }
 
-        draft.sheets = [...draft.sheets, sheet];
+        draft.modals = [...draft.modals, modal];
     });
 };
 
@@ -39,13 +39,13 @@ const Item: FC<{element: React.JSX.Element}> = ({element}) => <>{element}</>;
 
 export const emitter = mitt<EmitterEvent>();
 export const ModalProvider: FC<unknown> = () => {
-    const [{sheets}, setState] = useImmer<InitialState>({sheets: []});
+    const [{modals}, setState] = useImmer<InitialState>({modals: []});
 
-    emitter.on('sheet', sheet => processSheet(sheet, {setState}));
+    emitter.on('modal', modal => processModal(modal, {setState}));
 
     return (
         <>
-            {sheets.map(({element, id}) => (
+            {modals.map(({element, id}) => (
                 <Item key={id} element={element} />
             ))}
         </>

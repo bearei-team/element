@@ -75,7 +75,7 @@ const processSheetVisible = ({setState}: ProcessEventOptions, sheetVisible?: boo
     });
 
 const processEmit = ({visible, sheet, id}: ProcessEmitOptions) =>
-    emitter.emit('sheet', {id: `search__${id}`, element: visible ? sheet : <></>});
+    emitter.emit('modal', {id: `sideSheet__${id}`, element: visible ? sheet : <></>});
 
 export const SideSheetBase: FC<SideSheetBaseProps> = ({
     backIcon,

@@ -9,11 +9,11 @@ import {IconButtonBase, RenderProps} from './IconButtonBase';
 export type IconButtonType = 'filled' | 'outlined' | 'standard' | 'tonal';
 export interface IconButtonProps extends Partial<TouchableRippleProps> {
     fill?: string;
+    height?: number;
     icon?: React.JSX.Element;
+    tooltip?: TooltipProps;
     type?: IconButtonType;
     width?: number;
-    height?: number;
-    tooltip?: TooltipProps;
 }
 
 /**
@@ -36,7 +36,7 @@ const render = ({
 }: RenderProps) => {
     const {backgroundColor, height, width, ...border} = renderStyle;
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
-    const {supportingText, position} = tooltip;
+    const {supportingText, supportingPosition} = tooltip;
     const shape = 'full';
 
     return (
@@ -49,7 +49,7 @@ const render = ({
                 type="plain"
                 visible={tooltipVisible}
                 supportingText={supportingText}
-                position={position}>
+                supportingPosition={supportingPosition}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
                     disabled={disabled}

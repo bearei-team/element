@@ -7,8 +7,13 @@ export interface ContainerProps {
     width?: number;
 }
 
-export interface SupportingProps extends Pick<RenderProps, 'type' | 'position'> {
+export interface SupportingProps
+    extends Pick<RenderProps, 'type' | 'supportingPosition' | 'visible'> {
+    containerHeight?: number;
+    containerWidth?: number;
     height?: number;
+    pageX?: number;
+    pageY?: number;
     width?: number;
 }
 
@@ -18,18 +23,14 @@ export const Container = styled.View<ContainerProps>`
     ${({width, height}) =>
         typeof width === 'number' &&
         css`
-            width: ${width}px;
             height: ${height}px;
+            width: ${width}px;
         `}
 `;
 
 export const Supporting = styled(Shape)<SupportingProps>`
     position: absolute;
     z-index: 1024;
-
-    ${({theme}) => css`
-        min-width: ${theme.adaptSize(theme.spacing.small * 8)}px;
-    `}
 
     ${({theme, type = 'plain'}) => {
         const supportingType = {
@@ -45,28 +46,43 @@ export const Supporting = styled(Shape)<SupportingProps>`
         return supportingType[type];
     }}
 
-    ${({theme, height = 0, width = 0, position = 'verticalStart'}) => {
+    ${({
+        containerHeight = 0,
+        containerWidth = 0,
+        height = 0,
+        pageX = 0,
+        pageY = 0,
+        supportingPosition: position = 'verticalStart',
+        theme,
+        width = 0,
+    }) => {
         const supportingPosition = {
             verticalStart: css`
-                left: 50%;
-                top: ${-(height + theme.adaptSize(theme.spacing.extraSmall))}px;
+                left: ${pageX + containerWidth / 2}px;
+                top: ${pageY - (height + theme.adaptSize(theme.spacing.extraSmall))}px;
             `,
             verticalEnd: css`
-                left: 50%;
-                bottom: ${-(height + theme.adaptSize(theme.spacing.extraSmall))}px;
+                left: ${pageX + containerWidth / 2}px;
+                top: ${pageY + containerHeight + theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
             horizontalStart: css`
-                top: 50%;
-                left: ${-(width + theme.adaptSize(theme.spacing.extraSmall))}px;
+                top: ${pageY + containerHeight / 2}px;
+                left: ${pageX - (width + theme.adaptSize(theme.spacing.extraSmall))}px;
             `,
             horizontalEnd: css`
-                top: 50%;
-                right: ${-(width + theme.adaptSize(theme.spacing.extraSmall))}px;
+                top: ${pageY + containerHeight / 2}px;
+                left: ${pageX + (containerWidth + theme.adaptSize(theme.spacing.extraSmall))}px;
             `,
         };
 
         return supportingPosition[position];
     }}
+
+${({visible = false}) =>
+        !visible &&
+        css`
+            z-index: -1024;
+        `}
 `;
 
 export const SupportingText = styled(Typography)`

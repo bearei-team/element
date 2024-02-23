@@ -4,7 +4,6 @@ import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './IconButtonBase';
 
 export type ContainerProps = Pick<RenderProps, 'width' | 'height'>;
-export type ContentProps = ContainerProps;
 
 export const Container = styled(View)<ContainerProps>`
     ${({width, height, theme}) => css`
@@ -13,7 +12,7 @@ export const Container = styled(View)<ContainerProps>`
     `};
 `;
 
-export const Content = styled(Shape)<ContentProps>`
+export const Content = styled(Shape)<ContainerProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
