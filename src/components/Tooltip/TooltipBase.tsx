@@ -3,9 +3,11 @@ import {
     Animated,
     LayoutChangeEvent,
     LayoutRectangle,
+    Text,
     TextStyle,
     View,
     ViewStyle,
+    useWindowDimensions,
 } from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
@@ -46,6 +48,10 @@ export interface ProcessEmitOptions extends Pick<RenderProps, 'visible'> {
     supporting: React.JSX.Element;
 }
 
+export interface ProcessContainerLayout extends ProcessEventOptions {
+    layout: LayoutRectangle;
+}
+
 export type ProcessStateChangeOptions = OnStateChangeOptions &
     ProcessEventOptions & {
         onVisible: (visible: boolean) => void;
@@ -57,7 +63,11 @@ export interface RenderSupportingOptions extends RenderProps {
     supportingLayout: LayoutRectangle;
 }
 
-const processContainerLayout = (containerRef: RefObject<View>, {setState}: ProcessEventOptions) =>
+const processContainerLayout = (
+    containerRef: RefObject<View>,
+    {setState, layout}: ProcessContainerLayout,
+) =>
+    typeof layout.width === 'number' &&
     containerRef.current?.measure((x, y, width, height, pageX, pageY) =>
         setState(draft => {
             draft.containerLayout = {x, y, width, height, pageX, pageY};
@@ -116,24 +126,24 @@ const renderSupporting = ({
 
     return (
         <AnimatedSupporting
-            visible={visible}
+            containerHeight={containerHeight}
+            containerWidth={containerWidth}
+            onLayout={onSupportingLayout}
+            pageX={pageX}
+            pageY={pageY}
+            renderedHeight={height}
+            renderedWidth={width}
+            shape="extraSmall"
+            supportingPosition={supportingPosition}
             testID={`tooltip__supporting--${id}`}
             type={type}
-            onLayout={onSupportingLayout}
+            visible={visible}
             style={{
                 opacity,
                 transform: supportingPosition?.startsWith('vertical')
                     ? [{translateX: -(width / 2)}]
                     : [{translateY: -(height / 2)}],
-            }}
-            containerHeight={containerHeight}
-            containerWidth={containerWidth}
-            height={height}
-            pageX={pageX}
-            pageY={pageY}
-            shape="extraSmall"
-            supportingPosition={supportingPosition}
-            width={width}>
+            }}>
             <SupportingText
                 ellipsizeMode="tail"
                 numberOfLines={1}
@@ -169,6 +179,7 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
     const containerRef = useRef<View>(null);
     const relRef = ref ?? containerRef;
     const id = useId();
+    const windowDimensions = useWindowDimensions();
     const onVisible = useCallback(
         (value: boolean) => processVisible(value, {setState}),
         [setState],
@@ -225,8 +236,8 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
     }, [onVisible, visibleSource]);
 
     useEffect(() => {
-        processContainerLayout(containerRef, {setState});
-    }, [setState]);
+        processContainerLayout(containerRef, {setState, layout});
+    }, [setState, layout, windowDimensions]);
 
     useEffect(() => {
         processEmit(status, {id, supporting});
@@ -242,4 +253,14 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
         type,
         visible,
     });
+};
+
+export const Tooltip: FC<TooltipBaseProps> = () => {
+    const windowDimensions = useWindowDimensions();
+
+    return (
+        <View>
+            <Text>{windowDimensions.width}</Text>
+        </View>
+    );
 };

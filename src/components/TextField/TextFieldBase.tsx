@@ -18,15 +18,15 @@ import {Input} from './TextField.styles';
 import {useAnimated} from './useAnimated';
 
 export interface RenderProps extends TextFieldProps {
-    eventName: EventName;
-    onEvent: OnEvent;
-    underlayColor: string;
-    input: React.JSX.Element;
-    state: State;
     contentSize?: Partial<TextInputContentSizeChangeEventData['contentSize']>;
+    eventName: EventName;
+    input: React.JSX.Element;
+    onEvent: OnEvent;
+    state: State;
+    underlayColor: string;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         activeIndicatorBackgroundColor: AnimatedInterpolation;
-        activeIndicatorScale: AnimatedInterpolation;
+        activeIndicatorHeight: AnimatedInterpolation;
         height: number;
         labelTextColor: AnimatedInterpolation;
         labelTextHeight: AnimatedInterpolation;
@@ -102,13 +102,8 @@ const processStateChange = (
     processState(state, {eventName, setState});
 };
 
-const processChangeText = (text: string, {setState, onChangeText}: ProcessChangeTextOptions) => {
-    setState(draft => {
-        draft.value = text;
-    });
-
+const processChangeText = (text: string, {onChangeText}: ProcessChangeTextOptions) =>
     onChangeText?.(text);
-};
 
 const processContentSizeChange = (
     event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>,
@@ -156,22 +151,21 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     supportingText,
     trailing,
     type = 'filled',
-    value: valueSource,
+    value,
     ...textInputProps
 }) => {
-    const [{layout, value, eventName, state, contentSize}, setState] = useImmer<InitialState>({
+    const [{layout, eventName, state, contentSize}, setState] = useImmer<InitialState>({
+        contentSize: undefined,
         eventName: 'none',
         layout: {} as LayoutRectangle,
         state: 'enabled',
-        value: undefined,
-        contentSize: undefined,
     });
 
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const theme = useTheme();
-    const filled = defaultValue ?? valueSource ?? value ?? placeholder;
+    const filled = defaultValue ?? value ?? placeholder;
     const placeholderTextColor =
         state === 'disabled'
             ? theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38)
@@ -181,8 +175,8 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     const onContentSizeChange = useCallback(
         (event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>) =>
             processContentSizeChange(event, {
-                setState,
                 onContentSizeChange: textInputProps.onContentSizeChange,
+                setState,
             }),
         [setState, textInputProps.onContentSizeChange],
     );
@@ -203,7 +197,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     const [
         {
             activeIndicatorBackgroundColor,
-            activeIndicatorScale,
+            activeIndicatorHeight,
             backgroundColor,
             inputColor,
             labelTextColor,
@@ -215,12 +209,12 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
             supportingTextColor,
         },
     ] = useAnimated({
-        type,
-        eventName,
         disabled,
         error,
-        state,
+        eventName,
         filled: !!filled,
+        state,
+        type,
     });
 
     const input = useMemo(
@@ -238,7 +232,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
                 placeholderTextColor,
                 ref: inputRef,
                 renderStyle: {color: inputColor},
-                value: valueSource,
+                value,
             }),
         [
             defaultValue,
@@ -253,13 +247,13 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
             placeholder,
             placeholderTextColor,
             textInputProps,
-            valueSource,
+            value,
         ],
     );
 
     return render({
-        eventName,
         contentSize,
+        eventName,
         id,
         input,
         labelText,
@@ -271,7 +265,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         underlayColor,
         renderStyle: {
             activeIndicatorBackgroundColor,
-            activeIndicatorScale,
+            activeIndicatorHeight,
             backgroundColor,
             height: layout.height,
             labelTextColor,

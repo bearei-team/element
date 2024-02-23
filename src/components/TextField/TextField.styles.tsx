@@ -31,7 +31,10 @@ export const Inner = styled.View`
     `}
 `;
 
-export const Header = styled.Pressable``;
+export const Header = styled.Pressable`
+    cursor: text;
+`;
+
 export const HeaderInner = styled(Shape)<HeaderInnerProps>`
     align-items: center;
     display: flex;
@@ -169,7 +172,6 @@ export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
 
     ${({width = 0, theme}) => css`
         bottom: ${theme.adaptSize(theme.spacing.none)}px;
-        height: ${theme.adaptSize(theme.spacing.extraSmall / 2)}px;
         left: ${theme.adaptSize(theme.spacing.none)}px;
         width: ${width}px;
     `}

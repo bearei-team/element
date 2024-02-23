@@ -11,15 +11,13 @@ export interface SupportingProps
     extends Pick<RenderProps, 'type' | 'supportingPosition' | 'visible'> {
     containerHeight?: number;
     containerWidth?: number;
-    height?: number;
     pageX?: number;
     pageY?: number;
-    width?: number;
+    renderedHeight?: number;
+    renderedWidth?: number;
 }
 
 export const Container = styled.View<ContainerProps>`
-    position: relative;
-
     ${({width, height}) =>
         typeof width === 'number' &&
         css`
@@ -30,7 +28,7 @@ export const Container = styled.View<ContainerProps>`
 
 export const Supporting = styled(Shape)<SupportingProps>`
     position: absolute;
-    z-index: 1024;
+    z-index: 5120;
 
     ${({theme, type = 'plain'}) => {
         const supportingType = {
@@ -49,17 +47,17 @@ export const Supporting = styled(Shape)<SupportingProps>`
     ${({
         containerHeight = 0,
         containerWidth = 0,
-        height = 0,
         pageX = 0,
         pageY = 0,
+        renderedHeight = 0,
+        renderedWidth = 0,
         supportingPosition: position = 'verticalStart',
         theme,
-        width = 0,
     }) => {
         const supportingPosition = {
             verticalStart: css`
                 left: ${pageX + containerWidth / 2}px;
-                top: ${pageY - (height + theme.adaptSize(theme.spacing.extraSmall))}px;
+                top: ${pageY - (renderedHeight + theme.adaptSize(theme.spacing.extraSmall))}px;
             `,
             verticalEnd: css`
                 left: ${pageX + containerWidth / 2}px;
@@ -67,7 +65,7 @@ export const Supporting = styled(Shape)<SupportingProps>`
             `,
             horizontalStart: css`
                 top: ${pageY + containerHeight / 2}px;
-                left: ${pageX - (width + theme.adaptSize(theme.spacing.extraSmall))}px;
+                left: ${pageX - (renderedWidth + theme.adaptSize(theme.spacing.extraSmall))}px;
             `,
             horizontalEnd: css`
                 top: ${pageY + containerHeight / 2}px;

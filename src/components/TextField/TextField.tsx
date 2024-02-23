@@ -54,7 +54,7 @@ const render = ({
     const {
         activeIndicatorBackgroundColor,
         supportingTextColor,
-        activeIndicatorScale,
+        activeIndicatorHeight,
         backgroundColor,
         labelTextColor,
         labelTextHeight,
@@ -128,7 +128,7 @@ const render = ({
                             width={width}
                             style={{
                                 backgroundColor: activeIndicatorBackgroundColor,
-                                transform: [{scaleY: activeIndicatorScale}],
+                                height: activeIndicatorHeight,
                             }}
                         />
 

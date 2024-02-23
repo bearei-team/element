@@ -1,7 +1,8 @@
 import {Theme, theme} from '@bearei/theme';
-import React, {FC, ReactNode} from 'react';
+import React, {FC, ReactNode, useId} from 'react';
 import {Platform, useColorScheme} from 'react-native';
 import {ThemeProvider as StyledComponentThemeProvider} from 'styled-components/native';
+import {Root} from '../components/Common/Common.styles';
 import {AdaptOptions, adapt} from '../utils/adapt.utils';
 import {ModalProvider} from './ModalProvider';
 
@@ -15,6 +16,7 @@ export const ThemeProvider: FC<ThemeProps> = ({adaptOptions, children, theme: th
     const {adaptFontSize, adaptSize} = adapt(adaptOptions);
     const colorScheme = useColorScheme() ?? 'light';
     const OS = Platform.OS;
+    const id = useId();
 
     return (
         <StyledComponentThemeProvider
@@ -25,8 +27,10 @@ export const ThemeProvider: FC<ThemeProps> = ({adaptOptions, children, theme: th
                 colorScheme,
                 OS,
             }}>
-            <ModalProvider />
-            {children}
+            <Root testID={`root--${id}`}>
+                <ModalProvider />
+                {children}
+            </Root>
         </StyledComponentThemeProvider>
     );
 };

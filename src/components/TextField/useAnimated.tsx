@@ -8,8 +8,8 @@ import {RenderProps} from './TextFieldBase';
 
 export interface UseAnimatedOptions extends Pick<RenderProps, 'type' | 'error' | 'disabled'> {
     eventName: EventName;
-    state: State;
     filled: boolean;
+    state: State;
 }
 
 export interface ProcessEnabledOptions extends Pick<RenderProps, 'error'> {
@@ -149,11 +149,11 @@ const processDisabledAnimated = (
 ) => typeof disabled === 'boolean' && stateAnimated[disabled ? 'disabled' : state]?.();
 
 export const useAnimated = ({
-    type = 'filled',
-    state,
-    error,
     disabled,
+    error,
     filled,
+    state,
+    type = 'filled',
 }: UseAnimatedOptions) => {
     const theme = useTheme();
     const [activeIndicatorAnimated] = useAnimatedValue(0);
@@ -257,9 +257,9 @@ export const useAnimated = ({
         ],
     });
 
-    const activeIndicatorScale = activeIndicatorAnimated.interpolate({
+    const activeIndicatorHeight = activeIndicatorAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [0.5, 1],
+        outputRange: [1, 2],
     });
 
     const supportingTextColor = supportingTextAnimated.interpolate({
@@ -275,11 +275,11 @@ export const useAnimated = ({
         () =>
             processEnabled({
                 activeIndicatorAnimated,
+                animatedTiming,
                 colorAnimated,
                 error,
                 filledToValue,
                 labelAnimated,
-                animatedTiming,
             }),
         [
             activeIndicatorAnimated,
@@ -294,12 +294,12 @@ export const useAnimated = ({
     const processDisabledState = useCallback(
         () =>
             processDisabled({
+                activeIndicatorAnimated,
+                animatedTiming,
                 backgroundColorAnimated,
                 colorAnimated,
-                supportingTextAnimated,
-                activeIndicatorAnimated,
                 inputAnimated,
-                animatedTiming,
+                supportingTextAnimated,
             }),
         [
             activeIndicatorAnimated,
@@ -314,10 +314,10 @@ export const useAnimated = ({
     const processErrorState = useCallback(
         () =>
             processError({
-                colorAnimated,
-                supportingTextAnimated,
                 activeIndicatorAnimated,
                 animatedTiming,
+                colorAnimated,
+                supportingTextAnimated,
             }),
         [activeIndicatorAnimated, animatedTiming, colorAnimated, supportingTextAnimated],
     );
@@ -325,11 +325,11 @@ export const useAnimated = ({
     const processFocusedState = useCallback(
         () =>
             processFocused({
-                animatedTiming,
-                labelAnimated,
-                colorAnimated,
                 activeIndicatorAnimated,
+                animatedTiming,
+                colorAnimated,
                 error,
+                labelAnimated,
             }),
         [activeIndicatorAnimated, animatedTiming, colorAnimated, error, labelAnimated],
     );
@@ -359,13 +359,13 @@ export const useAnimated = ({
 
     return [
         {
-            labelTextLetterSpacing,
             activeIndicatorBackgroundColor,
-            activeIndicatorScale,
+            activeIndicatorHeight,
             backgroundColor,
             inputColor,
             labelTextColor,
             labelTextHeight,
+            labelTextLetterSpacing,
             labelTextLineHeight,
             labelTextSize,
             labelTextTop,
