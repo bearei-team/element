@@ -2,7 +2,7 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './BadgeBase';
 
-export type ContainerProps = Pick<RenderProps, 'size'>;
+export type ContainerProps = Pick<RenderProps, 'size' | 'renderStyle'>;
 
 export const Container = styled(Shape)<ContainerProps>`
     align-items: center;
@@ -10,6 +10,7 @@ export const Container = styled(Shape)<ContainerProps>`
     flex-direction: row;
     justify-content: center;
     pointer-events: none;
+    position: absolute;
 
     ${({theme}) => css`
         background-color: ${theme.palette.error.error};
@@ -39,6 +40,17 @@ export const Container = styled(Shape)<ContainerProps>`
         };
 
         return containerSize[size];
+    }}
+
+    ${({renderStyle = {}, theme}) => {
+        const {bottom, left, right, top} = renderStyle;
+
+        return css`
+            bottom: ${typeof bottom === 'number' ? `${theme.adaptSize(bottom)}px` : 'auto'};
+            left: ${typeof left === 'number' ? `${theme.adaptSize(left)}px` : 'auto'};
+            right: ${typeof right === 'number' ? `${theme.adaptSize(right)}px` : 'auto'};
+            top: ${typeof top === 'number' ? `${theme.adaptSize(top)}px` : 'auto'};
+        `;
     }}
 `;
 

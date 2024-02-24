@@ -13,3 +13,7 @@ export const NoneContentText: StoryObj<AvatarProps> = {
 export const ContentText: StoryObj<AvatarProps> = {
     args: {labelText: 'B'},
 };
+
+export const CustomSize: StoryObj<AvatarProps> = {
+    args: {labelText: 'B', renderStyle: {width: 60, height: 60}},
+};

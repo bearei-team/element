@@ -17,13 +17,13 @@ export interface HoveredProps
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const render = ({id, renderStyle, style, underlayColor, ...containerProps}: RenderProps) => {
-    const {width, height, ...containerStyle} = renderStyle;
+    const {width, height, opacity} = renderStyle;
 
     return (
         <AnimatedContainer
             {...containerProps}
             renderStyle={{width, height}}
-            style={{...(typeof style === 'object' && style), ...containerStyle}}
+            style={{...(typeof style === 'object' && style), opacity}}
             testID={`hovered--${id}`}
             underlayColor={underlayColor}
         />

@@ -6,6 +6,7 @@ import {BadgeBase, RenderProps} from './BadgeBase';
 
 export interface BadgeProps extends Partial<ViewProps & RefAttributes<View>> {
     labelText?: number | string;
+    renderStyle?: {bottom?: number; left?: number; right?: number; top?: number};
     size?: Size;
 }
 

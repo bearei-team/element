@@ -199,8 +199,6 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
         labelText,
         onContentLayout,
         onEvent,
-        type,
-        underlayColor,
         renderStyle: {
             ...border,
             backgroundColor,
@@ -210,5 +208,7 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
             height: layout.height,
             width: layout.width,
         },
+        type,
+        underlayColor,
     });
 };

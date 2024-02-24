@@ -17,3 +17,14 @@ export const ContentText: StoryObj<BadgeProps> = {
 export const MaxContentText: StoryObj<BadgeProps> = {
     args: {size: 'large', labelText: 9999},
 };
+
+export const CustomPosition: StoryObj<BadgeProps> = {
+    args: {
+        size: 'large',
+        labelText: 3,
+        renderStyle: {
+            top: 60,
+            left: 60,
+        },
+    },
+};

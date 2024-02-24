@@ -15,10 +15,9 @@ export interface HoveredBaseProps extends HoveredProps {
 
 export const HoveredBase: FC<HoveredBaseProps> = ({
     eventName,
-    height,
     opacities,
     render,
-    width,
+    renderStyle,
     ...renderProps
 }) => {
     const [{opacity}] = useAnimated({eventName, opacities});
@@ -27,6 +26,6 @@ export const HoveredBase: FC<HoveredBaseProps> = ({
     return render({
         ...renderProps,
         id,
-        renderStyle: {height, opacity, width},
+        renderStyle: {...renderStyle, opacity},
     });
 };
