@@ -2,7 +2,7 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './AvatarBase';
 
-export type ContainerProps = Pick<RenderProps, 'width' | 'height'>;
+export type ContainerProps = Pick<RenderProps, 'renderStyle'>;
 
 export const Container = styled(Shape)<ContainerProps>`
     align-items: center;
@@ -10,11 +10,15 @@ export const Container = styled(Shape)<ContainerProps>`
     justify-content: center;
     pointer-events: none;
 
-    ${({height, theme, width}) => css`
-        background-color: ${theme.palette.primary.primaryContainer};
-        height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
-        width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
-    `}
+    ${({theme, renderStyle = {}}) => {
+        const {width, height} = renderStyle;
+
+        return css`
+            background-color: ${theme.palette.primary.primaryContainer};
+            height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
+            width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
+        `;
+    }}
 `;
 
 export const LabelText = styled(Typography)`

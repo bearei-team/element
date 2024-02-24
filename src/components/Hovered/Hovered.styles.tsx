@@ -2,7 +2,12 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './HoveredBase';
 
-export type ContainerProps = Pick<RenderProps, 'underlayColor' | 'width' | 'height'>;
+export interface ContainerProps extends Pick<RenderProps, 'underlayColor'> {
+    renderStyle?: {
+        width?: number;
+        height?: number;
+    };
+}
 
 export const Container = styled(Shape)<ContainerProps>`
     pointer-events: none;
@@ -15,11 +20,16 @@ export const Container = styled(Shape)<ContainerProps>`
             top: ${theme.adaptSize(theme.spacing.none)}px;
         `}
 
-    ${({underlayColor, width = 0, height = 0}) =>
-        underlayColor &&
-        css`
-            background-color: ${underlayColor};
-            height: ${height}px;
-            width: ${width}px;
-        `}
+    ${({underlayColor, renderStyle = {}}) => {
+        const {height, width} = renderStyle;
+
+        return (
+            underlayColor &&
+            css`
+                background-color: ${underlayColor};
+                height: ${height}px;
+                width: ${width}px;
+            `
+        );
+    }}
 `;

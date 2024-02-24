@@ -4,23 +4,30 @@ import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './ButtonBase';
 
 export interface ContainerProps extends Pick<RenderProps, 'block'> {
-    width?: number;
+    renderStyle: {
+        width?: number;
+    };
 }
 
 export interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
     iconShow: boolean;
-    width?: number;
+    renderStyle: {
+        width?: number;
+    };
 }
 
 export const Container = styled(View)<ContainerProps>`
-    ${({block, width = 0}) =>
-        block
+    ${({block, renderStyle}) => {
+        const {width = 0} = renderStyle;
+
+        return block
             ? css`
                   width: 100%;
               `
             : css`
                   width: ${width}px;
-              `}
+              `;
+    }}
 `;
 
 export const Content = styled(Shape)<ContentProps>`
@@ -101,11 +108,16 @@ export const Content = styled(Shape)<ContentProps>`
         return iconShow && contentType[type];
     }}
 
-    ${({block, width = 0}) =>
-        block &&
-        css`
-            width: ${width}px;
-        `}
+    ${({block, renderStyle}) => {
+        const {width = 0} = renderStyle;
+
+        return (
+            block &&
+            css`
+                width: ${width}px;
+            `
+        );
+    }}
 `;
 
 export const LabelText = styled(Typography)`

@@ -47,8 +47,8 @@ const render = ({
             accessibilityRole="button"
             block={block}
             onLayout={onLayout}
-            testID={`button--${id}`}
-            width={contentWidth}>
+            renderStyle={{width: contentWidth}}
+            testID={`button--${id}`}>
             <Elevation defaultLevel={defaultElevation} level={elevation} shape={shape}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
@@ -57,8 +57,10 @@ const render = ({
                     underlayColor={underlayColor}>
                     <AnimatedContent
                         {...contentProps}
+                        block={block}
                         iconShow={!!icon}
                         onLayout={onContentLayout}
+                        renderStyle={{width}}
                         shape={shape}
                         style={{
                             ...(typeof style === 'object' && style),
@@ -66,9 +68,7 @@ const render = ({
                             backgroundColor,
                         }}
                         testID={`button__content--${id}`}
-                        type={type}
-                        block={block}
-                        width={width}>
+                        type={type}>
                         {icon && !link && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
 
                         <AnimatedLabelText

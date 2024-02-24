@@ -4,9 +4,8 @@ import {Container, LabelText} from './Avatar.styles';
 import {AvatarBase, RenderProps} from './AvatarBase';
 
 export interface AvatarProps extends Partial<ViewProps & RefAttributes<View>> {
-    height?: number;
     labelText?: string;
-    width?: number;
+    renderStyle?: {height?: number; width?: number};
 }
 
 const render = ({id, labelText, ...containerProps}: RenderProps) => (
