@@ -6,7 +6,6 @@ import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.u
 import {RenderProps} from './CardBase';
 
 export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName'>;
-
 export interface ProcessOutlinedAnimatedOptions extends UseAnimatedOptions {
     borderAnimated: Animated.Value;
     borderInputRange: number[];

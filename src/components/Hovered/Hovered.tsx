@@ -10,10 +10,9 @@ export interface HoveredProps
         ViewProps & RefAttributes<Animated.LegacyRef<View>> & Pick<ShapeProps, 'shape'>
     > {
     eventName?: EventName;
-    height?: number;
     opacities?: [number, number, number] | [number, number];
+    renderStyle?: {width?: number; height?: number};
     underlayColor?: string;
-    width?: number;
 }
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
@@ -23,13 +22,9 @@ const render = ({id, renderStyle, style, underlayColor, ...containerProps}: Rend
     return (
         <AnimatedContainer
             {...containerProps}
-            height={height}
-            style={{
-                ...(typeof style === 'object' && style),
-                ...containerStyle,
-            }}
+            renderStyle={{width, height}}
+            style={{...(typeof style === 'object' && style), ...containerStyle}}
             testID={`hovered--${id}`}
-            width={width}
             underlayColor={underlayColor}
         />
     );

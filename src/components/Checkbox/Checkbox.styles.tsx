@@ -1,19 +1,24 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
-import {RenderProps} from './CheckboxBase';
 
-export type ContainerProps = Pick<RenderProps, 'width'>;
-export type ContentProps = Pick<RenderProps, 'width' | 'height'>;
+export interface ContainerProps {
+    renderStyle?: {
+        width?: number;
+    };
+}
 
 export const Container = styled(View)<ContainerProps>`
-    ${({width = 0}) =>
-        css`
+    ${({renderStyle = {}}) => {
+        const {width = 0} = renderStyle;
+
+        return css`
             width: ${width}px;
-        `}
+        `;
+    }}
 `;
 
-export const Content = styled(Shape)<ContentProps>`
+export const Content = styled(Shape)`
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -21,9 +26,9 @@ export const Content = styled(Shape)<ContentProps>`
     pointer-events: none;
     position: relative;
 
-    ${({width, height, theme}) => css`
-        height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
-        width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
+    ${({theme}) => css`
+        height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+        width: ${theme.adaptSize(theme.spacing.small * 5)}px;
     `};
 `;
 

@@ -39,6 +39,7 @@ const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 const AnimatedSubheadText = Animated.createAnimatedComponent(SubheadText);
 const AnimatedTitleText = Animated.createAnimatedComponent(TitleText);
 const render = ({
+    block,
     defaultElevation,
     disabled,
     elevation,
@@ -46,6 +47,7 @@ const render = ({
     footer,
     id,
     onEvent,
+    onInnerLayout,
     primaryButton,
     renderStyle,
     secondaryButton,
@@ -54,17 +56,15 @@ const render = ({
     supportingText,
     titleText,
     underlayColor,
-    onInnerLayout,
-    block,
 }: RenderProps) => {
     const {
-        width,
-        height,
         backgroundColor,
-        titleColor,
-        subColor,
+        height,
         innerHeight,
         innerWidth,
+        subColor,
+        titleColor,
+        width,
         ...border
     } = renderStyle;
 
@@ -73,7 +73,11 @@ const render = ({
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
 
     return (
-        <Container testID={`card--${id}`} block={block} width={innerWidth} onLayout={onLayout}>
+        <Container
+            block={block}
+            onLayout={onLayout}
+            renderStyle={{width: innerWidth}}
+            testID={`card--${id}`}>
             <Elevation defaultLevel={defaultElevation} level={elevation} shape={shape}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
@@ -90,7 +94,7 @@ const render = ({
                         }}
                         testID={`card__inner--${id}`}
                         block={block}
-                        width={width}>
+                        renderStyle={{width}}>
                         <Content testID={`card__content--${id}`}>
                             <ContentHeader testID={`card__contentHeader--${id}`}>
                                 {titleText && (
@@ -139,10 +143,9 @@ const render = ({
 
                         <Hovered
                             eventName={eventName}
-                            height={hoveredLayout.height}
+                            renderStyle={{width: hoveredLayout.width, height: hoveredLayout.height}}
                             shape={shape}
                             underlayColor={underlayColor}
-                            width={hoveredLayout.width}
                         />
                     </AnimatedInner>
                 </TouchableRipple>

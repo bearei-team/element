@@ -4,20 +4,25 @@ import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './CardBase';
 
 export interface ContainerProps extends Pick<RenderProps, 'block'> {
-    width?: number;
+    renderStyle: {
+        width?: number;
+    };
 }
 
 export type InnerProps = ContainerProps;
 
 export const Container = styled(View)<ContainerProps>`
-    ${({block, width = 0}) =>
-        block
+    ${({block, renderStyle}) => {
+        const {width = 0} = renderStyle;
+
+        return block
             ? css`
                   width: 100%;
               `
             : css`
                   width: ${width}px;
-              `}
+              `;
+    }}
 `;
 
 export const Inner = styled(Shape)<InnerProps>`
@@ -28,11 +33,16 @@ export const Inner = styled(Shape)<InnerProps>`
             min-width: ${theme.adaptSize(theme.spacing.small * 45)}px;
         `}
 
-    ${({block, width = 0}) =>
-        block &&
-        css`
-            width: ${width}px;
-        `}
+    ${({block, renderStyle}) => {
+        const {width = 0} = renderStyle;
+
+        return (
+            block &&
+            css`
+                width: ${width}px;
+            `
+        );
+    }}
 `;
 
 export const Media = styled(Shape)`
@@ -71,6 +81,7 @@ export const ContentFooter = styled.View`
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
+
     ${({theme}) =>
         css`
             gap: ${theme.adaptSize(theme.spacing.small)}px;

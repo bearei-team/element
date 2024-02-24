@@ -6,16 +6,14 @@ import {Container, Content, Icon} from './Checkbox.styles';
 import {CheckboxBase, RenderProps} from './CheckboxBase';
 
 export type CheckboxType = 'selected' | 'indeterminate' | 'unselected';
-
 export interface CheckboxProps extends TouchableRippleProps {
+    active?: boolean;
     defaultActive?: boolean;
     disabled?: boolean;
     error?: boolean;
-    height?: number;
     indeterminate?: boolean;
     onActive?: (active?: boolean) => void;
     type?: CheckboxType;
-    width?: number;
 }
 
 const AnimatedContent = Animated.createAnimatedComponent(Content);
@@ -34,7 +32,7 @@ const render = ({
     const shape = 'full';
 
     return (
-        <Container accessibilityRole="checkbox" testID={`checkbox--${id}`} width={width}>
+        <Container accessibilityRole="checkbox" testID={`checkbox--${id}`} renderStyle={{width}}>
             <TouchableRipple
                 {...onTouchableRippleEvent}
                 disabled={disabled}
@@ -48,10 +46,9 @@ const render = ({
                     <Icon testID={`checkbox__icon--${id}`}>{icon}</Icon>
                     <Hovered
                         eventName={eventName}
-                        height={height}
+                        renderStyle={{width, height}}
                         shape={shape}
                         underlayColor={underlayColor}
-                        width={width}
                     />
                 </AnimatedContent>
             </TouchableRipple>

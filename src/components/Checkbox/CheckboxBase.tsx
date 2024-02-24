@@ -33,10 +33,13 @@ export interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessPressOutOptions = Pick<RenderProps, 'active' | 'indeterminate' | 'onActive'> &
+export type ProcessActiveOptions = Pick<RenderProps, 'active' | 'indeterminate' | 'onActive'> &
     ProcessEventOptions;
 
-export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
+export type ProcessStateChangeOptions = OnStateChangeOptions &
+    ProcessActiveOptions &
+    Pick<InitialState, 'status'>;
+
 export type ProcessDefaultActiveOptions = Pick<RenderProps, 'defaultActive' | 'indeterminate'> &
     ProcessEventOptions;
 
@@ -48,16 +51,25 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processPressOut = ({setState, active, indeterminate, onActive}: ProcessPressOutOptions) => {
+const processActive = (
+    status: ComponentStatus,
+    {setState, active, indeterminate, onActive}: ProcessActiveOptions,
+) => {
+    if (status === 'idle') {
+        return;
+    }
+
     const nextActive = !active;
     const activeType = indeterminate ? 'indeterminate' : 'selected';
 
     setState(draft => {
-        draft.active = nextActive;
-        draft.type = nextActive ? activeType : 'unselected';
-    });
+        if (draft.active !== nextActive) {
+            draft.active = nextActive;
+            draft.type = nextActive ? activeType : 'unselected';
 
-    onActive?.(nextActive);
+            onActive?.(nextActive);
+        }
+    });
 };
 
 const processStateChange = ({
@@ -67,10 +79,11 @@ const processStateChange = ({
     onActive,
     active,
     indeterminate,
+    status,
 }: ProcessStateChangeOptions) => {
     const nextEvent = {
         layout: () => processLayout(event as LayoutChangeEvent, {setState}),
-        pressOut: () => processPressOut({setState, onActive, active, indeterminate}),
+        pressOut: () => processActive(status, {setState, onActive, active, indeterminate}),
     };
 
     nextEvent[eventName as keyof typeof nextEvent]?.();
@@ -116,6 +129,7 @@ export const CheckboxBase: FC<CheckboxBaseProps> = ({
     indeterminate,
     onActive,
     render,
+    active: activeSource,
     ...renderProps
 }) => {
     const [{active, eventName, layout, status, type}, setState] = useImmer<InitialState>({
@@ -137,8 +151,8 @@ export const CheckboxBase: FC<CheckboxBaseProps> = ({
     const [icon] = useIcon({disabled, error, eventName, type});
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange({...options, active, indeterminate, onActive, setState}),
-        [active, indeterminate, onActive, setState],
+            processStateChange({...options, active, indeterminate, onActive, setState, status}),
+        [active, indeterminate, onActive, setState, status],
     );
 
     const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
@@ -146,6 +160,10 @@ export const CheckboxBase: FC<CheckboxBaseProps> = ({
     useEffect(() => {
         processDefaultActive(status, {defaultActive, indeterminate, setState});
     }, [defaultActive, indeterminate, setState, status]);
+
+    useEffect(() => {
+        processActive(status, {active: activeSource, indeterminate, setState, onActive});
+    }, [activeSource, indeterminate, onActive, setState, status]);
 
     useEffect(() => {
         processIndeterminate({setState}, indeterminate);
