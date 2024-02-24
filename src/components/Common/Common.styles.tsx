@@ -17,13 +17,6 @@ export interface TypographyProps {
     type?: keyof EITypography;
 }
 
-export const Root = styled.View`
-    flex: 1;
-    height: 100%;
-    position: relative;
-    width: 100%;
-`;
-
 export const Shape = styled(View)<ShapeProps>`
     ${({shape = 'none', theme}) => css`
         border-bottom-left-radius: ${theme.adaptSize(theme.shape[shape].bottomLeft)}px;

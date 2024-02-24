@@ -1,6 +1,7 @@
 import {FC, forwardRef, memo} from 'react';
 import {View} from 'react-native';
 import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
+import {Supporting} from './Supporting/Supporting';
 import {Container} from './Tooltip.styles';
 import {RenderProps, TooltipBase} from './TooltipBase';
 
@@ -10,18 +11,47 @@ export interface TooltipProps extends TouchableRippleProps {
     supportingText?: string;
     type?: TooltipType;
     visible?: boolean;
+    defaultVisible?: boolean;
 }
 
 /**
  * TODO: "rich"
  */
 
-const render = ({children, id, renderStyle, ...containerProps}: RenderProps) => {
+const render = ({
+    children,
+    containerCurrent,
+    id,
+    onEvent,
+    onVisible,
+    renderStyle,
+    supportingPosition,
+    supportingText,
+    visible,
+    windowDimensions,
+    defaultVisible,
+    ...containerProps
+}: RenderProps) => {
     const {width, height} = renderStyle;
 
     return (
-        <Container {...containerProps} testID={`tooltip--${id}`} width={width} height={height}>
+        <Container
+            {...containerProps}
+            {...onEvent}
+            testID={`tooltip--${id}`}
+            renderStyle={{width, height}}>
             {children}
+            {typeof width === 'number' && width && (
+                <Supporting
+                    containerCurrent={containerCurrent}
+                    defaultVisible={defaultVisible}
+                    onVisible={onVisible}
+                    supportingPosition={supportingPosition}
+                    supportingText={supportingText}
+                    visible={visible}
+                    windowDimensions={windowDimensions}
+                />
+            )}
         </Container>
     );
 };
