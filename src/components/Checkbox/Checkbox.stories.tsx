@@ -8,7 +8,7 @@ export default {
 } as Meta<typeof Checkbox>;
 
 export const CheckboxSelected: StoryObj<CheckboxProps> = {
-    args: {active: false},
+    args: {defaultActive: true, active: true},
 };
 
 export const CheckboxIndeterminate: StoryObj<CheckboxProps> = {

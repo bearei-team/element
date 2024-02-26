@@ -152,13 +152,13 @@ const processDisabledElevation = ({type, setState}: ProcessInitOptions, disabled
     typeof disabled === 'boolean' &&
     type === 'elevated' &&
     setState(draft => {
-        draft.elevation = disabled ? 0 : 1;
+        draft.status === 'succeeded' && (draft.elevation = disabled ? 0 : 1);
     });
 
 const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
     disabled &&
     setState(draft => {
-        draft.eventName = 'none';
+        draft.status === 'succeeded' && (draft.eventName = 'none');
     });
 
 export const CardBase: FC<CardBaseProps> = ({

@@ -47,6 +47,7 @@ export const Elevated: StoryObj<ButtonProps> = {
     args: {
         labelText: 'Label',
         type: 'elevated',
+        disabled: true,
     },
 };
 

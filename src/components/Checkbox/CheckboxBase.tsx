@@ -48,8 +48,7 @@ type ProcessActiveOptions = Pick<RenderProps, 'active' | 'indeterminate' | 'onAc
     ProcessEventOptions;
 
 type ProcessStateChangeOptions = OnStateChangeOptions & ProcessActiveOptions;
-type ProcessInitOptions = Pick<RenderProps, 'defaultActive' | 'indeterminate'> &
-    ProcessEventOptions;
+type ProcessInitOptions = Pick<RenderProps, 'active' | 'indeterminate'> & ProcessEventOptions;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -94,16 +93,16 @@ const processStateChange = ({
     });
 };
 
-const processInit = ({defaultActive, indeterminate, setState}: ProcessInitOptions) =>
+const processInit = ({active, indeterminate, setState}: ProcessInitOptions) =>
     setState(draft => {
         if (draft.status !== 'idle') {
             return;
         }
 
-        if (typeof defaultActive === 'boolean') {
-            const defaultType = defaultActive ? 'selected' : 'unselected';
+        if (typeof active === 'boolean') {
+            const defaultType = active ? 'selected' : 'unselected';
 
-            draft.active = defaultActive;
+            draft.active = active;
             draft.type = indeterminate ? 'indeterminate' : defaultType;
         }
 
@@ -171,8 +170,8 @@ export const CheckboxBase: FC<CheckboxBaseProps> = ({
     }, [indeterminate, setState]);
 
     useEffect(() => {
-        processInit({defaultActive, indeterminate, setState});
-    }, [defaultActive, indeterminate, setState]);
+        processInit({active: activeSource ?? defaultActive, indeterminate, setState});
+    }, [activeSource, defaultActive, indeterminate, setState]);
 
     if (status === 'idle') {
         return <></>;
