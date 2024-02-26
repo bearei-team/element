@@ -1,9 +1,9 @@
 import {useTheme} from 'styled-components/native';
 import {RenderProps} from './FABBase';
 
-export type UseUnderlayColorOptions = Required<Pick<RenderProps, 'type'>>;
+type UseUnderlayColorOptions = Pick<RenderProps, 'type'>;
 
-export const useUnderlayColor = ({type}: UseUnderlayColorOptions) => {
+export const useUnderlayColor = ({type = 'primary'}: UseUnderlayColorOptions) => {
     const theme = useTheme();
     const underlay = {
         primary: theme.palette.primary.onPrimaryContainer,

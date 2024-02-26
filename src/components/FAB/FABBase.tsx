@@ -2,12 +2,23 @@ import {FC, useCallback, useEffect, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
-import {EventName, State} from '../Common/interface';
+import {EventName, Size, State} from '../Common/interface';
 import {ElevationLevel} from '../Elevation/Elevation';
-import {FABProps} from './FAB';
+import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {useAnimated} from './useAnimated';
 import {useIcon} from './useIcon';
 import {useUnderlayColor} from './useUnderlayColor';
+
+type FABType = 'surface' | 'primary' | 'secondary' | 'tertiary';
+export interface FABProps extends TouchableRippleProps {
+    defaultElevation?: ElevationLevel;
+    disabled?: boolean;
+    elevated?: boolean;
+    icon?: React.JSX.Element;
+    labelText?: string;
+    size?: Size;
+    type?: FABType;
+}
 
 export interface RenderProps extends FABProps {
     onEvent: OnEvent;
@@ -20,25 +31,25 @@ export interface RenderProps extends FABProps {
     eventName?: EventName;
 }
 
-export interface FABBaseProps extends FABProps {
+interface FABBaseProps extends FABProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface InitialState {
+interface InitialState {
     elevation?: ElevationLevel;
     eventName: EventName;
     layout: LayoutRectangle;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessStateChangeOptions = Pick<RenderProps, 'elevated'> &
+type ProcessStateChangeOptions = Pick<RenderProps, 'elevated'> &
     ProcessEventOptions &
     OnStateChangeOptions;
 
-export type ProcessDisabledElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
+type ProcessDisabledElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
 
 const processElevation = (nextState: State, {setState}: ProcessEventOptions) => {
     const level = {

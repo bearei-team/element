@@ -2,21 +2,9 @@ import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
-import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
+import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon, LabelText} from './Chip.styles';
-import {ChipBase, RenderProps} from './ChipBase';
-
-export type ChipType = 'input' | 'assist' | 'filter' | 'suggestion' | 'text';
-export interface ChipProps extends TouchableRippleProps {
-    active?: boolean;
-    defaultActive?: boolean;
-    elevated?: boolean;
-    fill?: string;
-    icon?: React.JSX.Element;
-    labelText?: string;
-    trailingIcon?: React.JSX.Element;
-    type?: ChipType;
-}
+import {ChipBase, ChipProps, RenderProps} from './ChipBase';
 
 const AnimatedContent = Animated.createAnimatedComponent(Content);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
@@ -102,3 +90,4 @@ const ForwardRefChip = forwardRef<View, ChipProps>((props, ref) => (
 ));
 
 export const Chip: FC<ChipProps> = memo(ForwardRefChip);
+export type {ChipProps};

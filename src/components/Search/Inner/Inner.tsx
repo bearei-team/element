@@ -1,39 +1,28 @@
 import {FC, forwardRef, memo} from 'react';
-import {Animated, LayoutRectangle, ScaledSize, TextInput, View} from 'react-native';
-import {EventName} from '../../Common/interface';
+import {Animated, TextInput} from 'react-native';
 import {Divider} from '../../Divider/Divider';
 import {Hovered} from '../../Hovered/Hovered';
 import {Icon} from '../../Icon/Icon';
 import {List} from '../../List/List';
-import {SearchProps} from '../Search';
 import {Container, Content, Header, Leading, Trailing} from './Inner.styles';
-import {InnerBase, RenderProps} from './InnerBase';
-
-export interface InnerProps extends SearchProps {
-    activeKey?: string;
-    containerLayout: LayoutRectangle & {pageX: number; pageY: number};
-    eventName: EventName;
-    onListActive: (key?: string) => void;
-    underlayColor: string;
-    containerCurrent: View | null;
-    windowDimensions: ScaledSize;
-}
+import {InnerBase, InnerProps, RenderProps} from './InnerBase';
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const render = ({
+    activeKey,
     containerLayout,
+    data,
     eventName,
     id,
     input,
     leading,
+    listVisible,
+    onActive,
     onEvent,
     placeholder,
+    renderStyle,
     trailing,
     underlayColor,
-    visible,
-    renderStyle,
-    activeKey,
-    data,
     ...containerProps
 }: RenderProps) => {
     const shape = 'extraLarge';
@@ -49,6 +38,7 @@ const render = ({
             pageY={pageY}
             shape={shape}
             style={{height}}
+            renderStyle={{width: containerWidth}}
             testID={`search__inner--${id}`}>
             <Header
                 {...headerEvent}
@@ -69,13 +59,12 @@ const render = ({
                     eventName={eventName}
                     opacities={[0, 0.08]}
                     renderStyle={{width: containerWidth, height: containerHeight}}
-                    shape={visible ? 'extraLargeTop' : shape}
+                    shape={listVisible ? 'extraLargeTop' : shape}
                     underlayColor={underlayColor}
                 />
             </Header>
-
             <Divider />
-            <List data={data} activeKey={activeKey} />
+            <List data={data} activeKey={activeKey} onActive={onActive} />
         </AnimatedContainer>
     );
 };
@@ -85,3 +74,4 @@ const ForwardRefInner = forwardRef<TextInput, InnerProps>((props, ref) => (
 ));
 
 export const Inner: FC<InnerProps> = memo(ForwardRefInner);
+export type {InnerProps};

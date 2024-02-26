@@ -1,19 +1,9 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Hovered} from '../Hovered/Hovered';
-import {TooltipProps} from '../Tooltip/Tooltip';
-import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
+import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon} from './IconButton.styles';
-import {IconButtonBase, RenderProps} from './IconButtonBase';
-
-export type IconButtonType = 'filled' | 'outlined' | 'standard' | 'tonal';
-export interface IconButtonProps extends Partial<TouchableRippleProps> {
-    fill?: string;
-    icon?: React.JSX.Element;
-    renderStyle?: {width?: number; height?: number};
-    tooltip?: TooltipProps;
-    type?: IconButtonType;
-}
+import {IconButtonBase, IconButtonProps, RenderProps} from './IconButtonBase';
 
 /**
  * TODO: Selected
@@ -85,3 +75,4 @@ const ForwardRefIconButton = forwardRef<View, IconButtonProps>((props, ref) => (
 ));
 
 export const IconButton: FC<IconButtonProps> = memo(ForwardRefIconButton);
+export type {IconButtonProps};

@@ -1,8 +1,8 @@
 import {FC, forwardRef, memo} from 'react';
-import {Animated, GestureResponderEvent, View} from 'react-native';
+import {Animated, View} from 'react-native';
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
-import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
+import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {
     Container,
     Content,
@@ -15,24 +15,7 @@ import {
     SupportingText,
     TitleText,
 } from './Card.styles';
-import {CardBase, RenderProps} from './CardBase';
-
-export type CardType = 'elevated' | 'filled' | 'outlined';
-export interface CardProps extends TouchableRippleProps {
-    block?: boolean;
-    footer?: boolean;
-    onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
-    onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
-    primaryButton?: React.JSX.Element;
-    primaryButtonLabelText?: string;
-    secondaryButton?: React.JSX.Element;
-    secondaryButtonLabelText?: string;
-    subheadText?: string;
-    subheadTitleText?: string;
-    supportingText?: string;
-    titleText?: string;
-    type?: CardType;
-}
+import {CardBase, CardProps, RenderProps} from './CardBase';
 
 const AnimatedInner = Animated.createAnimatedComponent(Inner);
 const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
@@ -159,3 +142,4 @@ const ForwardRefCard = forwardRef<View, CardProps>((props, ref) => (
 ));
 
 export const Card: FC<CardProps> = memo(ForwardRefCard);
+export type {CardProps};

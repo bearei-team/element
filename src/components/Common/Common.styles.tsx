@@ -12,7 +12,7 @@ export interface ShapeProps {
     shape?: keyof ThemeShape;
 }
 
-export interface TypographyProps {
+interface TypographyProps {
     size?: Size;
     type?: keyof ThemeTypography;
 }

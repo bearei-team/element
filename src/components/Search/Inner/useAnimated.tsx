@@ -4,11 +4,11 @@ import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTiming.utils';
 
-export interface UseAnimatedOptions {
+interface UseAnimatedOptions {
     listVisible?: boolean;
 }
 
-export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
     heightAnimated: Animated.Value;
 }
 

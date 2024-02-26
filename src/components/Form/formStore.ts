@@ -8,21 +8,21 @@ export interface FieldError extends Pick<ValidateOptions, 'rules'> {
     errors: ValidateError[];
 }
 
-export type Error<T> = Record<keyof T, FieldError | undefined>;
+type Error<T> = Record<keyof T, FieldError | undefined>;
 export interface Callback<T extends Store> {
     onFinish?: (value: T) => void;
     onFinishFailed?: (error: Error<T>) => void;
     onValueChange?: (changedValue: T, value: T) => void;
 }
 
-export interface FieldEntity {
+interface FieldEntity {
     onFormStoreChange: () => void;
     props: FormItemProps;
     touched: boolean;
     validate: (value?: unknown) => Promise<FieldError | undefined>;
 }
 
-export interface SetFieldValueOptions {
+interface SetFieldValueOptions {
     response?: boolean;
     skipValidate?: boolean;
 }

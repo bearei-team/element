@@ -3,7 +3,7 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './ChipBase';
 
-export interface ContentProps extends Pick<RenderProps, 'type'> {
+interface ContentProps extends Pick<RenderProps, 'type'> {
     iconShow: boolean;
     trailingIconShow: boolean;
 }

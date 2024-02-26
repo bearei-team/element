@@ -5,8 +5,8 @@ import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.utils';
 import {RenderProps} from './IconBase';
 
-export type UseAnimatedOptions = Pick<RenderProps, 'eventName'>;
-export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+type UseAnimatedOptions = Pick<RenderProps, 'eventName'>;
+interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
     scaleAnimated: Animated.Value;
 }
 

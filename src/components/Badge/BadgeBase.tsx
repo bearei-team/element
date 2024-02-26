@@ -1,8 +1,15 @@
-import {FC, useId} from 'react';
-import {BadgeProps} from './Badge';
+import {FC, RefAttributes, useId} from 'react';
+import {View, ViewProps} from 'react-native';
+import {Size} from '../Common/interface';
+
+export interface BadgeProps extends Partial<ViewProps & RefAttributes<View>> {
+    labelText?: number | string;
+    renderStyle?: {bottom?: number; left?: number; right?: number; top?: number};
+    size?: Size;
+}
 
 export type RenderProps = BadgeProps;
-export interface BadgeBaseProps extends BadgeProps {
+interface BadgeBaseProps extends BadgeProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 

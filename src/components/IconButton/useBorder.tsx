@@ -1,8 +1,9 @@
-import {Animated, ViewStyle} from 'react-native';
+import {ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
+import {AnimatedInterpolation} from '../Common/interface';
 
-export interface UseBorderOptions {
-    borderColor?: Animated.AnimatedInterpolation<string | number>;
+interface UseBorderOptions {
+    borderColor?: AnimatedInterpolation;
 }
 
 export const useBorder = ({borderColor}: UseBorderOptions) => {

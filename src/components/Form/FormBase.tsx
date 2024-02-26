@@ -1,29 +1,41 @@
-import {useEffect, useId, useMemo} from 'react';
+import {RefAttributes, useEffect, useId, useMemo} from 'react';
 import {Updater, useImmer} from 'use-immer';
 import {ComponentStatus} from '../Common/interface';
-import {FormProps} from './Form';
-import {FormItem} from './FormItem/FormItem';
-import {FormStore, Store} from './formStore';
+
+import {View, ViewProps} from 'react-native';
+import {FormItem, FormItemProps} from './FormItem/FormItem';
+import {Callback, FormStore, Store} from './formStore';
 import {useForm} from './useForm';
 
+/**
+ * TODO: vertical
+ */
+export interface FormProps<T extends Store = Store>
+    extends Partial<ViewProps & RefAttributes<View> & Callback<T>> {
+    form?: FormStore<T>;
+    initialValue?: T;
+    items?: FormItemProps[];
+    layout?: 'horizontal' | 'vertical';
+}
+
 export type RenderProps<T extends Store> = FormProps<T>;
-export interface FormBaseProps<T extends Store> extends FormProps<T> {
+interface FormBaseProps<T extends Store> extends FormProps<T> {
     render: (props: RenderProps<T>) => React.JSX.Element;
 }
 
-export interface InitialState {
+interface InitialState {
     status: ComponentStatus;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessInitOptions = ProcessEventOptions &
+type ProcessInitOptions = ProcessEventOptions &
     Pick<FormStore<any>, 'setInitialValue'> &
     Pick<FormBaseProps<Store>, 'initialValue'>;
 
-export type ProcessCallbackOptions = Pick<
+type ProcessCallbackOptions = Pick<
     FormProps<any>,
     'onFinish' | 'onFinishFailed' | 'onValueChange'
 > &

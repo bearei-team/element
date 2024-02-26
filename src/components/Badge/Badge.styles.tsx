@@ -2,7 +2,7 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './BadgeBase';
 
-export type ContainerProps = Pick<RenderProps, 'size' | 'renderStyle'>;
+type ContainerProps = Pick<RenderProps, 'size' | 'renderStyle'>;
 
 export const Container = styled(Shape)<ContainerProps>`
     align-items: center;

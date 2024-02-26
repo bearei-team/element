@@ -1,16 +1,49 @@
-import {FC, useCallback, useEffect, useId} from 'react';
-import {ListRenderItemInfo} from 'react-native';
+import {FC, RefAttributes, useCallback, useEffect, useId} from 'react';
+import {FlatList, FlatListProps, ListRenderItemInfo} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
+import {ShapeProps} from '../Common/Common.styles';
 import {ComponentStatus} from '../Common/interface';
-import {ListDataSource, ListProps} from './List';
-import {ListItem} from './ListItem/ListItem';
+import {ListItem, ListItemProps} from './ListItem/ListItem';
+
+export interface ListDataSource
+    extends Pick<
+        ListItemProps,
+        'headline' | 'leading' | 'supportingText' | 'supportingTextNumberOfLines' | 'trailing'
+    > {
+    key?: string;
+}
+
+export interface ListProps
+    extends Partial<FlatListProps<ListDataSource> & RefAttributes<FlatList<ListDataSource>>> {
+    activeKey?: string;
+
+    /**
+     * Sets whether the item can be closed.
+     */
+    close?: boolean;
+    data?: ListDataSource[];
+    defaultActiveKey?: string;
+
+    /**
+     * Set the shape of the item.
+     */
+    shape?: ShapeProps['shape'];
+
+    /**
+     * Specifies the spacing between items
+     */
+    gap?: number;
+    onActive?: (key?: string) => void;
+    onClose?: (key?: string) => void;
+    supportingTextNumberOfLines?: ListDataSource['supportingTextNumberOfLines'];
+}
 
 export type RenderProps = ListProps;
-export interface ListBaseProps extends ListProps {
+interface ListBaseProps extends ListProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export type RenderItemOptions = ListRenderItemInfo<ListDataSource> &
+type RenderItemOptions = ListRenderItemInfo<ListDataSource> &
     Pick<
         RenderProps,
         | 'activeKey'
@@ -23,19 +56,19 @@ export type RenderItemOptions = ListRenderItemInfo<ListDataSource> &
         | 'supportingTextNumberOfLines'
     >;
 
-export interface InitialState {
+interface InitialState {
     activeKey?: string;
     data: ListDataSource[];
     status: ComponentStatus;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
-export type ProcessCloseOptions = ProcessEventOptions & Pick<RenderProps, 'onClose'>;
-export type ProcessActiveKeyOptions = ProcessEventOptions & Pick<RenderProps, 'activeKey'>;
+type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
+type ProcessCloseOptions = ProcessEventOptions & Pick<RenderProps, 'onClose'>;
+type ProcessActiveKeyOptions = ProcessEventOptions & Pick<RenderProps, 'activeKey'>;
 
 const processActive = ({onActive, setState}: ProcessActiveOptions, key?: string) =>
     typeof key === 'string' &&

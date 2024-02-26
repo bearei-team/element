@@ -1,7 +1,7 @@
 import {useTheme} from 'styled-components/native';
 import {RenderProps} from './ChipBase';
 
-export type UseUnderlayColorOptions = Required<Pick<RenderProps, 'type' | 'elevated'>>;
+type UseUnderlayColorOptions = Required<Pick<RenderProps, 'type' | 'elevated'>>;
 
 export const useUnderlayColor = ({type, elevated}: UseUnderlayColorOptions) => {
     const theme = useTheme();

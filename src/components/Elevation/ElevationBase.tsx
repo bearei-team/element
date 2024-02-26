@@ -1,10 +1,24 @@
-import {FC, useCallback, useEffect, useId} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, ViewStyle} from 'react-native';
+import {FC, RefAttributes, useCallback, useEffect, useId} from 'react';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    View,
+    ViewProps,
+    ViewStyle,
+} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
+import {ShapeProps} from '../Common/Common.styles';
 import {AnimatedInterpolation, ComponentStatus, State} from '../Common/interface';
-import {ElevationLevel, ElevationProps} from './Elevation';
 import {useAnimated} from './useAnimated';
+
+export type ElevationLevel = 0 | 1 | 2 | 3 | 4 | 5 | undefined;
+export interface ElevationProps
+    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>> {
+    level?: ElevationLevel;
+    defaultLevel?: ElevationLevel;
+}
 
 export interface RenderProps extends ElevationProps {
     onContentLayout?: (event: LayoutChangeEvent) => void;
@@ -17,7 +31,7 @@ export interface RenderProps extends ElevationProps {
     };
 }
 
-export interface ElevationBaseProps extends ElevationProps {
+interface ElevationBaseProps extends ElevationProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
@@ -27,13 +41,13 @@ export interface InitialState {
     status: ComponentStatus;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessEventOptions;
-export type ProcessInitOptions = Pick<ElevationProps, 'defaultLevel'> & ProcessEventOptions;
-export type ProcessLevelOptions = Pick<RenderProps, 'level'> & ProcessEventOptions;
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessEventOptions;
+type ProcessInitOptions = Pick<ElevationProps, 'defaultLevel'> & ProcessEventOptions;
+type ProcessLevelOptions = Pick<RenderProps, 'level'> & ProcessEventOptions;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;

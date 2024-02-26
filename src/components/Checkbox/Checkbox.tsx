@@ -1,20 +1,9 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Hovered} from '../Hovered/Hovered';
-import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
+import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon} from './Checkbox.styles';
-import {CheckboxBase, RenderProps} from './CheckboxBase';
-
-export type CheckboxType = 'selected' | 'indeterminate' | 'unselected';
-export interface CheckboxProps extends TouchableRippleProps {
-    active?: boolean;
-    defaultActive?: boolean;
-    disabled?: boolean;
-    error?: boolean;
-    indeterminate?: boolean;
-    onActive?: (active?: boolean) => void;
-    type?: CheckboxType;
-}
+import {CheckboxBase, CheckboxProps, RenderProps} from './CheckboxBase';
 
 const AnimatedContent = Animated.createAnimatedComponent(Content);
 const render = ({
@@ -61,3 +50,4 @@ const ForwardRefCheckbox = forwardRef<View, CheckboxProps>((props, ref) => (
 ));
 
 export const Checkbox: FC<CheckboxProps> = memo(ForwardRefCheckbox);
+export type {CheckboxProps};

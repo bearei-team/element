@@ -2,17 +2,9 @@ import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
-import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
+import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon, LabelText} from './Button.styles';
-import {ButtonBase, RenderProps} from './ButtonBase';
-
-export type ButtonType = 'elevated' | 'filled' | 'link' | 'outlined' | 'text' | 'tonal';
-export interface ButtonProps extends TouchableRippleProps {
-    block?: boolean;
-    icon?: React.JSX.Element;
-    labelText?: string;
-    type?: ButtonType;
-}
+import {ButtonBase, ButtonProps, RenderProps} from './ButtonBase';
 
 const AnimatedContent = Animated.createAnimatedComponent(Content);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
@@ -99,3 +91,4 @@ const ForwardRefButton = forwardRef<View, ButtonProps>((props, ref) => (
 ));
 
 export const Button: FC<ButtonProps> = memo(ForwardRefButton);
+export type {ButtonProps};

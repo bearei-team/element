@@ -3,11 +3,11 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './ElevationBase';
 
-export interface ContainerProps {
+interface ContainerProps {
     renderStyle?: {width?: number; height?: number};
 }
 
-export interface ShadowProps extends Pick<RenderProps & ContainerProps, 'level' | 'renderStyle'> {
+interface ShadowProps extends Pick<RenderProps & ContainerProps, 'level' | 'renderStyle'> {
     shadowIndex: 0 | 1;
 }
 

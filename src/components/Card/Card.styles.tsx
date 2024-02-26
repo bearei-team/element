@@ -3,13 +3,13 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './CardBase';
 
-export interface ContainerProps extends Pick<RenderProps, 'block'> {
+interface ContainerProps extends Pick<RenderProps, 'block'> {
     renderStyle: {
         width?: number;
     };
 }
 
-export type InnerProps = ContainerProps;
+type InnerProps = ContainerProps;
 
 export const Container = styled(View)<ContainerProps>`
     ${({block, renderStyle}) => {

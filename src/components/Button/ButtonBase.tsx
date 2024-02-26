@@ -4,11 +4,19 @@ import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ComponentStatus, EventName, State} from '../Common/interface';
 import {ElevationLevel} from '../Elevation/Elevation';
-import {ButtonProps} from './Button';
+import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {useAnimated} from './useAnimated';
 import {useBorder} from './useBorder';
 import {useIcon} from './useIcon';
 import {useUnderlayColor} from './useUnderlayColor';
+
+type ButtonType = 'elevated' | 'filled' | 'link' | 'outlined' | 'text' | 'tonal';
+export interface ButtonProps extends TouchableRippleProps {
+    block?: boolean;
+    icon?: React.JSX.Element;
+    labelText?: string;
+    type?: ButtonType;
+}
 
 export interface RenderProps extends ButtonProps {
     defaultElevation: ElevationLevel;
@@ -24,11 +32,11 @@ export interface RenderProps extends ButtonProps {
     };
 }
 
-export interface ButtonBaseProps extends ButtonProps {
+interface ButtonBaseProps extends ButtonProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface InitialState {
+interface InitialState {
     contentLayout: LayoutRectangle;
     defaultElevation?: ElevationLevel;
     elevation?: ElevationLevel;
@@ -37,15 +45,15 @@ export interface InitialState {
     status: ComponentStatus;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessContentLayoutOptions = Pick<RenderProps, 'block'> & ProcessEventOptions;
-export type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
-export type ProcessInitOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
-export type ProcessLayoutOptions = Pick<RenderProps, 'type' | 'block'> & ProcessEventOptions;
-export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
+type ProcessContentLayoutOptions = Pick<RenderProps, 'block'> & ProcessEventOptions;
+type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
+type ProcessInitOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
+type ProcessLayoutOptions = Pick<RenderProps, 'type' | 'block'> & ProcessEventOptions;
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) =>
     type === 'elevated' ? 1 : 0;

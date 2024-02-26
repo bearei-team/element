@@ -6,12 +6,12 @@ import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTiming.utils';
 import {InitialState, RenderProps} from './NavigationRailItemBase';
 
-export interface UseAnimatedOptions extends Pick<RenderProps, 'active' | 'block'> {
+interface UseAnimatedOptions extends Pick<RenderProps, 'active' | 'block'> {
     defaultActive?: boolean;
     setState: Updater<InitialState>;
 }
 
-export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
     labelAnimated: Animated.Value;
 }
 

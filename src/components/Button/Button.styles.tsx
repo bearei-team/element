@@ -3,17 +3,13 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './ButtonBase';
 
-export interface ContainerProps extends Pick<RenderProps, 'block'> {
-    renderStyle: {
-        width?: number;
-    };
+interface ContainerProps extends Pick<RenderProps, 'block'> {
+    renderStyle: {width?: number};
 }
 
-export interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
+interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
     iconShow: boolean;
-    renderStyle: {
-        width?: number;
-    };
+    renderStyle: {width?: number};
 }
 
 export const Container = styled(View)<ContainerProps>`

@@ -1,20 +1,7 @@
-import React, {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, View, ViewProps} from 'react-native';
-import {SvgProps} from 'react-native-svg';
-import {EventName} from '../Common/interface';
+import React, {FC, forwardRef, memo} from 'react';
+import {Animated, View} from 'react-native';
 import {Container} from './Icon.styles';
-import {IconBase, RenderProps} from './IconBase';
-import {filled} from './icons/filled';
-
-export type IconName = keyof (typeof filled)['svg'];
-export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
-export interface IconProps
-    extends Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps> {
-    eventName?: EventName;
-    name?: IconName;
-    renderStyle?: {width?: number; height?: number};
-    type?: IconType;
-}
+import {IconBase, IconProps, RenderProps} from './IconBase';
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const render = ({id, renderStyle, children, style, ...containerProps}: RenderProps) => {
@@ -40,3 +27,4 @@ const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => (
 ));
 
 export const Icon: FC<IconProps> = memo(ForwardRefIcon);
+export type {IconProps};

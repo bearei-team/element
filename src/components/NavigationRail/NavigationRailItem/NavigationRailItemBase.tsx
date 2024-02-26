@@ -1,20 +1,35 @@
-import {FC, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, RefAttributes, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
     LayoutChangeEvent,
     LayoutRectangle,
     NativeTouchEvent,
+    PressableProps,
     TextStyle,
+    View,
+    ViewProps,
     ViewStyle,
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../../hooks/useOnEvent';
+import {ShapeProps} from '../../Common/Common.styles';
 import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
-import {NavigationRailItemProps} from './NavigationRailItem';
 import {useAnimated} from './useAnimated';
+
+export interface NavigationRailItemProps
+    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & PressableProps> {
+    activeIcon?: React.JSX.Element;
+    activeKey?: string;
+    block?: boolean;
+    defaultActiveKey?: string;
+    icon?: React.JSX.Element;
+    indexKey?: string;
+    labelText?: string;
+    onActive?: (key?: string) => void;
+}
 
 export interface RenderProps extends NavigationRailItemProps {
     active?: boolean;
@@ -32,7 +47,7 @@ export interface RenderProps extends NavigationRailItemProps {
     underlayColor: string;
 }
 
-export interface NavigationRailItemBaseProps extends NavigationRailItemProps {
+interface NavigationRailItemBaseProps extends NavigationRailItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
@@ -44,16 +59,16 @@ export interface InitialState {
     status: ComponentStatus;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
+type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
     ProcessEventOptions;
 
-export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
-export type ProcessInitOptions = ProcessEventOptions & Pick<RenderProps, 'defaultActive'>;
-export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'active'>;
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
+type ProcessInitOptions = ProcessEventOptions & Pick<RenderProps, 'defaultActive'>;
+type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'active'>;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;

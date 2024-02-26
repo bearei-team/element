@@ -1,23 +1,10 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
-import {Size} from '../Common/interface';
-import {Elevation, ElevationLevel} from '../Elevation/Elevation';
+import {Elevation} from '../Elevation/Elevation';
 import {Hovered} from '../Hovered/Hovered';
-import {TouchableRipple, TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
+import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon, LabelText} from './FAB.styles';
-import {FABBase, RenderProps} from './FABBase';
-
-export type FABType = 'surface' | 'primary' | 'secondary' | 'tertiary';
-
-export interface FABProps extends TouchableRippleProps {
-    defaultElevation?: ElevationLevel;
-    disabled?: boolean;
-    elevated?: boolean;
-    icon?: React.JSX.Element;
-    labelText?: string;
-    size?: Size;
-    type?: FABType;
-}
+import {FABBase, FABProps, RenderProps} from './FABBase';
 
 const AnimatedContent = Animated.createAnimatedComponent(Content);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
@@ -91,3 +78,4 @@ const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => (
 ));
 
 export const FAB: FC<FABProps> = memo(ForwardRefFAB);
+export type {FABProps};

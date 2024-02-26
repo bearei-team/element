@@ -13,11 +13,24 @@ import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ComponentStatus, EventName, State} from '../Common/interface';
 import {ElevationLevel} from '../Elevation/Elevation';
-import {ChipProps} from './Chip';
+
+import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {useAnimated} from './useAnimated';
 import {useBorder} from './useBorder';
 import {useIcon} from './useIcon';
 import {useUnderlayColor} from './useUnderlayColor';
+
+type ChipType = 'input' | 'assist' | 'filter' | 'suggestion' | 'text';
+export interface ChipProps extends TouchableRippleProps {
+    active?: boolean;
+    defaultActive?: boolean;
+    elevated?: boolean;
+    fill?: string;
+    icon?: React.JSX.Element;
+    labelText?: string;
+    trailingIcon?: React.JSX.Element;
+    type?: ChipType;
+}
 
 export interface RenderProps extends ChipProps {
     activeColor: string;
@@ -33,11 +46,11 @@ export interface RenderProps extends ChipProps {
     rippleCentered?: boolean;
 }
 
-export interface ChipBaseProps extends ChipProps {
+interface ChipBaseProps extends ChipProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface InitialState {
+interface InitialState {
     active?: boolean;
     activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     defaultActive?: boolean;
@@ -49,19 +62,16 @@ export interface InitialState {
     status: ComponentStatus;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessActiveOptions = Pick<RenderProps, 'active'> & ProcessEventOptions;
-export type ProcessContentLayoutOptions = ProcessEventOptions;
-export type ProcessDisabledElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
-export type ProcessElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
-export type ProcessInitOptions = Pick<RenderProps, 'elevated' | 'defaultActive'> &
-    ProcessEventOptions;
-
-export type ProcessLayoutOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
-export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
+type ProcessActiveOptions = Pick<RenderProps, 'active'> & ProcessEventOptions;
+type ProcessDisabledElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
+type ProcessElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
+type ProcessInitOptions = Pick<RenderProps, 'elevated' | 'defaultActive'> & ProcessEventOptions;
+type ProcessLayoutOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
 
 const processCorrectionCoefficient = ({elevated}: Pick<RenderProps, 'elevated'>) =>
     elevated ? 1 : 0;
@@ -220,7 +230,7 @@ export const ChipBase: FC<ChipBaseProps> = ({
     const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
     const [{backgroundColor, borderColor, color}] = useAnimated({disabled, eventName, type});
     const [iconElement] = useIcon({eventName, type, icon, disabled, fill});
-    const [border] = useBorder({type, borderColor});
+    const [border] = useBorder({borderColor});
 
     useEffect(() => {
         processDisabledElevation({elevated, setState}, disabled);

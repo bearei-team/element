@@ -3,11 +3,11 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './FABBase';
 
-export interface ContentProps extends Pick<RenderProps, 'size' | 'type'> {
+interface ContentProps extends Pick<RenderProps, 'size' | 'type'> {
     labelTextShow: boolean;
 }
 
-export type IconProps = Pick<RenderProps, 'size'>;
+type IconProps = Pick<RenderProps, 'size'>;
 
 export const Container = styled(View)``;
 export const Content = styled(Shape)<ContentProps>`

@@ -2,11 +2,8 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './HoveredBase';
 
-export interface ContainerProps extends Pick<RenderProps, 'underlayColor'> {
-    renderStyle?: {
-        height?: number;
-        width?: number;
-    };
+interface ContainerProps extends Pick<RenderProps, 'underlayColor'> {
+    renderStyle?: {height?: number; width?: number};
 }
 
 export const Container = styled(Shape)<ContainerProps>`

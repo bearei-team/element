@@ -2,10 +2,8 @@ import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 
-export interface ContainerProps {
-    renderStyle?: {
-        width?: number;
-    };
+interface ContainerProps {
+    renderStyle?: {width?: number};
 }
 
 export const Container = styled(View)<ContainerProps>`

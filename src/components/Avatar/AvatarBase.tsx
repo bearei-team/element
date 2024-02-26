@@ -1,8 +1,13 @@
-import {FC, useId} from 'react';
-import {AvatarProps} from './Avatar';
+import {FC, RefAttributes, useId} from 'react';
+import {View, ViewProps} from 'react-native';
+
+export interface AvatarProps extends Partial<ViewProps & RefAttributes<View>> {
+    labelText?: string;
+    renderStyle?: {height?: number; width?: number};
+}
 
 export type RenderProps = AvatarProps;
-export interface AvatarBaseProps extends AvatarProps {
+interface AvatarBaseProps extends AvatarProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 

@@ -3,7 +3,7 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './IconButtonBase';
 
-export type ContainerProps = Pick<RenderProps, 'renderStyle'>;
+type ContainerProps = Pick<RenderProps, 'renderStyle'>;
 
 export const Container = styled(View)<ContainerProps>`
     ${({renderStyle = {}, theme}) => {

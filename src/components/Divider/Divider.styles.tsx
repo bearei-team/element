@@ -3,7 +3,7 @@ import styled, {css} from 'styled-components/native';
 import {Typography} from '../Common/Common.styles';
 import {RenderProps} from './DividerBase';
 
-export type ContainerProps = Pick<RenderProps, 'layout' | 'size' | 'renderStyle'>;
+type ContainerProps = Pick<RenderProps, 'layout' | 'size' | 'renderStyle'>;
 
 export const Container = styled(View)<ContainerProps>`
     align-items: flex-start;

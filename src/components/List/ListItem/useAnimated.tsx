@@ -6,25 +6,25 @@ import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTimin
 import {EventName, State} from '../../Common/interface';
 import {RenderProps} from './ListItemBase';
 
-export interface UseAnimatedOptions extends Pick<RenderProps, 'close'> {
+interface UseAnimatedOptions extends Pick<RenderProps, 'close'> {
     eventName: EventName;
     layoutHeight?: number;
     state: State;
     trailingEventName: EventName;
 }
 
-export interface ProcessCloseAnimatedOptions {
+interface ProcessCloseAnimatedOptions {
     heightAnimated: Animated.Value;
+}
+
+interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+    trailingOpacityAnimated: Animated.Value;
 }
 
 const processCloseAnimated = (
     animatedTiming: AnimatedTiming,
     {heightAnimated}: ProcessCloseAnimatedOptions,
 ) => requestAnimationFrame(() => animatedTiming(heightAnimated, {toValue: 0}).start());
-
-export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
-    trailingOpacityAnimated: Animated.Value;
-}
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,

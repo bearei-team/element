@@ -1,22 +1,13 @@
-import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, PressableProps, View, ViewProps} from 'react-native';
-import {ShapeProps} from '../../Common/Common.styles';
+import {FC, forwardRef, memo} from 'react';
+import {Animated, View} from 'react-native';
 import {Hovered} from '../../Hovered/Hovered';
 import {TouchableRipple} from '../../TouchableRipple/TouchableRipple';
 import {Container, Header, Icon, LabelText} from './NavigationRailItem.styles';
-import {NavigationRailItemBase, RenderProps} from './NavigationRailItemBase';
-
-export interface NavigationRailItemProps
-    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & PressableProps> {
-    activeIcon?: React.JSX.Element;
-    activeKey?: string;
-    block?: boolean;
-    defaultActiveKey?: string;
-    icon?: React.JSX.Element;
-    indexKey?: string;
-    labelText?: string;
-    onActive?: (key?: string) => void;
-}
+import {
+    NavigationRailItemBase,
+    NavigationRailItemProps,
+    RenderProps,
+} from './NavigationRailItemBase';
 
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
@@ -89,3 +80,4 @@ const ForwardRefNavigationRailItem = forwardRef<View, NavigationRailItemProps>((
 ));
 
 export const NavigationRailItem: FC<NavigationRailItemProps> = memo(ForwardRefNavigationRailItem);
+export type {NavigationRailItemProps};

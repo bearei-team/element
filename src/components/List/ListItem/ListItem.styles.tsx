@@ -2,8 +2,8 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../../Common/Common.styles';
 import {RenderProps} from './ListItemBase';
 
-export type ContainerProps = Pick<RenderProps, 'gap'>;
-export interface ContentProps {
+type ContainerProps = Pick<RenderProps, 'gap'>;
+interface ContentProps {
     supportingTextShow?: boolean;
 }
 

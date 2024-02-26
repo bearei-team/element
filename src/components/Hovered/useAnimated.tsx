@@ -6,8 +6,8 @@ import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.u
 import {EventName} from '../Common/interface';
 import {RenderProps} from './HoveredBase';
 
-export type UseAnimatedOptions = Pick<RenderProps, 'eventName' | 'opacities'>;
-export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+type UseAnimatedOptions = Pick<RenderProps, 'eventName' | 'opacities'>;
+interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
     opacityAnimated: Animated.Value;
     event: Record<EventName, number>;
 }

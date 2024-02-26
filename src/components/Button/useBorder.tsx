@@ -1,11 +1,10 @@
 import {ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {AnimatedInterpolation} from '../Common/interface';
-import {ButtonType} from './Button';
+import {RenderProps} from './ButtonBase';
 
-export interface UseBorderOptions {
+interface UseBorderOptions extends Pick<RenderProps, 'type'> {
     borderColor?: AnimatedInterpolation;
-    type: ButtonType;
 }
 
 export const useBorder = ({borderColor, type}: UseBorderOptions) => {

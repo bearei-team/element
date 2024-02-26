@@ -4,8 +4,19 @@ import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ComponentStatus, EventName, State} from '../Common/interface';
-import {CheckboxProps, CheckboxType} from './Checkbox';
+import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {useIcon} from './useIcon';
+
+type CheckboxType = 'selected' | 'indeterminate' | 'unselected';
+export interface CheckboxProps extends TouchableRippleProps {
+    active?: boolean;
+    defaultActive?: boolean;
+    disabled?: boolean;
+    error?: boolean;
+    indeterminate?: boolean;
+    onActive?: (active?: boolean) => void;
+    type?: CheckboxType;
+}
 
 export interface RenderProps extends CheckboxProps {
     eventName: EventName;
@@ -17,11 +28,11 @@ export interface RenderProps extends CheckboxProps {
     };
 }
 
-export interface CheckboxBaseProps extends CheckboxProps {
+interface CheckboxBaseProps extends CheckboxProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface InitialState {
+interface InitialState {
     active?: boolean;
     eventName: EventName;
     layout: LayoutRectangle;
@@ -29,15 +40,15 @@ export interface InitialState {
     type?: CheckboxType;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessActiveOptions = Pick<RenderProps, 'active' | 'indeterminate' | 'onActive'> &
+type ProcessActiveOptions = Pick<RenderProps, 'active' | 'indeterminate' | 'onActive'> &
     ProcessEventOptions;
 
-export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessActiveOptions;
-export type ProcessInitOptions = Pick<RenderProps, 'defaultActive' | 'indeterminate'> &
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessActiveOptions;
+type ProcessInitOptions = Pick<RenderProps, 'defaultActive' | 'indeterminate'> &
     ProcessEventOptions;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {

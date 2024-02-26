@@ -13,8 +13,23 @@ import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../../hooks/useOnEve
 import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
 import {IconButton} from '../../IconButton/IconButton';
-import {ListItemProps} from './ListItem';
+import {TouchableRippleProps} from '../../TouchableRipple/TouchableRipple';
 import {useAnimated} from './useAnimated';
+
+export interface ListItemProps extends TouchableRippleProps {
+    activeKey?: string;
+    close?: boolean;
+    defaultActiveKey?: string;
+    gap?: number;
+    headline?: string;
+    indexKey?: string;
+    leading?: React.JSX.Element;
+    onActive?: (key?: string) => void;
+    onClose?: (key?: string) => void;
+    supportingText?: string;
+    supportingTextNumberOfLines?: number;
+    trailing?: React.JSX.Element;
+}
 
 export interface RenderProps extends ListItemProps {
     active?: boolean;
@@ -33,11 +48,11 @@ export interface RenderProps extends ListItemProps {
     underlayColor: string;
 }
 
-export interface ListItemBaseProps extends ListItemProps {
+interface ListItemBaseProps extends ListItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface InitialState {
+interface InitialState {
     activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     eventName: EventName;
     layout: LayoutRectangle;
@@ -47,21 +62,21 @@ export interface InitialState {
     trailingEventName: EventName;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
+type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
     ProcessEventOptions;
 
-export type ProcessTrailingEventOptions = {callback?: () => void} & ProcessEventOptions;
-export type ProcessTrailingPressOutOptions = Pick<RenderProps, 'close' | 'indexKey' | 'onClose'> & {
+type ProcessTrailingEventOptions = {callback?: () => void} & ProcessEventOptions;
+type ProcessTrailingPressOutOptions = Pick<RenderProps, 'close' | 'indexKey' | 'onClose'> & {
     onCloseAnimated: (finished?: (() => void) | undefined) => void;
 } & ProcessEventOptions;
 
-export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
-export type ProcessInitOptions = ProcessEventOptions & Pick<RenderProps, 'defaultActive'>;
-export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'active'>;
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
+type ProcessInitOptions = ProcessEventOptions & Pick<RenderProps, 'defaultActive'>;
+type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'active'>;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;

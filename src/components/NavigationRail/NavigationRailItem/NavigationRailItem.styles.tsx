@@ -3,9 +3,9 @@ import styled, {css} from 'styled-components/native';
 import {Typography} from '../../Common/Common.styles';
 import {RenderProps} from './NavigationRailItemBase';
 
-export type ContainerProps = Pick<RenderProps, 'active'>;
-export type LabelTextProps = Pick<RenderProps, 'active'>;
-export type HeaderProps = Pick<RenderProps, 'block'>;
+type ContainerProps = Pick<RenderProps, 'active'>;
+type LabelTextProps = Pick<RenderProps, 'active'>;
+type HeaderProps = Pick<RenderProps, 'block'>;
 
 export const Container = styled(View)<ContainerProps>`
     align-items: center;

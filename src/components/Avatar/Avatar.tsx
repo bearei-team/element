@@ -1,12 +1,7 @@
-import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {View, ViewProps} from 'react-native';
+import {FC, forwardRef, memo} from 'react';
+import {View} from 'react-native';
 import {Container, LabelText} from './Avatar.styles';
-import {AvatarBase, RenderProps} from './AvatarBase';
-
-export interface AvatarProps extends Partial<ViewProps & RefAttributes<View>> {
-    labelText?: string;
-    renderStyle?: {height?: number; width?: number};
-}
+import {AvatarBase, AvatarProps, RenderProps} from './AvatarBase';
 
 const render = ({id, labelText, ...containerProps}: RenderProps) => (
     <Container {...containerProps} shape="full" testID={`avatar--${id}`}>
@@ -26,3 +21,4 @@ const ForwardRefAvatar = forwardRef<View, AvatarProps>((props, ref) => (
 ));
 
 export const Avatar: FC<AvatarProps> = memo(ForwardRefAvatar);
+export type {AvatarProps};

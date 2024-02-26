@@ -1,7 +1,7 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Hovered} from '../../Hovered/Hovered';
-import {TouchableRipple, TouchableRippleProps} from '../../TouchableRipple/TouchableRipple';
+import {TouchableRipple} from '../../TouchableRipple/TouchableRipple';
 import {
     Container,
     Content,
@@ -12,22 +12,7 @@ import {
     Trailing,
     TrailingInner,
 } from './ListItem.styles';
-import {ListItemBase, RenderProps} from './ListItemBase';
-
-export interface ListItemProps extends TouchableRippleProps {
-    activeKey?: string;
-    close?: boolean;
-    defaultActiveKey?: string;
-    gap?: number;
-    headline?: string;
-    indexKey?: string;
-    leading?: React.JSX.Element;
-    onActive?: (key?: string) => void;
-    onClose?: (key?: string) => void;
-    supportingText?: string;
-    supportingTextNumberOfLines?: number;
-    trailing?: React.JSX.Element;
-}
+import {ListItemBase, ListItemProps, RenderProps} from './ListItemBase';
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedInner = Animated.createAnimatedComponent(Inner);
@@ -124,3 +109,4 @@ const ForwardRefListItem = forwardRef<View, ListItemProps>((props, ref) => (
 ));
 
 export const ListItem: FC<ListItemProps> = memo(ForwardRefListItem);
+export type {ListItemProps};

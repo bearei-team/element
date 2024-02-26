@@ -3,10 +3,10 @@ import {css} from 'styled-components';
 import styled from 'styled-components/native';
 import {Shape} from '../../Common/Common.styles';
 
-export type ContainerProps = {
-    renderStyle?: {width?: number};
+type ContainerProps = {
     pageX: number;
     pageY: number;
+    renderStyle?: {width?: number};
 };
 
 export const Container = styled(Shape)<ContainerProps>`
@@ -59,10 +59,10 @@ export const Leading = styled.View`
 `;
 
 export const Content = styled.View`
-    flex: 1;
+    align-items: center;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    flex: 1;
 
     ${({theme}) =>
         css`
@@ -71,10 +71,10 @@ export const Content = styled.View`
 `;
 
 export const TextField = styled.View`
-    flex: 1;
+    align-items: center;
     display: flex;
     flex-direction: row;
-    align-items: center;
+    flex: 1;
 
     ${({theme}) => css`
         height: ${theme.adaptFontSize(theme.typography.body.large.lineHeight)}px;

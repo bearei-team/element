@@ -1,19 +1,7 @@
-import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, View, ViewProps} from 'react-native';
-import {ShapeProps} from '../Common/Common.styles';
-import {EventName} from '../Common/interface';
+import {FC, forwardRef, memo} from 'react';
+import {Animated, View} from 'react-native';
 import {Container} from './Hovered.styles';
-import {HoveredBase, RenderProps} from './HoveredBase';
-
-export interface HoveredProps
-    extends Partial<
-        ViewProps & RefAttributes<Animated.LegacyRef<View>> & Pick<ShapeProps, 'shape'>
-    > {
-    eventName?: EventName;
-    opacities?: [number, number, number] | [number, number];
-    renderStyle?: {width?: number; height?: number};
-    underlayColor?: string;
-}
+import {HoveredBase, HoveredProps, RenderProps} from './HoveredBase';
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const render = ({id, renderStyle, style, underlayColor, ...containerProps}: RenderProps) => {
@@ -35,3 +23,4 @@ const ForwardRefHovered = forwardRef<Animated.LegacyRef<View>, HoveredProps>((pr
 ));
 
 export const Hovered: FC<HoveredProps> = memo(ForwardRefHovered);
+export type {HoveredProps};

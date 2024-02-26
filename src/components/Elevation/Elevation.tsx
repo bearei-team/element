@@ -1,16 +1,7 @@
-import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, View, ViewProps} from 'react-native';
-import {ShapeProps} from '../Common/Common.styles';
+import {FC, forwardRef, memo} from 'react';
+import {Animated, View} from 'react-native';
 import {Container, Content, Shadow} from './Elevation.styles';
-import {ElevationBase, RenderProps} from './ElevationBase';
-
-export type ElevationLevel = 0 | 1 | 2 | 3 | 4 | 5 | undefined;
-
-export interface ElevationProps
-    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>> {
-    level?: ElevationLevel;
-    defaultLevel?: ElevationLevel;
-}
+import {ElevationBase, ElevationLevel, ElevationProps, RenderProps} from './ElevationBase';
 
 const AnimatedShadow = Animated.createAnimatedComponent(Shadow);
 const render = ({
@@ -61,3 +52,4 @@ const ForwardRefElevation = forwardRef<View, ElevationProps>((props, ref) => (
 ));
 
 export const Elevation: FC<ElevationProps> = memo(ForwardRefElevation);
+export type {ElevationLevel, ElevationProps};

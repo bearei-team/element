@@ -2,20 +2,20 @@ import mitt from 'mitt';
 import React, {FC} from 'react';
 import {Updater, useImmer} from 'use-immer';
 
-export interface Modal {
+interface Modal {
     element: React.JSX.Element;
     id: string;
 }
 
-export type EmitterEvent = {
+type EmitterEvent = {
     modal: Modal;
 };
 
-export interface InitialState {
+interface InitialState {
     modals: Modal[];
 }
 
-export interface ProcessModalEventOptions {
+interface ProcessModalEventOptions {
     setState: Updater<InitialState>;
 }
 

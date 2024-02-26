@@ -1,11 +1,9 @@
 import {ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {AnimatedInterpolation} from '../Common/interface';
-import {CardType} from './Card';
 
-export interface UseBorderOptions {
+interface UseBorderOptions {
     borderColor?: AnimatedInterpolation;
-    type: CardType;
 }
 
 export const useBorder = ({borderColor}: UseBorderOptions) => {

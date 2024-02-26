@@ -1,14 +1,38 @@
 import {FC, useCallback, useEffect, useId, useMemo} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
+import {
+    Animated,
+    GestureResponderEvent,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    TextStyle,
+    ViewStyle,
+} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {Button} from '../Button/Button';
 import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../Common/interface';
 import {ElevationLevel} from '../Elevation/Elevation';
-import {CardProps} from './Card';
+import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {useAnimated} from './useAnimated';
 import {useBorder} from './useBorder';
 import {useUnderlayColor} from './useUnderlayColor';
+
+type CardType = 'elevated' | 'filled' | 'outlined';
+export interface CardProps extends TouchableRippleProps {
+    block?: boolean;
+    footer?: boolean;
+    onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
+    onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
+    primaryButton?: React.JSX.Element;
+    primaryButtonLabelText?: string;
+    secondaryButton?: React.JSX.Element;
+    secondaryButtonLabelText?: string;
+    subheadText?: string;
+    subheadTitleText?: string;
+    supportingText?: string;
+    titleText?: string;
+    type?: CardType;
+}
 
 export interface RenderProps extends CardProps {
     defaultElevation: ElevationLevel;
@@ -26,11 +50,11 @@ export interface RenderProps extends CardProps {
     };
 }
 
-export interface CardBaseProps extends CardProps {
+interface CardBaseProps extends CardProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface InitialState {
+interface InitialState {
     defaultElevation?: ElevationLevel;
     elevation?: ElevationLevel;
     eventName: EventName;
@@ -39,23 +63,21 @@ export interface InitialState {
     status: ComponentStatus;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
-export type ProcessInitOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
-export type ProcessInnerLayoutOptions = Omit<ProcessLayoutOptions, 'type'>;
-export type ProcessLayoutOptions = Pick<RenderProps, 'block' | 'type'> & ProcessEventOptions;
-export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
+type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
+type ProcessInitOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
+type ProcessInnerLayoutOptions = Omit<ProcessLayoutOptions, 'type'>;
+type ProcessLayoutOptions = Pick<RenderProps, 'block' | 'type'> & ProcessEventOptions;
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) =>
     type === 'elevated' ? 1 : 0;
 
 const processElevation = (state: State, {type = 'filled', setState}: ProcessElevationOptions) => {
-    const elevationType = ['elevated', 'filled', 'tonal'].includes(type);
-
-    if (!elevationType) {
+    if (!['elevated', 'filled', 'tonal'].includes(type)) {
         return;
     }
 
@@ -182,7 +204,7 @@ export const CardBase: FC<CardBaseProps> = ({
         type,
     });
 
-    const [border] = useBorder({type, borderColor});
+    const [border] = useBorder({borderColor});
     const primaryButtonElement = useMemo(
         () =>
             primaryButton ?? (

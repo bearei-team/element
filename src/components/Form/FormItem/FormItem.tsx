@@ -1,31 +1,7 @@
-import {ValidateError} from 'async-validator';
-import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {View, ViewProps} from 'react-native';
-import {ValidateOptions} from '../../../utils/validate.utils';
-import {Store} from '../formStore';
+import {FC, forwardRef, memo} from 'react';
+import {View} from 'react-native';
 import {Container} from './FormItem.styles';
-import {FormItemBase, RenderProps} from './FormItemBase';
-
-export interface ControlProps {
-    errorMessage?: string;
-    errors?: ValidateError[];
-    id?: string;
-    labelText?: string;
-    onValueChange?: (value?: unknown) => void;
-    value?: unknown;
-}
-
-export interface FormItemProps
-    extends Partial<
-        ViewProps &
-            RefAttributes<View> &
-            Pick<ValidateOptions, 'rules' | 'validateFirst'> &
-            Pick<ControlProps, 'labelText'>
-    > {
-    initialValue?: Store;
-    name?: string;
-    renderControl?: (props: ControlProps) => JSX.Element;
-}
+import {ControlProps, FormItemBase, FormItemProps, RenderProps} from './FormItemBase';
 
 const render = ({id, children, ...containerProps}: RenderProps) => (
     <Container {...containerProps} testID={`formItem--${id}`}>
@@ -38,3 +14,4 @@ const ForwardRefFormItem = forwardRef<View, FormItemProps>((props, ref) => (
 ));
 
 export const FormItem: FC<FormItemProps> = memo(ForwardRefFormItem);
+export type {ControlProps, FormItemProps};

@@ -7,11 +7,11 @@ import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.u
 import {ElevationProps} from './Elevation';
 import {InitialState} from './ElevationBase';
 
-export interface UseAnimatedOptions extends Pick<ElevationProps, 'level' | 'defaultLevel'> {
+interface UseAnimatedOptions extends Pick<ElevationProps, 'level' | 'defaultLevel'> {
     setState: Updater<InitialState>;
 }
 
-export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
     opacityAnimated: Animated.Value;
 }
 

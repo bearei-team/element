@@ -1,38 +1,59 @@
-import {RuleItem} from 'async-validator';
-import {FC, useCallback, useEffect, useId, useMemo} from 'react';
+import {RuleItem, ValidateError} from 'async-validator';
+import {FC, RefAttributes, useCallback, useEffect, useId, useMemo} from 'react';
+import {View, ViewProps} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
-import {validate} from '../../../utils/validate.utils';
+import {ValidateOptions, validate} from '../../../utils/validate.utils';
 import {ComponentStatus} from '../../Common/interface';
 import {FieldError, FormStore, Store} from '../formStore';
 import {useFormContext} from '../useFormContext';
-import {FormItemProps} from './FormItem';
+
+export interface ControlProps {
+    errorMessage?: string;
+    errors?: ValidateError[];
+    id?: string;
+    labelText?: string;
+    onValueChange?: (value?: unknown) => void;
+    value?: unknown;
+}
+
+export interface FormItemProps
+    extends Partial<
+        ViewProps &
+            RefAttributes<View> &
+            Pick<ValidateOptions, 'rules' | 'validateFirst'> &
+            Pick<ControlProps, 'labelText'>
+    > {
+    initialValue?: Store;
+    name?: string;
+    renderControl?: (props: ControlProps) => JSX.Element;
+}
 
 export type RenderProps = FormItemProps;
-export interface FormItemBaseProps extends FormItemProps {
+interface FormItemBaseProps extends FormItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface InitialState {
+interface InitialState {
     shouldUpdate: Record<string, unknown>;
     signOut?: () => void;
     status: ComponentStatus;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export interface ProcessValueChangeOptions extends Pick<FormStore<Store>, 'setFieldValue'> {
+interface ProcessValueChangeOptions extends Pick<FormStore<Store>, 'setFieldValue'> {
     name?: string;
 }
 
-export interface ProcessValidateOptions {
+interface ProcessValidateOptions {
     name?: string;
     rules?: RuleItem[];
     validateFirst?: boolean;
 }
 
-export type ProcessInitOptions = ProcessEventOptions &
+type ProcessInitOptions = ProcessEventOptions &
     Pick<FormItemBaseProps, 'name' | 'rules' | 'validateFirst'> & {
         validate: (value?: unknown) => Promise<FieldError | undefined>;
     };

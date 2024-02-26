@@ -5,13 +5,13 @@ import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.utils';
 import {RenderProps} from './ChipBase';
 
-export type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName' | 'elevated'>;
-export interface ProcessOutlinedAnimatedOptions extends UseAnimatedOptions {
+type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName' | 'elevated'>;
+interface ProcessOutlinedAnimatedOptions extends UseAnimatedOptions {
     borderAnimated: Animated.Value;
     borderInputRange: number[];
 }
 
-export interface ProcessAnimatedTimingOptions extends ProcessOutlinedAnimatedOptions {
+interface ProcessAnimatedTimingOptions extends ProcessOutlinedAnimatedOptions {
     colorAnimated: Animated.Value;
 }
 

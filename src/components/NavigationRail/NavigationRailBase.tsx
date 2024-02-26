@@ -1,17 +1,41 @@
-import {FC, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, RefAttributes, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
+import {View, ViewProps} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {ComponentStatus} from '../Common/interface';
 import {FABProps} from '../FAB/FAB';
 import {ListDataSource} from '../List/List';
-import {NavigationRailProps} from './NavigationRail';
-import {NavigationRailItem} from './NavigationRailItem/NavigationRailItem';
+
+import {NavigationRailItem, NavigationRailItemProps} from './NavigationRailItem/NavigationRailItem';
+
+interface NavigationDataSource extends NavigationRailItemProps {
+    key?: string;
+}
+
+export interface NavigationRailProps extends Partial<ViewProps & RefAttributes<View>> {
+    activeKey?: string;
+    block?: boolean;
+    data?: NavigationDataSource[];
+    defaultActiveKey?: string;
+    fab?: React.JSX.Element;
+    onActive?: (key?: string) => void;
+}
 
 export type RenderProps = NavigationRailProps;
-export interface NavigationBaseProps extends NavigationRailProps {
+interface NavigationBaseProps extends NavigationRailProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface RenderItemOptions {
+interface InitialState {
+    activeKey?: string;
+    data: ListDataSource[];
+    status: ComponentStatus;
+}
+
+interface ProcessEventOptions {
+    setState: Updater<InitialState>;
+}
+
+interface RenderItemOptions {
     active?: boolean;
     activeKey?: string;
     block?: boolean;
@@ -20,18 +44,8 @@ export interface RenderItemOptions {
     onActive: (key?: string) => void;
 }
 
-export interface InitialState {
-    activeKey?: string;
-    data: ListDataSource[];
-    status: ComponentStatus;
-}
-
-export interface ProcessEventOptions {
-    setState: Updater<InitialState>;
-}
-
-export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
-export type ProcessActiveKeyOptions = ProcessEventOptions & Pick<RenderProps, 'activeKey'>;
+type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
+type ProcessActiveKeyOptions = ProcessEventOptions & Pick<RenderProps, 'activeKey'>;
 
 const renderItems = ({activeKey, block, data, defaultActiveKey, onActive}: RenderItemOptions) =>
     data.map(({key, ...props}) => (

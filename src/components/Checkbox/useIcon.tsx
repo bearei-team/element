@@ -3,8 +3,7 @@ import {useTheme} from 'styled-components/native';
 import {Icon, IconProps} from '../Icon/Icon';
 import {RenderProps} from './CheckboxBase';
 
-export interface UseIconOptions
-    extends Pick<RenderProps, 'disabled' | 'eventName' | 'type' | 'error'> {
+interface UseIconOptions extends Pick<RenderProps, 'disabled' | 'eventName' | 'type' | 'error'> {
     icon?: React.JSX.Element;
 }
 

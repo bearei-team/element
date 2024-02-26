@@ -9,7 +9,6 @@ export default {
 export const SearchBar: StoryObj<SearchProps> = {
     args: {
         placeholder: 'Hinted search text',
-        visible: true,
         data: [
             {
                 key: 'TitleA',

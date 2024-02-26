@@ -1,9 +1,21 @@
-import {FC, useId} from 'react';
-import {Animated, ViewStyle} from 'react-native';
+import {FC, RefAttributes, useId} from 'react';
+import {Animated, View, ViewProps, ViewStyle} from 'react-native';
+import {SvgProps} from 'react-native-svg';
 import {useTheme} from 'styled-components/native';
-import {IconProps} from './Icon';
+import {EventName} from '../Common/interface';
+import {filled} from './icons/filled';
 import {icon} from './icons/icon';
 import {useAnimated} from './useAnimated';
+
+type IconName = keyof (typeof filled)['svg'];
+type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
+export interface IconProps
+    extends Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps> {
+    eventName?: EventName;
+    name?: IconName;
+    renderStyle?: {width?: number; height?: number};
+    type?: IconType;
+}
 
 export interface RenderProps extends IconProps {
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
@@ -12,7 +24,7 @@ export interface RenderProps extends IconProps {
     };
 }
 
-export interface IconBaseProps extends IconProps {
+interface IconBaseProps extends IconProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 

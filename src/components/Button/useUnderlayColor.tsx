@@ -1,7 +1,7 @@
 import {useTheme} from 'styled-components/native';
 import {RenderProps} from './ButtonBase';
 
-export type UseUnderlayColorOptions = Pick<RenderProps, 'type'>;
+type UseUnderlayColorOptions = Pick<RenderProps, 'type'>;
 
 export const useUnderlayColor = ({type = 'filled'}: UseUnderlayColorOptions) => {
     const theme = useTheme();

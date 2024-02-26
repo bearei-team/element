@@ -3,8 +3,7 @@ import {useTheme} from 'styled-components/native';
 import {IconProps} from '../Icon/Icon';
 import {RenderProps} from './FABBase';
 
-export interface UseIconOptions
-    extends Pick<RenderProps, 'size' | 'disabled' | 'type' | 'eventName'> {
+interface UseIconOptions extends Pick<RenderProps, 'size' | 'disabled' | 'type' | 'eventName'> {
     icon?: React.JSX.Element;
 }
 

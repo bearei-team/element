@@ -3,11 +3,21 @@ import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {EventName, State} from '../Common/interface';
-import {IconButtonProps} from './IconButton';
+import {TooltipProps} from '../Tooltip/Tooltip';
+import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {useAnimated} from './useAnimated';
 import {useBorder} from './useBorder';
 import {useIcon} from './useIcon';
 import {useUnderlayColor} from './useUnderlayColor';
+
+type IconButtonType = 'filled' | 'outlined' | 'standard' | 'tonal';
+export interface IconButtonProps extends TouchableRippleProps {
+    fill?: string;
+    icon?: React.JSX.Element;
+    renderStyle?: {width?: number; height?: number};
+    tooltip?: TooltipProps;
+    type?: IconButtonType;
+}
 
 export interface RenderProps extends IconButtonProps {
     onEvent: OnEvent;
@@ -21,26 +31,26 @@ export interface RenderProps extends IconButtonProps {
     eventName: EventName;
 }
 
-export interface IconButtonBaseProps extends IconButtonProps {
+interface IconButtonBaseProps extends IconButtonProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface InitialState {
+interface InitialState {
     eventName: EventName;
     layout: LayoutRectangle;
     tooltipVisible: boolean;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessStateChangeOptions = OnStateChangeOptions &
+type ProcessStateChangeOptions = OnStateChangeOptions &
     ProcessEventOptions & {
         supportingText?: string;
     };
 
-export interface ProcessTooltipVisibleOptions extends ProcessEventOptions {
+interface ProcessTooltipVisibleOptions extends ProcessEventOptions {
     eventName: EventName;
 }
 

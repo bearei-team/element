@@ -1,5 +1,13 @@
 import {FC, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
-import {Animated, LayoutRectangle, TextInput, TextStyle, View, ViewStyle} from 'react-native';
+import {
+    Animated,
+    LayoutRectangle,
+    ScaledSize,
+    TextInput,
+    TextStyle,
+    View,
+    ViewStyle,
+} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../../context/ModalProvider';
@@ -7,28 +15,30 @@ import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../../hooks/useOnEve
 import {ComponentStatus, EventName, State} from '../../Common/interface';
 import {ListDataSource} from '../../List/List';
 import {Input} from '../../TextField/TextField.styles';
-import {InnerProps} from './Inner';
+import {SearchProps} from '../Search';
 import {TextField} from './Inner.styles';
 import {useAnimated} from './useAnimated';
 
+export interface InnerProps extends SearchProps {
+    containerCurrent: View | null;
+    windowDimensions: ScaledSize;
+}
+
 export interface RenderProps extends Omit<InnerProps, 'containerCurrent' | 'windowDimensions'> {
     containerLayout: LayoutRectangle & {pageX: number; pageY: number};
+    eventName: EventName;
     input: React.JSX.Element;
     onEvent: OnEvent;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle>;
+    underlayColor: string;
 }
 
-export interface InnerBaseProps extends InnerProps {
+interface InnerBaseProps extends InnerProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface Data extends ListDataSource {
-    active: boolean;
-}
-
-export type RenderTextInputOptions = Omit<InnerProps, 'containerCurrent' | 'windowDimensions'>;
-export interface InitialState {
-    activeKey?: string;
+type RenderTextInputOptions = Omit<InnerProps, 'containerCurrent' | 'windowDimensions'>;
+interface InitialState {
     containerLayout: LayoutRectangle & {pageX: number; pageY: number};
     data: ListDataSource[];
     eventName: EventName;
@@ -38,41 +48,30 @@ export interface InitialState {
     value?: string;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessChangeTextOptions = Pick<RenderProps, 'data' | 'onChangeText'> &
-    ProcessEventOptions;
-
-export interface ProcessEmitOptions extends ProcessEventOptions {
+type ProcessChangeTextOptions = Pick<RenderProps, 'data' | 'onChangeText'> & ProcessEventOptions;
+interface ProcessEmitOptions extends Pick<InitialState, 'status'> {
     id: string;
 }
 
-export type ProcessListActiveOptions = Pick<RenderProps, 'data' | 'onActive'> & ProcessEventOptions;
-export type ProcessListVisibleOptions = ProcessEventOptions & {state: State};
-export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
+type ProcessListActiveOptions = Pick<RenderProps, 'data' | 'onActive'> & ProcessEventOptions;
+type ProcessListVisibleOptions = ProcessEventOptions & {state: State};
+type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
     OnStateChangeOptions;
 
-export type ProcessStateOptions = ProcessEventOptions & Pick<OnStateChangeOptions, 'eventName'>;
+type ProcessStateOptions = ProcessEventOptions & Pick<OnStateChangeOptions, 'eventName'>;
 
 const processListActive = ({data, setState, onActive}: ProcessListActiveOptions, key?: string) => {
-    if (!key) {
-        return;
-    }
-
     const nextValue = data?.find(datum => datum.key === key)?.headline;
 
-    if (!nextValue) {
-        return;
-    }
-
-    setState(draft => {
-        draft.activeKey = key;
-        draft.value = nextValue;
-    });
-
-    onActive?.(key);
+    nextValue &&
+        setState(draft => {
+            draft.value = nextValue;
+            onActive?.(key);
+        });
 };
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
@@ -123,7 +122,6 @@ const processChangeText = (
         : [];
 
     setState(draft => {
-        draft.activeKey = '';
         draft.data = matchData;
         draft.value = text;
     });
@@ -156,11 +154,8 @@ const processContainerLayout = (containerCurrent: View | null, {setState}: Proce
         }),
     );
 
-const processEmit = (element: React.JSX.Element, {id, setState}: ProcessEmitOptions) =>
-    setState(draft => {
-        draft.status === 'succeeded' &&
-            emitter.emit('modal', {id: `search__inner--${id}`, element});
-    });
+const processEmit = (element: React.JSX.Element, {id, status}: ProcessEmitOptions) =>
+    status === 'succeeded' && emitter.emit('modal', {id: `search__inner--${id}`, element});
 
 const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
     <TextField testID={`search__control--${id}`}>
@@ -183,7 +178,7 @@ const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
 export const InnerBase: FC<InnerBaseProps> = ({
     data: dataSources,
     leading,
-    onActive,
+    onActive: onActiveSource,
     placeholder,
     ref,
     render,
@@ -192,9 +187,8 @@ export const InnerBase: FC<InnerBaseProps> = ({
     windowDimensions,
     ...textInputProps
 }) => {
-    const [{activeKey, data, eventName, containerLayout, listVisible, state, value}, setState] =
+    const [{data, eventName, containerLayout, listVisible, state, value, status}, setState] =
         useImmer<InitialState>({
-            activeKey: undefined,
             data: [],
             eventName: 'none',
             containerLayout: {} as InitialState['containerLayout'],
@@ -222,9 +216,9 @@ export const InnerBase: FC<InnerBaseProps> = ({
         onStateChange,
     });
 
-    const onListActive = useCallback(
-        (key?: string) => processListActive({data, setState, onActive}, key),
-        [data, onActive, setState],
+    const onActive = useCallback(
+        (key?: string) => processListActive({data, setState, onActive: onActiveSource}, key),
+        [data, onActiveSource, setState],
     );
 
     const onChangeText = useCallback(
@@ -273,15 +267,13 @@ export const InnerBase: FC<InnerBaseProps> = ({
                 input,
                 leading,
                 onEvent: {onBlur, onFocus, ...onEvent},
-                onListActive,
+                onActive,
                 placeholder,
                 renderStyle: {height},
                 trailing,
                 underlayColor,
-                activeKey,
             }),
         [
-            activeKey,
             containerLayout,
             data,
             eventName,
@@ -292,7 +284,7 @@ export const InnerBase: FC<InnerBaseProps> = ({
             onBlur,
             onEvent,
             onFocus,
-            onListActive,
+            onActive,
             placeholder,
             render,
             trailing,
@@ -309,8 +301,8 @@ export const InnerBase: FC<InnerBaseProps> = ({
     }, [onContainerLayout, windowDimensions]);
 
     useEffect(() => {
-        processEmit(inner, {id, setState});
-    }, [id, inner, setState]);
+        processEmit(inner, {id, status});
+    }, [id, inner, status]);
 
     return <></>;
 };

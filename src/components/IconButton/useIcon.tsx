@@ -3,8 +3,7 @@ import {useTheme} from 'styled-components/native';
 import {Icon, IconProps} from '../Icon/Icon';
 import {RenderProps} from './IconButtonBase';
 
-export interface UseIconOptions
-    extends Pick<RenderProps, 'disabled' | 'type' | 'eventName' | 'fill'> {
+interface UseIconOptions extends Pick<RenderProps, 'disabled' | 'type' | 'eventName' | 'fill'> {
     icon?: React.JSX.Element;
 }
 
