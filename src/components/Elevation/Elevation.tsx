@@ -26,7 +26,7 @@ const render = ({
     const {height, opacity0, opacity1, width} = renderStyle;
 
     return (
-        <Container height={height} testID={`elevation--${id}`} width={width}>
+        <Container testID={`elevation--${id}`} renderStyle={{width, height}}>
             <Content
                 {...contentProps}
                 onLayout={onLayout}
@@ -36,23 +36,21 @@ const render = ({
             </Content>
 
             <AnimatedShadow
-                height={height}
                 level={level}
-                shadow={0}
+                renderStyle={{width, height}}
+                shadowIndex={0}
                 shape={shape}
                 style={{opacity: opacity0}}
                 testID={`elevation__shadow0--${id}`}
-                width={width}
             />
 
             <AnimatedShadow
-                height={height}
                 level={level}
-                shadow={1}
+                renderStyle={{width, height}}
+                shadowIndex={1}
                 shape={shape}
                 style={{opacity: opacity1}}
                 testID={`elevation__shadow1--${id}`}
-                width={width}
             />
         </Container>
     );

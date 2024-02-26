@@ -1,6 +1,6 @@
 import React, {cloneElement} from 'react';
 import {useTheme} from 'styled-components/native';
-import {Icon} from '../Icon/Icon';
+import {Icon, IconProps} from '../Icon/Icon';
 import {RenderProps} from './CheckboxBase';
 
 export interface UseIconOptions
@@ -23,13 +23,15 @@ export const useIcon = ({disabled, error, eventName, type = 'unselected'}: UseIc
     };
 
     return [
-        cloneElement(icon[type], {
+        cloneElement<IconProps>(icon[type], {
             eventName,
-            width: theme.adaptSize(theme.spacing.large),
-            height: theme.adaptSize(theme.spacing.large),
             fill: disabled
                 ? theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38)
                 : color,
+            renderStyle: {
+                height: theme.adaptSize(theme.spacing.large),
+                width: theme.adaptSize(theme.spacing.large),
+            },
         }),
     ];
 };

@@ -19,11 +19,10 @@ export interface IconBaseProps extends IconProps {
 export const IconBase: FC<IconBaseProps> = ({
     eventName,
     fill,
-    height,
     name = 'circle',
     render,
     type = 'outlined',
-    width,
+    renderStyle,
     ...renderProps
 }) => {
     const id = useId();
@@ -34,7 +33,7 @@ export const IconBase: FC<IconBaseProps> = ({
     return render({
         ...renderProps,
         id,
-        renderStyle: {height, transform: [{scale}], width},
+        renderStyle: {...renderStyle, transform: [{scale}]},
         children: SvgIcon && (
             <SvgIcon
                 fill={fill ?? theme.palette.surface.onSurfaceVariant}

@@ -75,15 +75,15 @@ const processPressOut = (
     event: GestureResponderEvent,
     {activeKey, indexKey, onActive, setState}: ProcessPressOutOptions,
 ) => {
-    const responseActive = activeKey !== indexKey;
-    const {locationX = 0, locationY = 0} = event.nativeEvent;
-
-    if (!responseActive) {
+    if (activeKey === indexKey) {
         return;
     }
 
+    const {locationX = 0, locationY = 0} = event.nativeEvent;
+
     setState(draft => {
         draft.activeLocation = {locationX, locationY};
+        draft.rippleCentered = false;
     });
 
     onActive?.(indexKey);
@@ -136,27 +136,27 @@ const processTrailingHoverIn = ({setState}: ProcessEventOptions) =>
 const processTrailingHoverOut = ({setState}: ProcessEventOptions) =>
     processTrailingEvent('hoverOut', {setState});
 
-const processInit = (status: ComponentStatus, {defaultActive, setState}: ProcessInitOptions) => {
-    status === 'idle' &&
-        setState(draft => {
-            draft.rippleCentered = !!defaultActive;
-            draft.status = 'succeeded';
-        });
+const processInit = ({defaultActive, setState}: ProcessInitOptions) => {
+    setState(draft => {
+        if (draft.status !== 'idle') {
+            return;
+        }
+
+        draft.rippleCentered = !!defaultActive;
+        draft.status = 'succeeded';
+    });
 };
 
-const processActive = (status: ComponentStatus, {setState, active}: ProcessActiveOptions) => {
-    const setActive = status === 'succeeded' && active;
+const processActive = ({setState, active}: ProcessActiveOptions) =>
+    active &&
+    setState(draft => {
+        if (draft.status !== 'succeeded' || draft.activeLocation?.locationX) {
+            return;
+        }
 
-    setActive &&
-        setState(draft => {
-            if (draft.activeLocation?.locationX) {
-                return;
-            }
-
-            draft.rippleCentered = true;
-            draft.activeLocation = {locationX: 0, locationY: 0};
-        });
-};
+        draft.rippleCentered = true;
+        draft.activeLocation = {locationX: 0, locationY: 0};
+    });
 
 export const ListItemBase: FC<ListItemBaseProps> = ({
     activeKey,
@@ -228,12 +228,12 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
     );
 
     useEffect(() => {
-        processInit(status, {defaultActive, setState});
-    }, [defaultActive, setState, status]);
+        processActive({active, setState});
+    }, [active, setState]);
 
     useEffect(() => {
-        processActive(status, {active, setState});
-    }, [active, setState, status]);
+        processInit({defaultActive, setState});
+    }, [defaultActive, setState]);
 
     if (status === 'idle') {
         return <></>;
@@ -246,12 +246,12 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
         activeLocation,
         defaultActive,
         eventName,
-        rippleCentered,
         id,
         onEvent,
+        rippleCentered,
         renderStyle: {
-            height: layout?.height,
             containerHeight: height,
+            height: layout?.height,
             trailingOpacity,
             width: layout?.width,
         },

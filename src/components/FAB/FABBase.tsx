@@ -17,7 +17,7 @@ export interface RenderProps extends FABProps {
     };
     defaultElevation?: ElevationLevel;
     elevation?: ElevationLevel;
-    eventName: EventName;
+    eventName?: EventName;
 }
 
 export interface FABBaseProps extends FABProps {
@@ -79,14 +79,12 @@ const processStateChange = (
 const processDisabledElevation = (
     {elevated, setState}: ProcessDisabledElevationOptions,
     disabled?: boolean,
-) => {
-    const setElevated = typeof disabled === 'boolean' && elevated;
-
-    setElevated &&
-        setState(draft => {
-            draft.elevation = disabled ? 0 : 3;
-        });
-};
+) =>
+    typeof disabled === 'boolean' &&
+    elevated &&
+    setState(draft => {
+        draft.elevation = disabled ? 0 : 3;
+    });
 
 const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
     disabled &&
@@ -100,8 +98,8 @@ export const FABBase: FC<FABBaseProps> = ({
     elevated = true,
     icon,
     render,
-    type = 'primary',
     size,
+    type = 'primary',
     ...renderProps
 }) => {
     const [{elevation, layout, eventName}, setState] = useImmer<InitialState>({

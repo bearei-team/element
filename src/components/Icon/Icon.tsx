@@ -11,10 +11,9 @@ export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
 export interface IconProps
     extends Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps> {
     eventName?: EventName;
-    height?: number;
     name?: IconName;
+    renderStyle?: {width?: number; height?: number};
     type?: IconType;
-    width?: number;
 }
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
@@ -25,13 +24,12 @@ const render = ({id, renderStyle, children, style, ...containerProps}: RenderPro
         <AnimatedContainer
             {...containerProps}
             accessibilityRole="image"
-            height={height}
             style={{
                 ...(typeof style === 'object' && style),
                 ...containerStyle,
             }}
             testID={`icon--${id}`}
-            width={width}>
+            renderStyle={{height, width}}>
             {children}
         </AnimatedContainer>
     );

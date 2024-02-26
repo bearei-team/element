@@ -1,5 +1,4 @@
 import {Meta, StoryObj} from '@storybook/react';
-import {Icon} from '../Icon/Icon';
 import {List, ListProps} from './List';
 
 export default {
@@ -15,12 +14,10 @@ export const Headline: StoryObj<ListProps> = {
             {
                 key: 'TitleA',
                 headline: 'TitleA',
-                leading: <Icon width={24} height={24} />,
             },
             {
                 key: 'TitleB',
                 headline: 'TitleB',
-                leading: <Icon width={24} height={24} />,
                 supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
             },
             {

@@ -37,31 +37,23 @@ export type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onAc
 export type ProcessCloseOptions = ProcessEventOptions & Pick<RenderProps, 'onClose'>;
 export type ProcessActiveKeyOptions = ProcessEventOptions & Pick<RenderProps, 'activeKey'>;
 
-const processActive = ({onActive, setState}: ProcessActiveOptions, key?: string) => {
-    if (typeof key === 'undefined') {
-        return;
-    }
-
+const processActive = ({onActive, setState}: ProcessActiveOptions, key?: string) =>
+    typeof key === 'string' &&
     setState(draft => {
-        if (draft.activeKey !== key) {
-            draft.activeKey = key;
+        if (draft.activeKey === key) {
+            return;
         }
+
+        draft.activeKey = key;
+        onActive?.(key);
     });
 
-    onActive?.(key);
-};
-
-const processClose = ({onClose, setState}: ProcessCloseOptions, key?: string) => {
-    if (typeof key === 'undefined') {
-        return;
-    }
-
+const processClose = ({onClose, setState}: ProcessCloseOptions, key?: string) =>
+    typeof key === 'string' &&
     setState(draft => {
         draft.data = draft.data.filter(datum => datum.key !== key);
+        onClose?.(key);
     });
-
-    onClose?.(key);
-};
 
 const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSource[]) =>
     dataSources &&
@@ -70,12 +62,13 @@ const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSour
         draft.status === 'idle' && (draft.status = 'succeeded');
     });
 
-const processActiveKey = (
-    status: ComponentStatus,
-    {activeKey, setState}: ProcessActiveKeyOptions,
-) =>
-    status === 'succeeded' &&
+const processActiveKey = ({activeKey, setState}: ProcessActiveKeyOptions) =>
+    typeof activeKey === 'string' &&
     setState(draft => {
+        if (draft.status !== 'succeeded' || draft.activeKey === activeKey) {
+            return;
+        }
+
         draft.activeKey = activeKey;
     });
 
@@ -161,12 +154,12 @@ export const ListBase: FC<ListBaseProps> = ({
     );
 
     useEffect(() => {
-        processInit({setState}, dataSources);
-    }, [dataSources, setState]);
+        processActiveKey({activeKey: activeKeySource, setState});
+    }, [activeKeySource, setState]);
 
     useEffect(() => {
-        processActiveKey(status, {activeKey: activeKeySource, setState});
-    }, [activeKeySource, setState, status]);
+        processInit({setState}, dataSources);
+    }, [dataSources, setState]);
 
     if (status === 'idle') {
         return <></>;

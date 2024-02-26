@@ -69,11 +69,18 @@ export const ContentHeader = styled.View`
     align-self: stretch;
 `;
 
-export const TitleText = styled(Typography)``;
-export const SubheadText = styled(Typography)``;
+export const TitleText = styled(Typography)`
+    pointer-events: none;
+`;
+
+export const SubheadText = styled(Typography)`
+    pointer-events: none;
+`;
+
 export const SupportingText = styled(Typography)`
     align-self: stretch;
     height: auto;
+    pointer-events: none;
 `;
 
 export const ContentFooter = styled.View`

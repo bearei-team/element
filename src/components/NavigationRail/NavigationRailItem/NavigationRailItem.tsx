@@ -24,6 +24,7 @@ const render = ({
     activeColor,
     activeIcon,
     activeLocation,
+    block,
     defaultActive,
     eventName,
     icon,
@@ -33,7 +34,6 @@ const render = ({
     renderStyle,
     rippleCentered,
     underlayColor,
-    block,
     ...containerProps
 }: RenderProps) => {
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
@@ -62,11 +62,10 @@ const render = ({
                     </Icon>
 
                     <Hovered
-                        height={height}
-                        shape={shape}
                         eventName={eventName}
+                        renderStyle={{width, height}}
+                        shape={shape}
                         underlayColor={underlayColor}
-                        width={width}
                     />
                 </Header>
             </TouchableRipple>

@@ -1,12 +1,14 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
+import {Updater} from 'use-immer';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTiming.utils';
-import {RenderProps} from './NavigationRailItemBase';
+import {InitialState, RenderProps} from './NavigationRailItemBase';
 
 export interface UseAnimatedOptions extends Pick<RenderProps, 'active' | 'block'> {
     defaultActive?: boolean;
+    setState: Updater<InitialState>;
 }
 
 export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
@@ -15,19 +17,24 @@ export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {block, active, labelAnimated}: ProcessAnimatedTimingOptions,
+    {block, active, labelAnimated, setState}: ProcessAnimatedTimingOptions,
 ) => {
-    const runAnimated = !block && typeof active === 'boolean';
+    setState(draft => {
+        if (draft.status !== 'succeeded') {
+            return;
+        }
 
-    runAnimated &&
-        requestAnimationFrame(() =>
-            animatedTiming(labelAnimated, {
-                toValue: active ? 1 : 0,
-            }).start(),
-        );
+        !block &&
+            typeof active === 'boolean' &&
+            requestAnimationFrame(() =>
+                animatedTiming(labelAnimated, {
+                    toValue: active ? 1 : 0,
+                }).start(),
+            );
+    });
 };
 
-export const useAnimated = ({active, block, defaultActive}: UseAnimatedOptions) => {
+export const useAnimated = ({active, block, defaultActive, setState}: UseAnimatedOptions) => {
     const [labelAnimated] = useAnimatedValue(block || defaultActive ? 1 : 0);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
@@ -45,8 +52,8 @@ export const useAnimated = ({active, block, defaultActive}: UseAnimatedOptions) 
     });
 
     useEffect(() => {
-        processAnimatedTiming(animatedTiming, {active, block, labelAnimated});
-    }, [active, animatedTiming, block, labelAnimated]);
+        processAnimatedTiming(animatedTiming, {active, block, labelAnimated, setState});
+    }, [active, animatedTiming, block, labelAnimated, setState]);
 
     return [{height, color}];
 };

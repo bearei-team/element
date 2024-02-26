@@ -4,8 +4,8 @@ import {RenderProps} from './HoveredBase';
 
 export interface ContainerProps extends Pick<RenderProps, 'underlayColor'> {
     renderStyle?: {
-        width?: number;
         height?: number;
+        width?: number;
     };
 }
 

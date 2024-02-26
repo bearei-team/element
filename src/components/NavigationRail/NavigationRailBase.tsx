@@ -1,6 +1,7 @@
 import {FC, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
 import {Updater, useImmer} from 'use-immer';
 import {ComponentStatus} from '../Common/interface';
+import {FABProps} from '../FAB/FAB';
 import {ListDataSource} from '../List/List';
 import {NavigationRailProps} from './NavigationRail';
 import {NavigationRailItem} from './NavigationRailItem/NavigationRailItem';
@@ -46,19 +47,18 @@ const renderItems = ({activeKey, block, data, defaultActiveKey, onActive}: Rende
     ));
 
 const processFAB = (fab?: React.JSX.Element) =>
-    fab ? cloneElement(fab, {elevated: false, size: 'medium'}) : undefined;
+    fab ? cloneElement<FABProps>(fab, {elevated: false, size: 'medium'}) : undefined;
 
-const processActive = ({onActive, setState}: ProcessActiveOptions, key?: string) => {
-    if (typeof key === 'undefined') {
-        return;
-    }
-
+const processActive = ({onActive, setState}: ProcessActiveOptions, key?: string) =>
+    typeof key === 'string' &&
     setState(draft => {
-        draft.activeKey !== key && (draft.activeKey = key);
-    });
+        if (draft.activeKey === key) {
+            return;
+        }
 
-    onActive?.(key);
-};
+        draft.activeKey = key;
+        onActive?.(key);
+    });
 
 const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSource[]) =>
     dataSources &&
@@ -67,12 +67,13 @@ const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSour
         draft.status === 'idle' && (draft.status = 'succeeded');
     });
 
-const processActiveKey = (
-    status: ComponentStatus,
-    {activeKey, setState}: ProcessActiveKeyOptions,
-) =>
-    status === 'succeeded' &&
+const processActiveKey = ({activeKey, setState}: ProcessActiveKeyOptions) =>
+    typeof activeKey === 'string' &&
     setState(draft => {
+        if (draft.status !== 'succeeded' || draft.activeKey === activeKey) {
+            return;
+        }
+
         draft.activeKey = activeKey;
     });
 
@@ -110,12 +111,12 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
     );
 
     useEffect(() => {
-        processInit({setState}, dataSources);
-    }, [dataSources, setState]);
+        processActiveKey({activeKey: activeKeySource, setState});
+    }, [activeKeySource, setState, status]);
 
     useEffect(() => {
-        processActiveKey(status, {activeKey: activeKeySource, setState});
-    }, [activeKeySource, setState, status]);
+        processInit({setState}, dataSources);
+    }, [dataSources, setState]);
 
     if (status === 'idle') {
         return <></>;

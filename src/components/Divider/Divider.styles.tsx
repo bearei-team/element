@@ -3,7 +3,7 @@ import styled, {css} from 'styled-components/native';
 import {Typography} from '../Common/Common.styles';
 import {RenderProps} from './DividerBase';
 
-export type ContainerProps = Pick<RenderProps, 'layout' | 'size' | 'width' | 'height'>;
+export type ContainerProps = Pick<RenderProps, 'layout' | 'size' | 'renderStyle'>;
 
 export const Container = styled(View)<ContainerProps>`
     align-items: flex-start;
@@ -15,14 +15,15 @@ export const Container = styled(View)<ContainerProps>`
         gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
     `}
 
-    ${({layout = 'horizontal', theme, width = 0, height = 0}) => {
+    ${({layout = 'horizontal', theme, renderStyle = {}}) => {
+        const {width, height} = renderStyle;
         const containerLayout = {
             horizontal: css`
                 min-width: ${theme.adaptSize(theme.spacing.small * 40)}px;
-                width: ${width}px;
+                width: ${typeof width === 'number' ? `${theme.adaptSize(width)}px}` : 'auto'};
             `,
             vertical: css`
-                height: ${height}px;
+                height: ${typeof height === 'number' ? `${theme.adaptSize(height)}px}` : 'auto'};
                 min-height: ${theme.adaptSize(theme.spacing.small * 15)}px;
                 width: ${theme.adaptSize(1)}px;
             `,
@@ -60,6 +61,7 @@ export const Container = styled(View)<ContainerProps>`
 
 export const Content = styled.View`
     align-self: stretch;
+    flex: 1;
 
     ${({theme}) => css`
         background-color: ${theme.palette.outline.outlineVariant};

@@ -31,5 +31,14 @@ export const Suggestion: StoryObj<ChipProps> = {
     args: {
         labelText: 'Label',
         type: 'suggestion',
+        elevated: true,
+    },
+};
+
+export const Elevated: StoryObj<ChipProps> = {
+    args: {
+        labelText: 'Label',
+        type: 'suggestion',
+        elevated: true,
     },
 };

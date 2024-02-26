@@ -1,5 +1,6 @@
 import React, {cloneElement} from 'react';
 import {useTheme} from 'styled-components/native';
+import {IconProps} from '../Icon/Icon';
 import {RenderProps} from './ChipBase';
 
 export interface UseIconOptions
@@ -15,13 +16,15 @@ export const useIcon = ({disabled, icon, eventName, fill}: UseIconOptions) => {
     }
 
     return [
-        cloneElement(icon, {
+        cloneElement<IconProps>(icon, {
             eventName,
-            width: theme.adaptSize(theme.spacing.large - 6),
-            height: theme.adaptSize(theme.spacing.large - 6),
             fill: disabled
                 ? theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38)
                 : fill ?? theme.palette.primary.primary,
+            renderStyle: {
+                width: theme.adaptSize(theme.spacing.large - 6),
+                height: theme.adaptSize(theme.spacing.large - 6),
+            },
         }),
     ];
 };

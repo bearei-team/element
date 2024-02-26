@@ -38,3 +38,14 @@ export const Elevated: StoryObj<CardProps> = {
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor',
     },
 };
+
+export const Block: StoryObj<CardProps> = {
+    args: {
+        block: true,
+        footer: true,
+        subheadText: 'SubheadText',
+        titleText: 'Title',
+        supportingText:
+            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor',
+    },
+};

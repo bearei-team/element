@@ -20,8 +20,8 @@ export interface SearchProps
     visible?: boolean;
 }
 
-const render = ({containerRef, id, onEvent, ...containerProps}: RenderProps) => (
-    <Container {...containerProps} {...onEvent} testID={`search--${id}`} ref={containerRef} />
+const render = ({containerRef, id, ...containerProps}: RenderProps) => (
+    <Container {...containerProps} testID={`search--${id}`} ref={containerRef} />
 );
 
 const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => (

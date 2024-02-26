@@ -75,10 +75,9 @@ const render = ({
 
                         <Hovered
                             eventName={eventName}
-                            height={height}
+                            renderStyle={{width, height}}
                             shape={shape}
                             underlayColor={underlayColor}
-                            width={width}
                         />
                     </AnimatedContent>
                 </TouchableRipple>

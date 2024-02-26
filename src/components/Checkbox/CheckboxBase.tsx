@@ -36,11 +36,8 @@ export interface ProcessEventOptions {
 export type ProcessActiveOptions = Pick<RenderProps, 'active' | 'indeterminate' | 'onActive'> &
     ProcessEventOptions;
 
-export type ProcessStateChangeOptions = OnStateChangeOptions &
-    ProcessActiveOptions &
-    Pick<InitialState, 'status'>;
-
-export type ProcessDefaultActiveOptions = Pick<RenderProps, 'defaultActive' | 'indeterminate'> &
+export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessActiveOptions;
+export type ProcessInitOptions = Pick<RenderProps, 'defaultActive' | 'indeterminate'> &
     ProcessEventOptions;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
@@ -51,39 +48,32 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processActive = (
-    status: ComponentStatus,
-    {setState, active, indeterminate, onActive}: ProcessActiveOptions,
-) => {
-    if (status === 'idle') {
-        return;
-    }
-
-    const nextActive = !active;
-    const activeType = indeterminate ? 'indeterminate' : 'selected';
-
+const processActive = ({setState, active, indeterminate, onActive}: ProcessActiveOptions) =>
+    typeof active === 'boolean' &&
     setState(draft => {
-        if (draft.active !== nextActive) {
-            draft.active = nextActive;
-            draft.type = nextActive ? activeType : 'unselected';
-
-            onActive?.(nextActive);
+        if (draft.status !== 'succeeded' || draft.active === active) {
+            return;
         }
+
+        const activeType = indeterminate ? 'indeterminate' : 'selected';
+
+        draft.active = active;
+        draft.type = active ? activeType : 'unselected';
+
+        onActive?.(active);
     });
-};
 
 const processStateChange = ({
+    active,
     event,
     eventName,
-    setState,
-    onActive,
-    active,
     indeterminate,
-    status,
+    onActive,
+    setState,
 }: ProcessStateChangeOptions) => {
     const nextEvent = {
         layout: () => processLayout(event as LayoutChangeEvent, {setState}),
-        pressOut: () => processActive(status, {setState, onActive, active, indeterminate}),
+        pressOut: () => processActive({setState, onActive, active: !active, indeterminate}),
     };
 
     nextEvent[eventName as keyof typeof nextEvent]?.();
@@ -93,12 +83,12 @@ const processStateChange = ({
     });
 };
 
-const processDefaultActive = (
-    status: ComponentStatus,
-    {defaultActive, indeterminate, setState}: ProcessDefaultActiveOptions,
-) =>
-    status === 'idle' &&
+const processInit = ({defaultActive, indeterminate, setState}: ProcessInitOptions) =>
     setState(draft => {
+        if (draft.status !== 'idle') {
+            return;
+        }
+
         if (typeof defaultActive === 'boolean') {
             const defaultType = defaultActive ? 'selected' : 'unselected';
 
@@ -112,8 +102,12 @@ const processDefaultActive = (
 const processIndeterminate = ({setState}: ProcessEventOptions, indeterminate?: boolean) =>
     typeof indeterminate === 'boolean' &&
     setState(draft => {
+        if (draft.status !== 'succeeded') {
+            return;
+        }
+
         if (indeterminate) {
-            draft.active = true;
+            draft.active = indeterminate;
             draft.type = 'indeterminate';
 
             return;
@@ -123,13 +117,13 @@ const processIndeterminate = ({setState}: ProcessEventOptions, indeterminate?: b
     });
 
 export const CheckboxBase: FC<CheckboxBaseProps> = ({
+    active: activeSource,
     defaultActive,
-    disabled = false,
+    disabled,
     error,
     indeterminate,
     onActive,
     render,
-    active: activeSource,
     ...renderProps
 }) => {
     const [{active, eventName, layout, status, type}, setState] = useImmer<InitialState>({
@@ -151,23 +145,23 @@ export const CheckboxBase: FC<CheckboxBaseProps> = ({
     const [icon] = useIcon({disabled, error, eventName, type});
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange({...options, active, indeterminate, onActive, setState, status}),
-        [active, indeterminate, onActive, setState, status],
+            processStateChange({...options, active, indeterminate, onActive, setState}),
+        [active, indeterminate, onActive, setState],
     );
 
     const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
 
     useEffect(() => {
-        processDefaultActive(status, {defaultActive, indeterminate, setState});
-    }, [defaultActive, indeterminate, setState, status]);
-
-    useEffect(() => {
-        processActive(status, {active: activeSource, indeterminate, setState, onActive});
-    }, [activeSource, indeterminate, onActive, setState, status]);
+        processActive({active: activeSource, indeterminate, setState, onActive});
+    }, [activeSource, indeterminate, onActive, setState]);
 
     useEffect(() => {
         processIndeterminate({setState}, indeterminate);
     }, [indeterminate, setState]);
+
+    useEffect(() => {
+        processInit({defaultActive, indeterminate, setState});
+    }, [defaultActive, indeterminate, setState]);
 
     if (status === 'idle') {
         return <></>;

@@ -1,30 +1,30 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {useAnimatedValue} from '../../hooks/useAnimatedValue';
-import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.utils';
+import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
+import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTiming.utils';
 
 export interface UseAnimatedOptions {
     listVisible?: boolean;
 }
 
 export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
-    innerHeightAnimated: Animated.Value;
+    heightAnimated: Animated.Value;
 }
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {innerHeightAnimated, listVisible}: ProcessAnimatedTimingOptions,
+    {heightAnimated, listVisible}: ProcessAnimatedTimingOptions,
 ) =>
     requestAnimationFrame(() =>
-        animatedTiming(innerHeightAnimated, {toValue: listVisible ? 1 : 0}).start(),
+        animatedTiming(heightAnimated, {toValue: listVisible ? 1 : 0}).start(),
     );
 
 export const useAnimated = ({listVisible}: UseAnimatedOptions) => {
-    const [innerHeightAnimated] = useAnimatedValue(0);
+    const [heightAnimated] = useAnimatedValue(0);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
-    const innerHeight = innerHeightAnimated.interpolate({
+    const height = heightAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
             theme.adaptSize(theme.spacing.small * 7),
@@ -33,8 +33,8 @@ export const useAnimated = ({listVisible}: UseAnimatedOptions) => {
     });
 
     useEffect(() => {
-        processAnimatedTiming(animatedTiming, {innerHeightAnimated, listVisible});
-    }, [animatedTiming, innerHeightAnimated, listVisible]);
+        processAnimatedTiming(animatedTiming, {heightAnimated, listVisible});
+    }, [animatedTiming, heightAnimated, listVisible]);
 
-    return [{innerHeight}];
+    return [{height}];
 };

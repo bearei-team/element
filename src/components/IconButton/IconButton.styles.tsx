@@ -3,13 +3,17 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './IconButtonBase';
 
-export type ContainerProps = Pick<RenderProps, 'width' | 'height'>;
+export type ContainerProps = Pick<RenderProps, 'renderStyle'>;
 
 export const Container = styled(View)<ContainerProps>`
-    ${({width, height, theme}) => css`
-        height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
-        width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
-    `};
+    ${({renderStyle = {}, theme}) => {
+        const {height, width} = renderStyle;
+
+        return css`
+            height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
+            width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
+        `;
+    }};
 `;
 
 export const Content = styled(Shape)<ContainerProps>`
@@ -20,10 +24,14 @@ export const Content = styled(Shape)<ContainerProps>`
     pointer-events: none;
     position: relative;
 
-    ${({width, height, theme}) => css`
-        height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
-        width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
-    `};
+    ${({renderStyle = {}, theme}) => {
+        const {height, width} = renderStyle;
+
+        return css`
+            height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
+            width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
+        `;
+    }};
 `;
 
 export const Icon = styled.View`

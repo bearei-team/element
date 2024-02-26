@@ -1,5 +1,6 @@
 import React, {cloneElement} from 'react';
 import {useTheme} from 'styled-components/native';
+import {IconProps} from '../Icon/Icon';
 import {RenderProps} from './FABBase';
 
 export interface UseIconOptions
@@ -21,7 +22,7 @@ export const useIcon = ({disabled, icon, type, eventName, size}: UseIconOptions)
     }
 
     return [
-        cloneElement(icon, {
+        cloneElement<IconProps>(icon, {
             ...(size === 'large'
                 ? {
                       width: theme.adaptSize(theme.spacing.extraLarge + theme.spacing.extraSmall),

@@ -3,24 +3,25 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './ElevationBase';
 
-export type ContainerProps = {
-    height: number;
-    width: number;
-};
+export interface ContainerProps {
+    renderStyle?: {width?: number; height?: number};
+}
 
-export interface ShadowProps
-    extends Pick<RenderProps & ContainerProps, 'level' | 'width' | 'height'> {
-    shadow: 0 | 1;
+export interface ShadowProps extends Pick<RenderProps & ContainerProps, 'level' | 'renderStyle'> {
+    shadowIndex: 0 | 1;
 }
 
 export const Container = styled(Shape)<ContainerProps>`
     position: relative;
 
-    ${({width = 0, height = 0}) =>
-        css`
+    ${({renderStyle = {}}) => {
+        const {width = 0, height = 0} = renderStyle;
+
+        return css`
             height: ${height}px;
             width: ${width}px;
-        `}
+        `;
+    }}
 `;
 
 export const Content = styled(Shape)`
@@ -37,25 +38,27 @@ export const Shadow = styled(Shape)<ShadowProps>`
         background-color: ${theme.palette.surface.surface};
     `};
 
-    ${({theme, level = 0, shadow = 0}) => {
+    ${({theme, level = 0, shadowIndex = 0}) => {
         const levelString: keyof Elevation = `level${level}`;
-        const shadowString: 'shadow0' | 'shadow1' = `shadow${shadow}`;
+        const shadowString: 'shadow0' | 'shadow1' = `shadow${shadowIndex}`;
 
         return css`
             elevation: ${theme.elevation[levelString][shadowString].elevation};
             shadow-color: ${theme.palette.shadow.shadow};
             shadow-offset: ${theme.adaptSize(theme.elevation[levelString][shadowString].x)}px
                 ${theme.adaptSize(theme.elevation[levelString][shadowString].y)}px;
-
             shadow-opacity: 1;
             shadow-radius: ${theme.adaptSize(theme.elevation[levelString][shadowString].blur)}px;
-            z-index: ${shadow};
+            z-index: ${shadowIndex};
         `;
     }};
 
-    ${({width = 0, height = 0}) =>
-        css`
+    ${({renderStyle = {}}) => {
+        const {width = 0, height = 0} = renderStyle;
+
+        return css`
             height: ${height}px;
             width: ${width}px;
-        `}
+        `;
+    }}
 `;

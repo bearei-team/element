@@ -100,7 +100,6 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
         getInitialValue,
         isFieldTouched,
     } = useFormContext();
-
     const errors = getFieldError(name)?.errors;
     const value = getFieldValue(name);
     const initValue = getInitialValue(name);
@@ -131,11 +130,10 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
         [errors, fieldValue, id, labelText, onValueChange, renderControl],
     );
 
+    useEffect(() => () => signOut?.(), [signOut]);
     useEffect(() => {
         processInit(signInField, {name, rules, setState, validateFirst, validate: fieldValidate});
     }, [fieldValidate, name, rules, setState, signInField, validateFirst]);
-
-    useEffect(() => () => signOut?.(), [signOut]);
 
     return render({
         ...renderProps,

@@ -62,7 +62,15 @@ export const Content = styled.View<ContentProps>`
         `}
 `;
 
-export const Trailing = styled(Leading)``;
+export const Trailing = styled.View`
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+`;
+
+export const TrailingInner = styled(Leading)``;
 export const Headline = styled(Typography)`
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurface};

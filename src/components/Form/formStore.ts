@@ -76,8 +76,8 @@ export const formStore = <T extends Store>(): FormStore<T> => {
     };
 
     const getFieldError = ((name?: NamePath<T>) => {
-        const names = namePath(name);
         let err = {} as Error<T>;
+        const names = namePath(name);
         const processError = (entityName?: keyof T) =>
             entityName && (err = {...err, [entityName]: error[entityName]});
 
@@ -88,8 +88,8 @@ export const formStore = <T extends Store>(): FormStore<T> => {
     }) as FormStore<T>['getFieldError'];
 
     const getFieldValue = ((name?: NamePath<T>) => {
-        const names = namePath(name);
         let value = {} as T;
+        const names = namePath(name);
         const processValue = (entityName?: keyof T) =>
             entityName && (value = {...value, [entityName]: store[entityName]});
 
@@ -100,8 +100,8 @@ export const formStore = <T extends Store>(): FormStore<T> => {
     }) as FormStore<T>['getFieldValue'];
 
     const getInitialValue = ((name?: NamePath<T>) => {
-        const names = namePath(name);
         let value = {} as T;
+        const names = namePath(name);
         const processValue = (entityName?: keyof T) =>
             entityName && (value = {...value, [entityName]: initialValue[entityName]});
 

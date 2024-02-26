@@ -29,19 +29,15 @@ export type ProcessCallbackOptions = Pick<
 > &
     Pick<FormStore<Store>, 'setCallback'>;
 
-const processInit = (
-    status: ComponentStatus,
-    {initialValue, setInitialValue, setState}: ProcessInitOptions,
-) => {
-    if (status !== 'idle') {
-        return;
-    }
-
-    initialValue && setInitialValue(initialValue);
+const processInit = ({initialValue, setInitialValue, setState}: ProcessInitOptions) =>
     setState(draft => {
+        if (draft.status !== 'idle') {
+            return;
+        }
+
+        initialValue && setInitialValue(initialValue);
         draft.status = 'succeeded';
     });
-};
 
 const processCallback = ({
     onFinish,
@@ -52,7 +48,7 @@ const processCallback = ({
 
 const renderChildren = (status: ComponentStatus, {items}: Pick<FormBaseProps<{}>, 'items'>) =>
     status === 'succeeded' &&
-    items?.map((item, index) => <FormItem {...item} key={(item.name ?? index).toString()} />);
+    items?.map((item, index) => <FormItem {...item} key={item.name ?? index} />);
 
 export const FormBase = <T extends Store = Store>({
     form,
@@ -75,10 +71,10 @@ export const FormBase = <T extends Store = Store>({
     }, [onFinish, onFinishFailed, onValueChange, setCallback]);
 
     useEffect(() => {
-        processInit(status, {initialValue, setInitialValue, setState});
+        processInit({initialValue, setInitialValue, setState});
     }, [initialValue, setInitialValue, setState, status]);
 
-    if (!children) {
+    if (!children || status === 'idle') {
         return <></>;
     }
 

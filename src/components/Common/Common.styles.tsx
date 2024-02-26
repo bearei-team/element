@@ -1,4 +1,4 @@
-import {Typography as EITypography, Shape as ThemeShape} from '@bearei/theme';
+import {Shape as ThemeShape, Typography as ThemeTypography} from '@bearei/theme';
 import {View, ViewStyle} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {AnimatedInterpolation, Size} from './interface';
@@ -14,7 +14,7 @@ export interface ShapeProps {
 
 export interface TypographyProps {
     size?: Size;
-    type?: keyof EITypography;
+    type?: keyof ThemeTypography;
 }
 
 export const Shape = styled(View)<ShapeProps>`
@@ -42,12 +42,9 @@ export const Shape = styled(View)<ShapeProps>`
 `;
 
 export const Typography = styled.Text<TypographyProps>`
-    ${({theme}) => css`
-        color: ${theme.palette.surface.onSurfaceVariant};
-    `}
-
     ${({theme, type = 'title', size = 'medium'}) =>
         css`
+            color: ${theme.palette.surface.onSurfaceVariant};
             font-size: ${theme.adaptFontSize(theme.typography[type][size].size)}px;
             font-style: ${theme.typography[type][size].style};
             font-weight: ${theme.typography[type][size].weight};

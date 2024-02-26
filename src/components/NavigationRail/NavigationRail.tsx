@@ -20,7 +20,6 @@ export interface NavigationRailProps extends Partial<ViewProps & RefAttributes<V
 const render = ({id, children, fab, ...containerProps}: RenderProps) => (
     <Container {...containerProps} testID={`navigationRail--${id}`}>
         {fab && <Fab testID={`navigationRail__fab--${id}`}>{fab}</Fab>}
-
         <Destination testID={`navigationRail__destination--${id}`}>{children}</Destination>
     </Container>
 );

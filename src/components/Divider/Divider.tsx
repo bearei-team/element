@@ -5,15 +5,14 @@ import {Container, Content, Subheader} from './Divider.styles';
 import {DividerBase, RenderProps} from './DividerBase';
 
 export interface DividerProps extends Partial<ViewProps & RefAttributes<View>> {
-    height?: number;
     layout?: Layout;
     size?: Size;
     subheader?: string;
-    width?: number;
+    renderStyle?: {width?: number; height?: number};
 }
 
-const render = ({id, subheader, width, height, style, ...containerProps}: RenderProps) => (
-    <Container {...containerProps} height={height} testID={`divider--${id}`} width={width}>
+const render = ({id, subheader, renderStyle, style, ...containerProps}: RenderProps) => (
+    <Container {...containerProps} testID={`divider--${id}`} renderStyle={renderStyle}>
         <Content style={style} testID={`divider__content--${id}`} />
 
         {subheader && (

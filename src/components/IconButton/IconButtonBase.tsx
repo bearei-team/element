@@ -13,8 +13,10 @@ export interface RenderProps extends IconButtonProps {
     onEvent: OnEvent;
     tooltipVisible: boolean;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        height: number;
-        width: number;
+        height?: number;
+        width?: number;
+        layoutWidth?: number;
+        layoutHeight?: number;
     };
     eventName: EventName;
 }
@@ -88,6 +90,7 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
     render,
     tooltip,
     type = 'filled',
+    renderStyle,
     ...renderProps
 }) => {
     const [{eventName, layout, tooltipVisible}, setState] = useImmer<InitialState>({
@@ -125,10 +128,11 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
         type,
         underlayColor,
         renderStyle: {
+            ...renderStyle,
             ...border,
             backgroundColor,
-            height: layout?.height,
-            width: layout?.width,
+            layoutHeight: layout?.height,
+            layoutWidth: layout?.width,
         },
     });
 };

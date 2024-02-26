@@ -10,6 +10,7 @@ import {
     Leading,
     SupportingText,
     Trailing,
+    TrailingInner,
 } from './ListItem.styles';
 import {ListItemBase, RenderProps} from './ListItemBase';
 
@@ -30,7 +31,7 @@ export interface ListItemProps extends TouchableRippleProps {
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedInner = Animated.createAnimatedComponent(Inner);
-const AnimatedTrailing = Animated.createAnimatedComponent(Trailing);
+const AnimatedTrailingInner = Animated.createAnimatedComponent(TrailingInner);
 const render = ({
     active,
     activeColor,
@@ -98,18 +99,19 @@ const render = ({
                     </Content>
 
                     {trailing && (
-                        <AnimatedTrailing
-                            style={{opacity: trailingOpacity}}
-                            testID={`listItem__trailing--${id}`}>
-                            {trailing}
-                        </AnimatedTrailing>
+                        <Trailing>
+                            <AnimatedTrailingInner
+                                style={{opacity: trailingOpacity}}
+                                testID={`listItem__trailing--${id}`}>
+                                {trailing}
+                            </AnimatedTrailingInner>
+                        </Trailing>
                     )}
 
                     <Hovered
                         eventName={eventName}
-                        height={height}
+                        renderStyle={{width, height}}
                         underlayColor={underlayColor}
-                        width={width}
                     />
                 </AnimatedInner>
             </TouchableRipple>

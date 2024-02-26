@@ -2,8 +2,8 @@ import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 
 export const Container = styled(View)`
-    display: flex;
     align-items: center;
+    display: flex;
     flex-direction: column;
 
     ${({theme}) => css`
@@ -14,9 +14,9 @@ export const Container = styled(View)`
 `;
 
 export const Destination = styled.View`
+    align-items: center;
     display: flex;
     flex-direction: column;
-    align-items: center;
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.small)}px;

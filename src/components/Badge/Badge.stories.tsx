@@ -22,9 +22,6 @@ export const CustomPosition: StoryObj<BadgeProps> = {
     args: {
         size: 'large',
         labelText: 3,
-        renderStyle: {
-            top: 60,
-            left: 60,
-        },
+        renderStyle: {top: 60, left: 60},
     },
 };

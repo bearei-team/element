@@ -106,27 +106,29 @@ const processStateChange = (
     {event, eventName, type, block, setState}: ProcessStateChangeOptions,
 ) => {
     eventName === 'layout' && processLayout(event as LayoutChangeEvent, {block, setState});
+
     processElevation(state, {type, setState});
     setState(draft => {
         draft.eventName = eventName;
     });
 };
 
-const processInit = (status: ComponentStatus, {type, setState}: ProcessInitOptions) =>
-    status === 'idle' &&
+const processInit = ({type, setState}: ProcessInitOptions) =>
     setState(draft => {
+        if (draft.status !== 'idle') {
+            return;
+        }
+
         type === 'elevated' && (draft.defaultElevation = 1);
         draft.status = 'succeeded';
     });
 
-const processDisabledElevation = ({type, setState}: ProcessInitOptions, disabled?: boolean) => {
-    const setElevation = typeof disabled === 'boolean' && type === 'elevated';
-
-    setElevation &&
-        setState(draft => {
-            draft.elevation = disabled ? 0 : 1;
-        });
-};
+const processDisabledElevation = ({type, setState}: ProcessInitOptions, disabled?: boolean) =>
+    typeof disabled === 'boolean' &&
+    type === 'elevated' &&
+    setState(draft => {
+        draft.elevation = disabled ? 0 : 1;
+    });
 
 const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
     disabled &&
@@ -172,16 +174,16 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
     const [border] = useBorder({type, borderColor});
 
     useEffect(() => {
-        processInit(status, {type, setState});
-    }, [setState, status, type]);
-
-    useEffect(() => {
         processDisabledElevation({setState, type}, disabled);
     }, [disabled, setState, type]);
 
     useEffect(() => {
         processDisabled({setState}, disabled);
     }, [disabled, setState]);
+
+    useEffect(() => {
+        processInit({type, setState});
+    }, [setState, type]);
 
     if (status === 'idle') {
         return <></>;

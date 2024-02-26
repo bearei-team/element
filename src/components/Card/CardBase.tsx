@@ -108,27 +108,29 @@ const processStateChange = (
     {event, eventName, type, setState, block}: ProcessStateChangeOptions,
 ) => {
     eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState, block});
+
     processElevation(state, {type, setState});
     setState(draft => {
         draft.eventName = eventName;
     });
 };
 
-const processInit = (status: ComponentStatus, {type, setState}: ProcessInitOptions) =>
-    status === 'idle' &&
+const processInit = ({type, setState}: ProcessInitOptions) =>
     setState(draft => {
+        if (draft.status !== 'idle') {
+            return;
+        }
+
         type === 'elevated' && (draft.defaultElevation = 1);
         draft.status = 'succeeded';
     });
 
-const processDisabledElevation = ({type, setState}: ProcessInitOptions, disabled?: boolean) => {
-    const setElevation = typeof disabled === 'boolean' && type === 'elevated';
-
-    setElevation &&
-        setState(draft => {
-            draft.elevation = disabled ? 0 : 1;
-        });
-};
+const processDisabledElevation = ({type, setState}: ProcessInitOptions, disabled?: boolean) =>
+    typeof disabled === 'boolean' &&
+    type === 'elevated' &&
+    setState(draft => {
+        draft.elevation = disabled ? 0 : 1;
+    });
 
 const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
     disabled &&
@@ -208,16 +210,16 @@ export const CardBase: FC<CardBaseProps> = ({
     );
 
     useEffect(() => {
-        processInit(status, {setState, type});
-    }, [setState, status, type]);
-
-    useEffect(() => {
         processDisabledElevation({setState, type}, disabled);
     }, [disabled, setState, type]);
 
     useEffect(() => {
         processDisabled({setState}, disabled);
     }, [disabled, setState]);
+
+    useEffect(() => {
+        processInit({setState, type});
+    }, [setState, type]);
 
     if (status === 'idle') {
         return <></>;
@@ -243,11 +245,11 @@ export const CardBase: FC<CardBaseProps> = ({
             backgroundColor,
             borderColor,
             height: layout.height,
+            innerHeight: innerLayout.height,
+            innerWidth: innerLayout.width,
             subColor,
             titleColor,
             width: layout.width,
-            innerHeight: innerLayout.height,
-            innerWidth: innerLayout.width,
         },
     });
 };

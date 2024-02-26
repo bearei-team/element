@@ -26,8 +26,8 @@ export interface RenderProps extends NavigationRailItemProps {
     rippleCentered?: boolean;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
-        width: number;
         labelHeight: AnimatedInterpolation;
+        width: number;
     };
     underlayColor: string;
 }
@@ -67,15 +67,15 @@ const processPressOut = (
     event: GestureResponderEvent,
     {indexKey, activeKey, onActive, setState}: ProcessPressOutOptions,
 ) => {
-    const responseActive = indexKey !== activeKey;
-    const {locationX = 0, locationY = 0} = event.nativeEvent;
-
-    if (!responseActive) {
+    if (activeKey === indexKey) {
         return;
     }
 
+    const {locationX = 0, locationY = 0} = event.nativeEvent;
+
     setState(draft => {
         draft.activeLocation = {locationX, locationY};
+        draft.rippleCentered = false;
     });
 
     onActive?.(indexKey);
@@ -107,27 +107,26 @@ const processStateChange = ({
     });
 };
 
-const processInit = (status: ComponentStatus, {defaultActive, setState}: ProcessInitOptions) => {
-    status === 'idle' &&
-        setState(draft => {
-            draft.rippleCentered = !!defaultActive;
-            draft.status = 'succeeded';
-        });
-};
+const processInit = ({defaultActive, setState}: ProcessInitOptions) =>
+    setState(draft => {
+        if (draft.status !== 'idle') {
+            return;
+        }
 
-const processActive = (status: ComponentStatus, {setState, active}: ProcessActiveOptions) => {
-    const setActive = status === 'succeeded' && active;
+        draft.rippleCentered = !!defaultActive;
+        draft.status = 'succeeded';
+    });
 
-    setActive &&
-        setState(draft => {
-            if (draft.activeLocation?.locationX) {
-                return;
-            }
+const processActive = ({setState, active}: ProcessActiveOptions) =>
+    active &&
+    setState(draft => {
+        if (draft.status !== 'succeeded' || draft.activeLocation?.locationX) {
+            return;
+        }
 
-            draft.rippleCentered = true;
-            draft.activeLocation = {locationX: 0, locationY: 0};
-        });
-};
+        draft.rippleCentered = true;
+        draft.activeLocation = {locationX: 0, locationY: 0};
+    });
 
 export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     activeIcon = <Icon type="filled" name="circle" />,
@@ -155,7 +154,7 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     const underlayColor = theme.palette.surface.onSurface;
     const active = typeof activeKey === 'string' ? activeKey === indexKey : undefined;
     const defaultActive = defaultActiveKey === indexKey;
-    const [{height, color}] = useAnimated({active, block, defaultActive});
+    const [{height, color}] = useAnimated({active, block, defaultActive, setState});
     const iconLayout = useMemo(
         () => ({
             width: theme.adaptSize(theme.spacing.large),
@@ -182,12 +181,12 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     );
 
     useEffect(() => {
-        processInit(status, {defaultActive, setState});
-    }, [defaultActive, setState, status]);
+        processActive({active, setState});
+    }, [active, setState]);
 
     useEffect(() => {
-        processActive(status, {active, setState});
-    }, [active, setState, status]);
+        processInit({defaultActive, setState});
+    }, [defaultActive, setState]);
 
     if (status === 'idle') {
         return <></>;

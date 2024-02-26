@@ -122,12 +122,12 @@ const processStateChange = (
     });
 };
 
-const processInit = (
-    status: ComponentStatus,
-    {defaultActive, elevated, setState}: ProcessInitOptions,
-) =>
-    status === 'idle' &&
+const processInit = ({defaultActive, elevated, setState}: ProcessInitOptions) =>
     setState(draft => {
+        if (draft.status !== 'idle') {
+            return;
+        }
+
         elevated && (draft.defaultElevation = 1);
 
         if (typeof defaultActive === 'boolean') {
@@ -141,14 +141,12 @@ const processInit = (
 const processDisabledElevation = (
     {elevated, setState}: ProcessDisabledElevationOptions,
     disabled?: boolean,
-) => {
-    const setElevation = typeof disabled === 'boolean' && elevated;
-
-    setElevation &&
-        setState(draft => {
-            draft.elevation = disabled ? 0 : 1;
-        });
-};
+) =>
+    typeof disabled === 'boolean' &&
+    elevated &&
+    setState(draft => {
+        draft.elevation = disabled ? 0 : 1;
+    });
 
 const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
     disabled &&
@@ -156,19 +154,19 @@ const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
         draft.eventName = 'none';
     });
 
-const processActive = (status: ComponentStatus, {active, setState}: ProcessActiveOptions) => {
-    const setActive = status === 'succeeded' && typeof active === 'boolean';
-
-    setActive &&
+const processActive = ({active, setState}: ProcessActiveOptions) => {
+    typeof active === 'boolean' &&
         setState(draft => {
-            draft.active = active;
-
-            if (draft.activeLocation?.locationX) {
+            if (draft.status !== 'succeeded' || draft.active === active) {
                 return;
             }
 
-            draft.rippleCentered = true;
-            draft.activeLocation = {locationX: 0, locationY: 0};
+            draft.active = active;
+
+            if (!draft.activeLocation?.locationX) {
+                draft.rippleCentered = true;
+                draft.activeLocation = {locationX: 0, locationY: 0};
+            }
         });
 };
 
@@ -177,11 +175,11 @@ export const ChipBase: FC<ChipBaseProps> = ({
     defaultActive: defaultActiveSource,
     disabled,
     elevated = false,
+    fill,
     icon,
     labelText = 'Label',
     render,
     type = 'filter',
-    fill,
     ...renderProps
 }) => {
     const [
@@ -225,10 +223,6 @@ export const ChipBase: FC<ChipBaseProps> = ({
     const [border] = useBorder({type, borderColor});
 
     useEffect(() => {
-        processInit(status, {defaultActive: defaultActiveSource, elevated, setState});
-    }, [defaultActiveSource, elevated, setState, status]);
-
-    useEffect(() => {
         processDisabledElevation({elevated, setState}, disabled);
     }, [disabled, elevated, setState]);
 
@@ -237,8 +231,12 @@ export const ChipBase: FC<ChipBaseProps> = ({
     }, [disabled, setState]);
 
     useEffect(() => {
-        processActive(status, {active: activeSource, setState});
-    }, [activeSource, setState, status]);
+        processActive({active: activeSource, setState});
+    }, [activeSource, setState]);
+
+    useEffect(() => {
+        processInit({defaultActive: defaultActiveSource, elevated, setState});
+    }, [defaultActiveSource, elevated, setState]);
 
     if (status === 'idle') {
         return <></>;
