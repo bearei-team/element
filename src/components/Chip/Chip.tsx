@@ -12,8 +12,6 @@ const render = ({
     active,
     activeColor,
     activeLocation,
-    defaultActive,
-    defaultElevation,
     disabled,
     elevation,
     eventName,
@@ -34,11 +32,10 @@ const render = ({
 
     return (
         <Container accessibilityLabel={labelText} testID={`chip--${id}`}>
-            <Elevation defaultLevel={defaultElevation} level={elevation} shape={shape}>
+            <Elevation level={elevation} shape={shape}>
                 <TouchableRipple
                     {...onEvent}
                     active={active}
-                    defaultActive={defaultActive}
                     disabled={disabled}
                     shape={shape}
                     underlayColor={activeColor}

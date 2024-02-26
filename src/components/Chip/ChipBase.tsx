@@ -35,7 +35,6 @@ export interface ChipProps extends TouchableRippleProps {
 export interface RenderProps extends ChipProps {
     activeColor: string;
     activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
-    defaultElevation: ElevationLevel;
     elevation: ElevationLevel;
     eventName: EventName;
     onEvent: OnEvent;
@@ -53,8 +52,6 @@ interface ChipBaseProps extends ChipProps {
 interface InitialState {
     active?: boolean;
     activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
-    defaultActive?: boolean;
-    defaultElevation?: ElevationLevel;
     elevation?: ElevationLevel;
     eventName: EventName;
     layout: LayoutRectangle;
@@ -69,7 +66,9 @@ interface ProcessEventOptions {
 type ProcessActiveOptions = Pick<RenderProps, 'active'> & ProcessEventOptions;
 type ProcessDisabledElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
 type ProcessElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
-type ProcessInitOptions = Pick<RenderProps, 'elevated' | 'defaultActive'> & ProcessEventOptions;
+type ProcessInitOptions = Pick<RenderProps, 'elevated' | 'active' | 'disabled'> &
+    ProcessEventOptions;
+
 type ProcessLayoutOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
 type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
 
@@ -94,7 +93,9 @@ const processElevation = (state: State, {elevated, setState}: ProcessElevationOp
     const correctionCoefficient = processCorrectionCoefficient({elevated});
 
     setState(draft => {
-        draft.elevation = (level[state] + correctionCoefficient) as ElevationLevel;
+        draft.elevation = (
+            state === 'disabled' ? level[state] : level[state] + correctionCoefficient
+        ) as ElevationLevel;
     });
 };
 
@@ -125,24 +126,24 @@ const processStateChange = (
 
     nextEvent[eventName as keyof typeof nextEvent]?.();
 
-    processElevation(state, {elevated, setState});
+    eventName !== 'layout' && processElevation(state, {elevated, setState});
 
     setState(draft => {
         draft.eventName = eventName;
     });
 };
 
-const processInit = ({defaultActive, elevated, setState}: ProcessInitOptions) =>
+const processInit = ({active, elevated, setState, disabled}: ProcessInitOptions) =>
     setState(draft => {
         if (draft.status !== 'idle') {
             return;
         }
 
-        elevated && (draft.defaultElevation = 1);
+        elevated && !disabled && (draft.elevation = 1);
 
-        if (typeof defaultActive === 'boolean') {
-            draft.rippleCentered = defaultActive;
-            draft.defaultActive = defaultActive;
+        if (typeof active === 'boolean') {
+            draft.rippleCentered = active;
+            draft.active = active;
         }
 
         draft.status = 'succeeded';
@@ -155,13 +156,13 @@ const processDisabledElevation = (
     typeof disabled === 'boolean' &&
     elevated &&
     setState(draft => {
-        draft.elevation = disabled ? 0 : 1;
+        draft.status === 'succeeded' && (draft.elevation = disabled ? 0 : 1);
     });
 
 const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
     disabled &&
     setState(draft => {
-        draft.eventName = 'none';
+        draft.status === 'succeeded' && (draft.eventName = 'none');
     });
 
 const processActive = ({active, setState}: ProcessActiveOptions) => {
@@ -182,7 +183,7 @@ const processActive = ({active, setState}: ProcessActiveOptions) => {
 
 export const ChipBase: FC<ChipBaseProps> = ({
     active: activeSource,
-    defaultActive: defaultActiveSource,
+    defaultActive,
     disabled,
     elevated = false,
     fill,
@@ -193,23 +194,11 @@ export const ChipBase: FC<ChipBaseProps> = ({
     ...renderProps
 }) => {
     const [
-        {
-            active,
-            activeLocation,
-            defaultActive,
-            defaultElevation,
-            elevation,
-            eventName,
-            layout,
-            rippleCentered,
-            status,
-        },
+        {active, activeLocation, elevation, eventName, layout, rippleCentered, status},
         setState,
     ] = useImmer<InitialState>({
         active: undefined,
         activeLocation: undefined,
-        defaultActive: undefined,
-        defaultElevation: undefined,
         elevation: undefined,
         eventName: 'none',
         layout: {} as LayoutRectangle,
@@ -245,8 +234,8 @@ export const ChipBase: FC<ChipBaseProps> = ({
     }, [activeSource, setState]);
 
     useEffect(() => {
-        processInit({defaultActive: defaultActiveSource, elevated, setState});
-    }, [defaultActiveSource, elevated, setState]);
+        processInit({active: activeSource ?? defaultActive, elevated, setState});
+    }, [activeSource, defaultActive, elevated, setState]);
 
     if (status === 'idle') {
         return <></>;
@@ -257,8 +246,6 @@ export const ChipBase: FC<ChipBaseProps> = ({
         active,
         activeColor,
         activeLocation,
-        defaultActive,
-        defaultElevation,
         disabled,
         elevation,
         eventName,

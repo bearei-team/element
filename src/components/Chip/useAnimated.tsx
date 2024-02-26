@@ -61,8 +61,9 @@ export const useAnimated = ({
     eventName,
     elevated,
 }: UseAnimatedOptions) => {
-    const [borderAnimated] = useAnimatedValue(1);
-    const [colorAnimated] = useAnimatedValue(1);
+    const animatedValue = disabled ? 0 : 1;
+    const [borderAnimated] = useAnimatedValue(animatedValue);
+    const [colorAnimated] = useAnimatedValue(animatedValue);
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
