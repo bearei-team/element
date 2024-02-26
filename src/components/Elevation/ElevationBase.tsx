@@ -10,7 +10,7 @@ import {
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ShapeProps} from '../Common/Common.styles';
-import {AnimatedInterpolation, ComponentStatus, State} from '../Common/interface';
+import {AnimatedInterpolation, State} from '../Common/interface';
 import {useAnimated} from './useAnimated';
 
 export type ElevationLevel = 0 | 1 | 2 | 3 | 4 | 5 | undefined;
@@ -35,10 +35,9 @@ interface ElevationBaseProps extends ElevationProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface InitialState {
+interface InitialState {
     layout: LayoutRectangle;
     level?: ElevationLevel;
-    status: ComponentStatus;
 }
 
 interface ProcessEventOptions {
@@ -66,7 +65,6 @@ export const ElevationBase: FC<ElevationBaseProps> = ({
 }) => {
     const [{layout}, setState] = useImmer<InitialState>({
         layout: {} as LayoutRectangle,
-        status: 'idle',
     });
 
     const id = useId();

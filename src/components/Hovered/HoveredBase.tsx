@@ -20,7 +20,8 @@ export interface RenderProps extends HoveredProps {
         width?: number;
     };
 }
-export interface HoveredBaseProps extends HoveredProps {
+
+interface HoveredBaseProps extends HoveredProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 

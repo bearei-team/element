@@ -2,7 +2,7 @@ import {FC, useCallback, useEffect, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
-import {EventName, Size, State} from '../Common/interface';
+import {ComponentStatus, EventName, Size, State} from '../Common/interface';
 import {ElevationLevel} from '../Elevation/Elevation';
 import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {useAnimated} from './useAnimated';
@@ -11,7 +11,6 @@ import {useUnderlayColor} from './useUnderlayColor';
 
 type FABType = 'surface' | 'primary' | 'secondary' | 'tertiary';
 export interface FABProps extends TouchableRippleProps {
-    defaultElevation?: ElevationLevel;
     disabled?: boolean;
     elevated?: boolean;
     icon?: React.JSX.Element;
@@ -21,14 +20,13 @@ export interface FABProps extends TouchableRippleProps {
 }
 
 export interface RenderProps extends FABProps {
+    elevation?: ElevationLevel;
+    eventName?: EventName;
     onEvent: OnEvent;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
         width: number;
     };
-    defaultElevation?: ElevationLevel;
-    elevation?: ElevationLevel;
-    eventName?: EventName;
 }
 
 interface FABBaseProps extends FABProps {
@@ -39,6 +37,7 @@ interface InitialState {
     elevation?: ElevationLevel;
     eventName: EventName;
     layout: LayoutRectangle;
+    status: ComponentStatus;
 }
 
 interface ProcessEventOptions {
@@ -50,8 +49,14 @@ type ProcessStateChangeOptions = Pick<RenderProps, 'elevated'> &
     OnStateChangeOptions;
 
 type ProcessDisabledElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
+type ProcessElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
+type ProcessInitOptions = Pick<RenderProps, 'elevated' | 'disabled'> & ProcessEventOptions;
 
-const processElevation = (nextState: State, {setState}: ProcessEventOptions) => {
+const processElevation = (state: State, {setState, elevated}: ProcessElevationOptions) => {
+    if (!elevated) {
+        return;
+    }
+
     const level = {
         disabled: 0,
         enabled: 0,
@@ -63,7 +68,9 @@ const processElevation = (nextState: State, {setState}: ProcessEventOptions) => 
     };
 
     setState(draft => {
-        draft.elevation = (level[nextState] + 3) as ElevationLevel;
+        draft.elevation = (
+            state === 'disabled' ? level[state] : level[state] + 3
+        ) as ElevationLevel;
     });
 };
 
@@ -79,8 +86,9 @@ const processStateChange = (
     state: State,
     {event, eventName, elevated, setState}: ProcessStateChangeOptions,
 ) => {
-    eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
-    elevated && processElevation(state, {setState});
+    eventName === 'layout'
+        ? processLayout(event as LayoutChangeEvent, {setState})
+        : processElevation(state, {setState, elevated});
 
     setState(draft => {
         draft.eventName = eventName;
@@ -94,17 +102,26 @@ const processDisabledElevation = (
     typeof disabled === 'boolean' &&
     elevated &&
     setState(draft => {
-        draft.elevation = disabled ? 0 : 3;
+        draft.status === 'succeeded' && (draft.elevation = disabled ? 0 : 3);
     });
 
 const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
     disabled &&
     setState(draft => {
-        draft.eventName = 'none';
+        draft.status === 'succeeded' && (draft.eventName = 'none');
+    });
+
+const processInit = ({elevated, setState, disabled}: ProcessInitOptions) =>
+    setState(draft => {
+        if (draft.status !== 'idle') {
+            return;
+        }
+
+        elevated && !disabled && (draft.elevation = 3);
+        draft.status = 'succeeded';
     });
 
 export const FABBase: FC<FABBaseProps> = ({
-    defaultElevation = 3,
     disabled,
     elevated = true,
     icon,
@@ -113,10 +130,11 @@ export const FABBase: FC<FABBaseProps> = ({
     type = 'primary',
     ...renderProps
 }) => {
-    const [{elevation, layout, eventName}, setState] = useImmer<InitialState>({
+    const [{elevation, layout, eventName, status}, setState] = useImmer<InitialState>({
         elevation: undefined,
         eventName: 'none',
         layout: {} as LayoutRectangle,
+        status: 'idle',
     });
 
     const [underlayColor] = useUnderlayColor({type});
@@ -139,9 +157,16 @@ export const FABBase: FC<FABBaseProps> = ({
         processDisabled({setState}, disabled);
     }, [disabled, setState]);
 
+    useEffect(() => {
+        processInit({elevated, setState, disabled});
+    }, [disabled, setState, elevated]);
+
+    if (status === 'idle') {
+        return <></>;
+    }
+
     return render({
         ...renderProps,
-        defaultElevation: elevated ? defaultElevation : 0,
         elevation,
         eventName,
         icon: iconElement,

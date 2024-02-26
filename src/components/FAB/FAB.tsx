@@ -10,7 +10,6 @@ const AnimatedContent = Animated.createAnimatedComponent(Content);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     accessibilityLabel,
-    defaultElevation,
     elevation,
     eventName,
     icon,
@@ -32,7 +31,7 @@ const render = ({
             accessibilityLabel={labelText ?? accessibilityLabel}
             accessibilityRole="button"
             testID={`fab--${id}`}>
-            <Elevation level={elevation} shape={shape} defaultLevel={defaultElevation}>
+            <Elevation level={elevation} shape={shape}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
                     shape={shape}

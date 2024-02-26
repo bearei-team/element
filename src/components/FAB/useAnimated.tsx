@@ -18,7 +18,7 @@ const processAnimatedTiming = (
     requestAnimationFrame(() => animatedTiming(colorAnimated, {toValue: disabled ? 0 : 1}).start());
 
 export const useAnimated = ({disabled, type = 'primary'}: UseAnimatedOptions) => {
-    const [colorAnimated] = useAnimatedValue(1);
+    const [colorAnimated] = useAnimatedValue(disabled ? 0 : 1);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
     const disabledBackgroundColor = theme.color.convertHexToRGBA(
