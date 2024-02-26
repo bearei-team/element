@@ -3,8 +3,8 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './SideSheetBase';
 
-export type ContainerProps = Pick<RenderProps, 'position'>;
-export type HeaderProps = Pick<RenderProps, 'back'>;
+type ContainerProps = Pick<RenderProps, 'position'>;
+type HeaderProps = Pick<RenderProps, 'back'>;
 
 export const Modal = styled.View`
     height: 100%;

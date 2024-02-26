@@ -53,7 +53,7 @@ interface ProcessEventOptions {
 }
 
 type ProcessChangeTextOptions = Pick<RenderProps, 'data' | 'onChangeText'> & ProcessEventOptions;
-interface ProcessEmitOptions extends Pick<InitialState, 'status'> {
+interface ProcessEmitOptions extends ProcessEventOptions {
     id: string;
 }
 
@@ -154,8 +154,11 @@ const processContainerLayout = (containerCurrent: View | null, {setState}: Proce
         }),
     );
 
-const processEmit = (element: React.JSX.Element, {id, status}: ProcessEmitOptions) =>
-    status === 'succeeded' && emitter.emit('modal', {id: `search__inner--${id}`, element});
+const processEmit = (element: React.JSX.Element, {id, setState}: ProcessEmitOptions) =>
+    setState(draft => {
+        draft.status === 'succeeded' &&
+            emitter.emit('modal', {id: `search__inner--${id}`, element});
+    });
 
 const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
     <TextField testID={`search__control--${id}`}>
@@ -187,7 +190,7 @@ export const InnerBase: FC<InnerBaseProps> = ({
     windowDimensions,
     ...textInputProps
 }) => {
-    const [{data, eventName, containerLayout, listVisible, state, value, status}, setState] =
+    const [{data, eventName, containerLayout, listVisible, state, value}, setState] =
         useImmer<InitialState>({
             data: [],
             eventName: 'none',
@@ -301,8 +304,8 @@ export const InnerBase: FC<InnerBaseProps> = ({
     }, [onContainerLayout, windowDimensions]);
 
     useEffect(() => {
-        processEmit(inner, {id, status});
-    }, [id, inner, status]);
+        processEmit(inner, {id, setState});
+    }, [id, inner, setState]);
 
     return <></>;
 };

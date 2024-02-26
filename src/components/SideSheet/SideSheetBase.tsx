@@ -1,35 +1,64 @@
-import {FC, useCallback, useEffect, useId, useMemo} from 'react';
-import {Animated, ViewStyle} from 'react-native';
+import {FC, RefAttributes, useCallback, useEffect, useId, useMemo} from 'react';
+import {
+    Animated,
+    GestureResponderEvent,
+    ModalProps,
+    View,
+    ViewProps,
+    ViewStyle,
+} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
 import {Button} from '../Button/Button';
+import {ShapeProps} from '../Common/Common.styles';
 import {Icon} from '../Icon/Icon';
 import {IconButton} from '../IconButton/IconButton';
-import {SideSheetProps} from './SideSheet';
 import {useAnimated} from './useAnimated';
+
+type SideSheetType = 'side' | 'bottom';
+export interface SideSheetProps
+    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & ModalProps> {
+    back?: boolean;
+    backIcon?: React.JSX.Element;
+    closeIcon?: React.JSX.Element;
+    content?: React.JSX.Element;
+    footer?: boolean;
+    headlineText?: string;
+    onBack?: () => void;
+    onClose?: () => void;
+    onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
+    onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
+    position?: 'horizontalStart' | 'horizontalEnd';
+    primaryButton?: React.JSX.Element;
+    primaryButtonLabelText?: string;
+    secondaryButton?: React.JSX.Element;
+    secondaryButtonLabelText?: string;
+    type?: SideSheetType;
+    visible?: boolean;
+}
 
 export interface RenderProps extends SideSheetProps {
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         innerTranslateX: Animated.AnimatedInterpolation<string | number>;
     };
 }
-export interface SideSheetBaseProps extends SideSheetProps {
+interface SideSheetBaseProps extends SideSheetProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface InitialState {
+interface InitialState {
     modalVisible?: boolean;
     visible?: boolean;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessAnimatedFinishedOptions = Pick<RenderProps, 'visible' | 'onClose' | 'onBack'> &
+type ProcessAnimatedFinishedOptions = Pick<RenderProps, 'visible' | 'onClose' | 'onBack'> &
     ProcessEventOptions;
 
-export interface ProcessEmitOptions extends Pick<RenderProps, 'visible'> {
+interface ProcessEmitOptions extends Pick<RenderProps, 'visible'> {
     sheet: React.JSX.Element;
     id: string;
 }
@@ -39,19 +68,15 @@ const processAnimatedFinished = ({
     setState,
     onClose,
     onBack,
-}: ProcessAnimatedFinishedOptions) => {
-    if (!visible) {
-        return;
-    }
-
+}: ProcessAnimatedFinishedOptions) =>
+    visible &&
     setState(draft => {
         draft.modalVisible = false;
         draft.visible = undefined;
-    });
 
-    onClose?.();
-    onBack?.();
-};
+        onClose?.();
+        onBack?.();
+    });
 
 const processClose = ({setState}: ProcessEventOptions) =>
     setState(draft => {

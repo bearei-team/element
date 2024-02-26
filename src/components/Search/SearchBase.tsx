@@ -78,8 +78,8 @@ export const SearchBase: FC<SearchBaseProps> = ({render, ...renderProps}) => {
         containerCurrent: containerRef.current,
         containerRef,
         id,
-        windowDimensions,
-        status,
         onEvent,
+        status,
+        windowDimensions,
     });
 };

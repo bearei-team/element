@@ -1,6 +1,5 @@
-import React, {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, GestureResponderEvent, ModalProps, View, ViewProps} from 'react-native';
-import {ShapeProps} from '../Common/Common.styles';
+import React, {FC, forwardRef, memo} from 'react';
+import {Animated, View} from 'react-native';
 import {Divider} from '../Divider/Divider';
 import {
     BackAffordance,
@@ -15,29 +14,7 @@ import {
     PrimaryButton,
     SecondaryButton,
 } from './SideSheet.styles';
-import {RenderProps, SideSheetBase} from './SideSheetBase';
-export type SideSheetType = 'side' | 'bottom';
-
-export interface SideSheetProps
-    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & ModalProps> {
-    back?: boolean;
-    backIcon?: React.JSX.Element;
-    closeIcon?: React.JSX.Element;
-    content?: React.JSX.Element;
-    footer?: boolean;
-    headlineText?: string;
-    onBack?: () => void;
-    onClose?: () => void;
-    onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
-    onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
-    position?: 'horizontalStart' | 'horizontalEnd';
-    primaryButton?: React.JSX.Element;
-    primaryButtonLabelText?: string;
-    secondaryButton?: React.JSX.Element;
-    secondaryButtonLabelText?: string;
-    type?: SideSheetType;
-    visible?: boolean;
-}
+import {RenderProps, SideSheetBase, SideSheetProps} from './SideSheetBase';
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedInner = Animated.createAnimatedComponent(Inner);
@@ -124,3 +101,4 @@ const ForwardRefSideSheet = forwardRef<View, SideSheetProps>((props, ref) => (
 ));
 
 export const SideSheet: FC<SideSheetProps> = memo(ForwardRefSideSheet);
+export type {SideSheetProps};

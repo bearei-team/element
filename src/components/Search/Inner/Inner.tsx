@@ -12,6 +12,7 @@ const render = ({
     activeKey,
     containerLayout,
     data,
+    defaultActiveKey,
     eventName,
     id,
     input,
@@ -64,7 +65,12 @@ const render = ({
                 />
             </Header>
             <Divider />
-            <List data={data} activeKey={activeKey} onActive={onActive} />
+            <List
+                activeKey={activeKey}
+                data={data}
+                defaultActiveKey={defaultActiveKey}
+                onActive={onActive}
+            />
         </AnimatedContainer>
     );
 };

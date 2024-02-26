@@ -9,17 +9,17 @@ import {
 } from '../../utils/animatedTiming.utils';
 import {RenderProps} from './SideSheetBase';
 
-export interface UseAnimatedOptions extends Pick<RenderProps, 'visible' | 'position'> {
+interface UseAnimatedOptions extends Pick<RenderProps, 'visible' | 'position'> {
     finished: () => void;
 }
 
-export interface ScreenAnimatedOptions {
+interface ScreenAnimatedOptions {
     containerAnimated: Animated.Value;
     finished?: () => void;
     innerAnimated: Animated.Value;
 }
 
-export interface ProcessAnimatedTimingOptions extends ScreenAnimatedOptions {
+interface ProcessAnimatedTimingOptions extends ScreenAnimatedOptions {
     visible?: boolean;
 }
 
