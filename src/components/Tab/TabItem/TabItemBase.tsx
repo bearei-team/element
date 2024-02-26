@@ -1,11 +1,20 @@
-import {FC, useCallback, useId} from 'react';
+import {FC, useCallback, useEffect, useId} from 'react';
 import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../../hooks/useOnEvent';
-import {EventName, State} from '../../Common/interface';
-import {TabItemProps} from './TabItem';
+import {ComponentStatus, EventName, State} from '../../Common/interface';
+import {TouchableRippleProps} from '../../TouchableRipple/TouchableRipple';
 import {useAnimated} from './useAnimated';
+
+export interface TabItemProps extends TouchableRippleProps {
+    activeKey?: string;
+    defaultActiveKey?: string;
+    indexKey?: string;
+    labelText?: string;
+    onActive?: (key?: string) => void;
+    onLabelTextLayout: (event: LayoutChangeEvent, key: string) => void;
+}
 
 export interface RenderProps extends TabItemProps {
     eventName: EventName;
@@ -18,25 +27,26 @@ export interface RenderProps extends TabItemProps {
     underlayColor: string;
 }
 
-export interface TabItemBaseProps extends TabItemProps {
+interface TabItemBaseProps extends TabItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
 export interface InitialState {
     layout: LayoutRectangle;
     eventName: EventName;
+    status: ComponentStatus;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
+type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
     ProcessEventOptions;
 
-export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
-
-export type ProcessLabelTextLayoutOptions = Pick<
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
+type ProcessInitOptions = ProcessEventOptions & Pick<RenderProps, 'defaultActive'>;
+type ProcessLabelTextLayoutOptions = Pick<
     TabItemBaseProps,
     'onLabelTextLayout' | 'indexKey' | 'id'
 >;
@@ -77,6 +87,15 @@ const processLabelTextLayout = (
     {onLabelTextLayout, indexKey, id}: ProcessLabelTextLayoutOptions,
 ) => onLabelTextLayout?.(event, (indexKey ?? id)!);
 
+const processInit = ({setState}: ProcessInitOptions) =>
+    setState(draft => {
+        if (draft.status !== 'idle') {
+            return;
+        }
+
+        draft.status = 'succeeded';
+    });
+
 export const TabItemBase: FC<TabItemBaseProps> = ({
     activeKey,
     defaultActiveKey,
@@ -86,9 +105,10 @@ export const TabItemBase: FC<TabItemBaseProps> = ({
     render,
     ...renderProps
 }) => {
-    const [{layout, eventName}, setState] = useImmer<InitialState>({
+    const [{layout, eventName, status}, setState] = useImmer<InitialState>({
         layout: {} as LayoutRectangle,
         eventName: 'none',
+        status: 'idle',
     });
 
     const id = useId();
@@ -114,7 +134,15 @@ export const TabItemBase: FC<TabItemBaseProps> = ({
     );
 
     const [onEvent] = useOnEvent({...renderProps, onStateChange});
-    const [{color}] = useAnimated({active, defaultActive});
+    const [{color}] = useAnimated({active, defaultActive, setState});
+
+    useEffect(() => {
+        processInit({defaultActive, setState});
+    }, [defaultActive, setState]);
+
+    if (status === 'idle') {
+        return <></>;
+    }
 
     return render({
         ...renderProps,

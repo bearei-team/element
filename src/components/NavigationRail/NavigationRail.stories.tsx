@@ -10,20 +10,21 @@ export default {
 
 export const Rail: StoryObj<NavigationRailProps> = {
     args: {
-        defaultActiveKey: 'name',
+        defaultActiveKey: 'A',
+        activeKey: 'C',
         fab: <FAB defaultElevation={0} icon={<Icon />} />,
         data: [
             {
                 labelText: 'Label1',
-                key: 'name',
+                key: 'A',
             },
             {
                 labelText: 'Label2',
-                key: 'age',
+                key: 'B',
             },
             {
                 labelText: 'Label3',
-                key: 'sex',
+                key: 'C',
             },
         ],
     },

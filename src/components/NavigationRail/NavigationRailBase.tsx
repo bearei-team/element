@@ -1,4 +1,4 @@
-import {FC, RefAttributes, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, RefAttributes, cloneElement, useCallback, useEffect, useId, useRef} from 'react';
 import {View, ViewProps} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {ComponentStatus} from '../Common/interface';
@@ -78,7 +78,7 @@ const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSour
     dataSources &&
     setState(draft => {
         draft.data = dataSources;
-        draft.status === 'idle' && (draft.status = 'succeeded');
+        draft.status = 'succeeded';
     });
 
 const processActiveKey = ({activeKey, setState}: ProcessActiveKeyOptions) =>
@@ -100,6 +100,7 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
     render,
     ...renderProps
 }) => {
+    const isFirstRender = useRef(true);
     const [{activeKey, data, status}, setState] = useImmer<InitialState>({
         activeKey: undefined,
         data: [],
@@ -112,21 +113,24 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
         [renderProps.onActive, setState],
     );
 
-    const children = useMemo(
-        () =>
-            renderItems({
-                activeKey,
-                block,
-                data,
-                defaultActiveKey,
-                onActive,
-            }),
-        [activeKey, block, data, defaultActiveKey, onActive],
-    );
+    const children = useCallback(() => {
+        return renderItems({
+            activeKey,
+            block,
+            data,
+            defaultActiveKey,
+            onActive,
+        });
+    }, [activeKey, block, data, defaultActiveKey, onActive]);
 
     useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
         processActiveKey({activeKey: activeKeySource, setState});
-    }, [activeKeySource, setState, status]);
+    }, [activeKeySource, setState]);
 
     useEffect(() => {
         processInit({setState}, dataSources);
@@ -138,8 +142,13 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
 
     return render({
         ...renderProps,
-        children,
+        children: children(),
         fab: processFAB(fab),
         id,
+        // onLayout: () => {
+        //     setState(d => {
+        //         d.status = 'succeeded';
+        //     });
+        // },
     });
 };

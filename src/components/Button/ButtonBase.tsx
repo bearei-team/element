@@ -19,7 +19,6 @@ export interface ButtonProps extends TouchableRippleProps {
 }
 
 export interface RenderProps extends ButtonProps {
-    defaultElevation: ElevationLevel;
     elevation: ElevationLevel;
     eventName: EventName;
     onContentLayout: (event: LayoutChangeEvent) => void;
@@ -38,7 +37,6 @@ interface ButtonBaseProps extends ButtonProps {
 
 interface InitialState {
     contentLayout: LayoutRectangle;
-    defaultElevation?: ElevationLevel;
     elevation?: ElevationLevel;
     eventName: EventName;
     layout: LayoutRectangle;
@@ -51,7 +49,7 @@ interface ProcessEventOptions {
 
 type ProcessContentLayoutOptions = Pick<RenderProps, 'block'> & ProcessEventOptions;
 type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
-type ProcessInitOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
+type ProcessInitOptions = Pick<RenderProps, 'type' | 'disabled'> & ProcessEventOptions;
 type ProcessLayoutOptions = Pick<RenderProps, 'type' | 'block'> & ProcessEventOptions;
 type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
 
@@ -78,7 +76,9 @@ const processElevation = (state: State, {type = 'filled', setState}: ProcessElev
     const correctionCoefficient = processCorrectionCoefficient({type});
 
     setState(draft => {
-        draft.elevation = (level[state] + correctionCoefficient) as ElevationLevel;
+        draft.elevation = (
+            state === 'disabled' ? level[state] : level[state] + correctionCoefficient
+        ) as ElevationLevel;
     });
 };
 
@@ -113,21 +113,22 @@ const processStateChange = (
     state: State,
     {event, eventName, type, block, setState}: ProcessStateChangeOptions,
 ) => {
-    eventName === 'layout' && processLayout(event as LayoutChangeEvent, {block, setState});
+    eventName === 'layout'
+        ? processLayout(event as LayoutChangeEvent, {block, setState})
+        : processElevation(state, {type, setState});
 
-    processElevation(state, {type, setState});
     setState(draft => {
         draft.eventName = eventName;
     });
 };
 
-const processInit = ({type, setState}: ProcessInitOptions) =>
+const processInit = ({type, setState, disabled}: ProcessInitOptions) =>
     setState(draft => {
         if (draft.status !== 'idle') {
             return;
         }
 
-        type === 'elevated' && (draft.defaultElevation = 1);
+        type === 'elevated' && !disabled && (draft.elevation = 1);
         draft.status = 'succeeded';
     });
 
@@ -153,10 +154,9 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
     type = 'filled',
     ...renderProps
 }) => {
-    const [{contentLayout, defaultElevation, elevation, eventName, layout, status}, setState] =
+    const [{contentLayout, elevation, eventName, layout, status}, setState] =
         useImmer<InitialState>({
             contentLayout: {} as LayoutRectangle,
-            defaultElevation: undefined,
             elevation: undefined,
             eventName: 'none',
             layout: {} as LayoutRectangle,
@@ -190,8 +190,8 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
     }, [disabled, setState]);
 
     useEffect(() => {
-        processInit({type, setState});
-    }, [setState, type]);
+        processInit({type, setState, disabled});
+    }, [disabled, setState, type]);
 
     if (status === 'idle') {
         return <></>;
@@ -200,7 +200,6 @@ export const ButtonBase: FC<ButtonBaseProps> = ({
     return render({
         ...renderProps,
         block,
-        defaultElevation,
         disabled,
         elevation,
         eventName,

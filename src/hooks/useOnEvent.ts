@@ -192,7 +192,11 @@ export const useOnEvent = ({
     const mobile = ['ios', 'android'].includes(theme.OS);
     const processState = useCallback(
         (state: State, options = {} as ProcessStateOptions) =>
-            processStateChange(state, {...options, disabled, onStateChange}),
+            processStateChange(disabled ? 'disabled' : state, {
+                ...options,
+                disabled,
+                onStateChange,
+            }),
         [disabled, onStateChange],
     );
 

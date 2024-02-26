@@ -16,7 +16,7 @@ import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../../hooks/useOnEvent';
 import {ShapeProps} from '../../Common/Common.styles';
 import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../../Common/interface';
-import {Icon} from '../../Icon/Icon';
+import {Icon, IconProps} from '../../Icon/Icon';
 import {useAnimated} from './useAnimated';
 
 export interface NavigationRailItemProps
@@ -167,9 +167,16 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     const activeColor = theme.palette.secondary.secondaryContainer;
     const id = useId();
     const underlayColor = theme.palette.surface.onSurface;
+    console.info(activeKey, indexKey);
     const active = typeof activeKey === 'string' ? activeKey === indexKey : undefined;
     const defaultActive = defaultActiveKey === indexKey;
-    const [{height, color}] = useAnimated({active, block, defaultActive, setState});
+    const [{height, color}] = useAnimated({
+        active,
+        block,
+        defaultActive,
+        setState,
+    });
+
     const iconLayout = useMemo(
         () => ({
             width: theme.adaptSize(theme.spacing.large),
@@ -186,12 +193,12 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
 
     const [onEvent] = useOnEvent({...renderProps, disabled: false, onStateChange});
     const activeIconElement = useMemo(
-        () => cloneElement(activeIcon, {...iconLayout, eventName}),
+        () => cloneElement<IconProps>(activeIcon, {...iconLayout, eventName}),
         [activeIcon, eventName, iconLayout],
     );
 
     const iconElement = useMemo(
-        () => cloneElement(icon, {...iconLayout, eventName}),
+        () => cloneElement<IconProps>(icon, {...iconLayout, eventName}),
         [eventName, icon, iconLayout],
     );
 

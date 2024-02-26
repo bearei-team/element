@@ -3,13 +3,12 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './TabBase';
 
-export interface ActiveIndicatorProps extends Pick<RenderProps, 'activeIndicatorOffsetPosition'> {
-    paddingHorizontal: number;
-    width: number;
+interface ActiveIndicatorProps extends Pick<RenderProps, 'activeIndicatorOffsetPosition'> {
+    renderStyle?: {width?: number; paddingHorizontal?: number};
 }
 
-export interface ContentItemProps {
-    width: number;
+interface ContentItemProps {
+    renderStyle?: {width?: number};
 }
 
 export const Container = styled(View)`
@@ -30,9 +29,13 @@ export const HeaderInner = styled.View<ContentItemProps>`
     justify-content: center;
     position: relative;
 
-    ${({width = 0}) => css`
-        width: ${width}px;
-    `};
+    ${({renderStyle = {}}) => {
+        const {width = 0} = renderStyle;
+
+        return css`
+            width: ${width}px;
+        `;
+    }};
 `;
 
 export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
@@ -40,11 +43,15 @@ export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
     flex-direction: row;
     position: absolute;
 
-    ${({theme, width = 0, paddingHorizontal = 0}) => css`
-        bottom: ${theme.adaptSize(theme.spacing.none)}px;
-        width: ${width}px;
-        padding: ${theme.spacing.none}px ${paddingHorizontal}px;
-    `};
+    ${({theme, renderStyle = {}}) => {
+        const {width = 0, paddingHorizontal = 0} = renderStyle;
+
+        return css`
+            bottom: ${theme.adaptSize(theme.spacing.none)}px;
+            padding: ${theme.spacing.none}px ${paddingHorizontal}px;
+            width: ${width}px;
+        `;
+    }};
 
     ${({activeIndicatorOffsetPosition}) =>
         activeIndicatorOffsetPosition === 'horizontalStart'
@@ -87,7 +94,11 @@ export const ContentInner = styled.View`
 `;
 
 export const ContentItem = styled.View<ContentItemProps>`
-    ${({width = 0}) => css`
-        width: ${width}px;
-    `};
+    ${({renderStyle = {}}) => {
+        const {width = 0} = renderStyle;
+
+        return css`
+            width: ${width}px;
+        `;
+    }};
 `;

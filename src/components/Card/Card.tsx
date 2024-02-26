@@ -23,7 +23,6 @@ const AnimatedSubheadText = Animated.createAnimatedComponent(SubheadText);
 const AnimatedTitleText = Animated.createAnimatedComponent(TitleText);
 const render = ({
     block,
-    defaultElevation,
     disabled,
     elevation,
     eventName,
@@ -61,7 +60,7 @@ const render = ({
             onLayout={onLayout}
             renderStyle={{width: innerWidth}}
             testID={`card--${id}`}>
-            <Elevation defaultLevel={defaultElevation} level={elevation} shape={shape}>
+            <Elevation level={elevation} shape={shape}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
                     disabled={disabled}

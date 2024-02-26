@@ -202,6 +202,8 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
     const activeColor = theme.palette.secondary.secondaryContainer;
     const id = useId();
     const underlayColor = theme.palette.surface.onSurface;
+
+    console.info(activeKey, indexKey);
     const active = typeof activeKey === 'string' ? activeKey === indexKey : undefined;
     const defaultActive = defaultActiveKey === indexKey;
     const [{height, onCloseAnimated, trailingOpacity}] = useAnimated({
@@ -243,6 +245,7 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
     );
 
     useEffect(() => {
+        console.info(8888888888);
         processActive({active, setState});
     }, [active, setState]);
 

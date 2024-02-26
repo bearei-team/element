@@ -10,6 +10,7 @@ export const Headline: StoryObj<ListProps> = {
     args: {
         close: true,
         defaultActiveKey: 'TitleB',
+        activeKey: 'TitleA',
         data: [
             {
                 key: 'TitleA',

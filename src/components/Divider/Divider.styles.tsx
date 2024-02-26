@@ -20,10 +20,10 @@ export const Container = styled(View)<ContainerProps>`
         const containerLayout = {
             horizontal: css`
                 min-width: ${theme.adaptSize(theme.spacing.small * 40)}px;
-                width: ${typeof width === 'number' ? `${theme.adaptSize(width)}px}` : 'auto'};
+                width: ${typeof width === 'number' ? `${theme.adaptSize(width)}px` : 'auto'};
             `,
             vertical: css`
-                height: ${typeof height === 'number' ? `${theme.adaptSize(height)}px}` : 'auto'};
+                height: ${typeof height === 'number' ? `${theme.adaptSize(height)}px` : 'auto'};
                 min-height: ${theme.adaptSize(theme.spacing.small * 15)}px;
                 width: ${theme.adaptSize(1)}px;
             `,

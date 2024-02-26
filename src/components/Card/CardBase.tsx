@@ -35,7 +35,6 @@ export interface CardProps extends TouchableRippleProps {
 }
 
 export interface RenderProps extends CardProps {
-    defaultElevation: ElevationLevel;
     elevation: ElevationLevel;
     eventName: EventName;
     onEvent: OnEvent;
@@ -55,7 +54,6 @@ interface CardBaseProps extends CardProps {
 }
 
 interface InitialState {
-    defaultElevation?: ElevationLevel;
     elevation?: ElevationLevel;
     eventName: EventName;
     innerLayout: LayoutRectangle;
@@ -68,7 +66,7 @@ interface ProcessEventOptions {
 }
 
 type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
-type ProcessInitOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
+type ProcessInitOptions = Pick<RenderProps, 'type' | 'disabled'> & ProcessEventOptions;
 type ProcessInnerLayoutOptions = Omit<ProcessLayoutOptions, 'type'>;
 type ProcessLayoutOptions = Pick<RenderProps, 'block' | 'type'> & ProcessEventOptions;
 type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
@@ -94,7 +92,9 @@ const processElevation = (state: State, {type = 'filled', setState}: ProcessElev
     const correctionCoefficient = processCorrectionCoefficient({type});
 
     setState(draft => {
-        draft.elevation = (level[state] + correctionCoefficient) as ElevationLevel;
+        draft.elevation = (
+            state === 'disabled' ? level[state] : level[state] + correctionCoefficient
+        ) as ElevationLevel;
     });
 };
 
@@ -129,21 +129,22 @@ const processStateChange = (
     state: State,
     {event, eventName, type, setState, block}: ProcessStateChangeOptions,
 ) => {
-    eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState, block});
+    eventName === 'layout'
+        ? processLayout(event as LayoutChangeEvent, {block, setState})
+        : processElevation(state, {type, setState});
 
-    processElevation(state, {type, setState});
     setState(draft => {
         draft.eventName = eventName;
     });
 };
 
-const processInit = ({type, setState}: ProcessInitOptions) =>
+const processInit = ({type, setState, disabled}: ProcessInitOptions) =>
     setState(draft => {
         if (draft.status !== 'idle') {
             return;
         }
 
-        type === 'elevated' && (draft.defaultElevation = 1);
+        type === 'elevated' && !disabled && (draft.elevation = 1);
         draft.status = 'succeeded';
     });
 
@@ -174,15 +175,13 @@ export const CardBase: FC<CardBaseProps> = ({
     type = 'filled',
     ...renderProps
 }) => {
-    const [{defaultElevation, elevation, eventName, layout, status, innerLayout}, setState] =
-        useImmer<InitialState>({
-            defaultElevation: undefined,
-            elevation: undefined,
-            eventName: 'none',
-            innerLayout: {} as LayoutRectangle,
-            layout: {} as LayoutRectangle,
-            status: 'idle',
-        });
+    const [{elevation, eventName, layout, status, innerLayout}, setState] = useImmer<InitialState>({
+        elevation: undefined,
+        eventName: 'none',
+        innerLayout: {} as LayoutRectangle,
+        layout: {} as LayoutRectangle,
+        status: 'idle',
+    });
 
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
@@ -240,8 +239,8 @@ export const CardBase: FC<CardBaseProps> = ({
     }, [disabled, setState]);
 
     useEffect(() => {
-        processInit({setState, type});
-    }, [setState, type]);
+        processInit({setState, type, disabled});
+    }, [disabled, setState, type]);
 
     if (status === 'idle') {
         return <></>;
@@ -250,7 +249,6 @@ export const CardBase: FC<CardBaseProps> = ({
     return render({
         ...renderProps,
         block,
-        defaultElevation,
         disabled,
         elevation,
         eventName,

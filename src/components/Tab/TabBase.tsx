@@ -1,18 +1,38 @@
-import {FC, ReactNode, useCallback, useEffect, useId, useMemo} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, Text, ViewStyle} from 'react-native';
+import {FC, ReactNode, RefAttributes, useCallback, useEffect, useId, useMemo} from 'react';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    Text,
+    View,
+    ViewProps,
+    ViewStyle,
+} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {AnimatedInterpolation, ComponentStatus} from '../Common/interface';
-import {TabDataSource, TabProps} from './Tab';
 import {ContentItem} from './Tab.styles';
 import {TabItem, TabItemProps} from './TabItem/TabItem';
 import {useAnimated} from './useAnimated';
 
-export type ActiveIndicatorOffsetPosition = 'horizontalStart' | 'horizontalEnd';
+type TabType = 'primary' | 'secondary';
+export interface TabDataSource extends Pick<TabItemProps, 'labelText'> {
+    content?: ReactNode;
+    key?: string;
+}
+
+export interface TabProps extends Partial<ViewProps & RefAttributes<View>> {
+    activeKey?: string;
+    data?: TabDataSource[];
+    defaultActiveKey?: string;
+    onActive?: (key?: string) => void;
+    type?: TabType;
+}
+
+type ActiveIndicatorOffsetPosition = 'horizontalStart' | 'horizontalEnd';
 export interface RenderProps extends TabProps {
     activeIndicatorOffsetPosition: ActiveIndicatorOffsetPosition;
     items: ReactNode;
-    headerVisible: boolean;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         activeIndicatorLeft: AnimatedInterpolation;
         activeIndicatorPaddingHorizontal: number;
@@ -28,7 +48,7 @@ export interface TabBaseProps extends TabProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface RenderItemOptions extends TabItemProps {
+interface RenderItemOptions extends TabItemProps {
     data: TabDataSource[];
 }
 
@@ -41,13 +61,15 @@ export interface InitialState {
     layout: LayoutRectangle;
     status: ComponentStatus;
 }
-export interface ProcessEventOptions {
+
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessLayoutOptions = Pick<RenderProps, 'onLayout'> & ProcessEventOptions;
-export type ProcessActiveOptions = Pick<RenderProps, 'onActive'> & ProcessEventOptions;
-export type ProcessItemLabelTextLayoutOptions = ProcessEventOptions & {key?: string};
+type ProcessLayoutOptions = Pick<RenderProps, 'onLayout'> & ProcessEventOptions;
+type ProcessActiveOptions = Pick<RenderProps, 'onActive'> & ProcessEventOptions;
+type ProcessItemLabelTextLayoutOptions = ProcessEventOptions & {key?: string};
+type ProcessActiveKeyOptions = ProcessEventOptions & Pick<RenderProps, 'activeKey'>;
 
 const processLayout = (event: LayoutChangeEvent, {setState, onLayout}: ProcessLayoutOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -64,6 +86,8 @@ const processItemLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOpt
 
     setState(draft => {
         !draft.itemLayout.width && (draft.itemLayout = nativeEventLayout);
+
+        draft.status === 'idle' && (draft.status = 'succeeded');
     });
 };
 
@@ -80,13 +104,10 @@ const processItemLabelTextLayout = (
     });
 };
 
-const processActive = ({setState, onActive}: ProcessActiveOptions, key?: string) => {
-    if (!key) {
-        return;
-    }
-
+const processActive = ({setState, onActive}: ProcessActiveOptions, key?: string) =>
+    typeof key === 'string' &&
     setState(draft => {
-        if (draft.activeKey !== key) {
+        if (draft.activeKey === key) {
             return;
         }
 
@@ -97,16 +118,31 @@ const processActive = ({setState, onActive}: ProcessActiveOptions, key?: string)
             nextActiveItemIndex > draftActiveItemIndex ? 'horizontalEnd' : 'horizontalStart';
 
         draft.activeKey = key;
+
+        onActive?.(key);
     });
 
-    onActive?.(key);
-};
+const processActiveKey = ({activeKey, setState}: ProcessActiveKeyOptions) =>
+    typeof activeKey === 'string' &&
+    setState(draft => {
+        if (draft.status !== 'succeeded' || draft.activeKey === activeKey) {
+            return;
+        }
+
+        const draftActiveItemIndex = draft.data.findIndex(datum => datum.key === draft.activeKey);
+        const nextActiveItemIndex = draft.data.findIndex(datum => datum.key === activeKey);
+
+        draft.activeIndicatorOffsetPosition =
+            nextActiveItemIndex > draftActiveItemIndex ? 'horizontalEnd' : 'horizontalStart';
+
+        draft.activeKey = activeKey;
+    });
 
 const processInit = ({setState}: ProcessEventOptions, dataSources?: TabDataSource[]) =>
     dataSources &&
     setState(draft => {
         draft.data = dataSources;
-        draft.status === 'idle' && (draft.status = 'succeeded');
+        // draft.status === 'idle' && (draft.status = 'succeeded');
     });
 
 const renderItem = ({
@@ -136,16 +172,17 @@ const renderChildren = (data: Data, {layout}: Pick<InitialState, 'layout'>) => {
     }
 
     return data.map(({content, key}, index) => (
-        <ContentItem key={key ?? index} width={layout.width}>
+        <ContentItem key={key ?? index} renderStyle={{width: layout.width}}>
             {typeof content === 'string' ? <Text>{content}</Text> : content}
         </ContentItem>
     ));
 };
 
 export const TabBase: FC<TabBaseProps> = ({
+    activeKey: activeKeySource,
     data: dataSources,
     defaultActiveKey,
-    headerVisible = true,
+    onActive: onActiveSource,
     render,
     ...renderProps
 }) => {
@@ -171,14 +208,16 @@ export const TabBase: FC<TabBaseProps> = ({
     const [{activeIndicatorLeft, activeIndicatorWidth, contentInnerLeft}] = useAnimated({
         activeIndicatorBaseWidth,
         activeKey,
-        data,
+        data: dataSources,
+        defaultActiveKey,
         itemLayout,
         layout,
+        setState,
     });
 
     const onActive = useCallback(
-        (key?: string) => processActive({setState, onActive: renderProps.onActive}, key),
-        [renderProps.onActive, setState],
+        (key?: string) => processActive({setState, onActive: onActiveSource}, key),
+        [onActiveSource, setState],
     );
 
     const onLayout = useCallback(
@@ -214,19 +253,23 @@ export const TabBase: FC<TabBaseProps> = ({
     const children = useMemo(() => renderChildren(data, {layout}), [data, layout]);
 
     useEffect(() => {
+        console.info(activeKeySource, 'activeKeySource');
+        processActiveKey({activeKey: activeKeySource, setState});
+    }, [activeKeySource, setState]);
+
+    useEffect(() => {
         processInit({setState}, dataSources);
     }, [dataSources, setState]);
 
-    if (status === 'idle') {
-        return <></>;
-    }
+    // if (status === 'idle') {
+    //     return <></>;
+    // }
 
     return render({
         ...renderProps,
         activeIndicatorOffsetPosition,
         children,
         data,
-        headerVisible,
         id,
         items,
         onLayout,

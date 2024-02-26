@@ -6,7 +6,7 @@ export const Container = styled(View)`
     flex: 1;
 `;
 
-export const Inner = styled(View)`
+export const Inner = styled.View`
     align-items: center;
     display: flex;
     flex-direction: column;

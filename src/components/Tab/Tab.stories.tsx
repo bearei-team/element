@@ -8,7 +8,8 @@ export default {
 
 export const TabHorizontal: StoryObj<TabProps> = {
     args: {
-        defaultActiveKey: 'A',
+        defaultActiveKey: 'C',
+        activeKey: 'A',
         data: [
             {
                 labelText: 'TabA',

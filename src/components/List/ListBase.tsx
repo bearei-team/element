@@ -162,8 +162,10 @@ export const ListBase: FC<ListBaseProps> = ({
     );
 
     const processRenderItem = useCallback(
-        (options: ListRenderItemInfo<ListDataSource>) =>
-            renderItem({
+        (options: ListRenderItemInfo<ListDataSource>) => {
+            console.info(activeKey);
+
+            return renderItem({
                 ...options,
                 activeKey,
                 close,
@@ -173,7 +175,8 @@ export const ListBase: FC<ListBaseProps> = ({
                 onClose,
                 shape,
                 supportingTextNumberOfLines,
-            }),
+            });
+        },
         [
             activeKey,
             close,

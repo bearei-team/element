@@ -1,18 +1,9 @@
 import {FC, forwardRef, memo} from 'react';
-import {Animated, LayoutChangeEvent, View} from 'react-native';
+import {Animated, View} from 'react-native';
 import {Hovered} from '../../Hovered/Hovered';
-import {TouchableRipple, TouchableRippleProps} from '../../TouchableRipple/TouchableRipple';
+import {TouchableRipple} from '../../TouchableRipple/TouchableRipple';
 import {Container, Inner, LabelText} from './TabItem.styles';
-import {RenderProps, TabItemBase} from './TabItemBase';
-
-export interface TabItemProps extends TouchableRippleProps {
-    activeKey?: string;
-    defaultActiveKey?: string;
-    indexKey?: string;
-    labelText?: string;
-    onActive?: (key?: string) => void;
-    onLabelTextLayout: (event: LayoutChangeEvent, key: string) => void;
-}
+import {RenderProps, TabItemBase, TabItemProps} from './TabItemBase';
 
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
@@ -44,9 +35,8 @@ const render = ({
 
                     <Hovered
                         eventName={eventName}
-                        height={height}
+                        renderStyle={{width, height}}
                         underlayColor={underlayColor}
-                        width={width}
                     />
                 </Inner>
             </TouchableRipple>
@@ -59,3 +49,4 @@ const ForwardRefTabItem = forwardRef<View, TabItemProps>((props, ref) => (
 ));
 
 export const TabItem: FC<TabItemProps> = memo(ForwardRefTabItem);
+export type {TabItemProps};

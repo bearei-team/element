@@ -1,26 +1,34 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
+import {Updater} from 'use-immer';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTiming.utils';
+import {InitialState} from './TabItemBase';
 
-export interface UseAnimatedOptions {
+interface UseAnimatedOptions {
     active?: boolean;
     defaultActive?: boolean;
+    setState: Updater<InitialState>;
 }
 
-export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
     activeAnimated: Animated.Value;
 }
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {active, activeAnimated}: ProcessAnimatedTimingOptions,
+    {active, activeAnimated, setState}: ProcessAnimatedTimingOptions,
 ) =>
     typeof active === 'boolean' &&
-    requestAnimationFrame(() => animatedTiming(activeAnimated, {toValue: active ? 1 : 0}).start());
+    setState(draft => {
+        draft.status === 'succeeded' &&
+            requestAnimationFrame(() =>
+                animatedTiming(activeAnimated, {toValue: active ? 1 : 0}).start(),
+            );
+    });
 
-export const useAnimated = ({active, defaultActive}: UseAnimatedOptions) => {
+export const useAnimated = ({active, defaultActive, setState}: UseAnimatedOptions) => {
     const [activeAnimated] = useAnimatedValue(defaultActive ? 1 : 0);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
@@ -30,8 +38,8 @@ export const useAnimated = ({active, defaultActive}: UseAnimatedOptions) => {
     });
 
     useEffect(() => {
-        processAnimatedTiming(animatedTiming, {active, activeAnimated});
-    }, [active, activeAnimated, animatedTiming]);
+        processAnimatedTiming(animatedTiming, {active, activeAnimated, setState});
+    }, [active, activeAnimated, animatedTiming, setState]);
 
     return [{color}];
 };

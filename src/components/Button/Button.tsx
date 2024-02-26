@@ -10,7 +10,6 @@ const AnimatedContent = Animated.createAnimatedComponent(Content);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     block,
-    defaultElevation,
     disabled,
     elevation,
     eventName,
@@ -41,7 +40,7 @@ const render = ({
             onLayout={onLayout}
             renderStyle={{width: contentWidth}}
             testID={`button--${id}`}>
-            <Elevation defaultLevel={defaultElevation} level={elevation} shape={shape}>
+            <Elevation level={elevation} shape={shape}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
                     disabled={disabled}

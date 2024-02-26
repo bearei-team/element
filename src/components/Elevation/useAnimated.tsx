@@ -1,35 +1,22 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {Updater} from 'use-immer';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.utils';
 import {ElevationProps} from './Elevation';
-import {InitialState} from './ElevationBase';
 
-interface UseAnimatedOptions extends Pick<ElevationProps, 'level' | 'defaultLevel'> {
-    setState: Updater<InitialState>;
-}
-
+type UseAnimatedOptions = Pick<ElevationProps, 'level' | 'defaultLevel'>;
 interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
     opacityAnimated: Animated.Value;
 }
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {opacityAnimated, level, setState}: ProcessAnimatedTimingOptions,
-) =>
-    typeof level === 'number' &&
-    setState(draft => {
-        if (draft.status !== 'succeeded') {
-            return;
-        }
+    {opacityAnimated, level = 0}: ProcessAnimatedTimingOptions,
+) => requestAnimationFrame(() => animatedTiming(opacityAnimated, {toValue: level}).start());
 
-        requestAnimationFrame(() => animatedTiming(opacityAnimated, {toValue: level}).start());
-    });
-
-export const useAnimated = ({level, defaultLevel = 0, setState}: UseAnimatedOptions) => {
-    const [opacityAnimated] = useAnimatedValue(defaultLevel);
+export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
+    const [opacityAnimated] = useAnimatedValue(level);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
     const shadow0Opacity = opacityAnimated.interpolate({
@@ -57,8 +44,8 @@ export const useAnimated = ({level, defaultLevel = 0, setState}: UseAnimatedOpti
     });
 
     useEffect(() => {
-        processAnimatedTiming(animatedTiming, {level, opacityAnimated, setState});
-    }, [animatedTiming, level, opacityAnimated, setState]);
+        processAnimatedTiming(animatedTiming, {level, opacityAnimated});
+    }, [animatedTiming, level, opacityAnimated]);
 
     return [{shadow0Opacity, shadow1Opacity}];
 };
