@@ -14,8 +14,7 @@ interface UseAnimatedOptions extends Pick<RenderProps, 'onEntryAnimatedEnd' | 'a
     sequence: string;
 }
 
-interface CreateEntryAnimatedOptions extends Pick<UseAnimatedOptions, 'minDuration'> {
-    active?: boolean;
+interface CreateEntryAnimatedOptions extends Pick<UseAnimatedOptions, 'minDuration' | 'active'> {
     opacityAnimated: Animated.Value;
     scaleAnimated: Animated.Value;
 }

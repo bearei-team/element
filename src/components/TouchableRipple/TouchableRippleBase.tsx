@@ -37,8 +37,9 @@ interface TouchableRippleBaseProps extends TouchableRippleProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
+export type ExitAnimated = (finished?: () => void) => void;
 interface Ripple extends Pick<RippleProps, 'location'> {
-    exitAnimated?: (finished?: () => void) => void;
+    exitAnimated?: ExitAnimated;
 }
 
 type RippleSequence = Record<string, Ripple>;
@@ -65,28 +66,24 @@ type ProcessPressOutOptions = Omit<ProcessAddRippleOptions, 'locationX' | 'locat
 type ProcessRippleExitOptions = ProcessEventOptions & Pick<RenderProps, 'onRippleAnimatedEnd'>;
 type ProcessStateChangeOptions = ProcessPressOutOptions & OnStateChangeOptions;
 type ProcessRippleEntryAnimatedEndOptions = ProcessEventOptions &
-    Pick<RenderProps, 'active'> & {exitAnimated: (finished?: () => void) => void} & Pick<
+    Pick<RenderProps, 'active'> & {exitAnimated: ExitAnimated} & Pick<
         RenderProps,
         'onRippleAnimatedEnd'
     >;
 
-type ProcessInitOptions = {
-    addRipple: (options: AddRippleOptions & {draft?: Draft<InitialState>}) => void;
-} & ProcessEventOptions &
-    Pick<RenderProps, 'active'>;
+type AddRipple = (options: AddRippleOptions & {draft?: Draft<InitialState>}) => void;
+type ProcessInitOptions = ProcessEventOptions &
+    Pick<RenderProps, 'active'> & {addRipple: AddRipple};
 
 type ProcessActiveOptions = Pick<RenderProps, 'active' | 'location'> &
-    ProcessEventOptions & {
-        addRipple: (options: AddRippleOptions) => void;
-        rippleExit: () => void;
-    };
+    ProcessEventOptions & {addRipple: AddRipple; rippleExit: () => void};
 
 const processAddRipple = ({
     active,
+    draft: draftSource,
     locationX,
     locationY,
     setState,
-    draft: draftSource,
 }: ProcessAddRippleOptions) => {
     const addRipple = (draft: Draft<InitialState>) => {
         const exist = active && Object.keys(draft.rippleSequence).length !== 0;
@@ -241,7 +238,7 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
 
     const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
     const onEntryAnimatedEnd = useCallback(
-        (sequence: string, exitAnimated: (finished?: () => void) => void) =>
+        (sequence: string, exitAnimated: ExitAnimated) =>
             processRippleEntryAnimatedEnd(sequence, {
                 active,
                 exitAnimated,

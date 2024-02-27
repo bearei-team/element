@@ -7,13 +7,14 @@ import {
     ViewProps,
     ViewStyle,
 } from 'react-native';
+import {ExitAnimated} from '../TouchableRippleBase';
 import {useAnimated} from './useAnimated';
 
 export interface RippleProps extends Partial<ViewProps & React.RefAttributes<View>> {
     active?: boolean;
     centered?: boolean;
     location?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
-    onEntryAnimatedEnd?: (sequence: string, exitAnimated: (finished?: () => void) => void) => void;
+    onEntryAnimatedEnd?: (sequence: string, exitAnimated: ExitAnimated) => void;
     sequence: string;
     touchableLayout?: LayoutRectangle;
     underlayColor?: string;

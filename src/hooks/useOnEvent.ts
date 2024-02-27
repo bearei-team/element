@@ -35,7 +35,7 @@ interface ProcessStateOptions {
 }
 
 export type OnStateChangeOptions = Omit<ProcessStateOptions, 'callback'>;
-interface UseHandleEventOptions extends PressableProps {
+interface UseProcessEventOptions extends PressableProps {
     disabled?: boolean;
     onStateChange?: (state: State, options?: OnStateChangeOptions) => void;
 }
@@ -44,26 +44,27 @@ interface ProcessEventOptions {
     processState: (state: State, options?: ProcessStateOptions) => void;
 }
 
-type ProcessStateChangeOptions = Pick<UseHandleEventOptions, 'disabled' | 'onStateChange'>;
-type ProcessPressInEventOptions = ProcessEventOptions & Pick<UseHandleEventOptions, 'onPressIn'>;
+type ProcessStateChangeOptions = Pick<UseProcessEventOptions, 'disabled' | 'onStateChange'>;
+type ProcessPressInEventOptions = ProcessEventOptions & Pick<UseProcessEventOptions, 'onPressIn'>;
 type ProcessPressEventOptions = ProcessEventOptions &
-    Pick<UseHandleEventOptions, 'onPress'> & {mobile: boolean};
+    Pick<UseProcessEventOptions, 'onPress'> & {mobile: boolean};
 
 type processLongPressEventEventOptions = ProcessEventOptions &
-    Pick<UseHandleEventOptions, 'onLongPress'>;
+    Pick<UseProcessEventOptions, 'onLongPress'>;
 
 type processPressOutEventEventOptions = ProcessEventOptions &
-    Pick<UseHandleEventOptions, 'onPressOut'> & {mobile: boolean};
+    Pick<UseProcessEventOptions, 'onPressOut'> & {mobile: boolean};
 
 type processHoverIntEventEventOptions = ProcessEventOptions &
-    Pick<UseHandleEventOptions, 'onHoverIn'>;
+    Pick<UseProcessEventOptions, 'onHoverIn'>;
 
 type processHoverOutEventEventOptions = ProcessEventOptions &
-    Pick<UseHandleEventOptions, 'onHoverOut'>;
+    Pick<UseProcessEventOptions, 'onHoverOut'>;
 
-type processFocusEventEventOptions = ProcessEventOptions & Pick<UseHandleEventOptions, 'onFocus'>;
-type ProcessBlurEventOptions = ProcessEventOptions & Pick<UseHandleEventOptions, 'onBlur'>;
-type processLayoutEventEventOptions = ProcessEventOptions & Pick<UseHandleEventOptions, 'onLayout'>;
+type processFocusEventEventOptions = ProcessEventOptions & Pick<UseProcessEventOptions, 'onFocus'>;
+type ProcessBlurEventOptions = ProcessEventOptions & Pick<UseProcessEventOptions, 'onBlur'>;
+type processLayoutEventEventOptions = ProcessEventOptions &
+    Pick<UseProcessEventOptions, 'onLayout'>;
 
 const processStateChange = (
     state: State,
@@ -187,7 +188,7 @@ export const useOnEvent = ({
     onPressIn,
     onPressOut,
     onStateChange,
-}: UseHandleEventOptions) => {
+}: UseProcessEventOptions) => {
     const theme = useTheme();
     const mobile = ['ios', 'android'].includes(theme.OS);
     const processState = useCallback(
