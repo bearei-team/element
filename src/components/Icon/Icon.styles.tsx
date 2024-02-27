@@ -2,7 +2,7 @@ import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {IconProps} from './Icon';
 
-export type ContainerProps = Pick<IconProps, 'renderStyle'>;
+type ContainerProps = Pick<IconProps, 'renderStyle'>;
 
 export const Container = styled(View)<ContainerProps>`
     align-items: center;

@@ -35,7 +35,6 @@ export interface RenderProps extends ListItemProps {
     active?: boolean;
     activeColor: string;
     activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
-    defaultActive?: boolean;
     eventName: EventName;
     onEvent: OnEvent;
     rippleCentered?: boolean;
@@ -60,6 +59,7 @@ interface InitialState {
     state: State;
     status: ComponentStatus;
     trailingEventName: EventName;
+    active?: boolean;
 }
 
 interface ProcessEventOptions {
@@ -75,7 +75,7 @@ type ProcessTrailingPressOutOptions = Pick<RenderProps, 'close' | 'indexKey' | '
 } & ProcessEventOptions;
 
 type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
-type ProcessInitOptions = ProcessEventOptions & Pick<RenderProps, 'defaultActive'>;
+type ProcessInitOptions = ProcessEventOptions & Pick<RenderProps, 'active'>;
 type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'active'>;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
@@ -151,13 +151,14 @@ const processTrailingHoverIn = ({setState}: ProcessEventOptions) =>
 const processTrailingHoverOut = ({setState}: ProcessEventOptions) =>
     processTrailingEvent('hoverOut', {setState});
 
-const processInit = ({defaultActive, setState}: ProcessInitOptions) => {
+const processInit = ({active, setState}: ProcessInitOptions) => {
     setState(draft => {
         if (draft.status !== 'idle') {
             return;
         }
 
-        draft.rippleCentered = !!defaultActive;
+        draft.rippleCentered = !!active;
+        draft.active = active;
         draft.status = 'succeeded';
     });
 };
@@ -176,7 +177,6 @@ const processActive = ({setState, active}: ProcessActiveOptions) =>
 export const ListItemBase: FC<ListItemBaseProps> = ({
     activeKey,
     close,
-    defaultActiveKey,
     indexKey,
     onActive,
     onClose,
@@ -186,9 +186,19 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
     ...renderProps
 }) => {
     const [
-        {activeLocation, eventName, layout, state, status, trailingEventName, rippleCentered},
+        {
+            activeLocation,
+            eventName,
+            active,
+            layout,
+            state,
+            status,
+            trailingEventName,
+            rippleCentered,
+        },
         setState,
     ] = useImmer<InitialState>({
+        active: undefined,
         activeLocation: undefined,
         eventName: 'none',
         layout: {} as LayoutRectangle,
@@ -202,10 +212,8 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
     const activeColor = theme.palette.secondary.secondaryContainer;
     const id = useId();
     const underlayColor = theme.palette.surface.onSurface;
+    const activeA = typeof activeKey === 'string' ? activeKey === indexKey : undefined;
 
-    console.info(activeKey, indexKey);
-    const active = typeof activeKey === 'string' ? activeKey === indexKey : undefined;
-    const defaultActive = defaultActiveKey === indexKey;
     const [{height, onCloseAnimated, trailingOpacity}] = useAnimated({
         close,
         eventName,
@@ -245,13 +253,12 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
     );
 
     useEffect(() => {
-        console.info(8888888888);
-        processActive({active, setState});
-    }, [active, setState]);
+        processActive({active: activeA, setState});
+    }, [activeA, setState]);
 
     useEffect(() => {
-        processInit({defaultActive, setState});
-    }, [defaultActive, setState]);
+        processInit({active: activeA, setState});
+    }, [activeA, setState]);
 
     if (status === 'idle') {
         return <></>;
@@ -262,7 +269,6 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
         active,
         activeColor,
         activeLocation,
-        defaultActive,
         eventName,
         id,
         onEvent,

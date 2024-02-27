@@ -1,21 +1,37 @@
 import {FC, useId} from 'react';
-import {Animated, NativeTouchEvent, ViewStyle} from 'react-native';
-import {RippleProps} from './Ripple';
+import {
+    Animated,
+    LayoutRectangle,
+    NativeTouchEvent,
+    View,
+    ViewProps,
+    ViewStyle,
+} from 'react-native';
 import {useAnimated} from './useAnimated';
+
+export interface RippleProps extends Partial<ViewProps & React.RefAttributes<View>> {
+    active?: boolean;
+    centered?: boolean;
+    location?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
+    onEntryAnimatedEnd?: (sequence: string, exitAnimated: (finished?: () => void) => void) => void;
+    sequence: string;
+    touchableLayout?: LayoutRectangle;
+    underlayColor?: string;
+}
+
 export interface RenderProps extends Omit<RippleProps, 'sequence'> {
     locationX: number;
     locationY: number;
     renderStyle: Animated.WithAnimatedObject<ViewStyle & {height: number; width: number}>;
 }
 
-export interface RippleBaseProps extends RippleProps {
+interface RippleBaseProps extends RippleProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
 export const RippleBase: FC<RippleBaseProps> = ({
     active,
     centered,
-    defaultActive,
     location = {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
     onEntryAnimatedEnd,
     render,
@@ -38,7 +54,6 @@ export const RippleBase: FC<RippleBaseProps> = ({
     const diameter = radius * 2;
     const [{opacity, scale}] = useAnimated({
         active,
-        defaultActive,
         minDuration: diameter,
         onEntryAnimatedEnd,
         sequence,
@@ -47,7 +62,6 @@ export const RippleBase: FC<RippleBaseProps> = ({
     return render({
         ...renderProps,
         active,
-        defaultActive,
         id,
         renderStyle: {
             height: diameter,
@@ -55,8 +69,8 @@ export const RippleBase: FC<RippleBaseProps> = ({
             transform: [{translateY: -radius}, {translateX: -radius}, {scale}],
             width: diameter,
         },
-        underlayColor,
         locationX,
         locationY,
+        underlayColor,
     });
 };

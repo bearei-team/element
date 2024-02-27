@@ -21,7 +21,6 @@ const render = ({
     active,
     activeColor,
     activeLocation,
-    defaultActive,
     eventName,
     gap,
     headline,
@@ -53,7 +52,6 @@ const render = ({
                 active={active}
                 activeLocation={activeLocation}
                 centered={rippleCentered}
-                defaultActive={defaultActive}
                 shape={shape}
                 underlayColor={activeColor}>
                 <AnimatedInner {...innerProps} onLayout={onLayout}>

@@ -88,10 +88,11 @@ const processClose = ({onClose, setState}: ProcessCloseOptions, key?: string) =>
         onClose?.(key);
     });
 
-const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSource[]) =>
+const processInit = ({setState, activeKey}: ProcessEventOptions, dataSources?: ListDataSource[]) =>
     dataSources &&
     setState(draft => {
         draft.data = dataSources;
+        draft.activeKey = activeKey;
         draft.status === 'idle' && (draft.status = 'succeeded');
     });
 
@@ -162,31 +163,19 @@ export const ListBase: FC<ListBaseProps> = ({
     );
 
     const processRenderItem = useCallback(
-        (options: ListRenderItemInfo<ListDataSource>) => {
-            console.info(activeKey);
-
-            return renderItem({
+        (options: ListRenderItemInfo<ListDataSource>) =>
+            renderItem({
                 ...options,
                 activeKey,
                 close,
-                defaultActiveKey,
+
                 gap,
                 onActive,
                 onClose,
                 shape,
                 supportingTextNumberOfLines,
-            });
-        },
-        [
-            activeKey,
-            close,
-            defaultActiveKey,
-            gap,
-            onActive,
-            onClose,
-            shape,
-            supportingTextNumberOfLines,
-        ],
+            }),
+        [activeKey, close, gap, onActive, onClose, shape, supportingTextNumberOfLines],
     );
 
     useEffect(() => {
@@ -194,8 +183,8 @@ export const ListBase: FC<ListBaseProps> = ({
     }, [activeKeySource, setState]);
 
     useEffect(() => {
-        processInit({setState}, dataSources);
-    }, [dataSources, setState]);
+        processInit({setState, activeKey: activeKeySource ?? defaultActiveKey}, dataSources);
+    }, [activeKeySource, dataSources, defaultActiveKey, setState]);
 
     if (status === 'idle') {
         return <></>;
