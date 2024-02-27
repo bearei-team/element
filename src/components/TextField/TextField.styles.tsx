@@ -3,23 +3,25 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './TextFieldBase';
 
-export type HeaderInnerProps = Pick<RenderProps, 'type' | 'multiline'> & {
+type HeaderInnerProps = Pick<RenderProps, 'type' | 'multiline'> & {
     leadingShow: boolean;
     trailingShow: boolean;
 };
 
-export type LabelTextProps = {
+type LabelTextProps = {
     scale?: boolean;
     leadingShow: boolean;
 };
 
-export interface ActiveIndicatorProps {
-    width?: number;
+interface ActiveIndicatorProps {
+    renderStyle?: {
+        width?: number;
+    };
 }
 
-export type ContentProps = Pick<RenderProps, 'multiline'>;
-export type ControlProps = {height?: number} & ContentProps;
-export type TextInputProps = {multilineText?: boolean};
+type ContentProps = Pick<RenderProps, 'multiline'>;
+type ControlProps = {renderStyle?: {height?: number}} & ContentProps;
+type TextInputProps = {multilineText?: boolean};
 
 export const Container = styled.View``;
 export const Inner = styled.View`
@@ -129,7 +131,8 @@ export const Control = styled.View<ControlProps>`
         height: ${theme.adaptFontSize(theme.typography.body.large.lineHeight)}px;
     `};
 
-    ${({height, multiline, theme}) => {
+    ${({renderStyle = {}, multiline, theme}) => {
+        const {height = 0} = renderStyle;
         const multilineText = multiline && typeof height === 'number' && height !== 0;
 
         return (
@@ -150,6 +153,8 @@ export const Input = styled(TextInput)<TextInputProps>`
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
         letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
+        line-height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
+        min-height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
         padding: ${theme.spacing.none}px;
     `};
 
@@ -170,9 +175,16 @@ export const SupportingText = styled(Typography)`
 export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
     position: absolute;
 
-    ${({width = 0, theme}) => css`
+    ${({theme}) => css`
         bottom: ${theme.adaptSize(theme.spacing.none)}px;
         left: ${theme.adaptSize(theme.spacing.none)}px;
-        width: ${width}px;
     `}
+
+    ${({renderStyle = {}}) => {
+        const {width = 0} = renderStyle;
+
+        return css`
+            width: ${width}px;
+        `;
+    }}
 `;

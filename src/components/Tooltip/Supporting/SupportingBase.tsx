@@ -25,8 +25,7 @@ export interface SupportingProps extends Partial<ViewProps & RefAttributes<View>
     visible?: boolean;
 }
 
-export interface RenderProps
-    extends Omit<SupportingProps, 'containerCurrent' | 'windowDimensions' | 'onVisible'> {
+export interface RenderProps extends Omit<SupportingProps, 'containerCurrent' | 'onVisible'> {
     containerLayout: LayoutRectangle & {pageX: number; pageY: number};
     onEvent: OnEvent;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
@@ -106,7 +105,6 @@ export const SupportingBase: FC<SupportingBaseProps> = ({
         status: 'idle',
     });
 
-    // FIXME:
     const windowDimensions = useWindowDimensions();
     const id = useId();
     const onStateChange = useCallback(

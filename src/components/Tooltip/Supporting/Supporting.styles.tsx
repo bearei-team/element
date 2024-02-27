@@ -2,14 +2,13 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../../Common/Common.styles';
 import {RenderProps} from './SupportingBase';
 
-export interface ContainerProps
-    extends Pick<RenderProps, 'type' | 'supportingPosition' | 'visible'> {
+interface ContainerProps extends Pick<RenderProps, 'type' | 'supportingPosition' | 'visible'> {
+    containerHeight?: number;
     containerPageX?: number;
     containerPageY?: number;
     containerWidth?: number;
-    containerHeight?: number;
-    layoutWidth?: number;
     layoutHeight?: number;
+    layoutWidth?: number;
 }
 
 type InnerProps = Pick<RenderProps, 'type' | 'supportingPosition'>;

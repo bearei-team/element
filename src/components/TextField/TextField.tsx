@@ -1,6 +1,5 @@
-import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, PressableProps, TextInput, TextInputProps} from 'react-native';
-import {ShapeProps} from '../Common/Common.styles';
+import {FC, forwardRef, memo} from 'react';
+import {Animated, TextInput} from 'react-native';
 import {Hovered} from '../Hovered/Hovered';
 import {
     ActiveIndicator,
@@ -15,22 +14,7 @@ import {
     SupportingText,
     Trailing,
 } from './TextField.styles';
-import {RenderProps, TextFieldBase} from './TextFieldBase';
-
-export type TextFieldType = 'filled' | 'outlined';
-export type InputProps = Partial<
-    TextInputProps & PressableProps & RefAttributes<TextInput> & Pick<ShapeProps, 'shape'>
->;
-
-export interface TextFieldProps extends InputProps {
-    disabled?: boolean;
-    error?: boolean;
-    labelText?: string;
-    leading?: React.JSX.Element;
-    supportingText?: string;
-    trailing?: React.JSX.Element;
-    type?: TextFieldType;
-}
+import {RenderProps, TextFieldBase, TextFieldProps} from './TextFieldBase';
 
 const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
@@ -53,17 +37,17 @@ const render = ({
 }: RenderProps) => {
     const {
         activeIndicatorBackgroundColor,
-        supportingTextColor,
         activeIndicatorHeight,
         backgroundColor,
+        height,
         labelTextColor,
         labelTextHeight,
+        labelTextLetterSpacing,
         labelTextLineHeight,
         labelTextSize,
         labelTextTop,
-        labelTextLetterSpacing,
+        supportingTextColor,
         width,
-        height,
     } = renderStyle;
     const shape = 'extraSmallTop';
     const leadingShow = !!leading;
@@ -96,9 +80,9 @@ const render = ({
 
                         <Content multiline={multiline} testID={`textfield__content--${id}`}>
                             <Control
-                                height={contentSize?.height}
-                                testID={`textField__control--${id}`}
-                                multiline={multiline}>
+                                multiline={multiline}
+                                renderStyle={{height: contentSize?.height}}
+                                testID={`textField__control--${id}`}>
                                 {input}
                             </Control>
                         </Content>
@@ -114,18 +98,18 @@ const render = ({
                             leadingShow={leadingShow}
                             style={{
                                 color: labelTextColor,
-                                top: labelTextTop,
                                 fontSize: labelTextSize,
                                 height: labelTextHeight,
-                                lineHeight: labelTextLineHeight,
                                 letterSpacing: labelTextLetterSpacing,
+                                lineHeight: labelTextLineHeight,
+                                top: labelTextTop,
                             }}>
                             {labelText}
                         </AnimatedLabelText>
 
                         <AnimatedActiveIndicator
+                            renderStyle={{width}}
                             testID={`textfield__activeIndicator--${id}`}
-                            width={width}
                             style={{
                                 backgroundColor: activeIndicatorBackgroundColor,
                                 height: activeIndicatorHeight,
@@ -133,12 +117,11 @@ const render = ({
                         />
 
                         <Hovered
-                            height={height}
-                            shape={shape}
                             eventName={eventName}
-                            underlayColor={underlayColor}
-                            width={width}
                             opacities={[0, 0.08]}
+                            renderStyle={{width, height}}
+                            shape={shape}
+                            underlayColor={underlayColor}
                         />
                     </AnimatedHeaderInner>
                 </Header>
@@ -159,3 +142,4 @@ const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) =
 ));
 
 export const TextField: FC<TextFieldProps> = memo(ForwardRefTextField);
+export type {TextFieldProps};

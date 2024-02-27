@@ -1,21 +1,38 @@
-import {FC, RefObject, useCallback, useId, useMemo, useRef} from 'react';
+import {FC, RefAttributes, RefObject, useCallback, useId, useMemo, useRef} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
     LayoutRectangle,
     NativeSyntheticEvent,
+    PressableProps,
     TextInput,
     TextInputContentSizeChangeEventData,
+    TextInputProps,
     TextStyle,
     ViewStyle,
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
+import {ShapeProps} from '../Common/Common.styles';
 import {AnimatedInterpolation, EventName, State} from '../Common/interface';
-import {TextFieldProps} from './TextField';
 import {Input} from './TextField.styles';
 import {useAnimated} from './useAnimated';
+
+type TextFieldType = 'filled' | 'outlined';
+type InputProps = Partial<
+    TextInputProps & PressableProps & RefAttributes<TextInput> & Pick<ShapeProps, 'shape'>
+>;
+
+export interface TextFieldProps extends InputProps {
+    disabled?: boolean;
+    error?: boolean;
+    labelText?: string;
+    leading?: React.JSX.Element;
+    supportingText?: string;
+    trailing?: React.JSX.Element;
+    type?: TextFieldType;
+}
 
 export interface RenderProps extends TextFieldProps {
     contentSize?: Partial<TextInputContentSizeChangeEventData['contentSize']>;
@@ -39,15 +56,15 @@ export interface RenderProps extends TextFieldProps {
     };
 }
 
-export interface TextFieldBaseProps extends TextFieldProps {
+interface TextFieldBaseProps extends TextFieldProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export type RenderTextInputProps = TextFieldProps & {
+type RenderTextInputProps = TextFieldProps & {
     renderStyle: Animated.WithAnimatedObject<TextStyle>;
 };
 
-export interface InitialState {
+interface InitialState {
     contentSize?: TextInputContentSizeChangeEventData['contentSize'];
     eventName: EventName;
     layout: LayoutRectangle;
@@ -55,18 +72,19 @@ export interface InitialState {
     value?: string;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export type ProcessChangeTextOptions = Pick<RenderProps, 'onChangeText'> & ProcessEventOptions;
-export type ProcessContentSizeChangeOptions = Pick<RenderProps, 'onContentSizeChange'> &
+type ProcessContentSizeChangeOptions = Pick<RenderProps, 'onContentSizeChange'> &
     ProcessEventOptions;
 
-export type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
+type ProcessChangeTextOptions = Pick<RenderProps, 'onChangeText'> & ProcessEventOptions;
+
+type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
     OnStateChangeOptions;
 
-export type ProcessStateOptions = Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions;
+type ProcessStateOptions = Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions;
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
 const processState = (state: State, {eventName, setState}: ProcessStateOptions) =>
@@ -102,9 +120,6 @@ const processStateChange = (
     processState(state, {eventName, setState});
 };
 
-const processChangeText = (text: string, {onChangeText}: ProcessChangeTextOptions) =>
-    onChangeText?.(text);
-
 const processContentSizeChange = (
     event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>,
     {setState, onContentSizeChange}: ProcessContentSizeChangeOptions,
@@ -112,14 +127,36 @@ const processContentSizeChange = (
     const contentSize = event.nativeEvent.contentSize;
 
     setState(draft => {
-        draft.contentSize = contentSize;
-    });
+        if (draft.contentSize?.height === contentSize.height) {
+            return;
+        }
 
-    onContentSizeChange?.(event);
+        draft.contentSize = contentSize;
+
+        onContentSizeChange?.(event);
+    });
 };
 
+const processChangeText = ({setState, onChangeText}: ProcessChangeTextOptions, text?: string) =>
+    typeof text === 'string' &&
+    setState(draft => {
+        if (draft.value === text) {
+            return;
+        }
+
+        draft.value = text;
+
+        onChangeText?.(text);
+    });
+
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-const renderTextInput = ({id, renderStyle, multiline, ...inputProps}: RenderTextInputProps) => (
+const renderTextInput = ({
+    id,
+    renderStyle,
+    multiline,
+    secureTextEntry,
+    ...inputProps
+}: RenderTextInputProps) => (
     <AnimatedTextInput
         {...inputProps}
         style={renderStyle}
@@ -134,7 +171,7 @@ const renderTextInput = ({id, renderStyle, multiline, ...inputProps}: RenderText
          */
         // @ts-ignore
         enableFocusRing={false}
-        textAlignVertical="top"
+        secureTextEntry={secureTextEntry}
     />
 );
 
@@ -151,21 +188,24 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     supportingText,
     trailing,
     type = 'filled',
-    value,
+    value: valueSource,
+    onContentSizeChange: onContentSizeChangeSource,
+    onChangeText: onChangeTextSource,
     ...textInputProps
 }) => {
-    const [{layout, eventName, state, contentSize}, setState] = useImmer<InitialState>({
+    const [{layout, eventName, state, contentSize, value}, setState] = useImmer<InitialState>({
         contentSize: undefined,
         eventName: 'none',
         layout: {} as LayoutRectangle,
         state: 'enabled',
+        value: undefined,
     });
 
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const theme = useTheme();
-    const filled = defaultValue ?? value ?? placeholder;
+    const filled = value ?? defaultValue ?? placeholder;
     const placeholderTextColor =
         state === 'disabled'
             ? theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38)
@@ -175,16 +215,22 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     const onContentSizeChange = useCallback(
         (event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>) =>
             processContentSizeChange(event, {
-                onContentSizeChange: textInputProps.onContentSizeChange,
+                onContentSizeChange: onContentSizeChangeSource,
                 setState,
             }),
-        [setState, textInputProps.onContentSizeChange],
+        [onContentSizeChangeSource, setState],
     );
 
     const onChangeText = useCallback(
-        (text: string) =>
-            processChangeText(text, {setState, onChangeText: textInputProps.onChangeText}),
-        [setState, textInputProps.onChangeText],
+        (text?: string) =>
+            processChangeText(
+                {
+                    onChangeText: onChangeTextSource,
+                    setState,
+                },
+                text,
+            ),
+        [onChangeTextSource, setState],
     );
 
     const onStateChange = useCallback(
@@ -232,10 +278,12 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
                 placeholderTextColor,
                 ref: inputRef,
                 renderStyle: {color: inputColor},
-                value,
+                value: valueSource,
+                disabled,
             }),
         [
             defaultValue,
+            disabled,
             id,
             inputColor,
             inputRef,
@@ -247,7 +295,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
             placeholder,
             placeholderTextColor,
             textInputProps,
-            value,
+            valueSource,
         ],
     );
 

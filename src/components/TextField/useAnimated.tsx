@@ -6,21 +6,23 @@ import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.u
 import {EventName, State} from '../Common/interface';
 import {RenderProps} from './TextFieldBase';
 
-export interface UseAnimatedOptions extends Pick<RenderProps, 'type' | 'error' | 'disabled'> {
+interface UseAnimatedOptions extends Pick<RenderProps, 'type' | 'error' | 'disabled'> {
     eventName: EventName;
     filled: boolean;
     state: State;
 }
 
-export interface ProcessEnabledOptions extends Pick<RenderProps, 'error'> {
+interface ProcessEnabledOptions extends Pick<RenderProps, 'error'> {
     activeIndicatorAnimated: Animated.Value;
     animatedTiming: AnimatedTiming;
     colorAnimated: Animated.Value;
     filledToValue: number;
+    inputAnimated: Animated.Value;
     labelAnimated: Animated.Value;
+    supportingTextAnimated: Animated.Value;
 }
 
-export interface ProcessDisabledOptions {
+interface ProcessDisabledOptions {
     activeIndicatorAnimated: Animated.Value;
     animatedTiming: AnimatedTiming;
     backgroundColorAnimated: Animated.Value;
@@ -29,28 +31,29 @@ export interface ProcessDisabledOptions {
     supportingTextAnimated: Animated.Value;
 }
 
-export interface ProcessErrorOptions {
+interface ProcessErrorOptions {
     activeIndicatorAnimated: Animated.Value;
     animatedTiming: AnimatedTiming;
     colorAnimated: Animated.Value;
+    inputAnimated: Animated.Value;
     supportingTextAnimated: Animated.Value;
 }
 
-export interface ProcessFocusedOptions extends Pick<UseAnimatedOptions, 'error'> {
+interface ProcessFocusedOptions extends Pick<UseAnimatedOptions, 'error'> {
     activeIndicatorAnimated: Animated.Value;
     animatedTiming: AnimatedTiming;
     colorAnimated: Animated.Value;
     labelAnimated: Animated.Value;
 }
 
-export interface ProcessStateAnimatedOptions {
+interface ProcessStateAnimatedOptions {
     stateAnimated: Record<State, () => void | undefined | number>;
 }
 
-export type ProcessNonerrorAnimatedOptions = ProcessStateAnimatedOptions &
+type ProcessNonerrorAnimatedOptions = ProcessStateAnimatedOptions &
     Pick<UseAnimatedOptions, 'disabled' | 'error'>;
 
-export type ProcessDisabledAnimatedOptions = ProcessStateAnimatedOptions &
+type ProcessDisabledAnimatedOptions = ProcessStateAnimatedOptions &
     Pick<UseAnimatedOptions, 'disabled'>;
 
 const processEnabled = ({
@@ -60,6 +63,8 @@ const processEnabled = ({
     error,
     filledToValue,
     labelAnimated,
+    supportingTextAnimated,
+    inputAnimated,
 }: ProcessEnabledOptions) => {
     if (error) {
         return requestAnimationFrame(() =>
@@ -68,9 +73,11 @@ const processEnabled = ({
     }
 
     const compositeAnimations = [
-        animatedTiming(colorAnimated, {toValue: 1}),
         animatedTiming(activeIndicatorAnimated, {toValue: 0}),
+        animatedTiming(colorAnimated, {toValue: 1}),
+        animatedTiming(inputAnimated, {toValue: 1}),
         animatedTiming(labelAnimated, {toValue: filledToValue}),
+        animatedTiming(supportingTextAnimated, {toValue: 1}),
     ];
 
     requestAnimationFrame(() => Animated.parallel(compositeAnimations).start());
@@ -101,12 +108,14 @@ const processError = ({
     activeIndicatorAnimated,
     animatedTiming,
     colorAnimated,
+    inputAnimated,
     supportingTextAnimated,
 }: ProcessErrorOptions) =>
     requestAnimationFrame(() =>
         Animated.parallel([
             animatedTiming(activeIndicatorAnimated, {toValue: 1}),
             animatedTiming(colorAnimated, {toValue: 3}),
+            animatedTiming(inputAnimated, {toValue: 1}),
             animatedTiming(supportingTextAnimated, {toValue: 2}),
         ]).start(),
     );
@@ -156,11 +165,18 @@ export const useAnimated = ({
     type = 'filled',
 }: UseAnimatedOptions) => {
     const theme = useTheme();
-    const [activeIndicatorAnimated] = useAnimatedValue(0);
-    const [backgroundColorAnimated] = useAnimatedValue(1);
-    const [colorAnimated] = useAnimatedValue(1);
-    const [inputAnimated] = useAnimatedValue(1);
-    const [supportingTextAnimated] = useAnimatedValue(1);
+    const disabledAnimatedValue = disabled ? 0 : 1;
+    const [activeIndicatorAnimated] = useAnimatedValue(
+        disabled ? disabledAnimatedValue : error ? 1 : 0,
+    );
+
+    const [backgroundColorAnimated] = useAnimatedValue(disabledAnimatedValue);
+    const [colorAnimated] = useAnimatedValue(disabled ? disabledAnimatedValue : error ? 3 : 1);
+    const [inputAnimated] = useAnimatedValue(disabled ? disabledAnimatedValue : error ? 3 : 1);
+    const [supportingTextAnimated] = useAnimatedValue(
+        disabled ? disabledAnimatedValue : error ? 2 : 1,
+    );
+
     const animatedTiming = createAnimatedTiming(theme);
     const disabledBackgroundColor = theme.color.convertHexToRGBA(
         theme.palette.surface.onSurface,
@@ -279,7 +295,9 @@ export const useAnimated = ({
                 colorAnimated,
                 error,
                 filledToValue,
+                inputAnimated,
                 labelAnimated,
+                supportingTextAnimated,
             }),
         [
             activeIndicatorAnimated,
@@ -287,7 +305,9 @@ export const useAnimated = ({
             colorAnimated,
             error,
             filledToValue,
+            inputAnimated,
             labelAnimated,
+            supportingTextAnimated,
         ],
     );
 
@@ -317,9 +337,16 @@ export const useAnimated = ({
                 activeIndicatorAnimated,
                 animatedTiming,
                 colorAnimated,
+                inputAnimated,
                 supportingTextAnimated,
             }),
-        [activeIndicatorAnimated, animatedTiming, colorAnimated, supportingTextAnimated],
+        [
+            activeIndicatorAnimated,
+            animatedTiming,
+            colorAnimated,
+            inputAnimated,
+            supportingTextAnimated,
+        ],
     );
 
     const processFocusedState = useCallback(

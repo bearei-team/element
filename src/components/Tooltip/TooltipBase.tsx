@@ -1,27 +1,29 @@
-import {FC, cloneElement, useCallback, useEffect, useId, useRef} from 'react';
+import {FC, RefAttributes, cloneElement, useCallback, useEffect, useId, useRef} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
     LayoutRectangle,
     TextStyle,
     View,
+    ViewProps,
     ViewStyle,
 } from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {debounce} from '../../utils/debounce.utils';
 import {State} from '../Common/interface';
-import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {SupportingProps} from './Supporting/Supporting';
 
 export interface TooltipProps
     extends Partial<
-        TouchableRippleProps &
+        ViewProps &
+            RefAttributes<View> &
             Pick<
                 SupportingProps,
                 'supportingPosition' | 'supportingText' | 'type' | 'visible' | 'onVisible'
             >
     > {
+    children?: React.JSX.Element;
     defaultVisible?: boolean;
 }
 
