@@ -1,22 +1,7 @@
-import {FC, RefAttributes, forwardRef, memo} from 'react';
-import {Animated, ScaledSize, View, ViewProps} from 'react-native';
-import {TooltipProps} from '../Tooltip';
+import {FC, forwardRef, memo} from 'react';
+import {Animated, View} from 'react-native';
 import {Container, Inner, SupportingText} from './Supporting.styles';
-import {RenderProps, SupportingBase} from './SupportingBase';
-
-export interface SupportingProps
-    extends Partial<
-        Pick<
-            TooltipProps,
-            'supportingPosition' | 'supportingText' | 'visible' | 'type' | 'defaultVisible'
-        > &
-            ViewProps &
-            RefAttributes<View>
-    > {
-    containerCurrent: View | null;
-    onVisible: (visible: boolean) => void;
-    windowDimensions: ScaledSize;
-}
+import {RenderProps, SupportingBase, SupportingProps} from './SupportingBase';
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const render = ({
@@ -31,6 +16,7 @@ const render = ({
     ...containerProps
 }: RenderProps) => {
     const {width = 0, height = 0, opacity} = renderStyle;
+    const renderOpacity = width === 0 ? 0 : opacity;
 
     return (
         <AnimatedContainer
@@ -40,14 +26,14 @@ const render = ({
             containerPageX={containerLayout.pageX}
             containerPageY={containerLayout.pageY}
             containerWidth={containerLayout.width}
-            renderedHeight={height}
-            renderedWidth={width}
+            layoutHeight={height}
+            layoutWidth={width}
             supportingPosition={supportingPosition}
             testID={`tooltip__supporting--${id}`}
             type={type}
             visible={visible}
             style={{
-                opacity,
+                opacity: renderOpacity,
                 transform: supportingPosition?.startsWith('vertical')
                     ? [{translateX: -(width / 2)}]
                     : [{translateY: -(height / 2)}],
@@ -71,3 +57,4 @@ const ForwardRefSupporting = forwardRef<View, SupportingProps>((props, ref) => (
 ));
 
 export const Supporting: FC<SupportingProps> = memo(ForwardRefSupporting);
+export type {SupportingProps};

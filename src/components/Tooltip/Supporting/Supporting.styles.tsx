@@ -4,16 +4,15 @@ import {RenderProps} from './SupportingBase';
 
 export interface ContainerProps
     extends Pick<RenderProps, 'type' | 'supportingPosition' | 'visible'> {
-    containerHeight?: number;
     containerPageX?: number;
     containerPageY?: number;
     containerWidth?: number;
-    renderedHeight?: number;
-    renderedWidth?: number;
+    containerHeight?: number;
+    layoutWidth?: number;
+    layoutHeight?: number;
 }
 
-export type InnerProps = Pick<RenderProps, 'type' | 'supportingPosition'>;
-
+type InnerProps = Pick<RenderProps, 'type' | 'supportingPosition'>;
 export const Container = styled.Pressable<ContainerProps>`
     position: absolute;
     z-index: 5120;
@@ -23,8 +22,8 @@ export const Container = styled.Pressable<ContainerProps>`
         containerPageX = 0,
         containerPageY = 0,
         containerWidth = 0,
-        renderedHeight = 0,
-        renderedWidth = 0,
+        layoutHeight = 0,
+        layoutWidth = 0,
         supportingPosition: position = 'verticalStart',
         theme,
     }) => {
@@ -32,7 +31,7 @@ export const Container = styled.Pressable<ContainerProps>`
             verticalStart: css`
                 left: ${containerPageX + containerWidth / 2}px;
                 padding-bottom: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-                top: ${containerPageY - renderedHeight}px;
+                top: ${containerPageY - layoutHeight}px;
             `,
             verticalEnd: css`
                 left: ${containerPageX + containerWidth / 2}px;
@@ -40,7 +39,7 @@ export const Container = styled.Pressable<ContainerProps>`
                 top: ${containerPageY + containerHeight}px;
             `,
             horizontalStart: css`
-                left: ${containerPageX - renderedWidth}px;
+                left: ${containerPageX - layoutWidth}px;
                 padding-right: ${theme.adaptSize(theme.spacing.extraSmall)}px;
                 top: ${containerPageY + containerHeight / 2}px;
             `,
@@ -66,6 +65,7 @@ export const Container = styled.Pressable<ContainerProps>`
 
 export const Inner = styled(Shape)<InnerProps>`
     pointer-events: none;
+
     ${({theme, type = 'plain'}) => {
         const supportingType = {
             plain: css`

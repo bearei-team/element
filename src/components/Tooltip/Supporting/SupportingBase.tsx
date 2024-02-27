@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, RefAttributes, useCallback, useEffect, useId, useMemo} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
@@ -6,13 +6,24 @@ import {
     TextStyle,
     View,
     ViewStyle,
+    useWindowDimensions,
 } from 'react-native';
+import {ViewProps} from 'react-native-svg/lib/typescript/fabric/utils';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../../context/ModalProvider';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../../hooks/useOnEvent';
-import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../../Common/interface';
-import {SupportingProps} from './Supporting';
+import {AnimatedInterpolation, ComponentStatus, State} from '../../Common/interface';
 import {useAnimated} from './useAnimated';
+
+type TooltipType = 'plain' | 'rich';
+export interface SupportingProps extends Partial<ViewProps & RefAttributes<View>> {
+    containerCurrent: View | null;
+    onVisible: (value?: boolean) => void;
+    supportingPosition?: 'horizontalStart' | 'horizontalEnd' | 'verticalStart' | 'verticalEnd';
+    supportingText?: string;
+    type?: TooltipType;
+    visible?: boolean;
+}
 
 export interface RenderProps
     extends Omit<SupportingProps, 'containerCurrent' | 'windowDimensions' | 'onVisible'> {
@@ -25,29 +36,26 @@ export interface RenderProps
     };
 }
 
-export interface SupportingBaseProps extends SupportingProps {
+interface SupportingBaseProps extends SupportingProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface InitialState {
+interface InitialState {
     containerLayout: LayoutRectangle & {pageX: number; pageY: number};
-    eventName: EventName;
     layout: LayoutRectangle;
     status: ComponentStatus;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export interface ProcessEmitOptions extends Pick<RenderProps, 'visible'> {
-    id: string;
-    supporting: React.JSX.Element;
-}
-
-export type ProcessStateChangeOptions = OnStateChangeOptions &
+type ProcessEmitOptions = Pick<InitialState, 'status'> & Pick<RenderProps, 'visible' | 'id'>;
+type ProcessStateChangeOptions = OnStateChangeOptions &
     ProcessEventOptions &
     Pick<SupportingProps, 'onVisible'>;
+
+type ProcessContainerLayoutOptions = ProcessEventOptions;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -60,17 +68,16 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
 const processStateChange = ({event, eventName, setState, onVisible}: ProcessStateChangeOptions) => {
     eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
     ['hoverIn', 'hoverOut'].includes(eventName) && onVisible(eventName === 'hoverIn');
-
-    setState(draft => {
-        draft.eventName = eventName;
-    });
 };
 
-const processEmit = (status: ComponentStatus, {supporting, id}: ProcessEmitOptions) =>
+const processEmit = (supporting: React.JSX.Element, {id, status}: ProcessEmitOptions) =>
     status === 'succeeded' &&
     emitter.emit('modal', {id: `tooltip__supporting--${id}`, element: supporting});
 
-const processContainerLayout = (containerCurrent: View | null, {setState}: ProcessEventOptions) =>
+const processContainerLayout = (
+    containerCurrent: View | null,
+    {setState}: ProcessContainerLayoutOptions,
+) =>
     containerCurrent?.measure((x, y, width, height, pageX, pageY) =>
         setState(draft => {
             draft.containerLayout = {
@@ -82,32 +89,26 @@ const processContainerLayout = (containerCurrent: View | null, {setState}: Proce
                 y,
             };
 
-            draft.status = 'succeeded';
+            draft.status === 'idle' && (draft.status = 'succeeded');
         }),
     );
 
 export const SupportingBase: FC<SupportingBaseProps> = ({
     containerCurrent,
+    onVisible,
     render,
     visible,
-    windowDimensions,
-    onVisible,
-    defaultVisible,
     ...renderProps
 }) => {
-    const [{status, containerLayout, layout}, setState] = useImmer<InitialState>({
+    const [{containerLayout, layout, status}, setState] = useImmer<InitialState>({
         containerLayout: {} as InitialState['containerLayout'],
-        eventName: 'none',
         layout: {} as LayoutRectangle,
         status: 'idle',
     });
 
+    // FIXME:
+    const windowDimensions = useWindowDimensions();
     const id = useId();
-    const onContainerLayout = useCallback(
-        () => processContainerLayout(containerCurrent, {setState}),
-        [containerCurrent, setState],
-    );
-
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
             processStateChange({...options, setState, onVisible}),
@@ -115,7 +116,7 @@ export const SupportingBase: FC<SupportingBaseProps> = ({
     );
 
     const [onEvent] = useOnEvent({...renderProps, onStateChange});
-    const [{opacity}] = useAnimated({visible, defaultVisible});
+    const [{opacity}] = useAnimated({visible});
     const supporting = useMemo(
         () =>
             render({
@@ -140,11 +141,11 @@ export const SupportingBase: FC<SupportingBaseProps> = ({
     );
 
     useEffect(() => {
-        onContainerLayout();
-    }, [onContainerLayout, windowDimensions]);
+        processContainerLayout(containerCurrent, {setState});
+    }, [containerCurrent, setState, windowDimensions]);
 
     useEffect(() => {
-        processEmit(status, {id, supporting});
+        processEmit(supporting, {id, status});
     }, [id, status, supporting]);
 
     return <></>;

@@ -1,4 +1,3 @@
-import {Draft} from 'immer';
 import {FC, RefAttributes, useCallback, useEffect, useId, useMemo} from 'react';
 import {
     GestureResponderEvent,
@@ -11,7 +10,7 @@ import {
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ShapeProps} from '../Common/Common.styles';
-import {ComponentStatus, State} from '../Common/interface';
+import {State} from '../Common/interface';
 import {Ripple, RippleProps} from './Ripple/Ripple';
 
 type TouchableProps = PressableProps &
@@ -46,7 +45,6 @@ type RippleSequence = Record<string, Ripple>;
 interface InitialState {
     layout: LayoutRectangle;
     rippleSequence: RippleSequence;
-    status: ComponentStatus;
 }
 
 interface ProcessEventOptions {
@@ -54,14 +52,11 @@ interface ProcessEventOptions {
 }
 
 interface AddRippleOptions {
-    locationX: number;
-    locationY: number;
+    locationX?: number;
+    locationY?: number;
 }
 
-type ProcessAddRippleOptions = ProcessEventOptions &
-    Pick<RenderProps, 'active'> &
-    AddRippleOptions & {draft?: Draft<InitialState>};
-
+type ProcessAddRippleOptions = ProcessEventOptions & Pick<RenderProps, 'active'> & AddRippleOptions;
 type ProcessPressOutOptions = Omit<ProcessAddRippleOptions, 'locationX' | 'locationY'>;
 type ProcessRippleExitOptions = ProcessEventOptions & Pick<RenderProps, 'onRippleAnimatedEnd'>;
 type ProcessStateChangeOptions = ProcessPressOutOptions & OnStateChangeOptions;
@@ -71,21 +66,16 @@ type ProcessRippleEntryAnimatedEndOptions = ProcessEventOptions &
         'onRippleAnimatedEnd'
     >;
 
-type AddRipple = (options: AddRippleOptions & {draft?: Draft<InitialState>}) => void;
-type ProcessInitOptions = ProcessEventOptions &
-    Pick<RenderProps, 'active'> & {addRipple: AddRipple};
-
-type ProcessActiveOptions = Pick<RenderProps, 'active' | 'location'> &
-    ProcessEventOptions & {addRipple: AddRipple; rippleExit: () => void};
+type ProcessActiveOptions = Pick<RenderProps, 'active' | 'location' | 'onRippleAnimatedEnd'> &
+    ProcessEventOptions;
 
 const processAddRipple = ({
     active,
-    draft: draftSource,
-    locationX,
-    locationY,
+    locationX = 0,
+    locationY = 0,
     setState,
 }: ProcessAddRippleOptions) => {
-    const addRipple = (draft: Draft<InitialState>) => {
+    setState(draft => {
         const exist = active && Object.keys(draft.rippleSequence).length !== 0;
 
         !exist &&
@@ -93,13 +83,7 @@ const processAddRipple = ({
                 exitAnimated: undefined,
                 location: {locationX, locationY},
             });
-    };
-
-    draftSource
-        ? addRipple(draftSource)
-        : setState(draft => {
-              addRipple(draft);
-          });
+    });
 };
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
@@ -145,8 +129,6 @@ const processRippleEntryAnimatedEnd = (
         return setState(draft => {
             draft.rippleSequence[sequence] &&
                 (draft.rippleSequence[sequence].exitAnimated = exitAnimated);
-
-            draft.status === 'idle' && (draft.status = 'succeeded');
         });
     }
 
@@ -161,35 +143,14 @@ const processRippleEntryAnimatedEnd = (
     });
 };
 
-const processInit = ({active, setState, addRipple}: ProcessInitOptions) => {
-    setState(draft => {
-        if (draft.status !== 'idle') {
-            return;
-        }
+const processActive = ({active, location, setState, onRippleAnimatedEnd}: ProcessActiveOptions) => {
+    if (typeof active !== 'boolean') {
+        return;
+    }
 
-        if (active) {
-            addRipple({draft, locationX: 0, locationY: 0});
-            return;
-        }
-
-        draft.status = 'succeeded';
-    });
-};
-
-const processActive = ({
-    active,
-    location,
-    addRipple,
-    rippleExit,
-    setState,
-}: ProcessActiveOptions) => {
-    setState(draft => {
-        if (draft.status !== 'succeeded' || typeof active !== 'boolean') {
-            return;
-        }
-
-        active ? location && addRipple(location) : rippleExit();
-    });
+    active
+        ? processAddRipple({...location, active, setState})
+        : processRippleExit({setState, onRippleAnimatedEnd});
 };
 
 const renderRipples = (
@@ -225,7 +186,6 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
     const [{rippleSequence, layout}, setState] = useImmer<InitialState>({
         layout: {} as LayoutRectangle,
         rippleSequence: {} as RippleSequence,
-        status: 'idle',
     });
 
     const id = useId();
@@ -248,16 +208,6 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
         [active, onRippleAnimatedEnd, setState],
     );
 
-    const addRipple = useCallback(
-        (options: AddRippleOptions) => processAddRipple({...options, active, setState}),
-        [active, setState],
-    );
-
-    const rippleExit = useCallback(
-        () => processRippleExit({onRippleAnimatedEnd, setState}),
-        [onRippleAnimatedEnd, setState],
-    );
-
     const ripples = useMemo(
         () =>
             renderRipples(rippleSequence, {
@@ -271,12 +221,8 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
     );
 
     useEffect(() => {
-        processActive({active, location, addRipple, rippleExit, setState});
-    }, [active, location, addRipple, rippleExit, setState]);
-
-    useEffect(() => {
-        processInit({active, addRipple, setState});
-    }, [active, addRipple, setState]);
+        processActive({active, location, setState, onRippleAnimatedEnd});
+    }, [active, location, onRippleAnimatedEnd, setState]);
 
     return render({
         ...renderProps,

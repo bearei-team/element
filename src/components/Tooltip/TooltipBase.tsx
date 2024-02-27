@@ -3,49 +3,52 @@ import {
     Animated,
     LayoutChangeEvent,
     LayoutRectangle,
-    ScaledSize,
     TextStyle,
     View,
     ViewStyle,
-    useWindowDimensions,
 } from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {debounce} from '../../utils/debounce.utils';
-import {ComponentStatus, EventName, State} from '../Common/interface';
-import {TooltipProps} from './Tooltip';
+import {State} from '../Common/interface';
+import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
+import {SupportingProps} from './Supporting/Supporting';
+
+export interface TooltipProps
+    extends Partial<
+        TouchableRippleProps &
+            Pick<
+                SupportingProps,
+                'supportingPosition' | 'supportingText' | 'type' | 'visible' | 'onVisible'
+            >
+    > {
+    defaultVisible?: boolean;
+}
 
 export interface RenderProps extends TooltipProps {
     containerCurrent: View | null;
     onEvent: OnEvent;
-    onVisible: (visible: boolean) => void;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height?: number;
         width?: number;
     };
-    windowDimensions: ScaledSize;
 }
 
-export interface TooltipBaseProps extends TooltipProps {
+interface TooltipBaseProps extends TooltipProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export interface InitialState {
-    eventName: EventName;
+interface InitialState {
     layout: LayoutRectangle;
-    visible: boolean;
-    status: ComponentStatus;
+    visible?: boolean;
 }
 
-export interface ProcessEventOptions {
+interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-export interface ProcessContainerLayout extends ProcessEventOptions {
-    layout: LayoutRectangle;
-}
-
-export type ProcessStateChangeOptions = OnStateChangeOptions & ProcessEventOptions;
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessEventOptions;
+type ProcessVisibleOptions = ProcessEventOptions & Pick<RenderProps, 'onVisible'>;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -55,10 +58,15 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processVisible = ({setState}: ProcessEventOptions, value?: boolean) => {
-    typeof value === 'boolean' &&
+const processVisible = ({setState, onVisible}: ProcessVisibleOptions, visible?: boolean) => {
+    typeof visible === 'boolean' &&
         setState(draft => {
-            draft.visible = value;
+            if (draft.visible === visible) {
+                return;
+            }
+
+            draft.visible = visible;
+            onVisible?.(visible);
         });
 };
 
@@ -66,34 +74,29 @@ const debounceProcessVisible = debounce(processVisible, 100);
 const processStateChange = ({eventName, setState}: ProcessStateChangeOptions) => {
     ['hoverIn', 'hoverOut'].includes(eventName) &&
         debounceProcessVisible({setState}, eventName === 'hoverIn');
-
-    setState(draft => {
-        draft.eventName = eventName;
-    });
 };
 
 export const TooltipBase: FC<TooltipBaseProps> = ({
     children,
+    defaultVisible,
+    onVisible: onVisibleSource,
     ref,
     render,
-    visible: visibleSource = false,
-    defaultVisible,
+    visible: visibleSource,
     ...renderProps
 }) => {
     const [{layout, visible}, setState] = useImmer<InitialState>({
-        eventName: 'none',
         layout: {} as LayoutRectangle,
-        visible: false,
-        status: 'idle',
+        visible: undefined,
     });
 
+    const nextVisible = visibleSource ?? defaultVisible;
     const containerRef = useRef<View>(null);
     const id = useId();
     const relRef = (ref ?? containerRef) as React.RefObject<View>;
-    const windowDimensions = useWindowDimensions();
     const onVisible = useCallback(
-        (value?: boolean) => debounceProcessVisible({setState}, value),
-        [setState],
+        (value?: boolean) => debounceProcessVisible({setState, onVisible: onVisibleSource}, value),
+        [onVisibleSource, setState],
     );
 
     const onStateChange = useCallback(
@@ -110,12 +113,8 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
     const [onEvent] = useOnEvent({...renderProps, onStateChange});
 
     useEffect(() => {
-        onVisible(visibleSource);
-    }, [onVisible, visibleSource]);
-
-    useEffect(() => {
-        onVisible(defaultVisible);
-    }, [onVisible, defaultVisible]);
+        onVisible(nextVisible);
+    }, [onVisible, nextVisible]);
 
     return render({
         ...renderProps,
@@ -128,6 +127,5 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
         ref: relRef,
         renderStyle: {width: layout.width, height: layout.height},
         visible,
-        windowDimensions,
     });
 };
