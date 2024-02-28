@@ -29,7 +29,7 @@ const render = ({
             testID={`tooltip--${id}`}
             renderStyle={{width, height}}>
             {children}
-            {typeof visible === 'boolean' && (
+            {typeof visible === 'boolean' && typeof supportingText === 'string' && (
                 <Supporting
                     containerCurrent={containerCurrent}
                     id={id}

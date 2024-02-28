@@ -23,5 +23,4 @@ const ForwardRefList = forwardRef<FlatList<ListDataSource>, ListProps>((props, r
 ));
 
 export const List: FC<ListProps> = memo(ForwardRefList);
-
 export type {ListDataSource, ListProps};

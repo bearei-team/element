@@ -1,7 +1,6 @@
 import {FC, RefAttributes, useCallback, useEffect, useId} from 'react';
 import {FlatList, FlatListProps, ListRenderItemInfo} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
-import {ShapeProps} from '../Common/Common.styles';
 import {ComponentStatus} from '../Common/interface';
 import {ListItem, ListItemProps} from './ListItem/ListItem';
 
@@ -13,29 +12,17 @@ export interface ListDataSource
     key?: string;
 }
 
-export interface ListProps
-    extends Partial<FlatListProps<ListDataSource> & RefAttributes<FlatList<ListDataSource>>> {
-    activeKey?: string;
-
-    /**
-     * Sets whether the item can be closed.
-     */
-    close?: boolean;
+type BaseProps = Partial<
+    FlatListProps<ListDataSource> &
+        RefAttributes<FlatList<ListDataSource>> &
+        Pick<
+            ListItemProps,
+            'activeKey' | 'close' | 'onActive' | 'onClose' | 'supportingTextNumberOfLines' | 'gap'
+        >
+>;
+export interface ListProps extends BaseProps {
     data?: ListDataSource[];
     defaultActiveKey?: string;
-
-    /**
-     * Set the shape of the item.
-     */
-    shape?: ShapeProps['shape'];
-
-    /**
-     * Specifies the spacing between items
-     */
-    gap?: number;
-    onActive?: (key?: string) => void;
-    onClose?: (key?: string) => void;
-    supportingTextNumberOfLines?: ListDataSource['supportingTextNumberOfLines'];
 }
 
 export type RenderProps = ListProps;
@@ -52,8 +39,8 @@ type RenderItemOptions = ListRenderItemInfo<ListDataSource> &
         | 'gap'
         | 'onActive'
         | 'onClose'
-        | 'shape'
         | 'supportingTextNumberOfLines'
+        | 'id'
     >;
 
 interface InitialState {
@@ -68,17 +55,16 @@ interface ProcessEventOptions {
 
 type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
 type ProcessCloseOptions = ProcessEventOptions & Pick<RenderProps, 'onClose'>;
-type ProcessActiveKeyOptions = ProcessEventOptions & Pick<RenderProps, 'activeKey'>;
 
-const processActive = ({onActive, setState}: ProcessActiveOptions, key?: string) =>
-    typeof key === 'string' &&
+const processActive = ({onActive, setState}: ProcessActiveOptions, value?: string) =>
+    typeof value === 'string' &&
     setState(draft => {
-        if (draft.activeKey === key) {
+        if (draft.activeKey === value) {
             return;
         }
 
-        draft.activeKey = key;
-        onActive?.(key);
+        draft.activeKey = value;
+        onActive?.(value);
     });
 
 const processClose = ({onClose, setState}: ProcessCloseOptions, key?: string) =>
@@ -88,34 +74,22 @@ const processClose = ({onClose, setState}: ProcessCloseOptions, key?: string) =>
         onClose?.(key);
     });
 
-const processInit = ({setState, activeKey}: ProcessEventOptions, dataSources?: ListDataSource[]) =>
+const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSource[]) =>
     dataSources &&
     setState(draft => {
         draft.data = dataSources;
-        draft.activeKey = activeKey;
-        draft.status === 'idle' && (draft.status = 'succeeded');
-    });
-
-const processActiveKey = ({activeKey, setState}: ProcessActiveKeyOptions) =>
-    typeof activeKey === 'string' &&
-    setState(draft => {
-        if (draft.status !== 'succeeded' || draft.activeKey === activeKey) {
-            return;
-        }
-
-        draft.activeKey = activeKey;
+        draft.status = 'succeeded';
     });
 
 const renderItem = ({
     activeKey,
     close,
-    defaultActiveKey,
     gap,
     item,
     onActive,
     onClose,
-    shape,
     supportingTextNumberOfLines,
+    id,
 }: RenderItemOptions) => (
     <ListItem
         {...item}
@@ -124,13 +98,12 @@ const renderItem = ({
         })}
         activeKey={activeKey}
         close={close}
-        defaultActiveKey={defaultActiveKey}
+        dataKey={item.key}
         gap={gap}
-        indexKey={item.key}
+        id={id}
         key={item.key}
         onActive={onActive}
         onClose={onClose}
-        shape={shape}
     />
 );
 
@@ -142,7 +115,8 @@ export const ListBase: FC<ListBaseProps> = ({
     gap,
     render,
     supportingTextNumberOfLines,
-    shape,
+    onActive: onActiveSource,
+    onClose: onCloseSource,
     ...renderProps
 }) => {
     const [{data, status, activeKey}, setState] = useImmer<InitialState>({
@@ -153,13 +127,13 @@ export const ListBase: FC<ListBaseProps> = ({
 
     const id = useId();
     const onActive = useCallback(
-        (key?: string) => processActive({onActive: renderProps.onActive, setState}, key),
-        [renderProps.onActive, setState],
+        (value?: string) => processActive({onActive: onActiveSource, setState}, value),
+        [onActiveSource, setState],
     );
 
     const onClose = useCallback(
-        (key?: string) => processClose({onClose: renderProps.onClose, setState}, key),
-        [renderProps.onClose, setState],
+        (key?: string) => processClose({onClose: onCloseSource, setState}, key),
+        [onCloseSource, setState],
     );
 
     const processRenderItem = useCallback(
@@ -168,23 +142,22 @@ export const ListBase: FC<ListBaseProps> = ({
                 ...options,
                 activeKey,
                 close,
-
                 gap,
+                id,
                 onActive,
                 onClose,
-                shape,
                 supportingTextNumberOfLines,
             }),
-        [activeKey, close, gap, onActive, onClose, shape, supportingTextNumberOfLines],
+        [activeKey, close, gap, id, onActive, onClose, supportingTextNumberOfLines],
     );
 
     useEffect(() => {
-        processActiveKey({activeKey: activeKeySource, setState});
-    }, [activeKeySource, setState]);
+        onActive(activeKeySource ?? defaultActiveKey);
+    }, [activeKeySource, defaultActiveKey, onActive]);
 
     useEffect(() => {
-        processInit({setState, activeKey: activeKeySource ?? defaultActiveKey}, dataSources);
-    }, [activeKeySource, dataSources, defaultActiveKey, setState]);
+        processInit({setState}, dataSources);
+    }, [dataSources, setState]);
 
     if (status === 'idle') {
         return <></>;

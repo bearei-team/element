@@ -20,7 +20,7 @@ const AnimatedTrailingInner = Animated.createAnimatedComponent(TrailingInner);
 const render = ({
     active,
     activeColor,
-    activeLocation,
+    touchableLocation,
     eventName,
     gap,
     headline,
@@ -28,7 +28,6 @@ const render = ({
     leading,
     onEvent,
     renderStyle,
-    rippleCentered,
     shape,
     supportingText,
     supportingTextNumberOfLines,
@@ -50,8 +49,7 @@ const render = ({
             <TouchableRipple
                 {...onTouchableRippleEvent}
                 active={active}
-                activeLocation={activeLocation}
-                centered={rippleCentered}
+                touchableLocation={touchableLocation}
                 shape={shape}
                 underlayColor={activeColor}>
                 <AnimatedInner {...innerProps} onLayout={onLayout}>

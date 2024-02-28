@@ -33,7 +33,6 @@ interface RippleBaseProps extends RippleProps {
 export const RippleBase: FC<RippleBaseProps> = ({
     active,
     centered,
-    id,
     touchableLocation = {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
     onEntryAnimatedFinished,
     render,
@@ -63,7 +62,6 @@ export const RippleBase: FC<RippleBaseProps> = ({
     return render({
         ...renderProps,
         active,
-        id,
         renderStyle: {
             height: diameter,
             opacity,

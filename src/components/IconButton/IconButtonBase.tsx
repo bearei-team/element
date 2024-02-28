@@ -12,21 +12,23 @@ import {useUnderlayColor} from './useUnderlayColor';
 
 type IconButtonType = 'filled' | 'outlined' | 'standard' | 'tonal';
 export interface IconButtonProps extends TouchableRippleProps {
+    defaultTooltipVisible?: boolean;
     fill?: string;
     icon?: React.JSX.Element;
     renderStyle?: {width?: number; height?: number};
-    tooltip?: TooltipProps;
+    supportingPosition?: TooltipProps['supportingPosition'];
+    supportingText?: string;
+    tooltipVisible?: boolean;
     type?: IconButtonType;
 }
 
 export interface RenderProps extends IconButtonProps {
     onEvent: OnEvent;
-    tooltipVisible: boolean;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height?: number;
-        width?: number;
-        layoutWidth?: number;
         layoutHeight?: number;
+        layoutWidth?: number;
+        width?: number;
     };
     eventName: EventName;
 }
@@ -38,21 +40,13 @@ interface IconButtonBaseProps extends IconButtonProps {
 interface InitialState {
     eventName: EventName;
     layout: LayoutRectangle;
-    tooltipVisible: boolean;
 }
 
 interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-type ProcessStateChangeOptions = OnStateChangeOptions &
-    ProcessEventOptions & {
-        supportingText?: string;
-    };
-
-interface ProcessTooltipVisibleOptions extends ProcessEventOptions {
-    eventName: EventName;
-}
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessEventOptions;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -62,25 +56,8 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processTooltipVisible = (
-    {setState, eventName}: ProcessTooltipVisibleOptions,
-    supportingText?: string,
-) => {
-    supportingText &&
-        setState(draft => {
-            draft.tooltipVisible = eventName === 'hoverIn';
-        });
-};
-
-const processStateChange = ({
-    event,
-    eventName,
-    setState,
-    supportingText,
-}: ProcessStateChangeOptions) => {
-    eventName === 'layout'
-        ? processLayout(event as LayoutChangeEvent, {setState})
-        : processTooltipVisible({setState, eventName}, supportingText);
+const processStateChange = ({event, eventName, setState}: ProcessStateChangeOptions) => {
+    eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
 
     setState(draft => {
         draft.eventName = eventName;
@@ -94,27 +71,28 @@ const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
     });
 
 export const IconButtonBase: FC<IconButtonBaseProps> = ({
+    defaultTooltipVisible,
     disabled = false,
     fill,
     icon,
     render,
-    tooltip,
-    type = 'filled',
     renderStyle,
+    tooltipVisible: tooltipVisibleSource,
+    type = 'filled',
     ...renderProps
 }) => {
-    const [{eventName, layout, tooltipVisible}, setState] = useImmer<InitialState>({
+    const [{eventName, layout}, setState] = useImmer<InitialState>({
         eventName: 'none',
         layout: {} as LayoutRectangle,
-        tooltipVisible: false,
     });
 
+    const tooltipVisible = tooltipVisibleSource ?? defaultTooltipVisible;
     const id = useId();
     const [underlayColor] = useUnderlayColor({type});
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange({...options, setState, supportingText: tooltip?.supportingText}),
-        [setState, tooltip?.supportingText],
+            processStateChange({...options, setState}),
+        [setState],
     );
 
     const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
@@ -133,7 +111,6 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
         icon: iconElement,
         id,
         onEvent,
-        tooltip,
         tooltipVisible,
         type,
         underlayColor,
@@ -141,8 +118,8 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
             ...renderStyle,
             ...border,
             backgroundColor,
-            layoutHeight: layout?.height,
-            layoutWidth: layout?.width,
+            layoutHeight: layout.height,
+            layoutWidth: layout.width,
         },
     });
 };

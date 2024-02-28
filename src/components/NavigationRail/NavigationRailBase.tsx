@@ -92,6 +92,7 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
     defaultActiveKey,
     fab,
     render,
+    onActive: onActiveSource,
     ...renderProps
 }) => {
     const [{activeKey, data, status}, setState] = useImmer<InitialState>({
@@ -102,8 +103,8 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
 
     const id = useId();
     const onActive = useCallback(
-        (value?: string) => processActive({onActive: renderProps.onActive, setState}, value),
-        [renderProps.onActive, setState],
+        (value?: string) => processActive({onActive: onActiveSource, setState}, value),
+        [onActiveSource, setState],
     );
 
     const children = useMemo(

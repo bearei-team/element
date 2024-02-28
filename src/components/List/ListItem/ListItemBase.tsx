@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, useCallback, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -19,13 +19,12 @@ import {useAnimated} from './useAnimated';
 export interface ListItemProps extends TouchableRippleProps {
     activeKey?: string;
     close?: boolean;
-    defaultActiveKey?: string;
+    dataKey?: string;
     gap?: number;
     headline?: string;
-    indexKey?: string;
     leading?: React.JSX.Element;
-    onActive?: (key?: string) => void;
-    onClose?: (key?: string) => void;
+    onActive?: (value?: string) => void;
+    onClose?: (value?: string) => void;
     supportingText?: string;
     supportingTextNumberOfLines?: number;
     trailing?: React.JSX.Element;
@@ -34,10 +33,9 @@ export interface ListItemProps extends TouchableRippleProps {
 export interface RenderProps extends ListItemProps {
     active?: boolean;
     activeColor: string;
-    activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     eventName: EventName;
     onEvent: OnEvent;
-    rippleCentered?: boolean;
+    touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         height: number;
         trailingOpacity: AnimatedInterpolation;
@@ -52,10 +50,9 @@ interface ListItemBaseProps extends ListItemProps {
 }
 
 interface InitialState {
-    activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
+    touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     eventName: EventName;
     layout: LayoutRectangle;
-    rippleCentered: boolean;
     state: State;
     status: ComponentStatus;
     trailingEventName: EventName;
@@ -66,17 +63,15 @@ interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
+type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'dataKey' | 'onActive'> &
     ProcessEventOptions;
 
 type ProcessTrailingEventOptions = {callback?: () => void} & ProcessEventOptions;
-type ProcessTrailingPressOutOptions = Pick<RenderProps, 'close' | 'indexKey' | 'onClose'> & {
+type ProcessTrailingPressOutOptions = Pick<RenderProps, 'close' | 'dataKey' | 'onClose'> & {
     onCloseAnimated: (finished?: (() => void) | undefined) => void;
 } & ProcessEventOptions;
 
 type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
-type ProcessInitOptions = ProcessEventOptions & Pick<RenderProps, 'active'>;
-type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'active'>;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -88,38 +83,37 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
 
 const processPressOut = (
     event: GestureResponderEvent,
-    {activeKey, indexKey, onActive, setState}: ProcessPressOutOptions,
+    {activeKey, dataKey, onActive, setState}: ProcessPressOutOptions,
 ) => {
-    if (activeKey === indexKey) {
+    if (activeKey === dataKey) {
         return;
     }
 
     const {locationX = 0, locationY = 0} = event.nativeEvent;
 
     setState(draft => {
-        draft.activeLocation = {locationX, locationY};
-        draft.rippleCentered = false;
+        draft.touchableLocation = {locationX, locationY};
     });
 
-    onActive?.(indexKey);
+    onActive?.(dataKey);
 };
 
 const processStateChange = (
     state: State,
-    {event, eventName, activeKey, indexKey, onActive, setState}: ProcessStateChangeOptions,
+    {event, eventName, activeKey, dataKey, onActive, setState}: ProcessStateChangeOptions,
 ) => {
     const nextEvent = {
         layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () =>
             processPressOut(event as GestureResponderEvent, {
                 activeKey,
-                indexKey,
+                dataKey,
                 onActive,
                 setState,
             }),
-    };
+    } as Record<EventName, () => void>;
 
-    nextEvent[eventName as keyof typeof nextEvent]?.();
+    nextEvent[eventName]?.();
 
     setState(draft => {
         draft.eventName = eventName;
@@ -140,10 +134,10 @@ const processTrailingEvent = (
 
 const processTrailingPressOut = ({
     close,
-    indexKey,
+    dataKey,
     onCloseAnimated,
     onClose,
-}: ProcessTrailingPressOutOptions) => close && onCloseAnimated?.(() => onClose?.(indexKey));
+}: ProcessTrailingPressOutOptions) => close && onCloseAnimated?.(() => onClose?.(dataKey));
 
 const processTrailingHoverIn = ({setState}: ProcessEventOptions) =>
     processTrailingEvent('hoverIn', {setState});
@@ -151,33 +145,11 @@ const processTrailingHoverIn = ({setState}: ProcessEventOptions) =>
 const processTrailingHoverOut = ({setState}: ProcessEventOptions) =>
     processTrailingEvent('hoverOut', {setState});
 
-const processInit = ({active, setState}: ProcessInitOptions) => {
-    setState(draft => {
-        if (draft.status !== 'idle') {
-            return;
-        }
-
-        draft.rippleCentered = !!active;
-        draft.active = active;
-        draft.status = 'succeeded';
-    });
-};
-
-const processActive = ({setState, active}: ProcessActiveOptions) =>
-    active &&
-    setState(draft => {
-        if (draft.status !== 'succeeded' || draft.activeLocation?.locationX) {
-            return;
-        }
-
-        draft.rippleCentered = true;
-        draft.activeLocation = {locationX: 0, locationY: 0};
-    });
-
 export const ListItemBase: FC<ListItemBaseProps> = ({
     activeKey,
     close,
-    indexKey,
+    dataKey,
+    id,
     onActive,
     onClose,
     render,
@@ -185,35 +157,20 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
     trailing,
     ...renderProps
 }) => {
-    const [
-        {
-            activeLocation,
-            eventName,
-            active,
-            layout,
-            state,
-            status,
-            trailingEventName,
-            rippleCentered,
-        },
-        setState,
-    ] = useImmer<InitialState>({
-        active: undefined,
-        activeLocation: undefined,
-        eventName: 'none',
-        layout: {} as LayoutRectangle,
-        rippleCentered: false,
-        state: 'enabled',
-        status: 'idle',
-        trailingEventName: 'none',
-    });
+    const [{touchableLocation, eventName, layout, state, trailingEventName}, setState] =
+        useImmer<InitialState>({
+            eventName: 'none',
+            layout: {} as LayoutRectangle,
+            state: 'enabled',
+            status: 'idle',
+            touchableLocation: {} as InitialState['touchableLocation'],
+            trailingEventName: 'none',
+        });
 
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
-    const id = useId();
     const underlayColor = theme.palette.surface.onSurface;
-    const activeA = typeof activeKey === 'string' ? activeKey === indexKey : undefined;
-
+    const active = typeof activeKey === 'string' ? activeKey === dataKey : undefined;
     const [{height, onCloseAnimated, trailingOpacity}] = useAnimated({
         close,
         eventName,
@@ -224,16 +181,16 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
 
     const onStateChange = useCallback(
         (nextState: State, options = {} as OnStateChangeOptions) =>
-            processStateChange(nextState, {...options, activeKey, indexKey, setState, onActive}),
-        [activeKey, indexKey, onActive, setState],
+            processStateChange(nextState, {...options, activeKey, dataKey, setState, onActive}),
+        [activeKey, dataKey, onActive, setState],
     );
 
     const [onEvent] = useOnEvent({...renderProps, onStateChange});
     const onTrailingHoverIn = useCallback(() => processTrailingHoverIn({setState}), [setState]);
     const onTrailingHoverOut = useCallback(() => processTrailingHoverOut({setState}), [setState]);
     const onTrailingPressOut = useCallback(
-        () => processTrailingPressOut({close, indexKey, onCloseAnimated, onClose, setState}),
-        [close, indexKey, onClose, onCloseAnimated, setState],
+        () => processTrailingPressOut({close, dataKey, onCloseAnimated, onClose, setState}),
+        [close, dataKey, onClose, onCloseAnimated, setState],
     );
 
     const trailingElement = useMemo(
@@ -252,32 +209,19 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
         [active, close, onTrailingHoverIn, onTrailingHoverOut, onTrailingPressOut, trailing],
     );
 
-    useEffect(() => {
-        processActive({active: activeA, setState});
-    }, [activeA, setState]);
-
-    useEffect(() => {
-        processInit({active: activeA, setState});
-    }, [activeA, setState]);
-
-    if (status === 'idle') {
-        return <></>;
-    }
-
     return render({
         ...renderProps,
         active,
         activeColor,
-        activeLocation,
         eventName,
         id,
         onEvent,
-        rippleCentered,
+        touchableLocation,
         renderStyle: {
             containerHeight: height,
-            height: layout?.height,
+            height: layout.height,
             trailingOpacity,
-            width: layout?.width,
+            width: layout.width,
         },
         supportingText,
         trailing: trailingElement,

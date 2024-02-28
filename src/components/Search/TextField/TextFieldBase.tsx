@@ -1,4 +1,4 @@
-import {FC, RefAttributes, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
+import {FC, RefAttributes, RefObject, useCallback, useEffect, useMemo, useRef} from 'react';
 import {
     Animated,
     LayoutRectangle,
@@ -157,14 +157,15 @@ const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
 );
 
 export const TextFieldBase: FC<TextFieldBaseProps> = ({
+    containerCurrent,
     data: dataSources,
+    id,
     leading,
     onActive,
     placeholder,
     ref,
     render,
     trailing,
-    containerCurrent,
     ...textInputProps
 }) => {
     const [{status, data, eventName, containerLayout, listVisible, state}, setState] =
@@ -179,7 +180,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
 
     const windowDimensions = useWindowDimensions();
     const [{height}] = useAnimated({listVisible});
-    const id = useId();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const theme = useTheme();

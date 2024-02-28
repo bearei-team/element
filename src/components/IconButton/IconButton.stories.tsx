@@ -9,27 +9,31 @@ export default {
 
 export const Filled: StoryObj<IconButtonProps> = {
     args: {
-        tooltip: {
-            supportingText: 'supportingText',
-            supportingPosition: 'horizontalEnd',
-        },
+        supportingText: 'supportingText',
+        supportingPosition: 'horizontalEnd',
     },
 };
 
 export const Outlined: StoryObj<IconButtonProps> = {
     args: {
         type: 'outlined',
+        supportingText: 'supportingText',
+        supportingPosition: 'horizontalEnd',
     },
 };
 
 export const Standard: StoryObj<IconButtonProps> = {
     args: {
         type: 'standard',
+        supportingText: 'supportingText',
+        supportingPosition: 'horizontalEnd',
     },
 };
 
 export const Tonal: StoryObj<IconButtonProps> = {
     args: {
         type: 'tonal',
+        supportingText: 'supportingText',
+        supportingPosition: 'horizontalEnd',
     },
 };

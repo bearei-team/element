@@ -105,9 +105,9 @@ const processStateChange = ({
                 onActive,
                 setState,
             }),
-    };
+    } as Record<EventName, () => void>;
 
-    nextEvent[eventName as keyof typeof nextEvent]?.();
+    nextEvent[eventName]?.();
 
     setState(draft => {
         draft.eventName = eventName;
