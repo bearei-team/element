@@ -14,15 +14,16 @@ import {debounce} from '../../utils/debounce.utils';
 import {State} from '../Common/interface';
 import {SupportingProps} from './Supporting/Supporting';
 
-export interface TooltipProps
-    extends Partial<
-        ViewProps &
-            RefAttributes<View> &
-            Pick<
-                SupportingProps,
-                'supportingPosition' | 'supportingText' | 'type' | 'visible' | 'onVisible'
-            >
-    > {
+type BaseProps = Partial<
+    ViewProps &
+        RefAttributes<View> &
+        Pick<
+            SupportingProps,
+            'supportingPosition' | 'supportingText' | 'type' | 'visible' | 'onVisible'
+        >
+>;
+
+export interface TooltipProps extends BaseProps {
     children?: React.JSX.Element;
     defaultVisible?: boolean;
 }
@@ -68,6 +69,7 @@ const processVisible = ({setState, onVisible}: ProcessVisibleOptions, visible?: 
             }
 
             draft.visible = visible;
+
             onVisible?.(visible);
         });
 };
@@ -92,7 +94,6 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
         visible: undefined,
     });
 
-    const nextVisible = visibleSource ?? defaultVisible;
     const containerRef = useRef<View>(null);
     const id = useId();
     const relRef = (ref ?? containerRef) as React.RefObject<View>;
@@ -115,8 +116,8 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
     const [onEvent] = useOnEvent({...renderProps, onStateChange});
 
     useEffect(() => {
-        onVisible(nextVisible);
-    }, [onVisible, nextVisible]);
+        onVisible(visibleSource ?? defaultVisible);
+    }, [onVisible, visibleSource, defaultVisible]);
 
     return render({
         ...renderProps,

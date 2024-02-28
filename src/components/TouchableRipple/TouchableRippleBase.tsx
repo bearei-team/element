@@ -51,12 +51,9 @@ interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-interface AddRippleOptions {
-    locationX?: number;
-    locationY?: number;
-}
+type ProcessAddRippleOptions = ProcessEventOptions &
+    Pick<RenderProps, 'active'> & {locationX?: number; locationY?: number};
 
-type ProcessAddRippleOptions = ProcessEventOptions & Pick<RenderProps, 'active'> & AddRippleOptions;
 type ProcessPressOutOptions = Omit<ProcessAddRippleOptions, 'locationX' | 'locationY'>;
 type ProcessRippleExitOptions = ProcessEventOptions & Pick<RenderProps, 'onRippleAnimatedEnd'>;
 type ProcessStateChangeOptions = ProcessPressOutOptions & OnStateChangeOptions;

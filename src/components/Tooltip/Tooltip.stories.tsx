@@ -14,9 +14,6 @@ export const PlainVerticalEnd: StoryObj<TooltipProps> = {
         supportingPosition: 'verticalEnd',
         supportingText: 'Supporting Text',
         defaultVisible: true,
-        onVisible: a => {
-            console.info(a);
-        },
     },
 };
 

@@ -1,21 +1,18 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {useAnimatedValue} from '../../hooks/useAnimatedValue';
+import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {
     AnimatedTiming,
     AnimatedTimingOptions,
     createAnimatedTiming,
-} from '../../utils/animatedTiming.utils';
-import {RenderProps} from './SideSheetBase';
+} from '../../../utils/animatedTiming.utils';
+import {RenderProps} from './SheetBase';
 
-interface UseAnimatedOptions extends Pick<RenderProps, 'visible' | 'position'> {
-    finished: () => void;
-}
+type UseAnimatedOptions = Pick<RenderProps, 'visible' | 'position' | 'onExitAnimatedFinished'>;
 
-interface ScreenAnimatedOptions {
+interface ScreenAnimatedOptions extends Pick<UseAnimatedOptions, 'onExitAnimatedFinished'> {
     containerAnimated: Animated.Value;
-    finished?: () => void;
     innerAnimated: Animated.Value;
 }
 
@@ -43,7 +40,7 @@ const enterScreen = (
 
 const exitScreen = (
     animatedTiming: AnimatedTiming,
-    {containerAnimated, innerAnimated, finished}: ScreenAnimatedOptions,
+    {containerAnimated, innerAnimated, onExitAnimatedFinished}: ScreenAnimatedOptions,
 ) => {
     const animatedTimingOptions = {
         duration: 'short3',
@@ -55,28 +52,30 @@ const exitScreen = (
         Animated.parallel([
             animatedTiming(containerAnimated, animatedTimingOptions),
             animatedTiming(innerAnimated, animatedTimingOptions),
-        ]).start(finished),
+        ]).start(onExitAnimatedFinished),
     );
 };
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {visible, containerAnimated, innerAnimated, finished}: ProcessAnimatedTimingOptions,
+    {
+        visible,
+        containerAnimated,
+        innerAnimated,
+        onExitAnimatedFinished,
+    }: ProcessAnimatedTimingOptions,
 ) => {
-    if (typeof visible !== 'boolean') {
-        return;
-    }
-
     const screenAnimatedOptions = {containerAnimated, innerAnimated};
 
     visible
         ? enterScreen(animatedTiming, screenAnimatedOptions)
-        : exitScreen(animatedTiming, {...screenAnimatedOptions, finished});
+        : exitScreen(animatedTiming, {...screenAnimatedOptions, onExitAnimatedFinished});
 };
 
-export const useAnimated = ({visible, finished, position}: UseAnimatedOptions) => {
-    const [containerAnimated] = useAnimatedValue(0);
-    const [innerAnimated] = useAnimatedValue(0);
+export const useAnimated = ({visible, onExitAnimatedFinished, position}: UseAnimatedOptions) => {
+    const animatedValue = visible ? 1 : 0;
+    const [containerAnimated] = useAnimatedValue(animatedValue);
+    const [innerAnimated] = useAnimatedValue(animatedValue);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
     const backgroundColor = containerAnimated.interpolate({
@@ -100,11 +99,11 @@ export const useAnimated = ({visible, finished, position}: UseAnimatedOptions) =
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
             containerAnimated,
-            finished,
+            onExitAnimatedFinished,
             innerAnimated,
             visible,
         });
-    }, [animatedTiming, containerAnimated, finished, innerAnimated, visible]);
+    }, [animatedTiming, containerAnimated, onExitAnimatedFinished, innerAnimated, visible]);
 
     return [{backgroundColor, innerTranslateX}];
 };

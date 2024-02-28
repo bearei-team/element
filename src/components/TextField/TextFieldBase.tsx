@@ -182,6 +182,8 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     labelText = 'Label',
     leading,
     multiline,
+    onChangeText: onChangeTextSource,
+    onContentSizeChange: onContentSizeChangeSource,
     placeholder,
     ref,
     render,
@@ -189,8 +191,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     trailing,
     type = 'filled',
     value: valueSource,
-    onContentSizeChange: onContentSizeChangeSource,
-    onChangeText: onChangeTextSource,
     ...textInputProps
 }) => {
     const [{layout, eventName, state, contentSize, value}, setState] = useImmer<InitialState>({
@@ -268,6 +268,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
             renderTextInput({
                 ...textInputProps,
                 defaultValue,
+                disabled,
                 id,
                 multiline,
                 onBlur,
@@ -279,7 +280,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
                 ref: inputRef,
                 renderStyle: {color: inputColor},
                 value: valueSource,
-                disabled,
             }),
         [
             defaultValue,

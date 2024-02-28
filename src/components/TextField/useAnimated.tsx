@@ -62,9 +62,9 @@ const processEnabled = ({
     colorAnimated,
     error,
     filledToValue,
+    inputAnimated,
     labelAnimated,
     supportingTextAnimated,
-    inputAnimated,
 }: ProcessEnabledOptions) => {
     if (error) {
         return requestAnimationFrame(() =>

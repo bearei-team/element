@@ -107,6 +107,7 @@ export const SupportingBase: FC<SupportingBaseProps> = ({
 
     const windowDimensions = useWindowDimensions();
     const id = useId();
+    const [{opacity}] = useAnimated({visible});
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
             processStateChange({...options, setState, onVisible}),
@@ -114,7 +115,6 @@ export const SupportingBase: FC<SupportingBaseProps> = ({
     );
 
     const [onEvent] = useOnEvent({...renderProps, onStateChange});
-    const [{opacity}] = useAnimated({visible});
     const supporting = useMemo(
         () =>
             render({

@@ -1,53 +1,19 @@
-import {FC, RefAttributes, useCallback, useEffect, useId, useMemo} from 'react';
-import {
-    Animated,
-    GestureResponderEvent,
-    ModalProps,
-    View,
-    ViewProps,
-    ViewStyle,
-} from 'react-native';
+import {FC, useCallback, useEffect, useId, useMemo} from 'react';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
-import {Button} from '../Button/Button';
-import {ShapeProps} from '../Common/Common.styles';
-import {Icon} from '../Icon/Icon';
-import {IconButton} from '../IconButton/IconButton';
-import {useAnimated} from './useAnimated';
+import {SheetProps} from './Sheet/Sheet';
 
-type SideSheetType = 'side' | 'bottom';
-export interface SideSheetProps
-    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & ModalProps> {
-    back?: boolean;
-    backIcon?: React.JSX.Element;
-    closeIcon?: React.JSX.Element;
-    content?: React.JSX.Element;
-    footer?: boolean;
-    headlineText?: string;
-    onBack?: () => void;
-    onClose?: () => void;
-    onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
-    onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
-    position?: 'horizontalStart' | 'horizontalEnd';
-    primaryButton?: React.JSX.Element;
-    primaryButtonLabelText?: string;
-    secondaryButton?: React.JSX.Element;
-    secondaryButtonLabelText?: string;
-    type?: SideSheetType;
-    visible?: boolean;
+export interface SideSheetProps extends SheetProps {
+    defaultVisible?: boolean;
 }
 
-export interface RenderProps extends SideSheetProps {
-    renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
-        innerTranslateX: Animated.AnimatedInterpolation<string | number>;
-    };
-}
+export type RenderProps = SideSheetProps;
 interface SideSheetBaseProps extends SideSheetProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
 interface InitialState {
-    modalVisible?: boolean;
+    destroy?: boolean;
     visible?: boolean;
 }
 
@@ -55,176 +21,83 @@ interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-type ProcessAnimatedFinishedOptions = Pick<RenderProps, 'visible' | 'onClose' | 'onBack'> &
+type ProcessAnimatedFinishedOptions = Pick<RenderProps, 'visible' | 'onClose'> &
     ProcessEventOptions;
 
-interface ProcessEmitOptions extends Pick<RenderProps, 'visible'> {
-    sheet: React.JSX.Element;
-    id: string;
-}
+type ProcessEmitOptions = Pick<RenderProps, 'visible' | 'id'> & Pick<InitialState, 'destroy'>;
+type ProcessCloseOptions = Pick<RenderProps, 'onClose'> & ProcessEventOptions;
+type ProcessVisibleOptions = ProcessEventOptions & Pick<RenderProps, 'onOpen'>;
 
-const processAnimatedFinished = ({
-    visible,
-    setState,
-    onClose,
-    onBack,
-}: ProcessAnimatedFinishedOptions) =>
-    visible &&
+const processExitAnimatedFinished = ({setState}: ProcessAnimatedFinishedOptions) =>
     setState(draft => {
-        draft.modalVisible = false;
-        draft.visible = undefined;
-
-        onClose?.();
-        onBack?.();
+        draft.visible === false && (draft.destroy = true);
     });
 
-const processClose = ({setState}: ProcessEventOptions) =>
+const processClose = ({setState, onClose}: ProcessCloseOptions) =>
     setState(draft => {
-        draft.visible = false;
-    });
-
-const processModalShow = ({setState}: ProcessEventOptions) =>
-    setState(draft => {
-        draft.visible = true;
-    });
-
-const processSheetVisible = ({setState}: ProcessEventOptions, sheetVisible?: boolean) =>
-    setState(draft => {
-        if (draft.modalVisible) {
-            draft.visible = false;
-
+        if (draft.visible === false) {
             return;
         }
 
-        draft.modalVisible = sheetVisible;
+        draft.visible = false;
+
+        onClose?.();
     });
 
-const processEmit = ({visible, sheet, id}: ProcessEmitOptions) =>
-    emitter.emit('modal', {id: `sideSheet__${id}`, element: visible ? sheet : <></>});
+const processVisible = ({setState, onOpen}: ProcessVisibleOptions, visible?: boolean) =>
+    typeof visible === 'boolean' &&
+    setState(draft => {
+        if (draft.visible === visible) {
+            return;
+        }
+
+        draft.visible = visible;
+
+        if (visible) {
+            typeof draft.destroy === 'boolean' && (draft.destroy = false);
+            onOpen?.();
+        }
+    });
+
+const processEmit = (sheet: React.JSX.Element, {visible, id}: ProcessEmitOptions) =>
+    typeof visible === 'boolean' && emitter.emit('modal', {id: `sideSheet__${id}`, element: sheet});
 
 export const SideSheetBase: FC<SideSheetBaseProps> = ({
-    backIcon,
-    closeIcon,
-    headlineText = 'Title',
-    onBack,
-    onPrimaryButtonPress,
-    onSecondaryButtonPress,
-    position = 'horizontalEnd',
-    primaryButton,
-    primaryButtonLabelText = 'Save',
+    defaultVisible,
+    onClose: onCloseSource,
+    onOpen,
     render,
-    secondaryButton,
-    secondaryButtonLabelText = 'Cancel',
-    visible: sheetVisible,
+    visible: visibleSource,
     ...renderProps
 }) => {
-    const [{visible, modalVisible}, setState] = useImmer<InitialState>({
-        modalVisible: undefined,
+    const [{visible, destroy}, setState] = useImmer<InitialState>({
+        destroy: undefined,
         visible: undefined,
     });
 
     const id = useId();
-    const finished = useCallback(
-        () =>
-            processAnimatedFinished({
-                visible: modalVisible,
-                setState,
-                onBack,
-                onClose: renderProps.onClose,
-            }),
-        [modalVisible, onBack, renderProps.onClose, setState],
+    const onExitAnimatedFinished = useCallback(
+        () => processExitAnimatedFinished({setState}),
+        [setState],
     );
 
-    const [{backgroundColor, innerTranslateX}] = useAnimated({finished, position, visible});
-    const onClose = useCallback(() => processClose({setState}), [setState]);
-    const onShow = useCallback(() => processModalShow({setState}), [setState]);
-    const backIconElement = useMemo(
-        () =>
-            backIcon ?? (
-                <IconButton
-                    icon={<Icon type="filled" name="arrowBack" />}
-                    onPressOut={onClose}
-                    type="standard"
-                />
-            ),
-        [backIcon, onClose],
-    );
-
-    const closeIconElement = useMemo(
-        () =>
-            closeIcon ?? (
-                <IconButton
-                    icon={<Icon type="filled" name="close" />}
-                    onPressOut={onClose}
-                    type="standard"
-                />
-            ),
-        [closeIcon, onClose],
-    );
-
-    const primaryButtonElement = useMemo(
-        () =>
-            primaryButton ?? (
-                <Button
-                    labelText={primaryButtonLabelText}
-                    onPress={onPrimaryButtonPress}
-                    type="filled"
-                />
-            ),
-        [onPrimaryButtonPress, primaryButton, primaryButtonLabelText],
-    );
-
-    const secondaryButtonElement = useMemo(
-        () =>
-            secondaryButton ?? (
-                <Button
-                    labelText={secondaryButtonLabelText}
-                    onPress={onSecondaryButtonPress}
-                    type="outlined"
-                />
-            ),
-        [onSecondaryButtonPress, secondaryButton, secondaryButtonLabelText],
+    const onClose = useCallback(
+        () => processClose({setState, onClose: onCloseSource}),
+        [onCloseSource, setState],
     );
 
     const sheet = useMemo(
-        () =>
-            render({
-                ...renderProps,
-                backIcon: backIconElement,
-                closeIcon: closeIconElement,
-                headlineText,
-                id,
-                onShow,
-                position,
-                primaryButton: primaryButtonElement,
-                renderStyle: {backgroundColor, innerTranslateX},
-                secondaryButton: secondaryButtonElement,
-                visible: modalVisible,
-            }),
-        [
-            backIconElement,
-            backgroundColor,
-            closeIconElement,
-            headlineText,
-            id,
-            innerTranslateX,
-            modalVisible,
-            onShow,
-            position,
-            primaryButtonElement,
-            render,
-            renderProps,
-            secondaryButtonElement,
-        ],
+        () => render({...renderProps, id, visible, onClose, onExitAnimatedFinished, destroy}),
+        [destroy, id, onClose, onExitAnimatedFinished, render, renderProps, visible],
     );
 
     useEffect(() => {
-        processSheetVisible({setState}, sheetVisible);
-    }, [setState, sheetVisible]);
+        processVisible({setState, onOpen}, visibleSource ?? defaultVisible);
+    }, [setState, onOpen, visibleSource, defaultVisible]);
 
     useEffect(() => {
-        processEmit({id, sheet, visible: modalVisible});
-    }, [id, modalVisible, sheet]);
+        processEmit(sheet, {id, visible, destroy});
+    }, [destroy, id, sheet, visible]);
 
     return <></>;
 };

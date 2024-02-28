@@ -29,7 +29,6 @@ const render = ({
             testID={`tooltip--${id}`}
             renderStyle={{width, height}}>
             {children}
-
             {typeof visible === 'boolean' && (
                 <Supporting
                     containerCurrent={containerCurrent}
