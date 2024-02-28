@@ -115,13 +115,9 @@ const processChangeText = (
     });
 };
 
-const processListVisible = (
-    {setState, state}: ProcessListVisibleOptions,
-    data?: ListDataSource[],
-) =>
+const processListVisible = ({setState}: ProcessListVisibleOptions, data?: ListDataSource[]) =>
     setState(draft => {
-        draft.listVisible =
-            typeof data?.length === 'number' && data?.length !== 0 && state === 'focused';
+        draft.listVisible = typeof data?.length === 'number' && data?.length !== 0;
     });
 
 const processContainerLayout = (containerCurrent: View | null, {setState}: ProcessEventOptions) =>
@@ -244,23 +240,25 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
                 renderStyle: {height},
                 trailing,
                 underlayColor,
+                listVisible,
             }),
         [
+            render,
             containerLayout,
             data,
             eventName,
-            height,
             id,
             input,
             leading,
             onBlur,
-            onEvent,
             onFocus,
+            onEvent,
             onActive,
             placeholder,
-            render,
+            height,
             trailing,
             underlayColor,
+            listVisible,
         ],
     );
 

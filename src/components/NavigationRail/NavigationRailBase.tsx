@@ -1,23 +1,23 @@
-import {FC, RefAttributes, cloneElement, useCallback, useEffect, useId, useRef} from 'react';
+import {FC, RefAttributes, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
 import {View, ViewProps} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {ComponentStatus} from '../Common/interface';
 import {FABProps} from '../FAB/FAB';
 import {ListDataSource} from '../List/List';
-
 import {NavigationRailItem, NavigationRailItemProps} from './NavigationRailItem/NavigationRailItem';
 
 interface NavigationDataSource extends NavigationRailItemProps {
     key?: string;
 }
 
-export interface NavigationRailProps extends Partial<ViewProps & RefAttributes<View>> {
-    activeKey?: string;
+export interface NavigationRailProps
+    extends Partial<
+        ViewProps & RefAttributes<View> & Pick<NavigationRailItemProps, 'activeKey' | 'onActive'>
+    > {
     block?: boolean;
     data?: NavigationDataSource[];
     defaultActiveKey?: string;
     fab?: React.JSX.Element;
-    onActive?: (key?: string) => void;
 }
 
 export type RenderProps = NavigationRailProps;
@@ -40,21 +40,24 @@ interface RenderItemOptions {
     activeKey?: string;
     block?: boolean;
     data: ListDataSource[];
-    defaultActiveKey?: string;
     onActive: (key?: string) => void;
+    id: string;
 }
 
 type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
-type ProcessActiveKeyOptions = ProcessEventOptions & Pick<RenderProps, 'activeKey'>;
 
-const renderItems = ({activeKey, block, data, defaultActiveKey, onActive}: RenderItemOptions) =>
+const renderItems = (
+    status: ComponentStatus,
+    {activeKey, block, data, onActive, id}: RenderItemOptions,
+) =>
+    status === 'succeeded' &&
     data.map(({key, ...props}) => (
         <NavigationRailItem
             {...props}
             activeKey={activeKey}
             block={block}
-            defaultActiveKey={defaultActiveKey}
-            indexKey={key}
+            dataKey={key}
+            id={id}
             key={key}
             onActive={onActive}
         />
@@ -81,16 +84,6 @@ const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSour
         draft.status = 'succeeded';
     });
 
-const processActiveKey = ({activeKey, setState}: ProcessActiveKeyOptions) =>
-    typeof activeKey === 'string' &&
-    setState(draft => {
-        if (draft.status !== 'succeeded' || draft.activeKey === activeKey) {
-            return;
-        }
-
-        draft.activeKey = activeKey;
-    });
-
 export const NavigationRailBase: FC<NavigationBaseProps> = ({
     activeKey: activeKeySource,
     block,
@@ -100,7 +93,6 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
     render,
     ...renderProps
 }) => {
-    const isFirstRender = useRef(true);
     const [{activeKey, data, status}, setState] = useImmer<InitialState>({
         activeKey: undefined,
         data: [],
@@ -113,24 +105,21 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
         [renderProps.onActive, setState],
     );
 
-    const children = useCallback(() => {
-        return renderItems({
-            activeKey,
-            block,
-            data,
-            defaultActiveKey,
-            onActive,
-        });
-    }, [activeKey, block, data, defaultActiveKey, onActive]);
+    const children = useMemo(
+        () =>
+            renderItems(status, {
+                activeKey,
+                block,
+                data,
+                onActive,
+                id,
+            }),
+        [activeKey, block, data, id, onActive, status],
+    );
 
     useEffect(() => {
-        if (isFirstRender.current) {
-            isFirstRender.current = false;
-            return;
-        }
-
-        processActiveKey({activeKey: activeKeySource, setState});
-    }, [activeKeySource, setState]);
+        onActive(activeKeySource ?? defaultActiveKey);
+    }, [activeKeySource, defaultActiveKey, onActive]);
 
     useEffect(() => {
         processInit({setState}, dataSources);
@@ -142,13 +131,8 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
 
     return render({
         ...renderProps,
-        children: children(),
+        children,
         fab: processFAB(fab),
         id,
-        // onLayout: () => {
-        //     setState(d => {
-        //         d.status = 'succeeded';
-        //     });
-        // },
     });
 };

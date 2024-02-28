@@ -1,4 +1,4 @@
-import {FC, RefAttributes, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, RefAttributes, cloneElement, useCallback, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -15,7 +15,7 @@ import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../../hooks/useOnEvent';
 import {ShapeProps} from '../../Common/Common.styles';
-import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../../Common/interface';
+import {AnimatedInterpolation, EventName, State} from '../../Common/interface';
 import {Icon, IconProps} from '../../Icon/Icon';
 import {useAnimated} from './useAnimated';
 
@@ -24,9 +24,8 @@ export interface NavigationRailItemProps
     activeIcon?: React.JSX.Element;
     activeKey?: string;
     block?: boolean;
-    defaultActiveKey?: string;
+    dataKey?: string;
     icon?: React.JSX.Element;
-    indexKey?: string;
     labelText?: string;
     onActive?: (key?: string) => void;
 }
@@ -34,11 +33,9 @@ export interface NavigationRailItemProps
 export interface RenderProps extends NavigationRailItemProps {
     active?: boolean;
     activeColor: string;
-    activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
-    defaultActive?: boolean;
     eventName: EventName;
     onEvent: OnEvent;
-    rippleCentered?: boolean;
+    touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
         labelHeight: AnimatedInterpolation;
@@ -52,23 +49,19 @@ interface NavigationRailItemBaseProps extends NavigationRailItemProps {
 }
 
 export interface InitialState {
-    activeLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     eventName: EventName;
     layout: LayoutRectangle;
-    rippleCentered: boolean;
-    status: ComponentStatus;
+    touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
 }
 
 interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'indexKey' | 'onActive'> &
+type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'dataKey' | 'onActive'> &
     ProcessEventOptions;
 
 type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
-type ProcessInitOptions = ProcessEventOptions & Pick<RenderProps, 'defaultActive'>;
-type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'active'>;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -80,20 +73,19 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
 
 const processPressOut = (
     event: GestureResponderEvent,
-    {indexKey, activeKey, onActive, setState}: ProcessPressOutOptions,
+    {dataKey, activeKey, onActive, setState}: ProcessPressOutOptions,
 ) => {
-    if (activeKey === indexKey) {
+    if (activeKey === dataKey) {
         return;
     }
 
-    const {locationX = 0, locationY = 0} = event.nativeEvent;
+    const {locationX, locationY} = event.nativeEvent;
 
     setState(draft => {
-        draft.activeLocation = {locationX, locationY};
-        draft.rippleCentered = false;
+        draft.touchableLocation = {locationX, locationY};
     });
 
-    onActive?.(indexKey);
+    onActive?.(dataKey);
 };
 
 const processStateChange = ({
@@ -101,7 +93,7 @@ const processStateChange = ({
     eventName,
     setState,
     activeKey,
-    indexKey,
+    dataKey,
     onActive,
 }: ProcessStateChangeOptions) => {
     const nextEvent = {
@@ -109,7 +101,7 @@ const processStateChange = ({
         pressOut: () =>
             processPressOut(event as GestureResponderEvent, {
                 activeKey,
-                indexKey,
+                dataKey,
                 onActive,
                 setState,
             }),
@@ -122,61 +114,28 @@ const processStateChange = ({
     });
 };
 
-const processInit = ({defaultActive, setState}: ProcessInitOptions) =>
-    setState(draft => {
-        if (draft.status !== 'idle') {
-            return;
-        }
-
-        draft.rippleCentered = !!defaultActive;
-        draft.status = 'succeeded';
-    });
-
-const processActive = ({setState, active}: ProcessActiveOptions) =>
-    active &&
-    setState(draft => {
-        if (draft.status !== 'succeeded' || draft.activeLocation?.locationX) {
-            return;
-        }
-
-        draft.rippleCentered = true;
-        draft.activeLocation = {locationX: 0, locationY: 0};
-    });
-
 export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     activeIcon = <Icon type="filled" name="circle" />,
     activeKey,
     block,
-    defaultActiveKey,
     icon = <Icon type="outlined" name="circle" />,
-    indexKey,
+    dataKey,
     onActive,
     render,
+    id,
     ...renderProps
 }) => {
-    const [{activeLocation, eventName, layout, rippleCentered, status}, setState] =
-        useImmer<InitialState>({
-            activeLocation: undefined,
-            eventName: 'none',
-            layout: {} as LayoutRectangle,
-            rippleCentered: false,
-            status: 'idle',
-        });
+    const [{eventName, layout, touchableLocation}, setState] = useImmer<InitialState>({
+        eventName: 'none',
+        layout: {} as LayoutRectangle,
+        touchableLocation: {} as InitialState['touchableLocation'],
+    });
 
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
-    const id = useId();
     const underlayColor = theme.palette.surface.onSurface;
-    console.info(activeKey, indexKey);
-    const active = typeof activeKey === 'string' ? activeKey === indexKey : undefined;
-    const defaultActive = defaultActiveKey === indexKey;
-    const [{height, color}] = useAnimated({
-        active,
-        block,
-        defaultActive,
-        setState,
-    });
-
+    const active = typeof activeKey === 'string' ? activeKey === dataKey : undefined;
+    const [{height, color}] = useAnimated({active, block});
     const iconLayout = useMemo(
         () => ({
             width: theme.adaptSize(theme.spacing.large),
@@ -187,8 +146,8 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
 
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange({...options, activeKey, indexKey, onActive, setState}),
-        [activeKey, indexKey, onActive, setState],
+            processStateChange({...options, activeKey, dataKey, onActive, setState}),
+        [activeKey, dataKey, onActive, setState],
     );
 
     const [onEvent] = useOnEvent({...renderProps, disabled: false, onStateChange});
@@ -202,36 +161,22 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
         [eventName, icon, iconLayout],
     );
 
-    useEffect(() => {
-        processActive({active, setState});
-    }, [active, setState]);
-
-    useEffect(() => {
-        processInit({defaultActive, setState});
-    }, [defaultActive, setState]);
-
-    if (status === 'idle') {
-        return <></>;
-    }
-
     return render({
         ...renderProps,
         active,
         activeColor,
         activeIcon: activeIconElement,
-        activeLocation,
-        defaultActive,
+        block,
         eventName,
         icon: iconElement,
         id,
-        block,
         onEvent,
-        rippleCentered,
+        touchableLocation,
         renderStyle: {
             color,
-            height: layout?.height,
+            height: layout.height,
             labelHeight: height,
-            width: layout?.width,
+            width: layout.width,
         },
         underlayColor,
     });

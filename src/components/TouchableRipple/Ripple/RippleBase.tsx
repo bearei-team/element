@@ -13,10 +13,10 @@ import {useAnimated} from './useAnimated';
 export interface RippleProps extends Partial<ViewProps & React.RefAttributes<View>> {
     active?: boolean;
     centered?: boolean;
-    location?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     onEntryAnimatedFinished?: (sequence: string, exitAnimated: ExitAnimated) => void;
     sequence: string;
     touchableLayout?: LayoutRectangle;
+    touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     underlayColor?: string;
 }
 
@@ -34,7 +34,7 @@ export const RippleBase: FC<RippleBaseProps> = ({
     active,
     centered,
     id,
-    location = {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
+    touchableLocation = {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
     onEntryAnimatedFinished,
     render,
     sequence,
@@ -47,7 +47,7 @@ export const RippleBase: FC<RippleBaseProps> = ({
     const centerY = height / 2;
     const {locationX = 0, locationY = 0} = centered
         ? {locationX: centerX, locationY: centerY}
-        : location;
+        : touchableLocation;
 
     const offsetX = Math.abs(centerX - locationX);
     const offsetY = Math.abs(centerY - locationY);

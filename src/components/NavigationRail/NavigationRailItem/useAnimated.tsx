@@ -1,14 +1,12 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {Updater} from 'use-immer';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTiming.utils';
-import {InitialState, RenderProps} from './NavigationRailItemBase';
+import {RenderProps} from './NavigationRailItemBase';
 
 interface UseAnimatedOptions extends Pick<RenderProps, 'active' | 'block'> {
     defaultActive?: boolean;
-    setState: Updater<InitialState>;
 }
 
 interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
@@ -17,25 +15,19 @@ interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {block, active, labelAnimated, setState}: ProcessAnimatedTimingOptions,
+    {block, active, labelAnimated}: ProcessAnimatedTimingOptions,
 ) => {
-    setState(draft => {
-        if (draft.status !== 'succeeded') {
-            return;
-        }
-
-        !block &&
-            typeof active === 'boolean' &&
-            requestAnimationFrame(() =>
-                animatedTiming(labelAnimated, {
-                    toValue: active ? 1 : 0,
-                }).start(),
-            );
-    });
+    !block &&
+        typeof active === 'boolean' &&
+        requestAnimationFrame(() => {
+            animatedTiming(labelAnimated, {
+                toValue: active ? 1 : 0,
+            }).start();
+        });
 };
 
-export const useAnimated = ({active, block, defaultActive, setState}: UseAnimatedOptions) => {
-    const [labelAnimated] = useAnimatedValue(block || defaultActive ? 1 : 0);
+export const useAnimated = ({active, block}: UseAnimatedOptions) => {
+    const [labelAnimated] = useAnimatedValue(block || active ? 1 : 0);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
     const height = labelAnimated.interpolate({
@@ -52,8 +44,8 @@ export const useAnimated = ({active, block, defaultActive, setState}: UseAnimate
     });
 
     useEffect(() => {
-        processAnimatedTiming(animatedTiming, {active, block, labelAnimated, setState});
-    }, [active, animatedTiming, block, labelAnimated, setState]);
+        processAnimatedTiming(animatedTiming, {active, block, labelAnimated});
+    }, [active, animatedTiming, block, labelAnimated]);
 
     return [{height, color}];
 };

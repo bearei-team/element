@@ -14,16 +14,14 @@ const render = ({
     active,
     activeColor,
     activeIcon,
-    activeLocation,
     block,
-    defaultActive,
     eventName,
     icon,
     id,
     labelText,
     onEvent,
     renderStyle,
-    rippleCentered,
+    touchableLocation,
     underlayColor,
     ...containerProps
 }: RenderProps) => {
@@ -36,16 +34,14 @@ const render = ({
             {...containerProps}
             accessibilityLabel={labelText}
             accessibilityRole="tab"
-            active={active ?? defaultActive}
+            active={active}
             testID={`navigationRailItem--${id}`}>
             <TouchableRipple
                 {...onTouchableRippleEvent}
                 active={active}
-                activeLocation={activeLocation}
-                centered={rippleCentered}
-                defaultActive={defaultActive}
                 onLayout={onLayout}
                 shape={shape}
+                touchableLocation={touchableLocation}
                 underlayColor={activeColor}>
                 <Header testID={`navigationRailItem__header--${id}`} block={block}>
                     <Icon testID={`navigationRailItem__icon--${id}`}>
@@ -63,7 +59,7 @@ const render = ({
 
             {!block && (
                 <AnimatedLabelText
-                    active={active ?? defaultActive}
+                    active={active}
                     size="medium"
                     style={{color, height: labelHeight}}
                     testID={`navigationRailItem__labelText--${id}`}

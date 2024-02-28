@@ -30,6 +30,7 @@ export const Header = styled.View<HeaderProps>`
     display: flex;
     flex-direction: row;
     justify-content: center;
+    pointer-events: none;
     position: relative;
 
     ${({theme}) => css`
@@ -54,8 +55,9 @@ export const Icon = styled.View`
 `;
 
 export const LabelText = styled(Typography)<LabelTextProps>`
-    user-select: none;
     overflow: hidden;
+    pointer-events: none;
+    user-select: none;
 
     ${({theme, active}) => css`
         font-weight: ${active ? theme.font.weight.bold : theme.font.weight.medium};

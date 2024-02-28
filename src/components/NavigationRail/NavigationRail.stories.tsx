@@ -11,8 +11,8 @@ export default {
 export const Rail: StoryObj<NavigationRailProps> = {
     args: {
         defaultActiveKey: 'A',
-        activeKey: 'C',
-        fab: <FAB defaultElevation={0} icon={<Icon />} />,
+
+        fab: <FAB icon={<Icon />} />,
         data: [
             {
                 labelText: 'Label1',
@@ -33,7 +33,7 @@ export const Rail: StoryObj<NavigationRailProps> = {
 export const BlockRail: StoryObj<NavigationRailProps> = {
     args: {
         defaultActiveKey: 'name',
-        fab: <FAB defaultElevation={0} icon={<Icon />} />,
+        fab: <FAB icon={<Icon />} />,
         block: true,
         data: [
             {
