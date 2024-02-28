@@ -36,8 +36,6 @@ const render = ({
     const {backgroundColor, innerTranslateX} = renderStyle;
     const shape = position === 'horizontalStart' ? 'largeEnd' : 'largeStart';
 
-    console.info(destroy, 'destroy');
-
     return (
         <AnimatedContainer style={{backgroundColor}} testID={`sideSheet--${id}`}>
             <AnimatedInner
@@ -49,7 +47,7 @@ const render = ({
                 }}
                 testID={`sideSheet__inner--${id}`}
                 accessibilityRole="alert">
-                {typeof destroy === 'boolean' && destroy ? (
+                {destroy ? (
                     <></>
                 ) : (
                     <>

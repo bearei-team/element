@@ -2,10 +2,7 @@ import {Pressable} from 'react-native';
 import styled, {css} from 'styled-components/native';
 
 interface ContainerProps {
-    renderStyle: {
-        height?: number;
-        width?: number;
-    };
+    renderStyle: {height?: number; width?: number};
 }
 
 export const Container = styled(Pressable)<ContainerProps>`

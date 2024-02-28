@@ -15,12 +15,12 @@ import {State} from '../Common/interface';
 import {SupportingProps} from './Supporting/Supporting';
 
 type BaseProps = Partial<
-    ViewProps &
+    Pick<
+        SupportingProps,
+        'supportingPosition' | 'supportingText' | 'type' | 'visible' | 'onVisible'
+    > &
         RefAttributes<View> &
-        Pick<
-            SupportingProps,
-            'supportingPosition' | 'supportingText' | 'type' | 'visible' | 'onVisible'
-        >
+        ViewProps
 >;
 
 export interface TooltipProps extends BaseProps {
@@ -84,7 +84,7 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
     children,
     defaultVisible,
     onVisible: onVisibleSource,
-    ref,
+    ref: refSource,
     render,
     visible: visibleSource,
     ...renderProps
@@ -96,7 +96,7 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
 
     const containerRef = useRef<View>(null);
     const id = useId();
-    const relRef = (ref ?? containerRef) as React.RefObject<View>;
+    const ref = (refSource ?? containerRef) as React.RefObject<View>;
     const onVisible = useCallback(
         (value?: boolean) => debounceProcessVisible({setState, onVisible: onVisibleSource}, value),
         [onVisibleSource, setState],
@@ -122,12 +122,11 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
     return render({
         ...renderProps,
         children: cloneElement(children ?? <></>, {onLayout}),
-        containerCurrent: relRef.current,
-        defaultVisible,
+        containerCurrent: ref.current,
         id,
         onEvent,
         onVisible,
-        ref: relRef,
+        ref,
         renderStyle: {width: layout.width, height: layout.height},
         visible,
     });

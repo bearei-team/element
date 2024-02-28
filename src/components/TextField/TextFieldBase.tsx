@@ -80,23 +80,10 @@ type ProcessContentSizeChangeOptions = Pick<RenderProps, 'onContentSizeChange'> 
     ProcessEventOptions;
 
 type ProcessChangeTextOptions = Pick<RenderProps, 'onChangeText'> & ProcessEventOptions;
-
 type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
     OnStateChangeOptions;
 
-type ProcessStateOptions = Pick<OnStateChangeOptions, 'eventName'> & ProcessEventOptions;
-
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
-const processState = (state: State, {eventName, setState}: ProcessStateOptions) =>
-    setState(draft => {
-        if (draft.state === 'focused' && eventName !== 'blur') {
-            return;
-        }
-
-        draft.eventName = eventName;
-        draft.state = state;
-    });
-
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
@@ -113,11 +100,18 @@ const processStateChange = (
         focus: () => processFocus(ref),
         layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () => processFocus(ref),
-    };
+    } as Record<EventName, () => void>;
 
-    nextEvent[eventName as keyof typeof nextEvent]?.();
+    nextEvent[eventName]?.();
 
-    processState(state, {eventName, setState});
+    setState(draft => {
+        if (draft.state === 'focused' && eventName !== 'blur') {
+            return;
+        }
+
+        draft.eventName = eventName;
+        draft.state = state;
+    });
 };
 
 const processContentSizeChange = (
@@ -222,14 +216,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     );
 
     const onChangeText = useCallback(
-        (text?: string) =>
-            processChangeText(
-                {
-                    onChangeText: onChangeTextSource,
-                    setState,
-                },
-                text,
-            ),
+        (text?: string) => processChangeText({onChangeText: onChangeTextSource, setState}, text),
         [onChangeTextSource, setState],
     );
 
@@ -308,9 +295,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         leading,
         multiline,
         onEvent: {...onEvent, onBlur, onFocus},
-        state,
-        trailing,
-        underlayColor,
         renderStyle: {
             activeIndicatorBackgroundColor,
             activeIndicatorHeight,
@@ -325,6 +309,9 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
             supportingTextColor,
             width: layout.width,
         },
+        state,
         supportingText,
+        trailing,
+        underlayColor,
     });
 };

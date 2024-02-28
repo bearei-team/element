@@ -1,4 +1,4 @@
-import {FC, useId} from 'react';
+import {FC} from 'react';
 import {
     Animated,
     LayoutRectangle,
@@ -14,7 +14,7 @@ export interface RippleProps extends Partial<ViewProps & React.RefAttributes<Vie
     active?: boolean;
     centered?: boolean;
     location?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
-    onEntryAnimatedEnd?: (sequence: string, exitAnimated: ExitAnimated) => void;
+    onEntryAnimatedFinished?: (sequence: string, exitAnimated: ExitAnimated) => void;
     sequence: string;
     touchableLayout?: LayoutRectangle;
     underlayColor?: string;
@@ -33,8 +33,9 @@ interface RippleBaseProps extends RippleProps {
 export const RippleBase: FC<RippleBaseProps> = ({
     active,
     centered,
+    id,
     location = {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
-    onEntryAnimatedEnd,
+    onEntryAnimatedFinished,
     render,
     sequence,
     touchableLayout,
@@ -44,7 +45,6 @@ export const RippleBase: FC<RippleBaseProps> = ({
     const {width = 0, height = 0} = touchableLayout ?? {};
     const centerX = width / 2;
     const centerY = height / 2;
-    const id = useId();
     const {locationX = 0, locationY = 0} = centered
         ? {locationX: centerX, locationY: centerY}
         : location;
@@ -56,7 +56,7 @@ export const RippleBase: FC<RippleBaseProps> = ({
     const [{opacity, scale}] = useAnimated({
         active,
         minDuration: diameter,
-        onEntryAnimatedEnd,
+        onEntryAnimatedFinished,
         sequence,
     });
 

@@ -10,7 +10,7 @@ import {
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ShapeProps} from '../Common/Common.styles';
-import {State} from '../Common/interface';
+import {EventName, State} from '../Common/interface';
 import {Ripple, RippleProps} from './Ripple/Ripple';
 
 type TouchableProps = PressableProps &
@@ -57,14 +57,14 @@ type ProcessAddRippleOptions = ProcessEventOptions &
 type ProcessPressOutOptions = Omit<ProcessAddRippleOptions, 'locationX' | 'locationY'>;
 type ProcessRippleExitOptions = ProcessEventOptions & Pick<RenderProps, 'onRippleAnimatedEnd'>;
 type ProcessStateChangeOptions = ProcessPressOutOptions & OnStateChangeOptions;
-type ProcessRippleEntryAnimatedEndOptions = ProcessEventOptions &
-    Pick<RenderProps, 'active'> & {exitAnimated: ExitAnimated} & Pick<
-        RenderProps,
-        'onRippleAnimatedEnd'
-    >;
+type ProcessEntryAnimatedFinishedOptions = ProcessEventOptions &
+    Pick<RenderProps, 'active'> &
+    Pick<RenderProps, 'onRippleAnimatedEnd'> & {exitAnimated: ExitAnimated};
 
 type ProcessActiveOptions = Pick<RenderProps, 'active' | 'location' | 'onRippleAnimatedEnd'> &
     ProcessEventOptions;
+
+type RenderRipplesOptions = Omit<RippleProps, 'sequence'>;
 
 const processAddRipple = ({
     active,
@@ -104,9 +104,9 @@ const processStateChange = ({event, eventName, setState, active}: ProcessStateCh
     const nextEvent = {
         layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () => processPressOut(event as GestureResponderEvent, {setState, active}),
-    };
+    } as Record<EventName, () => void>;
 
-    nextEvent[eventName as keyof typeof nextEvent]?.();
+    nextEvent[eventName]?.();
 };
 
 const processRippleExit = ({setState, onRippleAnimatedEnd}: ProcessRippleExitOptions) => {
@@ -118,9 +118,9 @@ const processRippleExit = ({setState, onRippleAnimatedEnd}: ProcessRippleExitOpt
     });
 };
 
-const processRippleEntryAnimatedEnd = (
+const processEntryAnimatedFinished = (
     sequence: string,
-    {active, setState, onRippleAnimatedEnd, exitAnimated}: ProcessRippleEntryAnimatedEndOptions,
+    {active, setState, onRippleAnimatedEnd, exitAnimated}: ProcessEntryAnimatedFinishedOptions,
 ) => {
     if (typeof active === 'boolean') {
         return setState(draft => {
@@ -152,7 +152,7 @@ const processActive = ({active, location, setState, onRippleAnimatedEnd}: Proces
 
 const renderRipples = (
     rippleSequence: RippleSequence,
-    {touchableLayout, ...props}: Omit<RippleProps, 'sequence'>,
+    {touchableLayout, ...props}: RenderRipplesOptions,
 ) => {
     if (typeof touchableLayout?.width !== 'number' || touchableLayout?.width === 0) {
         return <></>;
@@ -194,9 +194,9 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
     );
 
     const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
-    const onEntryAnimatedEnd = useCallback(
+    const onEntryAnimatedFinished = useCallback(
         (sequence: string, exitAnimated: ExitAnimated) =>
-            processRippleEntryAnimatedEnd(sequence, {
+            processEntryAnimatedFinished(sequence, {
                 active,
                 exitAnimated,
                 onRippleAnimatedEnd,
@@ -210,11 +210,12 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
             renderRipples(rippleSequence, {
                 active,
                 centered,
-                onEntryAnimatedEnd,
+                id,
+                onEntryAnimatedFinished,
                 touchableLayout: layout,
                 underlayColor,
             }),
-        [active, centered, layout, onEntryAnimatedEnd, rippleSequence, underlayColor],
+        [active, centered, id, layout, onEntryAnimatedFinished, rippleSequence, underlayColor],
     );
 
     useEffect(() => {

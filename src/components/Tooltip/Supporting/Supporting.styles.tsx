@@ -14,7 +14,7 @@ interface ContainerProps extends Pick<RenderProps, 'type' | 'supportingPosition'
 type InnerProps = Pick<RenderProps, 'type' | 'supportingPosition'>;
 export const Container = styled.Pressable<ContainerProps>`
     position: absolute;
-    z-index: 5120;
+    z-index: 16384;
 
     ${({
         containerHeight = 0,
@@ -58,7 +58,7 @@ export const Container = styled.Pressable<ContainerProps>`
             height: ${theme.adaptSize(theme.spacing.none)}px;
             overflow: hidden;
             padding: ${theme.adaptSize(theme.spacing.none)}px;
-            z-index: -1024;
+            z-index: -16384;
         `}
 `;
 

@@ -7,7 +7,7 @@ export const Container = styled.View<ContainerProps>`
     height: 100%;
     position: absolute;
     width: 100%;
-    z-index: 4096;
+    z-index: 8192;
 
     ${({theme}) =>
         css`
@@ -21,6 +21,6 @@ export const Container = styled.View<ContainerProps>`
             height: ${theme.adaptSize(theme.spacing.none)}px;
             overflow: hidden;
             pointer-events: none;
-            z-index: -4096;
+            z-index: -8192;
         `}
 `;

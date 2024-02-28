@@ -35,7 +35,7 @@ export const Container = styled(Shape)<ContainerProps>`
                       0.12,
                   )};
 
-            z-index: ${activeRipple ? -1 : 2048};
+            z-index: ${activeRipple ? -1 : 1024};
         `;
     }};
 `;

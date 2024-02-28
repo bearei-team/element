@@ -5,8 +5,8 @@ import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTiming.utils';
 import {RenderProps} from './SupportingBase';
 
-export type UseAnimatedOptions = Pick<RenderProps, 'visible'>;
-export interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
+type UseAnimatedOptions = Pick<RenderProps, 'visible'>;
+interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
     opacityAnimated: Animated.Value;
 }
 

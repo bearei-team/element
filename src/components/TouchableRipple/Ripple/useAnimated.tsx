@@ -9,7 +9,7 @@ import {
 } from '../../../utils/animatedTiming.utils';
 import {RenderProps} from './RippleBase';
 
-interface UseAnimatedOptions extends Pick<RenderProps, 'onEntryAnimatedEnd' | 'active'> {
+interface UseAnimatedOptions extends Pick<RenderProps, 'onEntryAnimatedFinished' | 'active'> {
     minDuration: number;
     sequence: string;
 }
@@ -22,7 +22,7 @@ interface CreateEntryAnimatedOptions extends Pick<UseAnimatedOptions, 'minDurati
 type CreateExitAnimatedOptions = Omit<CreateEntryAnimatedOptions, 'minDuration'>;
 type ProcessAnimatedTimingOptions = CreateEntryAnimatedOptions &
     CreateExitAnimatedOptions &
-    Pick<UseAnimatedOptions, 'onEntryAnimatedEnd' | 'sequence'>;
+    Pick<UseAnimatedOptions, 'onEntryAnimatedFinished' | 'sequence'>;
 
 const createEntryAnimated =
     (
@@ -76,7 +76,7 @@ const processAnimatedTiming = (
     {
         active,
         minDuration,
-        onEntryAnimatedEnd,
+        onEntryAnimatedFinished,
         opacityAnimated,
         scaleAnimated,
         sequence,
@@ -95,13 +95,13 @@ const processAnimatedTiming = (
         scaleAnimated,
     });
 
-    entryAnimated(() => onEntryAnimatedEnd?.(sequence, exitAnimated));
+    entryAnimated(() => onEntryAnimatedFinished?.(sequence, exitAnimated));
 };
 
 export const useAnimated = ({
     active,
     minDuration,
-    onEntryAnimatedEnd,
+    onEntryAnimatedFinished,
     sequence,
 }: UseAnimatedOptions) => {
     const [opacityAnimated] = useAnimatedValue(1);
@@ -122,7 +122,7 @@ export const useAnimated = ({
         processAnimatedTiming(animatedTiming, {
             active,
             minDuration,
-            onEntryAnimatedEnd,
+            onEntryAnimatedFinished,
             opacityAnimated,
             scaleAnimated,
             sequence,
@@ -131,7 +131,7 @@ export const useAnimated = ({
         active,
         animatedTiming,
         minDuration,
-        onEntryAnimatedEnd,
+        onEntryAnimatedFinished,
         opacityAnimated,
         scaleAnimated,
         sequence,

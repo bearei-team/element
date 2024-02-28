@@ -12,7 +12,7 @@ interface UseAnimatedOptions extends Pick<RenderProps, 'type' | 'error' | 'disab
     state: State;
 }
 
-interface ProcessEnabledOptions extends Pick<RenderProps, 'error'> {
+interface ProcessEnabledOptions extends Pick<UseAnimatedOptions, 'error'> {
     activeIndicatorAnimated: Animated.Value;
     animatedTiming: AnimatedTiming;
     colorAnimated: Animated.Value;

@@ -10,15 +10,12 @@ import {
 import {RenderProps} from './SheetBase';
 
 type UseAnimatedOptions = Pick<RenderProps, 'visible' | 'position' | 'onExitAnimatedFinished'>;
-
 interface ScreenAnimatedOptions extends Pick<UseAnimatedOptions, 'onExitAnimatedFinished'> {
     containerAnimated: Animated.Value;
     innerAnimated: Animated.Value;
 }
 
-interface ProcessAnimatedTimingOptions extends ScreenAnimatedOptions {
-    visible?: boolean;
-}
+type ProcessAnimatedTimingOptions = ScreenAnimatedOptions & Pick<UseAnimatedOptions, 'visible'>;
 
 const enterScreen = (
     animatedTiming: AnimatedTiming,
