@@ -65,20 +65,9 @@ interface ProcessEventOptions {
 
 type ProcessChangeTextOptions = Pick<RenderProps, 'data' | 'onChangeText'> & ProcessEventOptions;
 type ProcessEmitOptions = Pick<InitialState, 'status'> & Pick<RenderProps, 'id'>;
-type ProcessListActiveOptions = Pick<RenderProps, 'data' | 'onActive'> & ProcessEventOptions;
 type ProcessListVisibleOptions = ProcessEventOptions & Pick<InitialState, 'state'>;
 type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
     OnStateChangeOptions;
-
-const processListActive = ({data, setState, onActive}: ProcessListActiveOptions, key?: string) => {
-    const value = data?.find(datum => datum.key === key)?.headline;
-
-    typeof value === 'string' &&
-        setState(draft => {
-            draft.value = value;
-            onActive?.(key);
-        });
-};
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
 const processStateChange = (
@@ -174,7 +163,7 @@ const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
 export const TextFieldBase: FC<TextFieldBaseProps> = ({
     data: dataSources,
     leading,
-    onActive: onActiveSource,
+    onActive,
     placeholder,
     ref,
     render,
@@ -210,11 +199,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         ...textInputProps,
         onStateChange,
     });
-
-    const onActive = useCallback(
-        (key?: string) => processListActive({data, setState, onActive: onActiveSource}, key),
-        [data, onActiveSource, setState],
-    );
 
     const onChangeText = useCallback(
         (text: string) => processChangeText(text, {data: dataSources, setState}),

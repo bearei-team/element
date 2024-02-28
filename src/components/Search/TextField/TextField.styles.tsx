@@ -33,6 +33,7 @@ export const Container = styled(Shape)<ContainerProps>`
 export const Header = styled.Pressable`
     align-items: center;
     align-self: stretch;
+    cursor: text;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
