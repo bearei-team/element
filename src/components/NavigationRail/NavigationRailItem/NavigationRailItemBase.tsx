@@ -152,12 +152,12 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
 
     const [onEvent] = useOnEvent({...renderProps, disabled: false, onStateChange});
     const activeIconElement = useMemo(
-        () => cloneElement<IconProps>(activeIcon, {...iconLayout, eventName}),
+        () => cloneElement<IconProps>(activeIcon, {renderStyle: {...iconLayout}, eventName}),
         [activeIcon, eventName, iconLayout],
     );
 
     const iconElement = useMemo(
-        () => cloneElement<IconProps>(icon, {...iconLayout, eventName}),
+        () => cloneElement<IconProps>(icon, {renderStyle: {...iconLayout}, eventName}),
         [eventName, icon, iconLayout],
     );
 

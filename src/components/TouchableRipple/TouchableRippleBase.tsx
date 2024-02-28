@@ -173,8 +173,8 @@ const renderRipples = (
     return Object.entries(rippleSequence).map(([sequence, {touchableLocation}]) => (
         <Ripple
             {...props}
-            key={sequence}
             centered={typeof centered === 'boolean' ? centered : !touchableLocation?.locationX}
+            key={sequence}
             sequence={sequence}
             touchableLayout={touchableLayout}
             touchableLocation={touchableLocation}
@@ -189,8 +189,8 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
     disabled,
     onRippleAnimatedEnd,
     render,
-    underlayColor,
     touchableLocation,
+    underlayColor,
     ...renderProps
 }) => {
     const [{rippleSequence, layout}, setState] = useImmer<InitialState>({

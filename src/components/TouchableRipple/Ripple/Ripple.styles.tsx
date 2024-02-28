@@ -35,7 +35,14 @@ export const Container = styled(Shape)<ContainerProps>`
                       0.12,
                   )};
 
-            z-index: ${activeRipple ? -1 : 1024};
+            z-index: -1;
         `;
     }};
+
+    ${({active}) =>
+        typeof active === 'boolean' &&
+        !active &&
+        css`
+            z-index: ${-1024};
+        `};
 `;

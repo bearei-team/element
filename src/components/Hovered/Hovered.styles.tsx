@@ -9,7 +9,7 @@ interface ContainerProps extends Pick<RenderProps, 'underlayColor'> {
 export const Container = styled(Shape)<ContainerProps>`
     pointer-events: none;
     position: absolute;
-    z-index: 2048;
+    z-index: -1;
 
     ${({theme}) =>
         css`

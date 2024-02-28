@@ -10,10 +10,11 @@ interface NavigationDataSource extends NavigationRailItemProps {
     key?: string;
 }
 
-export interface NavigationRailProps
-    extends Partial<
-        ViewProps & RefAttributes<View> & Pick<NavigationRailItemProps, 'activeKey' | 'onActive'>
-    > {
+type BaseProps = Partial<
+    Pick<NavigationRailItemProps, 'activeKey' | 'onActive'> & ViewProps & RefAttributes<View>
+>;
+
+export interface NavigationRailProps extends BaseProps {
     block?: boolean;
     data?: NavigationDataSource[];
     defaultActiveKey?: string;
@@ -40,8 +41,8 @@ interface RenderItemOptions {
     activeKey?: string;
     block?: boolean;
     data: ListDataSource[];
-    onActive: (key?: string) => void;
     id: string;
+    onActive: (value?: string) => void;
 }
 
 type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
@@ -66,15 +67,15 @@ const renderItems = (
 const processFAB = (fab?: React.JSX.Element) =>
     fab ? cloneElement<FABProps>(fab, {elevated: false, size: 'medium'}) : undefined;
 
-const processActive = ({onActive, setState}: ProcessActiveOptions, key?: string) =>
-    typeof key === 'string' &&
+const processActive = ({onActive, setState}: ProcessActiveOptions, value?: string) =>
+    typeof value === 'string' &&
     setState(draft => {
-        if (draft.activeKey === key) {
+        if (draft.activeKey === value) {
             return;
         }
 
-        draft.activeKey = key;
-        onActive?.(key);
+        draft.activeKey = value;
+        onActive?.(value);
     });
 
 const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSource[]) =>
@@ -101,7 +102,7 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
 
     const id = useId();
     const onActive = useCallback(
-        (key?: string) => processActive({onActive: renderProps.onActive, setState}, key),
+        (value?: string) => processActive({onActive: renderProps.onActive, setState}, value),
         [renderProps.onActive, setState],
     );
 

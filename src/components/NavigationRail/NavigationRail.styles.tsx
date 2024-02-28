@@ -30,9 +30,9 @@ export const Fab = styled.View`
 
     ${({theme}) =>
         css`
-            width: ${theme.adaptSize(theme.spacing.small * 7)}px;
             height: ${theme.adaptSize(theme.spacing.small * 7)}px;
-            margin-top: ${theme.adaptSize(theme.spacing.extraSmall)}px;
             margin-bottom: ${theme.adaptSize(theme.spacing.small * 8 - theme.spacing.extraSmall)}px;
+            margin-top: ${theme.adaptSize(theme.spacing.extraSmall)}px;
+            width: ${theme.adaptSize(theme.spacing.small * 7)}px;
         `};
 `;

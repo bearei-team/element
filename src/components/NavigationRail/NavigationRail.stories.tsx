@@ -11,7 +11,6 @@ export default {
 export const Rail: StoryObj<NavigationRailProps> = {
     args: {
         defaultActiveKey: 'A',
-
         fab: <FAB icon={<Icon />} />,
         data: [
             {
