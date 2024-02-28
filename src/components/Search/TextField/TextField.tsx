@@ -4,8 +4,8 @@ import {Divider} from '../../Divider/Divider';
 import {Hovered} from '../../Hovered/Hovered';
 import {Icon} from '../../Icon/Icon';
 import {List} from '../../List/List';
-import {Container, Content, Header, Leading, Trailing} from './Inner.styles';
-import {InnerBase, InnerProps, RenderProps} from './InnerBase';
+import {Container, Content, Header, Leading, Trailing} from './TextField.styles';
+import {RenderProps, TextFieldBase, TextFieldProps} from './TextFieldBase';
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const render = ({
@@ -64,7 +64,7 @@ const render = ({
                     underlayColor={underlayColor}
                 />
             </Header>
-            <Divider />
+            <Divider size="large" block={true} />
             <List
                 activeKey={activeKey}
                 data={data}
@@ -75,9 +75,9 @@ const render = ({
     );
 };
 
-const ForwardRefInner = forwardRef<TextInput, InnerProps>((props, ref) => (
-    <InnerBase {...props} ref={ref} render={render} />
+const ForwardRefInner = forwardRef<TextInput, TextFieldProps>((props, ref) => (
+    <TextFieldBase {...props} ref={ref} render={render} />
 ));
 
-export const Inner: FC<InnerProps> = memo(ForwardRefInner);
-export type {InnerProps};
+export const TextField: FC<TextFieldProps> = memo(ForwardRefInner);
+export type {TextFieldProps};

@@ -71,7 +71,7 @@ const render = ({
 
                         {footer && (
                             <>
-                                <Divider size="large" />
+                                <Divider size="large" block={true} />
                                 <Footer testID={`sideSheet__footer--${id}`}>
                                     <PrimaryButton testID={`sideSheet__primaryButton--${id}`}>
                                         {primaryButton}

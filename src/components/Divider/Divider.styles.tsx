@@ -3,7 +3,7 @@ import styled, {css} from 'styled-components/native';
 import {Typography} from '../Common/Common.styles';
 import {RenderProps} from './DividerBase';
 
-type ContainerProps = Pick<RenderProps, 'layout' | 'size' | 'renderStyle'>;
+type ContainerProps = Pick<RenderProps, 'layout' | 'size' | 'renderStyle' | 'block'>;
 
 export const Container = styled(View)<ContainerProps>`
     align-items: flex-start;
@@ -19,13 +19,14 @@ export const Container = styled(View)<ContainerProps>`
         const {width, height} = renderStyle;
         const containerLayout = {
             horizontal: css`
+                max-height: ${theme.adaptSize(1)}px;
                 min-width: ${theme.adaptSize(theme.spacing.small * 40)}px;
                 width: ${typeof width === 'number' ? `${theme.adaptSize(width)}px` : 'auto'};
             `,
             vertical: css`
                 height: ${typeof height === 'number' ? `${theme.adaptSize(height)}px` : 'auto'};
+                max-width: ${theme.adaptSize(1)}px;
                 min-height: ${theme.adaptSize(theme.spacing.small * 15)}px;
-                width: ${theme.adaptSize(1)}px;
             `,
         };
 
@@ -57,6 +58,13 @@ export const Container = styled(View)<ContainerProps>`
 
         return containerSize[size];
     }};
+
+    ${({block}) =>
+        block &&
+        css`
+            align-self: stretch;
+            flex: 1;
+        `}
 `;
 
 export const Content = styled.View`

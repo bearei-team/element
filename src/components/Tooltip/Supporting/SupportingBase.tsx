@@ -49,7 +49,7 @@ interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-type ProcessEmitOptions = Pick<InitialState, 'status'> & Pick<RenderProps, 'visible' | 'id'>;
+type ProcessEmitOptions = Pick<InitialState, 'status'> & Pick<RenderProps, 'id'>;
 type ProcessStateChangeOptions = OnStateChangeOptions &
     ProcessEventOptions &
     Pick<SupportingProps, 'onVisible'>;

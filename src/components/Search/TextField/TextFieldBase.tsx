@@ -1,30 +1,41 @@
-import {FC, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
+import {FC, RefAttributes, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
 import {
     Animated,
     LayoutRectangle,
-    ScaledSize,
+    PressableProps,
     TextInput,
+    TextInputProps,
     TextStyle,
     View,
     ViewStyle,
+    useWindowDimensions,
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../../context/ModalProvider';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../../hooks/useOnEvent';
 import {ComponentStatus, EventName, State} from '../../Common/interface';
-import {ListDataSource} from '../../List/List';
+import {ListDataSource, ListProps} from '../../List/List';
 import {Input} from '../../TextField/TextField.styles';
-import {SearchProps} from '../Search';
-import {TextField} from './Inner.styles';
+import {TextField} from './TextField.styles';
 import {useAnimated} from './useAnimated';
 
-export interface InnerProps extends SearchProps {
+type BaseProps = Partial<
+    TextInputProps &
+        Pick<ListProps, 'activeKey' | 'onActive' | 'data' | 'defaultActiveKey'> &
+        PressableProps &
+        RefAttributes<TextInput>
+>;
+
+export interface TextFieldProps extends BaseProps {
     containerCurrent: View | null;
-    windowDimensions: ScaledSize;
+    disabled?: boolean;
+    leading?: React.JSX.Element;
+    listVisible?: boolean;
+    trailing?: React.JSX.Element;
 }
 
-export interface RenderProps extends Omit<InnerProps, 'containerCurrent' | 'windowDimensions'> {
+export interface RenderProps extends Omit<TextFieldProps, 'containerCurrent'> {
     containerLayout: LayoutRectangle & {pageX: number; pageY: number};
     eventName: EventName;
     input: React.JSX.Element;
@@ -33,16 +44,16 @@ export interface RenderProps extends Omit<InnerProps, 'containerCurrent' | 'wind
     underlayColor: string;
 }
 
-interface InnerBaseProps extends InnerProps {
+interface TextFieldBaseProps extends TextFieldProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-type RenderTextInputOptions = Omit<InnerProps, 'containerCurrent' | 'windowDimensions'>;
+type RenderTextInputOptions = Omit<TextFieldProps, 'containerCurrent' | 'windowDimensions'>;
 interface InitialState {
     containerLayout: LayoutRectangle & {pageX: number; pageY: number};
     data: ListDataSource[];
     eventName: EventName;
-    listVisible: boolean;
+    listVisible?: boolean;
     state: State;
     status: ComponentStatus;
     value?: string;
@@ -53,46 +64,23 @@ interface ProcessEventOptions {
 }
 
 type ProcessChangeTextOptions = Pick<RenderProps, 'data' | 'onChangeText'> & ProcessEventOptions;
-interface ProcessEmitOptions extends ProcessEventOptions {
-    id: string;
-}
-
+type ProcessEmitOptions = Pick<InitialState, 'status'> & Pick<RenderProps, 'id'>;
 type ProcessListActiveOptions = Pick<RenderProps, 'data' | 'onActive'> & ProcessEventOptions;
-type ProcessListVisibleOptions = ProcessEventOptions & {state: State};
+type ProcessListVisibleOptions = ProcessEventOptions & Pick<InitialState, 'state'>;
 type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
     OnStateChangeOptions;
 
-type ProcessStateOptions = ProcessEventOptions & Pick<OnStateChangeOptions, 'eventName'>;
-
 const processListActive = ({data, setState, onActive}: ProcessListActiveOptions, key?: string) => {
-    const nextValue = data?.find(datum => datum.key === key)?.headline;
+    const value = data?.find(datum => datum.key === key)?.headline;
 
-    nextValue &&
+    typeof value === 'string' &&
         setState(draft => {
-            draft.value = nextValue;
+            draft.value = value;
             onActive?.(key);
         });
 };
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
-const processState = (state: State, {eventName, setState}: ProcessStateOptions) => {
-    setState(draft => {
-        if (draft.state === 'focused') {
-            if (eventName !== 'blur') {
-                return;
-            }
-
-            draft.eventName = eventName;
-            draft.state = state;
-
-            return;
-        }
-
-        draft.eventName = eventName;
-        draft.state = state;
-    });
-};
-
 const processStateChange = (
     state: State,
     {eventName, ref, setState}: ProcessStateChangeOptions,
@@ -100,11 +88,18 @@ const processStateChange = (
     const nextEvent = {
         focus: () => processFocus(ref),
         pressOut: () => processFocus(ref),
-    };
+    } as Record<EventName, () => void>;
 
-    nextEvent[eventName as keyof typeof nextEvent]?.();
+    nextEvent[eventName]?.();
 
-    processState(state, {eventName, setState});
+    setState(draft => {
+        if (draft.state === 'focused' && eventName !== 'blur') {
+            return;
+        }
+
+        draft.eventName = eventName;
+        draft.state = state;
+    });
 };
 
 const processChangeText = (
@@ -122,11 +117,13 @@ const processChangeText = (
         : [];
 
     setState(draft => {
-        draft.data = matchData;
-        draft.value = text;
-    });
+        if (draft.value === text) {
+            return;
+        }
 
-    onChangeText?.(text);
+        draft.data = matchData;
+        onChangeText?.(text);
+    });
 };
 
 const processListVisible = (
@@ -154,11 +151,8 @@ const processContainerLayout = (containerCurrent: View | null, {setState}: Proce
         }),
     );
 
-const processEmit = (element: React.JSX.Element, {id, setState}: ProcessEmitOptions) =>
-    setState(draft => {
-        draft.status === 'succeeded' &&
-            emitter.emit('modal', {id: `search__inner--${id}`, element});
-    });
+const processEmit = (element: React.JSX.Element, {id, status}: ProcessEmitOptions) =>
+    status === 'succeeded' && emitter.emit('modal', {id: `search__TextField--${id}`, element});
 
 const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
     <TextField testID={`search__control--${id}`}>
@@ -173,12 +167,11 @@ const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
              */
             // @ts-ignore
             enableFocusRing={false}
-            textAlignVertical="center"
         />
     </TextField>
 );
 
-export const InnerBase: FC<InnerBaseProps> = ({
+export const TextFieldBase: FC<TextFieldBaseProps> = ({
     data: dataSources,
     leading,
     onActive: onActiveSource,
@@ -187,20 +180,19 @@ export const InnerBase: FC<InnerBaseProps> = ({
     render,
     trailing,
     containerCurrent,
-    windowDimensions,
     ...textInputProps
 }) => {
-    const [{data, eventName, containerLayout, listVisible, state, value}, setState] =
+    const [{status, data, eventName, containerLayout, listVisible, state}, setState] =
         useImmer<InitialState>({
             data: [],
             eventName: 'none',
             containerLayout: {} as InitialState['containerLayout'],
-            listVisible: false,
+            listVisible: undefined,
             state: 'enabled',
             status: 'idle',
-            value: undefined,
         });
 
+    const windowDimensions = useWindowDimensions();
     const [{height}] = useAnimated({listVisible});
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
@@ -229,11 +221,6 @@ export const InnerBase: FC<InnerBaseProps> = ({
         [dataSources, setState],
     );
 
-    const onContainerLayout = useCallback(
-        () => processContainerLayout(containerCurrent, {setState}),
-        [containerCurrent, setState],
-    );
-
     const input = useMemo(
         () =>
             renderTextInput({
@@ -245,7 +232,6 @@ export const InnerBase: FC<InnerBaseProps> = ({
                 placeholder,
                 placeholderTextColor,
                 ref: inputRef,
-                value,
             }),
         [
             id,
@@ -256,11 +242,10 @@ export const InnerBase: FC<InnerBaseProps> = ({
             placeholder,
             placeholderTextColor,
             textInputProps,
-            value,
         ],
     );
 
-    const inner = useMemo(
+    const textField = useMemo(
         () =>
             render({
                 containerLayout,
@@ -300,12 +285,12 @@ export const InnerBase: FC<InnerBaseProps> = ({
     }, [data, setState, state]);
 
     useEffect(() => {
-        onContainerLayout();
-    }, [onContainerLayout, windowDimensions]);
+        processContainerLayout(containerCurrent, {setState});
+    }, [containerCurrent, setState, windowDimensions]);
 
     useEffect(() => {
-        processEmit(inner, {id, setState});
-    }, [id, inner, setState]);
+        processEmit(textField, {id, status});
+    }, [id, textField, status]);
 
     return <></>;
 };

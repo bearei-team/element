@@ -21,7 +21,7 @@ const processAnimatedTiming = (
     );
 
 export const useAnimated = ({listVisible}: UseAnimatedOptions) => {
-    const [heightAnimated] = useAnimatedValue(0);
+    const [heightAnimated] = useAnimatedValue(listVisible ? 1 : 0);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
     const height = heightAnimated.interpolate({

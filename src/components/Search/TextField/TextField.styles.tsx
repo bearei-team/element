@@ -90,6 +90,9 @@ export const Input = styled(TextInput)`
         font-style: ${theme.typography.body.large.style};
         font-weight: ${theme.typography.body.large.weight};
         letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
+        line-height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
+        min-height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
+        padding: ${theme.spacing.none}px;
     `};
 `;
 

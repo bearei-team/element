@@ -7,6 +7,7 @@ export interface DividerProps extends Partial<ViewProps & RefAttributes<View>> {
     renderStyle?: {width?: number; height?: number};
     size?: Size;
     subheader?: string;
+    block?: boolean;
 }
 
 export type RenderProps = DividerProps;

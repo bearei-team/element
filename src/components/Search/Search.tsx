@@ -1,15 +1,15 @@
 import {FC, forwardRef, memo} from 'react';
 import {TextInput} from 'react-native';
-import {Inner} from './Inner/Inner';
 import {Container} from './Search.styles';
 import {RenderProps, SearchBase, SearchProps} from './SearchBase';
+import {TextField} from './TextField/TextField';
 
-const render = ({containerRef, id, onEvent, status, ...innerProps}: RenderProps) => {
+const render = ({containerRef, id, onEvent, status, ...textFieldProps}: RenderProps) => {
     const {onLayout} = onEvent;
 
     return (
         <Container testID={`search--${id}`} ref={containerRef} onLayout={onLayout}>
-            {status === 'succeeded' && <Inner {...innerProps} />}
+            {status === 'succeeded' && <TextField {...textFieldProps} id={id} />}
         </Container>
     );
 };
