@@ -33,7 +33,7 @@ export const FormA: FC<FormProps> = () => {
         {
             name: 'age',
             renderControl,
-            rules: [{type: 'string'}],
+            rules: [{type: 'number'}],
             labelText: 'age',
         },
     ] as FormItemProps[];
@@ -42,14 +42,19 @@ export const FormA: FC<FormProps> = () => {
         console.info(value);
     };
 
-    const handleSubmit = () => {
+    const processSubmit = () => {
         form.submit();
+    };
+
+    const processReset = () => {
+        form.resetField();
     };
 
     return (
         <>
             <Form form={form} onFinish={processFinish} items={items} />
-            <Button labelText="submit" onPress={handleSubmit} />
+            <Button labelText="submit" onPress={processSubmit} />
+            <Button labelText="reset" type="outlined" onPress={processReset} />
         </>
     );
 };

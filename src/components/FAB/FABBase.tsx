@@ -102,13 +102,13 @@ const processDisabledElevation = (
     typeof disabled === 'boolean' &&
     elevated &&
     setState(draft => {
-        draft.status === 'succeeded' && (draft.elevation = disabled ? 0 : 3);
+        draft.elevation = disabled ? 0 : 3;
     });
 
 const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
     disabled &&
     setState(draft => {
-        draft.status === 'succeeded' && (draft.eventName = 'none');
+        draft.eventName = 'none';
     });
 
 const processInit = ({elevated, setState, disabled}: ProcessInitOptions) =>

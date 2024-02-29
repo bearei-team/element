@@ -3,6 +3,7 @@ import {FC, RefAttributes, useCallback, useEffect, useMemo} from 'react';
 import {View, ViewProps} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {ValidateOptions, validate} from '../../../utils/validate.utils';
+import {ComponentStatus} from '../../Common/interface';
 import {FieldError, FormStore, Store} from '../formStore';
 import {useFormContext} from '../useFormContext';
 
@@ -36,7 +37,7 @@ interface FormItemBaseProps extends FormItemProps {
 interface InitialState {
     shouldUpdate: Record<string, unknown>;
     signOut?: () => void;
-    value?: unknown;
+    status: ComponentStatus;
 }
 
 interface ProcessEventOptions {
@@ -82,19 +83,26 @@ const processInit = (
     signInField: FormStore<Store>['signInField'],
     {name, rules, validateFirst, validate: fieldValidate, setState}: ProcessInitOptions,
 ) => {
-    const {signOut} =
-        signInField({
-            onFormStoreChange: () =>
-                setState(draft => {
-                    draft.shouldUpdate = {};
-                }),
-            props: {name, rules, validateFirst},
-            touched: false,
-            validate: fieldValidate,
-        }) ?? {};
-
     setState(draft => {
+        if (draft.status !== 'idle') {
+            return;
+        }
+
+        const onFormStoreChange = () =>
+            setState(d => {
+                d.shouldUpdate = {};
+            });
+
+        const {signOut} =
+            signInField({
+                onFormStoreChange,
+                props: {name, rules, validateFirst},
+                touched: false,
+                validate: fieldValidate,
+            }) ?? {};
+
         draft.signOut = signOut;
+        draft.status = 'succeeded';
     });
 };
 
@@ -108,9 +116,10 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
     validateFirst,
     ...renderProps
 }) => {
-    const [{signOut}, setState] = useImmer<InitialState>({
+    const [{signOut, status}, setState] = useImmer<InitialState>({
         shouldUpdate: {},
         signOut: undefined,
+        status: 'idle',
     });
 
     const {getFieldError, getFieldValue, setFieldValue, signInField, getInitialValue} =
@@ -145,6 +154,10 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
     useEffect(() => {
         processInit(signInField, {name, rules, setState, validateFirst, validate: fieldValidate});
     }, [fieldValidate, name, rules, setState, signInField, validateFirst]);
+
+    if (status === 'idle') {
+        return <></>;
+    }
 
     return render({
         ...renderProps,
