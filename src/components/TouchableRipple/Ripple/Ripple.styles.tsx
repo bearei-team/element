@@ -35,7 +35,7 @@ export const Container = styled(Shape)<ContainerProps>`
                       0.12,
                   )};
 
-            z-index: -1;
+            z-index: 1;
         `;
     }};
 
