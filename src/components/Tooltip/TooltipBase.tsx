@@ -1,4 +1,4 @@
-import {FC, RefAttributes, useCallback, useEffect, useId, useRef} from 'react';
+import {FC, RefAttributes, useCallback, useEffect, useId, useMemo, useRef} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
@@ -105,7 +105,8 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
     const containerRef = useRef<View>(null);
     const id = useId();
     const ref = (refSource ?? containerRef) as React.RefObject<View>;
-    const debounceProcessVisible = debounce(processVisible, 100);
+
+    const debounceProcessVisible = useMemo(() => debounce(processVisible, 100), []);
     const onVisible = useCallback(
         (value?: boolean) => debounceProcessVisible({setState, onVisible: onVisibleSource}, value),
         [debounceProcessVisible, onVisibleSource, setState],

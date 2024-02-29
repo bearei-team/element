@@ -1,3 +1,4 @@
+import {Pressable} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../../Common/Common.styles';
 import {RenderProps} from './SupportingBase';
@@ -12,7 +13,8 @@ interface ContainerProps extends Pick<RenderProps, 'type' | 'supportingPosition'
 }
 
 type InnerProps = Pick<RenderProps, 'type' | 'supportingPosition'>;
-export const Container = styled.Pressable<ContainerProps>`
+export const Container = styled(Shape)<ContainerProps>`
+    overflow: hidden;
     position: absolute;
     z-index: 16384;
 
@@ -29,22 +31,23 @@ export const Container = styled.Pressable<ContainerProps>`
         const supportingPosition = {
             verticalStart: css`
                 left: ${containerPageX + containerWidth / 2}px;
-                padding-bottom: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-                top: ${containerPageY - layoutHeight}px;
+                top: ${containerPageY - layoutHeight - theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
             verticalEnd: css`
                 left: ${containerPageX + containerWidth / 2}px;
-                padding-top: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-                top: ${containerPageY + containerHeight}px;
+                top: ${containerPageY +
+                containerHeight +
+                theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
             horizontalStart: css`
-                left: ${containerPageX - layoutWidth}px;
-                padding-right: ${theme.adaptSize(theme.spacing.extraSmall)}px;
+                left: ${containerPageX - layoutWidth - theme.adaptSize(theme.spacing.extraSmall)}px;
                 top: ${containerPageY + containerHeight / 2}px;
             `,
             horizontalEnd: css`
-                left: ${containerPageX + containerWidth}px;
-                padding-left: ${theme.adaptSize(theme.spacing.extraSmall)}px;
+                left: ${containerPageX +
+                containerWidth +
+                theme.adaptSize(theme.spacing.extraSmall)}px;
+
                 top: ${containerPageY + containerHeight / 2}px;
             `,
         };
@@ -60,9 +63,7 @@ export const Container = styled.Pressable<ContainerProps>`
         `}
 `;
 
-export const Inner = styled(Shape)<InnerProps>`
-    pointer-events: none;
-
+export const Inner = styled(Pressable)<InnerProps>`
     ${({theme, type = 'plain'}) => {
         const supportingType = {
             plain: css`

@@ -21,7 +21,7 @@ const render = ({
     return (
         <AnimatedContainer
             {...containerProps}
-            {...onEvent}
+            shape="extraSmall"
             containerHeight={containerLayout.height}
             containerPageX={containerLayout.pageX}
             containerPageY={containerLayout.pageY}
@@ -34,11 +34,22 @@ const render = ({
             visible={visible}
             style={{
                 opacity: renderOpacity,
-                transform: supportingPosition?.startsWith('vertical')
-                    ? [{translateX: -(width / 2)}]
-                    : [{translateY: -(height / 2)}],
+
+                /**
+                 * HACK:
+                 *
+                 * The transform property in react-native-macos 0.72.* has various bugs that cause
+                 * problems when using transform to implement offsets. Here is a temporary implementation
+                 * using margin.
+                 */
+                ...(supportingPosition?.startsWith('vertical')
+                    ? {marginLeft: -(width / 2)}
+                    : {marginTop: -(height / 2)}),
+                // transform: supportingPosition?.startsWith('vertical')
+                //     ? [{translateX: -(width / 2)}]
+                //     : [{translateY: -(height / 2)}],
             }}>
-            <Inner testID={`tooltip__supportingInner--${id}`} shape="extraSmall">
+            <Inner {...onEvent} testID={`tooltip__supportingInner--${id}`}>
                 <SupportingText
                     ellipsizeMode="tail"
                     numberOfLines={1}
