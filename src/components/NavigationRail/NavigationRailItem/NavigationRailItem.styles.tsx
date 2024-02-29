@@ -1,10 +1,10 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {Typography} from '../../Common/Common.styles';
+import {Typography, TypographyProps} from '../../Common/Common.styles';
 import {RenderProps} from './NavigationRailItemBase';
 
 type ContainerProps = Pick<RenderProps, 'active'>;
-type LabelTextProps = Pick<RenderProps, 'active'>;
+type LabelTextProps = Pick<RenderProps, 'active'> & TypographyProps;
 type HeaderProps = Pick<RenderProps, 'block'>;
 
 export const Container = styled(View)<ContainerProps>`

@@ -1,6 +1,6 @@
 import {TextInput} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {Shape, Typography} from '../Common/Common.styles';
+import {Shape, Typography, TypographyProps} from '../Common/Common.styles';
 import {RenderProps} from './TextFieldBase';
 
 type HeaderInnerProps = Pick<RenderProps, 'type' | 'multiline'> & {
@@ -11,7 +11,7 @@ type HeaderInnerProps = Pick<RenderProps, 'type' | 'multiline'> & {
 type LabelTextProps = {
     scale?: boolean;
     leadingShow: boolean;
-};
+} & TypographyProps;
 
 interface ActiveIndicatorProps {
     renderStyle?: {
