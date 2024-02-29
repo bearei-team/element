@@ -9,8 +9,8 @@ import {useAnimated} from './useAnimated';
 
 type IconName = keyof (typeof filled)['svg'];
 type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
-export interface IconProps
-    extends Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps> {
+type BaseProps = Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps>;
+export interface IconProps extends BaseProps {
     eventName?: EventName;
     name?: IconName;
     renderStyle?: {width?: number; height?: number};
@@ -33,8 +33,8 @@ export const IconBase: FC<IconBaseProps> = ({
     fill,
     name = 'circle',
     render,
-    type = 'outlined',
     renderStyle,
+    type = 'outlined',
     ...renderProps
 }) => {
     const id = useId();
