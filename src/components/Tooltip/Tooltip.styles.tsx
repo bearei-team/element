@@ -2,11 +2,13 @@ import {Pressable} from 'react-native';
 import styled, {css} from 'styled-components/native';
 
 interface ContainerProps {
-    renderStyle: {height?: number; width?: number};
+    renderStyle?: {height?: number; width?: number};
 }
 
 export const Container = styled(Pressable)<ContainerProps>`
-    ${({renderStyle}) => {
+    position: relative;
+
+    ${({renderStyle = {}}) => {
         const {width = 0, height = 0} = renderStyle;
 
         return css`
@@ -14,4 +16,8 @@ export const Container = styled(Pressable)<ContainerProps>`
             width: ${width}px;
         `;
     }}
+`;
+
+export const Content = styled.View`
+    position: absolute;
 `;

@@ -1,7 +1,7 @@
 import {FC, forwardRef, memo} from 'react';
 import {View} from 'react-native';
 import {Supporting} from './Supporting/Supporting';
-import {Container} from './Tooltip.styles';
+import {Container, Content} from './Tooltip.styles';
 import {RenderProps, TooltipBase, TooltipProps} from './TooltipBase';
 
 /**
@@ -21,14 +21,18 @@ const render = ({
     ...containerProps
 }: RenderProps) => {
     const {width, height} = renderStyle;
+    const {onLayout, ...onContainerEvent} = onEvent;
 
     return (
         <Container
             {...containerProps}
-            {...onEvent}
+            {...onContainerEvent}
             testID={`tooltip--${id}`}
             renderStyle={{width, height}}>
-            {children}
+            <Content onLayout={onLayout} testID={`tooltip__content--${id}`}>
+                {children}
+            </Content>
+
             {typeof visible === 'boolean' && typeof supportingText === 'string' && (
                 <Supporting
                     containerCurrent={containerCurrent}

@@ -47,6 +47,7 @@ export const Shadow = styled(Shape)<ShadowProps>`
             shadow-color: ${theme.palette.shadow.shadow};
             shadow-offset: ${theme.adaptSize(theme.elevation[levelString][shadowString].x)}px
                 ${theme.adaptSize(theme.elevation[levelString][shadowString].y)}px;
+
             shadow-opacity: 1;
             shadow-radius: ${theme.adaptSize(theme.elevation[levelString][shadowString].blur)}px;
             z-index: ${shadowIndex};

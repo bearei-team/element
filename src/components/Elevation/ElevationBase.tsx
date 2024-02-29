@@ -21,7 +21,6 @@ export interface ElevationProps
 }
 
 export interface RenderProps extends ElevationProps {
-    onContentLayout?: (event: LayoutChangeEvent) => void;
     onEvent: OnEvent;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         height: number;

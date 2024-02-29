@@ -1,4 +1,4 @@
-import {FC, RefAttributes, cloneElement, useCallback, useEffect, useId, useRef} from 'react';
+import {FC, RefAttributes, useCallback, useEffect, useId, useRef} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
@@ -76,13 +76,13 @@ const processVisible = ({setState, onVisible}: ProcessVisibleOptions, visible?: 
 };
 
 const debounceProcessVisible = debounce(processVisible, 100);
-const processStateChange = ({eventName, setState}: ProcessStateChangeOptions) => {
+const processStateChange = ({event, eventName, setState}: ProcessStateChangeOptions) => {
+    eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
     ['hoverIn', 'hoverOut'].includes(eventName) &&
         debounceProcessVisible({setState}, eventName === 'hoverIn');
 };
 
 export const TooltipBase: FC<TooltipBaseProps> = ({
-    children,
     defaultVisible,
     onVisible: onVisibleSource,
     ref: refSource,
@@ -110,11 +110,6 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
         [setState],
     );
 
-    const onLayout = useCallback(
-        (event: LayoutChangeEvent) => processLayout(event, {setState}),
-        [setState],
-    );
-
     const [onEvent] = useOnEvent({...renderProps, onStateChange, disabled});
 
     useEffect(() => {
@@ -123,7 +118,6 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
 
     return render({
         ...renderProps,
-        children: cloneElement(children ?? <></>, {onLayout}),
         containerCurrent: ref.current,
         id,
         onEvent,
