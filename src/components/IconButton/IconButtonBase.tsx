@@ -11,13 +11,11 @@ import {useIcon} from './useIcon';
 import {useUnderlayColor} from './useUnderlayColor';
 
 type IconButtonType = 'filled' | 'outlined' | 'standard' | 'tonal';
-export interface IconButtonProps extends TouchableRippleProps {
+export interface IconButtonProps extends Omit<TooltipProps & TouchableRippleProps, 'type'> {
     defaultTooltipVisible?: boolean;
     fill?: string;
     icon?: React.JSX.Element;
     renderStyle?: {width?: number; height?: number};
-    supportingPosition?: TooltipProps['supportingPosition'];
-    supportingText?: string;
     tooltipVisible?: boolean;
     type?: IconButtonType;
 }

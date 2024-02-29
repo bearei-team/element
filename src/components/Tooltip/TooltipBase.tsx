@@ -3,9 +3,9 @@ import {
     Animated,
     LayoutChangeEvent,
     LayoutRectangle,
+    PressableProps,
     TextStyle,
     View,
-    ViewProps,
     ViewStyle,
 } from 'react-native';
 import {Updater, useImmer} from 'use-immer';
@@ -20,12 +20,13 @@ type BaseProps = Partial<
         'supportingPosition' | 'supportingText' | 'type' | 'visible' | 'onVisible'
     > &
         RefAttributes<View> &
-        ViewProps
+        PressableProps
 >;
 
-export interface TooltipProps extends BaseProps {
+export interface TooltipProps extends Omit<BaseProps, 'children' | 'disabled' | 'hitSlop'> {
     children?: React.JSX.Element;
     defaultVisible?: boolean;
+    disabled?: boolean;
 }
 
 export interface RenderProps extends TooltipProps {
@@ -87,6 +88,7 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
     ref: refSource,
     render,
     visible: visibleSource,
+    disabled = false,
     ...renderProps
 }) => {
     const [{layout, visible}, setState] = useImmer<InitialState>({
@@ -113,7 +115,7 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
         [setState],
     );
 
-    const [onEvent] = useOnEvent({...renderProps, onStateChange});
+    const [onEvent] = useOnEvent({...renderProps, onStateChange, disabled});
 
     useEffect(() => {
         onVisible(visibleSource ?? defaultVisible);

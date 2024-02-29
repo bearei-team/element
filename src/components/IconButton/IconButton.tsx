@@ -33,9 +33,10 @@ const render = ({
             accessibilityRole="button"
             testID={`iconButton--${id}`}
             renderStyle={{width: layoutWidth, height: layoutHeight}}>
-            <TouchableRipple disabled={disabled} shape={shape} underlayColor={underlayColor}>
+            <TouchableRipple shape={shape} underlayColor={underlayColor}>
                 <Tooltip
                     {...onEvent}
+                    disabled={disabled}
                     supportingPosition={supportingPosition}
                     supportingText={supportingText}
                     type="plain"
