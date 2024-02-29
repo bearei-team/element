@@ -4,10 +4,11 @@ import {ShapeProps} from '../Common/Common.styles';
 import {EventName} from '../Common/interface';
 import {useAnimated} from './useAnimated';
 
-export interface HoveredProps
-    extends Partial<
-        ViewProps & RefAttributes<Animated.LegacyRef<View>> & Pick<ShapeProps, 'shape'>
-    > {
+type BaseProps = Partial<
+    Pick<ShapeProps, 'shape'> & ViewProps & RefAttributes<Animated.LegacyRef<View>>
+>;
+
+export interface HoveredProps extends BaseProps {
     eventName?: EventName;
     opacities?: [number, number, number] | [number, number];
     renderStyle?: {width?: number; height?: number};

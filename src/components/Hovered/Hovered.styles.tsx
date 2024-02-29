@@ -18,7 +18,7 @@ export const Container = styled(Shape)<ContainerProps>`
         `}
 
     ${({underlayColor, renderStyle = {}}) => {
-        const {height, width} = renderStyle;
+        const {height = 0, width = 0} = renderStyle;
 
         return (
             underlayColor &&
