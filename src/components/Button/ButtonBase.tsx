@@ -136,13 +136,13 @@ const processDisabledElevation = ({type, setState}: ProcessInitOptions, disabled
     typeof disabled === 'boolean' &&
     type === 'elevated' &&
     setState(draft => {
-        draft.status === 'succeeded' && (draft.elevation = disabled ? 0 : 1);
+        draft.elevation = disabled ? 0 : 1;
     });
 
 const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
     disabled &&
     setState(draft => {
-        draft.status === 'succeeded' && (draft.eventName = 'none');
+        draft.eventName = 'none';
     });
 
 export const ButtonBase: FC<ButtonBaseProps> = ({
