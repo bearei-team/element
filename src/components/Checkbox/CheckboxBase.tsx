@@ -14,7 +14,7 @@ export interface CheckboxProps extends TouchableRippleProps {
     disabled?: boolean;
     error?: boolean;
     indeterminate?: boolean;
-    onActive?: (active?: boolean) => void;
+    onActive?: (value?: boolean) => void;
     type?: CheckboxType;
 }
 
@@ -61,7 +61,7 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
 const processActive = ({setState, active, indeterminate, onActive}: ProcessActiveOptions) =>
     typeof active === 'boolean' &&
     setState(draft => {
-        if (draft.status !== 'succeeded' || draft.active === active) {
+        if (draft.active === active) {
             return;
         }
 
@@ -84,25 +84,24 @@ const processStateChange = ({
     const nextEvent = {
         layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () => processActive({setState, onActive, active: !active, indeterminate}),
-    };
+    } as Record<EventName, () => void>;
 
-    nextEvent[eventName as keyof typeof nextEvent]?.();
+    nextEvent[eventName]?.();
 
     setState(draft => {
         draft.eventName = eventName;
     });
 };
 
-const processInit = ({active, indeterminate, setState}: ProcessInitOptions) =>
+const processInit = ({indeterminate, setState}: ProcessInitOptions) =>
     setState(draft => {
         if (draft.status !== 'idle') {
             return;
         }
 
-        if (typeof active === 'boolean') {
-            const defaultType = active ? 'selected' : 'unselected';
+        if (typeof draft.active === 'boolean') {
+            const defaultType = draft.active ? 'selected' : 'unselected';
 
-            draft.active = active;
             draft.type = indeterminate ? 'indeterminate' : defaultType;
         }
 
@@ -112,10 +111,6 @@ const processInit = ({active, indeterminate, setState}: ProcessInitOptions) =>
 const processIndeterminate = ({setState}: ProcessEventOptions, indeterminate?: boolean) =>
     typeof indeterminate === 'boolean' &&
     setState(draft => {
-        if (draft.status !== 'succeeded') {
-            return;
-        }
-
         if (indeterminate) {
             draft.active = indeterminate;
             draft.type = 'indeterminate';

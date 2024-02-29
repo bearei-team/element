@@ -28,7 +28,6 @@ export interface ChipProps extends TouchableRippleProps {
     fill?: string;
     icon?: React.JSX.Element;
     labelText?: string;
-    onActive?: (value?: boolean) => void;
     trailingIcon?: React.JSX.Element;
     type?: ChipType;
 }
@@ -62,7 +61,7 @@ interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-type ProcessActiveOptions = Pick<RenderProps, 'active' | 'onActive'> & ProcessEventOptions;
+type ProcessActiveOptions = Pick<RenderProps, 'active'> & ProcessEventOptions;
 type ProcessDisabledElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
 type ProcessElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
 type ProcessInitOptions = Pick<RenderProps, 'elevated' | 'active' | 'disabled'> &
@@ -162,7 +161,7 @@ const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
         draft.eventName = 'none';
     });
 
-const processActive = ({onActive, active, setState}: ProcessActiveOptions) => {
+const processActive = ({active, setState}: ProcessActiveOptions) => {
     typeof active === 'boolean' &&
         setState(draft => {
             if (draft.active === active) {
@@ -170,7 +169,6 @@ const processActive = ({onActive, active, setState}: ProcessActiveOptions) => {
             }
 
             draft.active = active;
-            onActive?.(active);
         });
 };
 
@@ -184,7 +182,6 @@ export const ChipBase: FC<ChipBaseProps> = ({
     labelText = 'Label',
     render,
     type = 'filter',
-    onActive: onActiveSource,
     ...renderProps
 }) => {
     const [{active, touchableLocation, elevation, eventName, layout, status}, setState] =
@@ -222,11 +219,10 @@ export const ChipBase: FC<ChipBaseProps> = ({
 
     useEffect(() => {
         processActive({
-            onActive: onActiveSource,
             active: activeSource ?? defaultActive,
             setState,
         });
-    }, [activeSource, defaultActive, onActiveSource, setState]);
+    }, [activeSource, defaultActive, setState]);
 
     useEffect(() => {
         processInit({elevated, setState});
