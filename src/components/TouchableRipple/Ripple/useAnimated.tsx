@@ -95,6 +95,10 @@ const processAnimatedTiming = (
         scaleAnimated,
     });
 
+    if (typeof active === 'boolean') {
+        return active ? entryAnimated() : exitAnimated();
+    }
+
     entryAnimated(() => onEntryAnimatedFinished?.(sequence, exitAnimated));
 };
 

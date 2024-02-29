@@ -52,12 +52,10 @@ export const Container = styled.Pressable<ContainerProps>`
         return supportingPosition[position];
     }}
 
-    ${({visible = false, theme}) =>
+    ${({visible = false}) =>
         !visible &&
         css`
-            height: ${theme.adaptSize(theme.spacing.none)}px;
-            overflow: hidden;
-            padding: ${theme.adaptSize(theme.spacing.none)}px;
+            pointer-events: none;
             z-index: -16384;
         `}
 `;

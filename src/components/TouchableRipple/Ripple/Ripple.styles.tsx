@@ -34,8 +34,6 @@ export const Container = styled(Shape)<ContainerProps>`
                       underlayColor ?? theme.palette.surface.surface,
                       0.12,
                   )};
-
-            z-index: 1;
         `;
     }};
 

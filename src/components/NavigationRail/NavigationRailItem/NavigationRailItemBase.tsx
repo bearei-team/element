@@ -161,6 +161,8 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
         [eventName, icon, iconLayout],
     );
 
+    console.info(iconElement);
+
     return render({
         ...renderProps,
         active,

@@ -51,7 +51,9 @@ interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-type ProcessStateChangeOptions = OnStateChangeOptions & ProcessEventOptions;
+type ProcessStateChangeOptions = OnStateChangeOptions &
+    ProcessEventOptions & {debounceProcessVisible: typeof processVisible};
+
 type ProcessVisibleOptions = ProcessEventOptions & Pick<RenderProps, 'onVisible'>;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
@@ -75,8 +77,12 @@ const processVisible = ({setState, onVisible}: ProcessVisibleOptions, visible?: 
         });
 };
 
-const debounceProcessVisible = debounce(processVisible, 100);
-const processStateChange = ({event, eventName, setState}: ProcessStateChangeOptions) => {
+const processStateChange = ({
+    event,
+    eventName,
+    setState,
+    debounceProcessVisible,
+}: ProcessStateChangeOptions) => {
     eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
     ['hoverIn', 'hoverOut'].includes(eventName) &&
         debounceProcessVisible({setState}, eventName === 'hoverIn');
@@ -99,15 +105,16 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
     const containerRef = useRef<View>(null);
     const id = useId();
     const ref = (refSource ?? containerRef) as React.RefObject<View>;
+    const debounceProcessVisible = debounce(processVisible, 100);
     const onVisible = useCallback(
         (value?: boolean) => debounceProcessVisible({setState, onVisible: onVisibleSource}, value),
-        [onVisibleSource, setState],
+        [debounceProcessVisible, onVisibleSource, setState],
     );
 
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange({...options, setState}),
-        [setState],
+            processStateChange({...options, setState, debounceProcessVisible}),
+        [debounceProcessVisible, setState],
     );
 
     const [onEvent] = useOnEvent({...renderProps, onStateChange, disabled});

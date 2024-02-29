@@ -32,6 +32,7 @@ export const Header = styled.View<HeaderProps>`
     justify-content: center;
     pointer-events: none;
     position: relative;
+    z-index: 1;
 
     ${({theme}) => css`
         height: ${theme.adaptSize(theme.spacing.extraLarge)}px;
