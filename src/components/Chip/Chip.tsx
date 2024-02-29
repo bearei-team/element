@@ -11,7 +11,7 @@ const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     active,
     activeColor,
-    activeLocation,
+    touchableLocation,
     disabled,
     elevation,
     eventName,
@@ -20,7 +20,6 @@ const render = ({
     labelText,
     onEvent,
     renderStyle,
-    rippleCentered,
     style,
     trailingIcon,
     type,
@@ -39,8 +38,7 @@ const render = ({
                     disabled={disabled}
                     shape={shape}
                     underlayColor={activeColor}
-                    centered={rippleCentered}
-                    activeLocation={activeLocation}>
+                    touchableLocation={touchableLocation}>
                     <AnimatedContent
                         {...contentProps}
                         iconShow={!!icon}

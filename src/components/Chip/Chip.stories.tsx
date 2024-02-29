@@ -10,6 +10,7 @@ export default {
 export const Filter: StoryObj<ChipProps> = {
     args: {
         labelText: 'Label',
+        defaultActive: true,
     },
 };
 
