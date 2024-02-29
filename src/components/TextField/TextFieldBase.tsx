@@ -1,4 +1,4 @@
-import {FC, RefAttributes, RefObject, useCallback, useId, useMemo, useRef} from 'react';
+import {FC, RefAttributes, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
@@ -192,14 +192,13 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         eventName: 'none',
         layout: {} as LayoutRectangle,
         state: 'enabled',
-        value: undefined,
+        value: '',
     });
 
     const id = useId();
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
     const theme = useTheme();
-    const filled = value ?? defaultValue ?? placeholder;
     const placeholderTextColor =
         state === 'disabled'
             ? theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38)
@@ -245,7 +244,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         disabled,
         error,
         eventName,
-        filled: !!filled,
+        filled: [valueSource, defaultValue, placeholder, value].some(item => item),
         state,
         type,
     });
@@ -254,7 +253,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         () =>
             renderTextInput({
                 ...textInputProps,
-                defaultValue,
                 disabled,
                 id,
                 multiline,
@@ -266,10 +264,9 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
                 placeholderTextColor,
                 ref: inputRef,
                 renderStyle: {color: inputColor},
-                value: valueSource,
+                value,
             }),
         [
-            defaultValue,
             disabled,
             id,
             inputColor,
@@ -282,9 +279,13 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
             placeholder,
             placeholderTextColor,
             textInputProps,
-            valueSource,
+            value,
         ],
     );
+
+    useEffect(() => {
+        onChangeText(valueSource ?? defaultValue);
+    }, [valueSource, defaultValue, onChangeText]);
 
     return render({
         contentSize,

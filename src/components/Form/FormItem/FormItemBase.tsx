@@ -1,9 +1,8 @@
 import {RuleItem, ValidateError} from 'async-validator';
-import {FC, RefAttributes, useCallback, useEffect, useId, useMemo} from 'react';
+import {FC, RefAttributes, useCallback, useEffect, useMemo} from 'react';
 import {View, ViewProps} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {ValidateOptions, validate} from '../../../utils/validate.utils';
-import {ComponentStatus} from '../../Common/interface';
 import {FieldError, FormStore, Store} from '../formStore';
 import {useFormContext} from '../useFormContext';
 
@@ -16,13 +15,14 @@ export interface ControlProps {
     value?: unknown;
 }
 
-export interface FormItemProps
-    extends Partial<
-        ViewProps &
-            RefAttributes<View> &
-            Pick<ValidateOptions, 'rules' | 'validateFirst'> &
-            Pick<ControlProps, 'labelText'>
-    > {
+type BaseProps = Partial<
+    ViewProps &
+        RefAttributes<View> &
+        Pick<ValidateOptions, 'rules' | 'validateFirst'> &
+        Pick<ControlProps, 'labelText'>
+>;
+
+export interface FormItemProps extends BaseProps {
     initialValue?: Store;
     name?: string;
     renderControl?: (props: ControlProps) => JSX.Element;
@@ -36,16 +36,16 @@ interface FormItemBaseProps extends FormItemProps {
 interface InitialState {
     shouldUpdate: Record<string, unknown>;
     signOut?: () => void;
-    status: ComponentStatus;
+    value?: unknown;
 }
 
 interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-interface ProcessValueChangeOptions extends Pick<FormStore<Store>, 'setFieldValue'> {
+type ProcessValueChangeOptions = Pick<FormStore<Store>, 'setFieldValue'> & {
     name?: string;
-}
+};
 
 interface ProcessValidateOptions {
     name?: string;
@@ -58,8 +58,9 @@ type ProcessInitOptions = ProcessEventOptions &
         validate: (value?: unknown) => Promise<FieldError | undefined>;
     };
 
-const processValueChange = (value: unknown, {name, setFieldValue}: ProcessValueChangeOptions) =>
+const processValueChange = ({name, setFieldValue}: ProcessValueChangeOptions, value?: unknown) => {
     name && setFieldValue({[name]: value});
+};
 
 const processValidate = async (
     value: unknown,
@@ -94,11 +95,11 @@ const processInit = (
 
     setState(draft => {
         draft.signOut = signOut;
-        draft.status = 'succeeded';
     });
 };
 
 export const FormItemBase: FC<FormItemBaseProps> = ({
+    id,
     labelText,
     name,
     render,
@@ -107,29 +108,18 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
     validateFirst,
     ...renderProps
 }) => {
-    const [{status, signOut}, setState] = useImmer<InitialState>({
+    const [{signOut}, setState] = useImmer<InitialState>({
         shouldUpdate: {},
         signOut: undefined,
-        status: 'idle',
     });
 
-    const {
-        getFieldError,
-        getFieldValue,
-        setFieldValue,
-        signInField,
-        getInitialValue,
-        isFieldTouched,
-    } = useFormContext();
+    const {getFieldError, getFieldValue, setFieldValue, signInField, getInitialValue} =
+        useFormContext();
+
     const errors = getFieldError(name)?.errors;
-    const value = getFieldValue(name);
-    const initValue = getInitialValue(name);
-    const touched = isFieldTouched(name);
-    const touchedValue = touched ? value : initValue;
-    const fieldValue = status === 'idle' ? initValue ?? value : touchedValue;
-    const id = useId();
+    const value = getFieldValue(name) ?? getInitialValue(name) ?? '';
     const onValueChange = useCallback(
-        (nextValue: unknown) => processValueChange(nextValue, {name, setFieldValue}),
+        (nextValue?: unknown) => processValueChange({name, setFieldValue}, nextValue),
         [name, setFieldValue],
     );
 
@@ -146,9 +136,9 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
                 id,
                 labelText,
                 onValueChange,
-                value: fieldValue,
+                value,
             }),
-        [errors, fieldValue, id, labelText, onValueChange, renderControl],
+        [renderControl, errors, id, labelText, onValueChange, value],
     );
 
     useEffect(() => () => signOut?.(), [signOut]);

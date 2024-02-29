@@ -27,13 +27,13 @@ export const FormA: FC<FormProps> = () => {
         {
             name: 'name',
             renderControl,
-            rules: [{type: 'number'}],
+            rules: [{type: 'string'}],
             labelText: 'name',
         },
         {
             name: 'age',
             renderControl,
-            rules: [{type: 'number'}],
+            rules: [{type: 'string'}],
             labelText: 'age',
         },
     ] as FormItemProps[];

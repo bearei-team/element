@@ -41,6 +41,8 @@ type ProcessCallbackOptions = Pick<
 > &
     Pick<FormStore<Store>, 'setCallback'>;
 
+type RenderChildrenOptions = Pick<FormBaseProps<{}>, 'items' | 'id'>;
+
 const processInit = ({initialValue, setInitialValue, setState}: ProcessInitOptions) =>
     setState(draft => {
         if (draft.status !== 'idle') {
@@ -58,9 +60,9 @@ const processCallback = ({
     setCallback,
 }: ProcessCallbackOptions) => setCallback({onFinish, onFinishFailed, onValueChange});
 
-const renderChildren = (status: ComponentStatus, {items}: Pick<FormBaseProps<{}>, 'items'>) =>
+const renderChildren = (status: ComponentStatus, {items, id}: RenderChildrenOptions) =>
     status === 'succeeded' &&
-    items?.map((item, index) => <FormItem {...item} key={item.name ?? index} />);
+    items?.map((item, index) => <FormItem {...item} key={item.name ?? index} id={id} />);
 
 export const FormBase = <T extends Store = Store>({
     form,
@@ -76,7 +78,7 @@ export const FormBase = <T extends Store = Store>({
     const [formStore] = useForm<T>(form);
     const {setCallback, setInitialValue} = formStore;
     const id = useId();
-    const children = useMemo(() => renderChildren(status, {items}), [items, status]);
+    const children = useMemo(() => renderChildren(status, {items, id}), [id, items, status]);
 
     useEffect(() => {
         processCallback({onFinish, onFinishFailed, onValueChange, setCallback});
