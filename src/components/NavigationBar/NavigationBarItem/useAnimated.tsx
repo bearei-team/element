@@ -3,7 +3,7 @@ import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTiming.utils';
-import {RenderProps} from './NavigationRailItemBase';
+import {RenderProps} from './NavigationBarItemBase';
 
 interface UseAnimatedOptions extends Pick<RenderProps, 'active' | 'type'> {
     defaultActive?: boolean;

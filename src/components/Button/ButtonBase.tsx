@@ -50,8 +50,10 @@ interface ProcessEventOptions {
 type ProcessContentLayoutOptions = Pick<RenderProps, 'block'> & ProcessEventOptions;
 type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
 type ProcessInitOptions = Pick<RenderProps, 'type' | 'disabled'> & ProcessEventOptions;
-type ProcessLayoutOptions = Pick<RenderProps, 'type' | 'block'> & ProcessEventOptions;
-type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
+type ProcessLayoutOptions = Pick<RenderProps, 'block'> & ProcessEventOptions;
+type ProcessStateChangeOptions = OnStateChangeOptions &
+    ProcessLayoutOptions &
+    ProcessElevationOptions;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) =>
     type === 'elevated' ? 1 : 0;

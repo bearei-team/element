@@ -4,7 +4,7 @@ import {Hovered} from '../Hovered/Hovered';
 import {Tooltip} from '../Tooltip/Tooltip';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon} from './IconButton.styles';
-import {IconButtonBase, IconButtonProps, RenderProps} from './IconButtonBase';
+import {IconButtonBase, IconButtonProps, IconButtonType, RenderProps} from './IconButtonBase';
 
 /**
  * TODO: Selected
@@ -70,4 +70,4 @@ const ForwardRefIconButton = forwardRef<View, IconButtonProps>((props, ref) => (
 ));
 
 export const IconButton: FC<IconButtonProps> = memo(ForwardRefIconButton);
-export type {IconButtonProps};
+export type {IconButtonProps, IconButtonType};

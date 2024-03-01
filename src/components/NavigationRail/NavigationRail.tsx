@@ -1,7 +1,12 @@
 import React, {FC, forwardRef, memo} from 'react';
 import {View} from 'react-native';
 import {Container, Destination, Fab} from './NavigationRail.styles';
-import {NavigationRailBase, NavigationRailProps, RenderProps} from './NavigationRailBase';
+import {
+    NavigationDataSource,
+    NavigationRailBase,
+    NavigationRailProps,
+    RenderProps,
+} from './NavigationRailBase';
 
 const render = ({id, children, fab, ...containerProps}: RenderProps) => (
     <Container {...containerProps} testID={`navigationRail--${id}`}>
@@ -15,4 +20,4 @@ const ForwardRefNavigationRail = forwardRef<View, NavigationRailProps>((props, r
 ));
 
 export const NavigationRail: FC<NavigationRailProps> = memo(ForwardRefNavigationRail);
-export type {NavigationRailProps};
+export type {NavigationDataSource, NavigationRailProps};

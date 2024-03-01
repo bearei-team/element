@@ -1,7 +1,7 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Typography, TypographyProps} from '../../Common/Common.styles';
-import {RenderProps} from './NavigationRailItemBase';
+import {RenderProps} from './NavigationBarItemBase';
 
 type ContainerProps = Pick<RenderProps, 'active'>;
 type LabelTextProps = Pick<RenderProps, 'active'> & TypographyProps;
@@ -12,10 +12,12 @@ export const Container = styled(View)<ContainerProps>`
     display: flex;
     flex-direction: column;
     justify-content: center;
+    flex: 1;
 
     ${({theme}) => css`
-        height: ${theme.adaptSize(theme.spacing.small * 7)}px;
-        width: ${theme.adaptSize(theme.spacing.small * 7)}px;
+        height: ${theme.adaptSize(theme.spacing.small * 10)}px;
+        max-width: ${theme.adaptSize(theme.spacing.small * 16)}px;
+        min-width: ${theme.adaptSize(theme.spacing.small * 9)}px;
     `}
 
     ${({theme, active}) =>
@@ -36,13 +38,13 @@ export const Header = styled.View<HeaderProps>`
 
     ${({theme}) => css`
         height: ${theme.adaptSize(theme.spacing.extraLarge)}px;
-        width: ${theme.adaptSize(theme.spacing.small * 7)}px;
+        width: ${theme.adaptSize(theme.spacing.small * 8)}px;
     `};
 
     ${({theme, type}) =>
         type === 'block' &&
         css`
-            height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+            height: ${theme.adaptSize(theme.spacing.small * 8)}px;
         `};
 `;
 

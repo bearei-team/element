@@ -10,7 +10,7 @@ import {useBorder} from './useBorder';
 import {useIcon} from './useIcon';
 import {useUnderlayColor} from './useUnderlayColor';
 
-type IconButtonType = 'filled' | 'outlined' | 'standard' | 'tonal';
+export type IconButtonType = 'filled' | 'outlined' | 'standard' | 'tonal';
 export interface IconButtonProps extends Omit<TooltipProps & TouchableRippleProps, 'type'> {
     defaultTooltipVisible?: boolean;
     fill?: string;

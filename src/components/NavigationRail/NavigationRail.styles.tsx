@@ -21,7 +21,6 @@ export const Destination = styled.View`
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.small)}px;
         padding: ${theme.adaptSize(theme.spacing.extraSmall + 1)}px;
-        width: ${theme.adaptSize(theme.spacing.small * 10)}px;
     `}
 `;
 

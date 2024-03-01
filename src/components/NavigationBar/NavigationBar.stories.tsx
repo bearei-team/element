@@ -1,17 +1,14 @@
 import {Meta, StoryObj} from '@storybook/react';
-import {FAB} from '../FAB/FAB';
-import {Icon} from '../Icon/Icon';
-import {NavigationRail, NavigationRailProps} from './NavigationRail';
+import {NavigationBar, NavigationBarProps} from './NavigationBar';
 
 export default {
-    title: 'components/NavigationRail',
-    component: NavigationRail,
-} as Meta<typeof NavigationRail>;
+    title: 'components/NavigationBar',
+    component: NavigationBar,
+} as Meta<typeof NavigationBar>;
 
-export const Rail: StoryObj<NavigationRailProps> = {
+export const Bar: StoryObj<NavigationBarProps> = {
     args: {
         defaultActiveKey: 'A',
-        fab: <FAB icon={<Icon />} />,
         data: [
             {
                 labelText: 'Label1',
@@ -29,11 +26,32 @@ export const Rail: StoryObj<NavigationRailProps> = {
     },
 };
 
-export const BlockRail: StoryObj<NavigationRailProps> = {
+export const BlockBar: StoryObj<NavigationBarProps> = {
     args: {
         defaultActiveKey: 'name',
-        fab: <FAB icon={<Icon />} />,
+        block: true,
+        data: [
+            {
+                labelText: 'Label1',
+                key: 'name',
+            },
+            {
+                labelText: 'Label2',
+                key: 'age',
+            },
+            {
+                labelText: 'Label3',
+                key: 'sex',
+            },
+        ],
+    },
+};
+
+export const TypeBlockBar: StoryObj<NavigationBarProps> = {
+    args: {
+        defaultActiveKey: 'name',
         type: 'block',
+        shape: 'full',
         data: [
             {
                 labelText: 'Label1',

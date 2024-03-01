@@ -2,20 +2,19 @@ import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Hovered} from '../../Hovered/Hovered';
 import {TouchableRipple} from '../../TouchableRipple/TouchableRipple';
-import {Container, Header, Icon, LabelText} from './NavigationRailItem.styles';
+import {Container, Header, Icon, LabelText} from './NavigationBarItem.styles';
 import {
-    NavigationRailItemBase,
-    NavigationRailItemProps,
-    NavigationRailType,
+    NavigationBarItemBase,
+    NavigationBarItemProps,
+    NavigationBarType,
     RenderProps,
-} from './NavigationRailItemBase';
+} from './NavigationBarItemBase';
 
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     active,
     activeColor,
     activeIcon,
-    type,
     eventName,
     icon,
     id,
@@ -23,6 +22,7 @@ const render = ({
     onEvent,
     renderStyle,
     touchableLocation,
+    type,
     underlayColor,
     ...containerProps
 }: RenderProps) => {
@@ -36,7 +36,7 @@ const render = ({
             accessibilityLabel={labelText}
             accessibilityRole="tab"
             active={active}
-            testID={`navigationRailItem--${id}`}>
+            testID={`NavigationBarItem--${id}`}>
             <TouchableRipple
                 {...onTouchableRippleEvent}
                 active={active}
@@ -44,8 +44,8 @@ const render = ({
                 shape={shape}
                 touchableLocation={touchableLocation}
                 underlayColor={activeColor}>
-                <Header testID={`navigationRailItem__header--${id}`} type={type}>
-                    <Icon testID={`navigationRailItem__icon--${id}`}>
+                <Header testID={`NavigationBarItem__header--${id}`} type={type}>
+                    <Icon testID={`NavigationBarItem__icon--${id}`}>
                         {active ? activeIcon : icon}
                     </Icon>
 
@@ -63,7 +63,7 @@ const render = ({
                     active={active}
                     size="medium"
                     style={{color, height: labelHeight}}
-                    testID={`navigationRailItem__labelText--${id}`}
+                    testID={`NavigationBarItem__labelText--${id}`}
                     type="label">
                     {labelText}
                 </AnimatedLabelText>
@@ -72,9 +72,9 @@ const render = ({
     );
 };
 
-const ForwardRefNavigationRailItem = forwardRef<View, NavigationRailItemProps>((props, ref) => (
-    <NavigationRailItemBase {...props} ref={ref} render={render} />
+const ForwardRefNavigationBarItem = forwardRef<View, NavigationBarItemProps>((props, ref) => (
+    <NavigationBarItemBase {...props} ref={ref} render={render} />
 ));
 
-export const NavigationRailItem: FC<NavigationRailItemProps> = memo(ForwardRefNavigationRailItem);
-export type {NavigationRailItemProps, NavigationRailType};
+export const NavigationBarItem: FC<NavigationBarItemProps> = memo(ForwardRefNavigationBarItem);
+export type {NavigationBarItemProps, NavigationBarType};

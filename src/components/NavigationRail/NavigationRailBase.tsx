@@ -4,18 +4,23 @@ import {Updater, useImmer} from 'use-immer';
 import {ComponentStatus} from '../Common/interface';
 import {FABProps} from '../FAB/FAB';
 import {ListDataSource} from '../List/List';
-import {NavigationRailItem, NavigationRailItemProps} from './NavigationRailItem/NavigationRailItem';
+import {
+    NavigationRailItem,
+    NavigationRailItemProps,
+    NavigationRailType,
+} from './NavigationRailItem/NavigationRailItem';
 
-interface NavigationDataSource extends NavigationRailItemProps {
+export interface NavigationDataSource extends NavigationRailItemProps {
     key?: string;
 }
 
 type BaseProps = Partial<
-    Pick<NavigationRailItemProps, 'activeKey' | 'onActive'> & ViewProps & RefAttributes<View>
+    Pick<NavigationRailItemProps, 'activeKey' | 'onActive' | 'type'> &
+        ViewProps &
+        RefAttributes<View>
 >;
 
 export interface NavigationRailProps extends BaseProps {
-    block?: boolean;
     data?: NavigationDataSource[];
     defaultActiveKey?: string;
     fab?: React.JSX.Element;
@@ -39,7 +44,7 @@ interface ProcessEventOptions {
 interface RenderItemOptions {
     active?: boolean;
     activeKey?: string;
-    block?: boolean;
+    type?: NavigationRailType;
     data: ListDataSource[];
     id: string;
     onActive: (value?: string) => void;
@@ -49,18 +54,18 @@ type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
 
 const renderItems = (
     status: ComponentStatus,
-    {activeKey, block, data, onActive, id}: RenderItemOptions,
+    {activeKey, type, data, onActive, id}: RenderItemOptions,
 ) =>
     status === 'succeeded' &&
     data.map(({key, ...props}) => (
         <NavigationRailItem
             {...props}
             activeKey={activeKey}
-            block={block}
             dataKey={key}
             id={id}
             key={key}
             onActive={onActive}
+            type={type}
         />
     ));
 
@@ -87,12 +92,12 @@ const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSour
 
 export const NavigationRailBase: FC<NavigationBaseProps> = ({
     activeKey: activeKeySource,
-    block,
     data: dataSources,
     defaultActiveKey,
     fab,
-    render,
     onActive: onActiveSource,
+    render,
+    type,
     ...renderProps
 }) => {
     const [{activeKey, data, status}, setState] = useImmer<InitialState>({
@@ -111,12 +116,12 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
         () =>
             renderItems(status, {
                 activeKey,
-                block,
                 data,
-                onActive,
                 id,
+                onActive,
+                type,
             }),
-        [activeKey, block, data, id, onActive, status],
+        [activeKey, type, data, id, onActive, status],
     );
 
     useEffect(() => {

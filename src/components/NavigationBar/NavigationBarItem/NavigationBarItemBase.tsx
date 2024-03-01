@@ -19,19 +19,19 @@ import {AnimatedInterpolation, EventName, State} from '../../Common/interface';
 import {Icon, IconProps} from '../../Icon/Icon';
 import {useAnimated} from './useAnimated';
 
-export type NavigationRailType = 'segment' | 'block';
-export interface NavigationRailItemProps
+export type NavigationBarType = 'segment' | 'block';
+export interface NavigationBarItemProps
     extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & PressableProps> {
     activeIcon?: React.JSX.Element;
     activeKey?: string;
+    type?: NavigationBarType;
     dataKey?: string;
     icon?: React.JSX.Element;
     labelText?: string;
     onActive?: (key?: string) => void;
-    type?: NavigationRailType;
 }
 
-export interface RenderProps extends NavigationRailItemProps {
+export interface RenderProps extends NavigationBarItemProps {
     active?: boolean;
     activeColor: string;
     eventName: EventName;
@@ -45,7 +45,7 @@ export interface RenderProps extends NavigationRailItemProps {
     underlayColor: string;
 }
 
-interface NavigationRailItemBaseProps extends NavigationRailItemProps {
+interface NavigationBarItemBaseProps extends NavigationBarItemProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
@@ -115,7 +115,7 @@ const processStateChange = ({
     });
 };
 
-export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
+export const NavigationBarItemBase: FC<NavigationBarItemBaseProps> = ({
     activeIcon = <Icon type="filled" name="circle" />,
     activeKey,
     dataKey,
@@ -167,12 +167,12 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
         active,
         activeColor,
         activeIcon: activeIconElement,
-        type,
         eventName,
         icon: iconElement,
         id,
         onEvent,
         touchableLocation,
+        type,
         renderStyle: {
             color,
             height: layout.height,
