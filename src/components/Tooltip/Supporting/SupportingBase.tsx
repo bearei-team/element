@@ -11,7 +11,6 @@ import {ViewProps} from 'react-native-svg/lib/typescript/fabric/utils';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../../context/ModalProvider';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../../hooks/useOnEvent';
-import {debounce} from '../../../utils/debounce.utils';
 import {AnimatedInterpolation, ComponentStatus, State} from '../../Common/interface';
 import {useAnimated} from './useAnimated';
 
@@ -54,7 +53,7 @@ type ProcessStateChangeOptions = OnStateChangeOptions &
     ProcessEventOptions &
     Pick<SupportingProps, 'onVisible'>;
 
-type ProcessContainerLayoutOptions = ProcessEventOptions;
+type ProcessContainerLayoutOptions = ProcessEventOptions & Pick<RenderProps, 'visible'>;
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -79,8 +78,9 @@ const processEmit = (supporting: React.JSX.Element, {id, status}: ProcessEmitOpt
 
 const processContainerLayout = (
     containerCurrent: View | null,
-    {setState}: ProcessContainerLayoutOptions,
+    {setState, visible}: ProcessContainerLayoutOptions,
 ) =>
+    visible &&
     containerCurrent?.measure((x, y, width, height, pageX, pageY) =>
         setState(draft => {
             const update =
@@ -116,7 +116,6 @@ export const SupportingBase: FC<SupportingBaseProps> = ({
     });
 
     const [{opacity}] = useAnimated({visible});
-    const debounceProcessContainerLayout = useMemo(() => debounce(processContainerLayout, 50), []);
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
             processStateChange({...options, setState, onVisible}),
@@ -148,8 +147,8 @@ export const SupportingBase: FC<SupportingBaseProps> = ({
     );
 
     useEffect(() => {
-        debounceProcessContainerLayout(containerCurrent, {setState});
-    }, [containerCurrent, debounceProcessContainerLayout, setState]);
+        processContainerLayout(containerCurrent, {setState, visible});
+    }, [containerCurrent, setState, visible]);
 
     useEffect(() => {
         processEmit(supporting, {id, status});
