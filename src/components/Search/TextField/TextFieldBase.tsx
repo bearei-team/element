@@ -8,7 +8,6 @@ import {
     TextStyle,
     View,
     ViewStyle,
-    useWindowDimensions,
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
@@ -28,7 +27,7 @@ type BaseProps = Partial<
 >;
 
 export interface TextFieldProps extends BaseProps {
-    containerCurrent: View | null;
+    containerCurrent?: View | null;
     disabled?: boolean;
     leading?: React.JSX.Element;
     listVisible?: boolean;
@@ -120,19 +119,24 @@ const processListVisible = ({setState}: ProcessListVisibleOptions, data?: ListDa
         draft.listVisible = typeof data?.length === 'number' && data?.length !== 0;
     });
 
-const processContainerLayout = (containerCurrent: View | null, {setState}: ProcessEventOptions) =>
+const processContainerLayout = ({setState}: ProcessEventOptions, containerCurrent?: View | null) =>
     containerCurrent?.measure((x, y, width, height, pageX, pageY) =>
         setState(draft => {
-            draft.containerLayout = {
-                height,
-                pageX,
-                pageY,
-                width,
-                x,
-                y,
-            };
+            const update =
+                draft.containerLayout.pageX !== pageX || draft.containerLayout.pageY !== pageY;
 
-            draft.status = 'idle' && (draft.status = 'succeeded');
+            if (update) {
+                draft.containerLayout = {
+                    height,
+                    pageX,
+                    pageY,
+                    width,
+                    x,
+                    y,
+                };
+
+                draft.status === 'idle' && (draft.status = 'succeeded');
+            }
         }),
     );
 
@@ -178,7 +182,6 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
             status: 'idle',
         });
 
-    const windowDimensions = useWindowDimensions();
     const [{height}] = useAnimated({listVisible});
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
@@ -243,22 +246,22 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
                 listVisible,
             }),
         [
-            render,
             containerLayout,
             data,
             eventName,
+            height,
             id,
             input,
             leading,
-            onBlur,
-            onFocus,
-            onEvent,
+            listVisible,
             onActive,
+            onBlur,
+            onEvent,
+            onFocus,
             placeholder,
-            height,
+            render,
             trailing,
             underlayColor,
-            listVisible,
         ],
     );
 
@@ -267,8 +270,8 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
     }, [data, setState, state]);
 
     useEffect(() => {
-        processContainerLayout(containerCurrent, {setState});
-    }, [containerCurrent, setState, windowDimensions]);
+        processContainerLayout({setState}, containerCurrent);
+    }, [containerCurrent, setState]);
 
     useEffect(() => {
         processEmit(textField, {id, status});
