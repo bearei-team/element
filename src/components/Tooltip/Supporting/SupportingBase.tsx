@@ -6,12 +6,12 @@ import {
     TextStyle,
     View,
     ViewStyle,
-    useWindowDimensions,
 } from 'react-native';
 import {ViewProps} from 'react-native-svg/lib/typescript/fabric/utils';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../../context/ModalProvider';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../../hooks/useOnEvent';
+import {debounce} from '../../../utils/debounce.utils';
 import {AnimatedInterpolation, ComponentStatus, State} from '../../Common/interface';
 import {useAnimated} from './useAnimated';
 
@@ -60,7 +60,11 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState(draft => {
-        draft.layout = nativeEventLayout;
+        const update =
+            draft.layout.width !== nativeEventLayout.width ||
+            draft.layout.height !== nativeEventLayout.height;
+
+        update && (draft.layout = nativeEventLayout);
     });
 };
 
@@ -79,16 +83,21 @@ const processContainerLayout = (
 ) =>
     containerCurrent?.measure((x, y, width, height, pageX, pageY) =>
         setState(draft => {
-            draft.containerLayout = {
-                height,
-                pageX,
-                pageY,
-                width,
-                x,
-                y,
-            };
+            const update =
+                draft.containerLayout.pageX !== pageX || draft.containerLayout.pageY !== pageY;
 
-            draft.status === 'idle' && (draft.status = 'succeeded');
+            if (update) {
+                draft.containerLayout = {
+                    height,
+                    pageX,
+                    pageY,
+                    width,
+                    x,
+                    y,
+                };
+
+                draft.status === 'idle' && (draft.status = 'succeeded');
+            }
         }),
     );
 
@@ -106,8 +115,8 @@ export const SupportingBase: FC<SupportingBaseProps> = ({
         status: 'idle',
     });
 
-    const windowDimensions = useWindowDimensions();
     const [{opacity}] = useAnimated({visible});
+    const debounceProcessContainerLayout = useMemo(() => debounce(processContainerLayout, 50), []);
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>
             processStateChange({...options, setState, onVisible}),
@@ -139,8 +148,8 @@ export const SupportingBase: FC<SupportingBaseProps> = ({
     );
 
     useEffect(() => {
-        processContainerLayout(containerCurrent, {setState});
-    }, [containerCurrent, setState, windowDimensions]);
+        debounceProcessContainerLayout(containerCurrent, {setState});
+    }, [containerCurrent, debounceProcessContainerLayout, setState]);
 
     useEffect(() => {
         processEmit(supporting, {id, status});

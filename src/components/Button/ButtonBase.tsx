@@ -92,7 +92,11 @@ const processLayout = (event: LayoutChangeEvent, {block, setState}: ProcessLayou
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState(draft => {
-        draft.layout = nativeEventLayout;
+        const update =
+            draft.layout.width !== nativeEventLayout.width ||
+            draft.layout.height !== nativeEventLayout.height;
+
+        update && (draft.layout = nativeEventLayout);
     });
 };
 
@@ -107,7 +111,11 @@ const processContentLayout = (
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState(draft => {
-        draft.contentLayout = nativeEventLayout;
+        const update =
+            draft.contentLayout.width !== nativeEventLayout.width ||
+            draft.contentLayout.height !== nativeEventLayout.height;
+
+        update && (draft.contentLayout = nativeEventLayout);
     });
 };
 

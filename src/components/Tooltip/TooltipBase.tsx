@@ -60,7 +60,11 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState(draft => {
-        draft.layout = nativeEventLayout;
+        const update =
+            draft.layout.width !== nativeEventLayout.width ||
+            draft.layout.height !== nativeEventLayout.height;
+
+        update && (draft.layout = nativeEventLayout);
     });
 };
 
@@ -105,8 +109,7 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
     const containerRef = useRef<View>(null);
     const id = useId();
     const ref = (refSource ?? containerRef) as React.RefObject<View>;
-
-    const debounceProcessVisible = useMemo(() => debounce(processVisible, 100), []);
+    const debounceProcessVisible = useMemo(() => debounce(processVisible, 50), []);
     const onVisible = useCallback(
         (value?: boolean) => debounceProcessVisible({setState, onVisible: onVisibleSource}, value),
         [debounceProcessVisible, onVisibleSource, setState],

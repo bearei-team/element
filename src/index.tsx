@@ -34,6 +34,7 @@ export * from './hooks/useLazyRef';
 export * from './hooks/useOnEvent';
 export * from './utils/adapt.utils';
 export * from './utils/animatedTiming.utils';
+export * from './utils/debounce.utils';
 export * from './utils/namePath.utils';
 export * from './utils/omit.utils';
 export * from './utils/validate.utils';
