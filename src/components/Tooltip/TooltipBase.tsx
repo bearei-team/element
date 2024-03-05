@@ -9,6 +9,7 @@ import {
     ViewStyle,
 } from 'react-native';
 import {Updater, useImmer} from 'use-immer';
+import {emitter} from '../../context/ModalProvider';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {debounce} from '../../utils/debounce.utils';
 import {State} from '../Common/interface';
@@ -92,6 +93,9 @@ const processStateChange = ({
         debounceProcessVisible({setState}, eventName === 'hoverIn');
 };
 
+const processUnmount = (id: string) =>
+    emitter.emit('modal', {id: `tooltip__supporting--${id}`, element: undefined});
+
 export const TooltipBase: FC<TooltipBaseProps> = ({
     defaultVisible,
     onVisible: onVisibleSource,
@@ -126,6 +130,10 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
     useEffect(() => {
         onVisible(visibleSource ?? defaultVisible);
     }, [onVisible, visibleSource, defaultVisible]);
+
+    useEffect(() => {
+        return () => processUnmount(id);
+    }, [id]);
 
     return render({
         ...renderProps,

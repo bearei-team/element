@@ -62,6 +62,9 @@ const processVisible = ({setState, onOpen}: ProcessVisibleOptions, visible?: boo
 const processEmit = (sheet: React.JSX.Element, {visible, id}: ProcessEmitOptions) =>
     typeof visible === 'boolean' && emitter.emit('modal', {id: `sideSheet__${id}`, element: sheet});
 
+const processUnmount = (id: string) =>
+    emitter.emit('modal', {id: `sideSheet__${id}`, element: undefined});
+
 export const SideSheetBase: FC<SideSheetBaseProps> = ({
     defaultVisible,
     onClose: onCloseSource,
@@ -98,6 +101,10 @@ export const SideSheetBase: FC<SideSheetBaseProps> = ({
     useEffect(() => {
         processEmit(sheet, {id, visible, destroy});
     }, [destroy, id, sheet, visible]);
+
+    useEffect(() => {
+        return () => processUnmount(id);
+    }, [id]);
 
     return <></>;
 };

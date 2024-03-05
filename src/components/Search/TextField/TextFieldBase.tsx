@@ -141,7 +141,8 @@ const processContainerLayout = ({setState}: ProcessEventOptions, containerCurren
     );
 
 const processEmit = (element: React.JSX.Element, {id, status}: ProcessEmitOptions) =>
-    status === 'succeeded' && emitter.emit('modal', {id: `search__TextField--${id}`, element});
+    status === 'succeeded' &&
+    emitter.emit('modal', {id: `search__TextField--${id}`, element: element});
 
 const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
     <TextField testID={`search__control--${id}`}>
@@ -275,7 +276,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
 
     useEffect(() => {
         processEmit(textField, {id, status});
-    }, [id, textField, status]);
+    }, [id, status, textField]);
 
     return <></>;
 };

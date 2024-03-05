@@ -1,6 +1,7 @@
-import {FC, RefObject, useCallback, useId, useRef} from 'react';
+import {FC, RefObject, useCallback, useEffect, useId, useRef} from 'react';
 import {View} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
+import {emitter} from '../../context/ModalProvider';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ComponentStatus, State} from '../Common/interface';
 import {TextFieldProps} from './TextField/TextField';
@@ -35,6 +36,9 @@ const processLayout = ({setState}: ProcessEventOptions) => {
 const processStateChange = ({eventName, setState}: ProcessStateChangeOptions) =>
     eventName === 'layout' && processLayout({setState});
 
+const processUnmount = (id: string) =>
+    emitter.emit('modal', {id: `search__TextField--${id}`, element: undefined});
+
 export const SearchBase: FC<SearchBaseProps> = ({render, ...renderProps}) => {
     const [{status}, setState] = useImmer<InitialState>({status: 'idle'});
     const containerRef = useRef<View>(null);
@@ -46,6 +50,10 @@ export const SearchBase: FC<SearchBaseProps> = ({render, ...renderProps}) => {
     );
 
     const [onEvent] = useOnEvent({...renderProps, onStateChange});
+
+    useEffect(() => {
+        return () => processUnmount(id);
+    }, [id]);
 
     return render({
         ...renderProps,
