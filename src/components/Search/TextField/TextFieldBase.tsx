@@ -109,9 +109,10 @@ const processChangeText = (
             return;
         }
 
-        draft.data = matchData;
-        onChangeText?.(text);
+        matchData.length !== 0 && (draft.data = matchData);
     });
+
+    onChangeText?.(text);
 };
 
 const processListVisible = ({setState}: ProcessListVisibleOptions, data?: ListDataSource[]) =>
@@ -141,8 +142,7 @@ const processContainerLayout = ({setState}: ProcessEventOptions, containerCurren
     );
 
 const processEmit = (element: React.JSX.Element, {id, status}: ProcessEmitOptions) =>
-    status === 'succeeded' &&
-    emitter.emit('modal', {id: `search__TextField--${id}`, element: element});
+    status === 'succeeded' && emitter.emit('modal', {id: `search__TextField--${id}`, element});
 
 const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
     <TextField testID={`search__control--${id}`}>

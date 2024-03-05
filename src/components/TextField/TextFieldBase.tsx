@@ -130,22 +130,26 @@ const processContentSizeChange = (
         }
 
         draft.contentSize = contentSize;
-
-        onContentSizeChange?.(event);
     });
+
+    onContentSizeChange?.(event);
 };
 
-const processChangeText = ({setState, onChangeText}: ProcessChangeTextOptions, text?: string) =>
-    typeof text === 'string' &&
+const processChangeText = ({setState, onChangeText}: ProcessChangeTextOptions, text?: string) => {
+    if (typeof text !== 'string') {
+        return;
+    }
+
     setState(draft => {
         if (draft.value === text) {
             return;
         }
 
         draft.value = text;
-
-        onChangeText?.(text);
     });
+
+    onChangeText?.(text);
+};
 
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
 const renderTextInput = ({

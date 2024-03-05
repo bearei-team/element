@@ -62,8 +62,11 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
     });
 };
 
-const processActive = ({setState, active, indeterminate, onActive}: ProcessActiveOptions) =>
-    typeof active === 'boolean' &&
+const processActive = ({setState, active, indeterminate, onActive}: ProcessActiveOptions) => {
+    if (typeof active !== 'boolean') {
+        return;
+    }
+
     setState(draft => {
         if (draft.active === active) {
             return;
@@ -73,9 +76,10 @@ const processActive = ({setState, active, indeterminate, onActive}: ProcessActiv
 
         draft.active = active;
         draft.type = active ? activeType : 'unselected';
-
-        onActive?.(active);
     });
+
+    onActive?.(active);
+};
 
 const processStateChange = ({
     active,

@@ -70,16 +70,19 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
 };
 
 const processVisible = ({setState, onVisible}: ProcessVisibleOptions, visible?: boolean) => {
-    typeof visible === 'boolean' &&
-        setState(draft => {
-            if (draft.visible === visible) {
-                return;
-            }
+    if (typeof visible !== 'boolean') {
+        return;
+    }
 
-            draft.visible = visible;
+    setState(draft => {
+        if (draft.visible === visible) {
+            return;
+        }
 
-            onVisible?.(visible);
-        });
+        draft.visible = visible;
+    });
+
+    onVisible?.(visible);
 };
 
 const processStateChange = ({

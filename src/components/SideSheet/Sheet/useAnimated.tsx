@@ -9,8 +9,8 @@ import {
 } from '../../../utils/animatedTiming.utils';
 import {RenderProps} from './SheetBase';
 
-type UseAnimatedOptions = Pick<RenderProps, 'visible' | 'position' | 'onExitAnimatedFinished'>;
-interface ScreenAnimatedOptions extends Pick<UseAnimatedOptions, 'onExitAnimatedFinished'> {
+type UseAnimatedOptions = Pick<RenderProps, 'visible' | 'position'>;
+interface ScreenAnimatedOptions {
     containerAnimated: Animated.Value;
     innerAnimated: Animated.Value;
 }
@@ -37,7 +37,7 @@ const enterScreen = (
 
 const exitScreen = (
     animatedTiming: AnimatedTiming,
-    {containerAnimated, innerAnimated, onExitAnimatedFinished}: ScreenAnimatedOptions,
+    {containerAnimated, innerAnimated}: ScreenAnimatedOptions,
 ) => {
     const animatedTimingOptions = {
         duration: 'short3',
@@ -49,7 +49,7 @@ const exitScreen = (
         Animated.parallel([
             animatedTiming(containerAnimated, animatedTimingOptions),
             animatedTiming(innerAnimated, animatedTimingOptions),
-        ]).start(onExitAnimatedFinished),
+        ]).start(),
     );
 };
 
@@ -58,7 +58,7 @@ const processAnimatedTiming = (
     {
         containerAnimated,
         innerAnimated,
-        onExitAnimatedFinished,
+
         visible,
     }: ProcessAnimatedTimingOptions,
 ) => {
@@ -66,10 +66,10 @@ const processAnimatedTiming = (
 
     visible
         ? enterScreen(animatedTiming, screenAnimatedOptions)
-        : exitScreen(animatedTiming, {...screenAnimatedOptions, onExitAnimatedFinished});
+        : exitScreen(animatedTiming, screenAnimatedOptions);
 };
 
-export const useAnimated = ({visible, onExitAnimatedFinished, position}: UseAnimatedOptions) => {
+export const useAnimated = ({visible, position}: UseAnimatedOptions) => {
     const animatedValue = visible ? 1 : 0;
     const [containerAnimated] = useAnimatedValue(animatedValue);
     const [innerAnimated] = useAnimatedValue(animatedValue);
@@ -97,10 +97,9 @@ export const useAnimated = ({visible, onExitAnimatedFinished, position}: UseAnim
         processAnimatedTiming(animatedTiming, {
             containerAnimated,
             innerAnimated,
-            onExitAnimatedFinished,
             visible,
         });
-    }, [animatedTiming, containerAnimated, onExitAnimatedFinished, innerAnimated, visible]);
+    }, [animatedTiming, containerAnimated, innerAnimated, visible]);
 
     return [{backgroundColor, innerTranslateX}];
 };

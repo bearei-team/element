@@ -20,11 +20,9 @@ export interface SheetProps
     backIcon?: React.JSX.Element;
     closeIcon?: React.JSX.Element;
     content?: React.JSX.Element;
-    destroy?: boolean;
     footer?: boolean;
     headlineText?: string;
     onClose?: () => void;
-    onExitAnimatedFinished?: () => void;
     onOpen?: () => void;
     onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
     onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
@@ -51,7 +49,6 @@ export const SheetBase: FC<SheetBaseProps> = ({
     closeIcon,
     headlineText = 'Title',
     onClose,
-    onExitAnimatedFinished,
     onPrimaryButtonPress,
     onSecondaryButtonPress,
     position = 'horizontalEnd',
@@ -64,7 +61,6 @@ export const SheetBase: FC<SheetBaseProps> = ({
     ...renderProps
 }) => {
     const [{backgroundColor, innerTranslateX}] = useAnimated({
-        onExitAnimatedFinished,
         position,
         visible,
     });

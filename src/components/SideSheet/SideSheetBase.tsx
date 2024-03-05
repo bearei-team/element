@@ -13,7 +13,6 @@ interface SideSheetBaseProps extends SideSheetProps {
 }
 
 interface InitialState {
-    destroy?: boolean;
     visible?: boolean;
 }
 
@@ -21,43 +20,37 @@ interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-type ProcessAnimatedFinishedOptions = Pick<RenderProps, 'visible' | 'onClose'> &
-    ProcessEventOptions;
-
-type ProcessEmitOptions = Pick<RenderProps, 'visible' | 'id'> & Pick<InitialState, 'destroy'>;
+type ProcessEmitOptions = Pick<RenderProps, 'visible' | 'id'>;
 type ProcessCloseOptions = Pick<RenderProps, 'onClose'> & ProcessEventOptions;
 type ProcessVisibleOptions = ProcessEventOptions & Pick<RenderProps, 'onOpen'>;
 
-const processExitAnimatedFinished = ({setState}: ProcessAnimatedFinishedOptions) =>
-    setState(draft => {
-        draft.visible === false && (draft.destroy = true);
-    });
-
-const processClose = ({setState, onClose}: ProcessCloseOptions) =>
+const processClose = ({setState, onClose}: ProcessCloseOptions) => {
     setState(draft => {
         if (draft.visible === false) {
             return;
         }
 
         draft.visible = false;
-
-        onClose?.();
     });
 
-const processVisible = ({setState, onOpen}: ProcessVisibleOptions, visible?: boolean) =>
-    typeof visible === 'boolean' &&
+    onClose?.();
+};
+
+const processVisible = ({setState, onOpen}: ProcessVisibleOptions, visible?: boolean) => {
+    if (typeof visible !== 'boolean') {
+        return;
+    }
+
     setState(draft => {
         if (draft.visible === visible) {
             return;
         }
 
         draft.visible = visible;
-
-        if (visible) {
-            typeof draft.destroy === 'boolean' && (draft.destroy = false);
-            onOpen?.();
-        }
     });
+
+    visible && onOpen?.();
+};
 
 const processEmit = (sheet: React.JSX.Element, {visible, id}: ProcessEmitOptions) =>
     typeof visible === 'boolean' && emitter.emit('modal', {id: `sideSheet__${id}`, element: sheet});
@@ -73,25 +66,19 @@ export const SideSheetBase: FC<SideSheetBaseProps> = ({
     visible: visibleSource,
     ...renderProps
 }) => {
-    const [{visible, destroy}, setState] = useImmer<InitialState>({
-        destroy: undefined,
+    const [{visible}, setState] = useImmer<InitialState>({
         visible: undefined,
     });
 
     const id = useId();
-    const onExitAnimatedFinished = useCallback(
-        () => processExitAnimatedFinished({setState}),
-        [setState],
-    );
-
     const onClose = useCallback(
         () => processClose({setState, onClose: onCloseSource}),
         [onCloseSource, setState],
     );
 
     const sheet = useMemo(
-        () => render({...renderProps, id, visible, onClose, onExitAnimatedFinished, destroy}),
-        [destroy, id, onClose, onExitAnimatedFinished, render, renderProps, visible],
+        () => render({...renderProps, id, visible, onClose}),
+        [id, onClose, render, renderProps, visible],
     );
 
     useEffect(() => {
@@ -99,8 +86,8 @@ export const SideSheetBase: FC<SideSheetBaseProps> = ({
     }, [setState, onOpen, visibleSource, defaultVisible]);
 
     useEffect(() => {
-        processEmit(sheet, {id, visible, destroy});
-    }, [destroy, id, sheet, visible]);
+        processEmit(sheet, {id, visible});
+    }, [id, sheet, visible]);
 
     useEffect(() => {
         return () => processUnmount(id);

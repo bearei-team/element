@@ -86,16 +86,21 @@ const renderItems = (
         />
     ));
 
-const processActive = ({onActive, setState}: ProcessActiveOptions, value?: string) =>
-    typeof value === 'string' &&
+const processActive = ({onActive, setState}: ProcessActiveOptions, value?: string) => {
+    if (typeof value !== 'string') {
+        return;
+    }
+
     setState(draft => {
         if (draft.activeKey === value) {
             return;
         }
 
         draft.activeKey = value;
-        onActive?.(value);
     });
+
+    onActive?.(value);
+};
 
 const processDestinationLayout = (
     event: LayoutChangeEvent,

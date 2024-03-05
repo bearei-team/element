@@ -83,15 +83,15 @@ const processInit = (
     signInField: FormStore<Store>['signInField'],
     {name, rules, validateFirst, validate: fieldValidate, setState}: ProcessInitOptions,
 ) => {
+    const onFormStoreChange = () =>
+        setState(draft => {
+            draft.shouldUpdate = {};
+        });
+
     setState(draft => {
         if (draft.status !== 'idle') {
             return;
         }
-
-        const onFormStoreChange = () =>
-            setState(d => {
-                d.shouldUpdate = {};
-            });
 
         const {signOut} =
             signInField({

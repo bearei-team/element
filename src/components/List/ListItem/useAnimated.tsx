@@ -15,6 +15,7 @@ interface UseAnimatedOptions extends Pick<RenderProps, 'close'> {
 
 interface ProcessCloseAnimatedOptions {
     heightAnimated: Animated.Value;
+    finished?: () => void;
 }
 
 interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
@@ -23,8 +24,8 @@ interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
 
 const processCloseAnimated = (
     animatedTiming: AnimatedTiming,
-    {heightAnimated}: ProcessCloseAnimatedOptions,
-) => requestAnimationFrame(() => animatedTiming(heightAnimated, {toValue: 0}).start());
+    {heightAnimated, finished}: ProcessCloseAnimatedOptions,
+) => requestAnimationFrame(() => animatedTiming(heightAnimated, {toValue: 0}).start(finished));
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
@@ -70,7 +71,7 @@ export const useAnimated = ({
     });
 
     const onCloseAnimated = useCallback(
-        () => processCloseAnimated(animatedTiming, {heightAnimated}),
+        (finished?: () => void) => processCloseAnimated(animatedTiming, {heightAnimated, finished}),
         [animatedTiming, heightAnimated],
     );
 

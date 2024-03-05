@@ -56,23 +56,33 @@ interface ProcessEventOptions {
 type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
 type ProcessCloseOptions = ProcessEventOptions & Pick<RenderProps, 'onClose'>;
 
-const processActive = ({onActive, setState}: ProcessActiveOptions, value?: string) =>
-    typeof value === 'string' &&
+const processActive = ({onActive, setState}: ProcessActiveOptions, value?: string) => {
+    if (typeof value !== 'string') {
+        return;
+    }
+
     setState(draft => {
         if (draft.activeKey === value) {
             return;
         }
 
         draft.activeKey = value;
-        onActive?.(value);
     });
 
-const processClose = ({onClose, setState}: ProcessCloseOptions, key?: string) =>
-    typeof key === 'string' &&
+    onActive?.(value);
+};
+
+const processClose = ({onClose, setState}: ProcessCloseOptions, value?: string) => {
+    if (typeof value !== 'string') {
+        return;
+    }
+
     setState(draft => {
-        draft.data = draft.data.filter(datum => datum.key !== key);
-        onClose?.(key);
+        draft.data = draft.data.filter(datum => datum.key !== value);
     });
+
+    onClose?.(value);
+};
 
 const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSource[]) =>
     dataSources &&
@@ -132,7 +142,7 @@ export const ListBase: FC<ListBaseProps> = ({
     );
 
     const onClose = useCallback(
-        (key?: string) => processClose({onClose: onCloseSource, setState}, key),
+        (value?: string) => processClose({onClose: onCloseSource, setState}, value),
         [onCloseSource, setState],
     );
 
