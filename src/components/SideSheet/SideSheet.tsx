@@ -4,14 +4,9 @@ import {Sheet} from './Sheet/Sheet';
 import {Container} from './SideSheet.styles';
 import {RenderProps, SideSheetBase, SideSheetProps} from './SideSheetBase';
 
-const render = ({id, visible, destroy, ...sheetProps}: RenderProps) => (
-    <Container
-        key={`sideSheet__modal--${id}`}
-        testID={`sideSheet__modal--${id}`}
-        visible={!(typeof destroy === 'boolean' && destroy)}>
-        {typeof visible === 'boolean' && (
-            <Sheet {...sheetProps} visible={visible} id={id} destroy={destroy} />
-        )}
+const render = ({id, visible, ...sheetProps}: RenderProps) => (
+    <Container key={`sideSheet__modal--${id}`} testID={`sideSheet__modal--${id}`}>
+        {typeof visible === 'boolean' && <Sheet {...sheetProps} visible={visible} id={id} />}
     </Container>
 );
 

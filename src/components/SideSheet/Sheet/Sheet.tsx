@@ -30,7 +30,6 @@ const render = ({
     renderStyle,
     secondaryButton,
     style,
-    destroy,
     ...innerProps
 }: RenderProps) => {
     const {backgroundColor, innerTranslateX} = renderStyle;
@@ -47,42 +46,36 @@ const render = ({
                 }}
                 testID={`sideSheet__inner--${id}`}
                 accessibilityRole="alert">
-                {destroy ? (
-                    <></>
-                ) : (
+                <Header testID={`sideSheet__header--${id}`}>
+                    {back && (
+                        <BackAffordance testID={`sideSheet__backAffordance--${id}`}>
+                            {backIcon}
+                        </BackAffordance>
+                    )}
+
+                    <HeadlineText size="large" type="title">
+                        {headlineText}
+                    </HeadlineText>
+
+                    <CloseAffordance testID={`sideSheet__closeAffordance--${id}`}>
+                        {closeIcon}
+                    </CloseAffordance>
+                </Header>
+
+                <Content testID={`sideSheet__content--${id}`}>{content}</Content>
+
+                {footer && (
                     <>
-                        <Header testID={`sideSheet__header--${id}`}>
-                            {back && (
-                                <BackAffordance testID={`sideSheet__backAffordance--${id}`}>
-                                    {backIcon}
-                                </BackAffordance>
-                            )}
+                        <Divider size="large" block={true} />
+                        <Footer testID={`sideSheet__footer--${id}`}>
+                            <PrimaryButton testID={`sideSheet__primaryButton--${id}`}>
+                                {primaryButton}
+                            </PrimaryButton>
 
-                            <HeadlineText size="large" type="title">
-                                {headlineText}
-                            </HeadlineText>
-
-                            <CloseAffordance testID={`sideSheet__closeAffordance--${id}`}>
-                                {closeIcon}
-                            </CloseAffordance>
-                        </Header>
-
-                        <Content testID={`sideSheet__content--${id}`}>{content}</Content>
-
-                        {footer && (
-                            <>
-                                <Divider size="large" block={true} />
-                                <Footer testID={`sideSheet__footer--${id}`}>
-                                    <PrimaryButton testID={`sideSheet__primaryButton--${id}`}>
-                                        {primaryButton}
-                                    </PrimaryButton>
-
-                                    <SecondaryButton testID={`sideSheet__secondaryButton--${id}`}>
-                                        {secondaryButton}
-                                    </SecondaryButton>
-                                </Footer>
-                            </>
-                        )}
+                            <SecondaryButton testID={`sideSheet__secondaryButton--${id}`}>
+                                {secondaryButton}
+                            </SecondaryButton>
+                        </Footer>
                     </>
                 )}
             </AnimatedInner>
