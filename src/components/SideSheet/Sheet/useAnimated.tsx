@@ -56,10 +56,10 @@ const exitScreen = (
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {
-        visible,
         containerAnimated,
         innerAnimated,
         onExitAnimatedFinished,
+        visible,
     }: ProcessAnimatedTimingOptions,
 ) => {
     const screenAnimatedOptions = {containerAnimated, innerAnimated};
@@ -96,8 +96,8 @@ export const useAnimated = ({visible, onExitAnimatedFinished, position}: UseAnim
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
             containerAnimated,
-            onExitAnimatedFinished,
             innerAnimated,
+            onExitAnimatedFinished,
             visible,
         });
     }, [animatedTiming, containerAnimated, onExitAnimatedFinished, innerAnimated, visible]);

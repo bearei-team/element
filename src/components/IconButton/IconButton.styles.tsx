@@ -23,6 +23,7 @@ export const Content = styled(Shape)<ContainerProps>`
     justify-content: center;
     pointer-events: none;
     position: relative;
+    z-index: 1;
 
     ${({renderStyle = {}, theme}) => {
         const {height, width} = renderStyle;

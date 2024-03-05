@@ -62,7 +62,7 @@ type RenderRipplesOptions = Omit<RippleProps, 'sequence'>;
 const processAddRipple = ({active, touchableLocation, setState}: ProcessAddRippleOptions) => {
     setState(draft => {
         const keys = Object.keys(draft.rippleSequence);
-        const exist = active && keys.length !== 0;
+        const exist = typeof active === 'boolean' && keys.length !== 0;
 
         if (exist) {
             draft.rippleSequence = {
@@ -128,7 +128,7 @@ const processActive = ({active, setState, touchableLocation}: ProcessActiveOptio
         return;
     }
 
-    active && processAddRipple({touchableLocation, active, setState});
+    processAddRipple({touchableLocation, active, setState});
 };
 
 const renderRipples = (

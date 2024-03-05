@@ -16,6 +16,7 @@ export const Content = styled(Shape)<ContentProps>`
     justify-content: center;
     pointer-events: none;
     position: relative;
+    z-index: 1;
 
     ${({theme, iconShow}) =>
         iconShow &&

@@ -27,6 +27,7 @@ export const Container = styled(View)<ContainerProps>`
 
 export const Inner = styled(Shape)<InnerProps>`
     position: relative;
+    z-index: 1;
 
     ${({theme}) =>
         css`

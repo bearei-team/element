@@ -25,6 +25,7 @@ export const Inner = styled.View`
     flex-direction: row;
     justify-content: space-between;
     position: relative;
+    z-index: 1;
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.medium)}px;
