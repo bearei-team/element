@@ -34,12 +34,3 @@ export const Content = styled(Shape)<ContainerProps>`
         `;
     }};
 `;
-
-export const Icon = styled.View`
-    overflow: hidden;
-
-    ${({theme}) => css`
-        height: ${theme.adaptSize(theme.spacing.large)}px;
-        width: ${theme.adaptSize(theme.spacing.large)}px;
-    `}
-`;

@@ -99,7 +99,7 @@ export const IconButtonBase: FC<IconButtonBaseProps> = ({
 
     const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
     const [{backgroundColor, borderColor}] = useAnimated({disabled, type});
-    const [iconElement] = useIcon({eventName, type, icon, disabled, fill});
+    const [iconElement] = useIcon({eventName, type, icon, disabled, fill, layout});
     const [border] = useBorder({borderColor});
 
     useEffect(() => {

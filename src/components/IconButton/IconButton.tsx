@@ -3,7 +3,7 @@ import {Animated, View} from 'react-native';
 import {Hovered} from '../Hovered/Hovered';
 import {Tooltip} from '../Tooltip/Tooltip';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
-import {Container, Content, Icon} from './IconButton.styles';
+import {Container, Content} from './IconButton.styles';
 import {IconButtonBase, IconButtonProps, IconButtonType, RenderProps} from './IconButtonBase';
 
 /**
@@ -51,7 +51,7 @@ const render = ({
                             backgroundColor,
                         }}
                         testID={`iconButton__content--${id}`}>
-                        <Icon testID={`iconButton__icon--${id}`}>{icon}</Icon>
+                        {icon}
                         <Hovered
                             eventName={eventName}
                             renderStyle={{width: layoutWidth, height: layoutHeight}}
