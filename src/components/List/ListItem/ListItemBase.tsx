@@ -174,7 +174,7 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
     const underlayColor = theme.palette.surface.onSurface;
-    const active = typeof activeKey === 'string' ? activeKey === dataKey : undefined;
+    const active = activeKey === dataKey;
     const [{height, onCloseAnimated, trailingOpacity}] = useAnimated({
         close,
         eventName,

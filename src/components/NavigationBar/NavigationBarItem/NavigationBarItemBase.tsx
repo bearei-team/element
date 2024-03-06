@@ -139,7 +139,7 @@ export const NavigationBarItemBase: FC<NavigationBarItemBaseProps> = ({
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
     const underlayColor = theme.palette.surface.onSurface;
-    const active = typeof activeKey === 'string' ? activeKey === dataKey : undefined;
+    const active = activeKey === dataKey;
     const [{height, color}] = useAnimated({active, type});
     const iconLayout = useMemo(
         () => ({
