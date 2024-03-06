@@ -1,11 +1,12 @@
-import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './IconButtonBase';
 
 type ContainerProps = Pick<RenderProps, 'renderStyle'>;
 
-export const Container = styled(View)<ContainerProps>`
+export const Container = styled(Shape)<ContainerProps>`
+    overflow: hidden;
+
     ${({renderStyle = {}, theme}) => {
         const {height, width} = renderStyle;
 

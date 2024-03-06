@@ -6,12 +6,14 @@ import {
     PressableProps,
     TextStyle,
     View,
+    ViewProps,
     ViewStyle,
 } from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {debounce} from '../../utils/debounce.utils';
+import {ShapeProps} from '../Common/Common.styles';
 import {State} from '../Common/interface';
 import {SupportingProps} from './Supporting/Supporting';
 
@@ -20,8 +22,10 @@ type BaseProps = Partial<
         SupportingProps,
         'supportingPosition' | 'supportingText' | 'type' | 'visible' | 'onVisible'
     > &
+        Pick<ShapeProps, 'shape'> &
+        PressableProps &
         RefAttributes<View> &
-        PressableProps
+        ViewProps
 >;
 
 export interface TooltipProps extends Omit<BaseProps, 'children' | 'disabled' | 'hitSlop'> {

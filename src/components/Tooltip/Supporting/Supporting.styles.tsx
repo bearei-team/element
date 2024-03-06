@@ -3,7 +3,8 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../../Common/Common.styles';
 import {RenderProps} from './SupportingBase';
 
-interface ContainerProps extends Pick<RenderProps, 'type' | 'supportingPosition' | 'visible'> {
+interface ContainerProps
+    extends Pick<RenderProps, 'type' | 'supportingPosition' | 'visible' | 'renderStyle'> {
     containerHeight?: number;
     containerPageX?: number;
     containerPageY?: number;
@@ -17,6 +18,15 @@ export const Container = styled(Shape)<ContainerProps>`
     overflow: hidden;
     position: absolute;
     z-index: 16384;
+
+    ${({renderStyle}) => {
+        const {width = 0, height = 0} = renderStyle;
+
+        return css`
+            height: ${height};
+            width: ${width};
+        `;
+    }}
 
     ${({
         containerHeight = 0,

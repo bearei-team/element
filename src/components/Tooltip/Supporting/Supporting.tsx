@@ -28,6 +28,7 @@ const render = ({
             containerWidth={containerLayout.width}
             layoutHeight={height}
             layoutWidth={width}
+            renderStyle={{width, height}}
             supportingPosition={supportingPosition}
             testID={`tooltip__supporting--${id}`}
             type={type}
