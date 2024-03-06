@@ -12,7 +12,7 @@ interface ContainerProps extends Pick<RenderProps, 'type' | 'supportingPosition'
     layoutWidth?: number;
 }
 
-type InnerProps = Pick<RenderProps, 'type' | 'supportingPosition'>;
+type InnerProps = Pick<RenderProps, 'type' | 'supportingPosition' | 'visible'>;
 export const Container = styled(Shape)<ContainerProps>`
     overflow: hidden;
     position: absolute;
@@ -58,12 +58,18 @@ export const Container = styled(Shape)<ContainerProps>`
     ${({visible = false}) =>
         !visible &&
         css`
-            pointer-events: none;
             z-index: -16384;
         `}
 `;
 
 export const Inner = styled(Pressable)<InnerProps>`
+    position: absolute;
+
+    ${({theme}) => css`
+        top: ${theme.adaptSize(theme.spacing.none)}px;
+        left: ${theme.adaptSize(theme.spacing.none)}px;
+    `}
+
     ${({theme, type = 'plain'}) => {
         const supportingType = {
             plain: css`
@@ -77,6 +83,13 @@ export const Inner = styled(Pressable)<InnerProps>`
 
         return supportingType[type];
     }}
+
+    ${({visible = false}) =>
+        !visible &&
+        css`
+            pointer-events: none;
+            top: -100%;
+        `}
 `;
 
 export const SupportingText = styled(Typography)`

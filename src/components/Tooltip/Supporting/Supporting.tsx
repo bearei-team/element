@@ -49,7 +49,7 @@ const render = ({
                 //     ? [{translateX: -(width / 2)}]
                 //     : [{translateY: -(height / 2)}],
             }}>
-            <Inner {...onEvent} testID={`tooltip__supportingInner--${id}`}>
+            <Inner {...onEvent} testID={`tooltip__supportingInner--${id}`} visible={visible}>
                 <SupportingText
                     ellipsizeMode="tail"
                     numberOfLines={1}
