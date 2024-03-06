@@ -14,13 +14,4 @@ export const Container = styled.View<ContainerProps>`
             left: ${theme.adaptSize(theme.spacing.none)}px;
             top: ${theme.adaptSize(theme.spacing.none)}px;
         `}
-
-    ${({visible, theme}) =>
-        !visible &&
-        css`
-            height: ${theme.adaptSize(theme.spacing.none)}px;
-            overflow: hidden;
-            pointer-events: none;
-            z-index: -8192;
-        `}
 `;

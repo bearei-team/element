@@ -55,12 +55,7 @@ const exitScreen = (
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {
-        containerAnimated,
-        innerAnimated,
-
-        visible,
-    }: ProcessAnimatedTimingOptions,
+    {containerAnimated, innerAnimated, visible}: ProcessAnimatedTimingOptions,
 ) => {
     const screenAnimatedOptions = {containerAnimated, innerAnimated};
 
