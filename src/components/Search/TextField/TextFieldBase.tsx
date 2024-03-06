@@ -1,4 +1,4 @@
-import {FC, RefAttributes, RefObject, useCallback, useEffect, useMemo, useRef} from 'react';
+import {FC, RefAttributes, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
 import {
     Animated,
     LayoutRectangle,
@@ -164,7 +164,6 @@ const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
 export const TextFieldBase: FC<TextFieldBaseProps> = ({
     containerCurrent,
     data: dataSources,
-    id,
     leading,
     onActive,
     placeholder,
@@ -183,6 +182,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
             status: 'idle',
         });
 
+    const id = useId();
     const [{height}] = useAnimated({listVisible});
     const textFieldRef = useRef<TextInput>(null);
     const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;

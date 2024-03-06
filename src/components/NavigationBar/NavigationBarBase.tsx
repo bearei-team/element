@@ -71,7 +71,7 @@ type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
 
 const renderItems = (
     status: ComponentStatus,
-    {activeKey, type, data, onActive, id}: RenderItemOptions,
+    {activeKey, type, data, onActive}: RenderItemOptions,
 ) =>
     status === 'succeeded' &&
     data.map(({key, ...props}) => (
@@ -80,7 +80,6 @@ const renderItems = (
             activeKey={activeKey}
             type={type}
             dataKey={key}
-            id={id}
             key={key}
             onActive={onActive}
         />

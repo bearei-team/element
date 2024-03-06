@@ -153,7 +153,6 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
     activeKey,
     close,
     dataKey,
-    id,
     onActive,
     onClose,
     render,
@@ -218,7 +217,6 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
         active,
         activeColor,
         eventName,
-        id,
         onEvent,
         touchableLocation,
         renderStyle: {

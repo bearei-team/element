@@ -110,7 +110,6 @@ const renderItem = ({
         close={close}
         dataKey={item.key}
         gap={gap}
-        id={id}
         key={item.key}
         onActive={onActive}
         onClose={onClose}

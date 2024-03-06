@@ -9,7 +9,7 @@ const render = ({containerRef, id, onEvent, status, ...textFieldProps}: RenderPr
 
     return (
         <Container testID={`search--${id}`} ref={containerRef} onLayout={onLayout}>
-            {status === 'succeeded' && <TextField {...textFieldProps} id={id} />}
+            {status === 'succeeded' && <TextField {...textFieldProps} />}
         </Container>
     );
 };

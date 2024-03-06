@@ -1,4 +1,4 @@
-import {FC} from 'react';
+import {FC, useId} from 'react';
 import {
     Animated,
     LayoutRectangle,
@@ -41,6 +41,7 @@ export const RippleBase: FC<RippleBaseProps> = ({
     underlayColor,
     ...renderProps
 }) => {
+    const id = useId();
     const {width = 0, height = 0} = touchableLayout ?? {};
     const centerX = width / 2;
     const centerY = height / 2;
@@ -62,6 +63,7 @@ export const RippleBase: FC<RippleBaseProps> = ({
     return render({
         ...renderProps,
         active,
+        id,
         renderStyle: {
             height: diameter,
             opacity,

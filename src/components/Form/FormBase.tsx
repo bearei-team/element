@@ -62,7 +62,7 @@ const processCallback = ({
 
 const renderChildren = (status: ComponentStatus, {items, id}: RenderChildrenOptions) =>
     status === 'succeeded' &&
-    items?.map((item, index) => <FormItem {...item} key={item.name ?? index} id={id} />);
+    items?.map((item, index) => <FormItem {...item} key={item.name ?? index} />);
 
 export const FormBase = <T extends Store = Store>({
     form,

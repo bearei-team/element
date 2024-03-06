@@ -6,7 +6,7 @@ import {RenderProps, SideSheetBase, SideSheetProps} from './SideSheetBase';
 
 const render = ({id, visible, ...sheetProps}: RenderProps) => (
     <Container key={`sideSheet__modal--${id}`} testID={`sideSheet__modal--${id}`} visible={visible}>
-        {typeof visible === 'boolean' && <Sheet {...sheetProps} visible={visible} id={id} />}
+        {typeof visible === 'boolean' && <Sheet {...sheetProps} visible={visible} />}
     </Container>
 );
 

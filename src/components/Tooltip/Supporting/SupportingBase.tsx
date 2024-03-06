@@ -1,4 +1,4 @@
-import {FC, RefAttributes, useCallback, useEffect, useMemo} from 'react';
+import {FC, RefAttributes, useCallback, useEffect, useId, useMemo} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
@@ -103,7 +103,6 @@ const processContainerLayout = (
 
 export const SupportingBase: FC<SupportingBaseProps> = ({
     containerCurrent,
-    id,
     onVisible,
     render,
     visible,
@@ -115,6 +114,7 @@ export const SupportingBase: FC<SupportingBaseProps> = ({
         status: 'idle',
     });
 
+    const id = useId();
     const [{opacity}] = useAnimated({visible});
     const onStateChange = useCallback(
         (_state: State, options = {} as OnStateChangeOptions) =>

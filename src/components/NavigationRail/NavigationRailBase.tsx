@@ -62,7 +62,6 @@ const renderItems = (
             {...props}
             activeKey={activeKey}
             dataKey={key}
-            id={id}
             key={key}
             onActive={onActive}
             type={type}

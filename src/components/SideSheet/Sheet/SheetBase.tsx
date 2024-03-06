@@ -1,4 +1,4 @@
-import {FC, RefAttributes, useMemo} from 'react';
+import {FC, RefAttributes, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -65,6 +65,7 @@ export const SheetBase: FC<SheetBaseProps> = ({
         visible,
     });
 
+    const id = useId();
     const backIconElement = useMemo(
         () =>
             backIcon ?? (
@@ -123,5 +124,6 @@ export const SheetBase: FC<SheetBaseProps> = ({
         renderStyle: {backgroundColor, innerTranslateX},
         secondaryButton: secondaryButtonElement,
         visible,
+        id,
     });
 };

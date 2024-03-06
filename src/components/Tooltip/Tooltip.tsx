@@ -36,7 +36,6 @@ const render = ({
             {typeof visible === 'boolean' && typeof supportingText === 'string' && (
                 <Supporting
                     containerCurrent={containerCurrent}
-                    id={id}
                     onVisible={onVisible!}
                     supportingPosition={supportingPosition}
                     supportingText={supportingText}

@@ -1,4 +1,4 @@
-import {FC, RefAttributes, cloneElement, useCallback, useMemo} from 'react';
+import {FC, RefAttributes, cloneElement, useCallback, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -124,7 +124,6 @@ export const NavigationBarItemBase: FC<NavigationBarItemBaseProps> = ({
     activeKey,
     dataKey,
     icon = <Icon type="outlined" name="circle" />,
-    id,
     onActive,
     render,
     type = 'segment',
@@ -136,6 +135,7 @@ export const NavigationBarItemBase: FC<NavigationBarItemBaseProps> = ({
         touchableLocation: {} as InitialState['touchableLocation'],
     });
 
+    const id = useId();
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
     const underlayColor = theme.palette.surface.onSurface;

@@ -1,5 +1,5 @@
 import {RuleItem, ValidateError} from 'async-validator';
-import {FC, RefAttributes, useCallback, useEffect, useMemo} from 'react';
+import {FC, RefAttributes, useCallback, useEffect, useId, useMemo} from 'react';
 import {View, ViewProps} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {ValidateOptions, validate} from '../../../utils/validate.utils';
@@ -107,7 +107,6 @@ const processInit = (
 };
 
 export const FormItemBase: FC<FormItemBaseProps> = ({
-    id,
     labelText,
     name,
     render,
@@ -122,6 +121,7 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
         status: 'idle',
     });
 
+    const id = useId();
     const {getFieldError, getFieldValue, setFieldValue, signInField, getInitialValue} =
         useFormContext();
 
@@ -142,12 +142,11 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
             renderControl?.({
                 errorMessage: errors?.[0].message,
                 errors,
-                id,
                 labelText,
                 onValueChange,
                 value,
             }),
-        [renderControl, errors, id, labelText, onValueChange, value],
+        [renderControl, errors, labelText, onValueChange, value],
     );
 
     useEffect(() => () => signOut?.(), [signOut]);

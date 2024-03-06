@@ -124,7 +124,6 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
     activeKey,
     dataKey,
     icon = <Icon type="outlined" name="circle" />,
-    id,
     onActive,
     render,
     type = 'segment',
@@ -174,7 +173,7 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
         type,
         eventName,
         icon: iconElement,
-        id,
+
         onEvent,
         touchableLocation,
         renderStyle: {
