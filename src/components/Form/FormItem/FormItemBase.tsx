@@ -126,7 +126,7 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
         useFormContext();
 
     const errors = getFieldError(name)?.errors;
-    const value = getFieldValue(name) ?? getInitialValue(name) ?? '';
+    const value = getFieldValue(name) ?? getInitialValue(name);
     const onValueChange = useCallback(
         (nextValue?: unknown) => processValueChange({name, setFieldValue}, nextValue),
         [name, setFieldValue],
@@ -149,10 +149,11 @@ export const FormItemBase: FC<FormItemBaseProps> = ({
         [renderControl, errors, labelText, onValueChange, value],
     );
 
-    useEffect(() => () => signOut?.(), [signOut]);
     useEffect(() => {
         processInit(signInField, {name, rules, setState, validateFirst, validate: fieldValidate});
     }, [fieldValidate, name, rules, setState, signInField, validateFirst]);
+
+    useEffect(() => () => signOut?.(), [signOut]);
 
     if (status === 'idle') {
         return <></>;

@@ -136,19 +136,15 @@ const processContentSizeChange = (
 };
 
 const processChangeText = ({setState, onChangeText}: ProcessChangeTextOptions, text?: string) => {
-    if (typeof text !== 'string') {
-        return;
-    }
-
     setState(draft => {
         if (draft.value === text) {
             return;
         }
 
-        draft.value = text;
+        draft.value = typeof text === 'undefined' ? '' : text;
     });
 
-    onChangeText?.(text);
+    typeof text === 'string' && onChangeText?.(text);
 };
 
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
