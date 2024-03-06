@@ -46,7 +46,6 @@ interface RenderItemOptions {
     activeKey?: string;
     type?: NavigationRailType;
     data: ListDataSource[];
-    id: string;
     onActive: (value?: string) => void;
 }
 
@@ -54,7 +53,7 @@ type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
 
 const renderItems = (
     status: ComponentStatus,
-    {activeKey, type, data, onActive, id}: RenderItemOptions,
+    {activeKey, type, data, onActive}: RenderItemOptions,
 ) =>
     status === 'succeeded' &&
     data.map(({key, ...props}) => (
@@ -121,11 +120,10 @@ export const NavigationRailBase: FC<NavigationBaseProps> = ({
             renderItems(status, {
                 activeKey,
                 data,
-                id,
                 onActive,
                 type,
             }),
-        [activeKey, type, data, id, onActive, status],
+        [activeKey, type, data, onActive, status],
     );
 
     useEffect(() => {

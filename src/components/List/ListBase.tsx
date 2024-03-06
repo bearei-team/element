@@ -40,7 +40,6 @@ type RenderItemOptions = ListRenderItemInfo<ListDataSource> &
         | 'onActive'
         | 'onClose'
         | 'supportingTextNumberOfLines'
-        | 'id'
     >;
 
 interface InitialState {
@@ -99,7 +98,6 @@ const renderItem = ({
     onActive,
     onClose,
     supportingTextNumberOfLines,
-    id,
 }: RenderItemOptions) => (
     <ListItem
         {...item}
@@ -152,12 +150,11 @@ export const ListBase: FC<ListBaseProps> = ({
                 activeKey,
                 close,
                 gap,
-                id,
                 onActive,
                 onClose,
                 supportingTextNumberOfLines,
             }),
-        [activeKey, close, gap, id, onActive, onClose, supportingTextNumberOfLines],
+        [activeKey, close, gap, onActive, onClose, supportingTextNumberOfLines],
     );
 
     useEffect(() => {

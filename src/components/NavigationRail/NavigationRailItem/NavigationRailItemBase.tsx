@@ -1,4 +1,4 @@
-import {FC, RefAttributes, cloneElement, useCallback, useMemo} from 'react';
+import {FC, RefAttributes, cloneElement, useCallback, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -135,6 +135,7 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
         touchableLocation: {} as InitialState['touchableLocation'],
     });
 
+    const id = useId();
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
     const underlayColor = theme.palette.surface.onSurface;
@@ -173,7 +174,7 @@ export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
         type,
         eventName,
         icon: iconElement,
-
+        id,
         onEvent,
         touchableLocation,
         renderStyle: {

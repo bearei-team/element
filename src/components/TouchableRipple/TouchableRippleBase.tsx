@@ -186,12 +186,11 @@ export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
             renderRipples(rippleSequence, {
                 active,
                 centered,
-                id,
                 onEntryAnimatedFinished,
                 touchableLayout: layout,
                 underlayColor,
             }),
-        [active, centered, id, layout, onEntryAnimatedFinished, rippleSequence, underlayColor],
+        [active, centered, layout, onEntryAnimatedFinished, rippleSequence, underlayColor],
     );
 
     useEffect(() => {

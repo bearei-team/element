@@ -59,7 +59,6 @@ interface RenderItemOptions {
     active?: boolean;
     activeKey?: string;
     data: ListDataSource[];
-    id: string;
     onActive: (value?: string) => void;
     type?: NavigationBarType;
 }
@@ -193,11 +192,10 @@ export const NavigationBarBase: FC<NavigationBaseProps> = ({
             renderItems(status, {
                 activeKey,
                 data,
-                id,
                 onActive,
                 type,
             }),
-        [activeKey, type, data, id, onActive, status],
+        [activeKey, type, data, onActive, status],
     );
 
     useEffect(() => {

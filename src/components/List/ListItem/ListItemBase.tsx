@@ -1,4 +1,4 @@
-import {FC, useCallback, useMemo} from 'react';
+import {FC, useCallback, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -170,6 +170,7 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
             trailingEventName: 'none',
         });
 
+    const id = useId();
     const theme = useTheme();
     const activeColor = theme.palette.secondary.secondaryContainer;
     const underlayColor = theme.palette.surface.onSurface;
@@ -219,6 +220,7 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
         eventName,
         onEvent,
         touchableLocation,
+        id,
         renderStyle: {
             containerHeight: height,
             height: layout.height,

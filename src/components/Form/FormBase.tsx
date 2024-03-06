@@ -60,7 +60,7 @@ const processCallback = ({
     setCallback,
 }: ProcessCallbackOptions) => setCallback({onFinish, onFinishFailed, onValueChange});
 
-const renderChildren = (status: ComponentStatus, {items, id}: RenderChildrenOptions) =>
+const renderChildren = (status: ComponentStatus, {items}: RenderChildrenOptions) =>
     status === 'succeeded' &&
     items?.map((item, index) => <FormItem {...item} key={item.name ?? index} />);
 
