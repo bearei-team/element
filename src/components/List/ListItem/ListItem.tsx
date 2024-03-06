@@ -15,7 +15,6 @@ import {
 import {ListItemBase, ListItemProps, RenderProps} from './ListItemBase';
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
-const AnimatedInner = Animated.createAnimatedComponent(Inner);
 const AnimatedTrailingInner = Animated.createAnimatedComponent(TrailingInner);
 const render = ({
     active,
@@ -43,7 +42,6 @@ const render = ({
             accessibilityLabel={headline}
             accessibilityRole="list"
             gap={gap}
-            shape={shape}
             style={{height: containerHeight}}
             testID={`listItem--${id}`}>
             <TouchableRipple
@@ -52,7 +50,7 @@ const render = ({
                 touchableLocation={touchableLocation}
                 shape={shape}
                 underlayColor={activeColor}>
-                <AnimatedInner {...innerProps} onLayout={onLayout}>
+                <Inner {...innerProps} onLayout={onLayout}>
                     {leading && <Leading testID={`listItem__leading--${id}`}>{leading}</Leading>}
 
                     <Content
@@ -94,7 +92,7 @@ const render = ({
                         renderStyle={{width, height}}
                         underlayColor={underlayColor}
                     />
-                </AnimatedInner>
+                </Inner>
             </TouchableRipple>
         </AnimatedContainer>
     );

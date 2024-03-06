@@ -63,13 +63,11 @@ export const Container = styled(Shape)<ContainerProps>`
         };
 
         return supportingPosition[position];
-    }}
-
-    ${({visible = false}) =>
+    }} /* ${({visible = false}) =>
         !visible &&
         css`
             z-index: -16384;
-        `}
+        `} */
 `;
 
 export const Inner = styled(Pressable)<InnerProps>`
@@ -97,7 +95,6 @@ export const Inner = styled(Pressable)<InnerProps>`
     ${({visible = false}) =>
         !visible &&
         css`
-            pointer-events: none;
             top: -100%;
         `}
 `;

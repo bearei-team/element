@@ -17,7 +17,7 @@ import {
 } from './Card.styles';
 import {CardBase, CardProps, RenderProps} from './CardBase';
 
-const AnimatedInner = Animated.createAnimatedComponent(Inner);
+const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
 const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 const AnimatedSubheadText = Animated.createAnimatedComponent(SubheadText);
 const AnimatedTitleText = Animated.createAnimatedComponent(TitleText);
@@ -61,19 +61,19 @@ const render = ({
             renderStyle={{width: innerWidth}}
             testID={`card--${id}`}>
             <Elevation level={elevation} shape={shape}>
-                <TouchableRipple
+                <AnimatedTouchableRipple
                     {...onTouchableRippleEvent}
                     disabled={disabled}
                     shape={shape}
-                    underlayColor={underlayColor}>
-                    <AnimatedInner
+                    underlayColor={underlayColor}
+                    style={{
+                        ...(typeof style === 'object' && style),
+                        ...border,
+                        backgroundColor,
+                    }}>
+                    <Inner
                         shape={shape}
                         onLayout={onInnerLayout}
-                        style={{
-                            ...(typeof style === 'object' && style),
-                            ...border,
-                            backgroundColor,
-                        }}
                         testID={`card__inner--${id}`}
                         block={block}
                         renderStyle={{width}}>
@@ -129,8 +129,8 @@ const render = ({
                             shape={shape}
                             underlayColor={underlayColor}
                         />
-                    </AnimatedInner>
-                </TouchableRipple>
+                    </Inner>
+                </AnimatedTouchableRipple>
             </Elevation>
         </Container>
     );

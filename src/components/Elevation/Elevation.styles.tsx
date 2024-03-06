@@ -1,4 +1,5 @@
 import {Elevation} from '@bearei/theme';
+import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './ElevationBase';
@@ -11,7 +12,7 @@ interface ShadowProps extends Pick<RenderProps & ContainerProps, 'level' | 'rend
     shadowIndex: 0 | 1;
 }
 
-export const Container = styled(Shape)<ContainerProps>`
+export const Container = styled(View)<ContainerProps>`
     position: relative;
 
     ${({renderStyle = {}}) => {
@@ -30,12 +31,12 @@ export const Content = styled(Shape)`
 `;
 
 export const Shadow = styled(Shape)<ShadowProps>`
-    left: 0;
     position: absolute;
-    top: 0;
 
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surface};
+        top: ${theme.adaptSize(theme.spacing.none)}px;
+        left: ${theme.adaptSize(theme.spacing.none)}px;
     `};
 
     ${({theme, level = 0, shadowIndex = 0}) => {

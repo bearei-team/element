@@ -1,5 +1,6 @@
+import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {Shape, Typography} from '../../Common/Common.styles';
+import {Typography} from '../../Common/Common.styles';
 import {RenderProps} from './ListItemBase';
 
 type ContainerProps = Pick<RenderProps, 'gap'>;
@@ -7,7 +8,7 @@ interface ContentProps {
     supportingTextShow?: boolean;
 }
 
-export const Container = styled(Shape)<ContainerProps>`
+export const Container = styled(View)<ContainerProps>`
     overflow: hidden;
 
     ${({theme}) => css`

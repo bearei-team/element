@@ -14,7 +14,7 @@ import {emitter} from '../../context/ModalProvider';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {debounce} from '../../utils/debounce.utils';
 import {ShapeProps} from '../Common/Common.styles';
-import {State} from '../Common/interface';
+import {EventName, State} from '../Common/interface';
 import {SupportingProps} from './Supporting/Supporting';
 
 type BaseProps = Partial<
@@ -32,6 +32,7 @@ export interface TooltipProps extends Omit<BaseProps, 'children' | 'disabled' | 
     children?: React.JSX.Element;
     defaultVisible?: boolean;
     disabled?: boolean;
+    eventName?: EventName;
 }
 
 export interface RenderProps extends TooltipProps {
@@ -58,6 +59,11 @@ interface ProcessEventOptions {
 
 type ProcessStateChangeOptions = OnStateChangeOptions &
     ProcessEventOptions & {debounceProcessVisible: typeof processVisible};
+
+type ProcessEventNameChangeOptions = Pick<
+    ProcessStateChangeOptions,
+    'setState' | 'debounceProcessVisible'
+>;
 
 type ProcessVisibleOptions = ProcessEventOptions & Pick<RenderProps, 'onVisible'>;
 
@@ -89,6 +95,14 @@ const processVisible = ({setState, onVisible}: ProcessVisibleOptions, visible?: 
     onVisible?.(visible);
 };
 
+const processEventNameChange = (
+    {setState, debounceProcessVisible}: ProcessEventNameChangeOptions,
+    eventName?: EventName,
+) =>
+    eventName &&
+    ['hoverIn', 'hoverOut'].includes(eventName) &&
+    debounceProcessVisible({setState}, eventName === 'hoverIn');
+
 const processStateChange = ({
     event,
     eventName,
@@ -97,7 +111,7 @@ const processStateChange = ({
 }: ProcessStateChangeOptions) => {
     eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
     ['hoverIn', 'hoverOut'].includes(eventName) &&
-        debounceProcessVisible({setState}, eventName === 'hoverIn');
+        processEventNameChange({setState, debounceProcessVisible}, eventName);
 };
 
 const processUnmount = (id: string) =>
@@ -110,6 +124,7 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
     render,
     visible: visibleSource,
     disabled = false,
+    eventName: eventNameSource,
     ...renderProps
 }) => {
     const [{layout, visible}, setState] = useImmer<InitialState>({
@@ -120,7 +135,7 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
     const containerRef = useRef<View>(null);
     const id = useId();
     const ref = (refSource ?? containerRef) as React.RefObject<View>;
-    const debounceProcessVisible = useMemo(() => debounce(processVisible, 50), []);
+    const debounceProcessVisible = useMemo(() => debounce(processVisible, 100), []);
     const onVisible = useCallback(
         (value?: boolean) => debounceProcessVisible({setState, onVisible: onVisibleSource}, value),
         [debounceProcessVisible, onVisibleSource, setState],
@@ -132,11 +147,21 @@ export const TooltipBase: FC<TooltipBaseProps> = ({
         [debounceProcessVisible, setState],
     );
 
+    const onEventNameChange = useCallback(
+        (eventName?: EventName) =>
+            processEventNameChange({setState, debounceProcessVisible}, eventName),
+        [debounceProcessVisible, setState],
+    );
+
     const [onEvent] = useOnEvent({...renderProps, onStateChange, disabled});
 
     useEffect(() => {
         onVisible(visibleSource ?? defaultVisible);
     }, [onVisible, visibleSource, defaultVisible]);
+
+    useEffect(() => {
+        onEventNameChange(eventNameSource);
+    }, [eventNameSource, onEventNameChange]);
 
     useEffect(() => {
         return () => processUnmount(id);

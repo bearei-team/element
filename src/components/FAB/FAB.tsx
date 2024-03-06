@@ -6,7 +6,7 @@ import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon, LabelText} from './FAB.styles';
 import {FABBase, FABProps, RenderProps} from './FABBase';
 
-const AnimatedContent = Animated.createAnimatedComponent(Content);
+const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     accessibilityLabel,
@@ -32,19 +32,19 @@ const render = ({
             accessibilityRole="button"
             testID={`fab--${id}`}>
             <Elevation level={elevation} shape={shape}>
-                <TouchableRipple
+                <AnimatedTouchableRipple
                     {...onTouchableRippleEvent}
                     shape={shape}
-                    underlayColor={underlayColor}>
-                    <AnimatedContent
+                    underlayColor={underlayColor}
+                    style={{
+                        ...(typeof style === 'object' && style),
+                        backgroundColor,
+                    }}>
+                    <Content
                         {...contentProps}
                         labelTextShow={!!labelText}
                         onLayout={onLayout}
                         shape={shape}
-                        style={{
-                            ...(typeof style === 'object' && style),
-                            backgroundColor,
-                        }}
                         testID={`fab__content--${id}`}
                         type={type}>
                         {icon && <Icon testID={`fab__icon--${id}`}>{icon}</Icon>}
@@ -65,8 +65,8 @@ const render = ({
                             shape={shape}
                             underlayColor={underlayColor}
                         />
-                    </AnimatedContent>
-                </TouchableRipple>
+                    </Content>
+                </AnimatedTouchableRipple>
             </Elevation>
         </Container>
     );

@@ -6,7 +6,7 @@ import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon, LabelText} from './Chip.styles';
 import {ChipBase, ChipProps, RenderProps} from './ChipBase';
 
-const AnimatedContent = Animated.createAnimatedComponent(Content);
+const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     active,
@@ -32,23 +32,23 @@ const render = ({
     return (
         <Container accessibilityLabel={labelText} testID={`chip--${id}`}>
             <Elevation level={elevation} shape={shape}>
-                <TouchableRipple
+                <AnimatedTouchableRipple
                     {...onEvent}
                     active={active}
                     disabled={disabled}
                     shape={shape}
                     underlayColor={activeColor}
-                    touchableLocation={touchableLocation}>
-                    <AnimatedContent
+                    touchableLocation={touchableLocation}
+                    style={{
+                        ...(typeof style === 'object' && style),
+                        ...border,
+                        backgroundColor,
+                    }}>
+                    <Content
                         {...contentProps}
                         iconShow={!!icon}
                         trailingIconShow={!!trailingIcon}
                         shape={shape}
-                        style={{
-                            ...(typeof style === 'object' && style),
-                            ...border,
-                            backgroundColor,
-                        }}
                         testID={`chip__content--${id}`}
                         type={type}>
                         {icon && <Icon testID={`chip__icon--${id}`}>{icon}</Icon>}
@@ -73,8 +73,8 @@ const render = ({
                             shape={shape}
                             underlayColor={underlayColor}
                         />
-                    </AnimatedContent>
-                </TouchableRipple>
+                    </Content>
+                </AnimatedTouchableRipple>
             </Elevation>
         </Container>
     );

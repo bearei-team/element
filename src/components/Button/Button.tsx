@@ -6,7 +6,7 @@ import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon, LabelText} from './Button.styles';
 import {ButtonBase, ButtonProps, RenderProps} from './ButtonBase';
 
-const AnimatedContent = Animated.createAnimatedComponent(Content);
+const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     block,
@@ -39,26 +39,25 @@ const render = ({
             block={block}
             onLayout={onLayout}
             renderStyle={{width: contentWidth}}
-            shape={shape}
             testID={`button--${id}`}>
             <Elevation level={elevation} shape={shape}>
-                <TouchableRipple
+                <AnimatedTouchableRipple
                     {...onTouchableRippleEvent}
+                    style={{
+                        ...(typeof style === 'object' && style),
+                        ...border,
+                        backgroundColor,
+                    }}
                     disabled={disabled}
                     shape={shape}
                     underlayColor={underlayColor}>
-                    <AnimatedContent
+                    <Content
                         {...contentProps}
                         block={block}
                         iconShow={!!icon}
                         onLayout={onContentLayout}
                         renderStyle={{width}}
                         shape={shape}
-                        style={{
-                            ...(typeof style === 'object' && style),
-                            ...border,
-                            backgroundColor,
-                        }}
                         testID={`button__content--${id}`}
                         type={type}>
                         {icon && !link && <Icon testID={`button__icon--${id}`}>{icon}</Icon>}
@@ -79,8 +78,8 @@ const render = ({
                             shape={shape}
                             underlayColor={underlayColor}
                         />
-                    </AnimatedContent>
-                </TouchableRipple>
+                    </Content>
+                </AnimatedTouchableRipple>
             </Elevation>
         </Container>
     );

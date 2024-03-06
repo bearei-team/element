@@ -1,11 +1,10 @@
 import {FC, forwardRef, memo} from 'react';
-import {Animated, View} from 'react-native';
+import {View} from 'react-native';
 import {Hovered} from '../Hovered/Hovered';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon} from './Checkbox.styles';
 import {CheckboxBase, CheckboxProps, RenderProps} from './CheckboxBase';
 
-const AnimatedContent = Animated.createAnimatedComponent(Content);
 const render = ({
     disabled,
     eventName,
@@ -27,7 +26,7 @@ const render = ({
                 disabled={disabled}
                 shape={shape}
                 underlayColor={underlayColor}>
-                <AnimatedContent
+                <Content
                     {...contentProps}
                     onLayout={onLayout}
                     shape={shape}
@@ -39,7 +38,7 @@ const render = ({
                         shape={shape}
                         underlayColor={underlayColor}
                     />
-                </AnimatedContent>
+                </Content>
             </TouchableRipple>
         </Container>
     );

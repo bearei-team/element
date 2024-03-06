@@ -10,7 +10,7 @@ import {IconButtonBase, IconButtonProps, IconButtonType, RenderProps} from './Ic
  * TODO: Selected
  */
 
-const AnimatedContent = Animated.createAnimatedComponent(Content);
+const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
 const render = ({
     disabled,
     eventName,
@@ -32,26 +32,29 @@ const render = ({
         <Container
             accessibilityRole="button"
             testID={`iconButton--${id}`}
-            renderStyle={{width: layoutWidth, height: layoutHeight}}
-            shape={shape}>
-            <TouchableRipple shape={shape} underlayColor={underlayColor}>
-                <Tooltip
+            renderStyle={{width: layoutWidth, height: layoutHeight}}>
+            <Tooltip
+                disabled={disabled}
+                eventName={eventName}
+                shape={shape}
+                supportingPosition={supportingPosition}
+                supportingText={supportingText}
+                type="plain"
+                visible={tooltipVisible}>
+                <AnimatedTouchableRipple
                     {...onEvent}
-                    shape={shape}
                     disabled={disabled}
-                    supportingPosition={supportingPosition}
-                    supportingText={supportingText}
-                    type="plain"
-                    visible={tooltipVisible}>
-                    <AnimatedContent
+                    shape={shape}
+                    underlayColor={underlayColor}
+                    style={{
+                        ...(typeof style === 'object' && style),
+                        ...border,
+                        backgroundColor,
+                    }}>
+                    <Content
                         {...contentProps}
                         shape={shape}
                         renderStyle={{width, height}}
-                        style={{
-                            ...(typeof style === 'object' && style),
-                            ...border,
-                            backgroundColor,
-                        }}
                         testID={`iconButton__content--${id}`}>
                         {icon}
                         <Hovered
@@ -60,9 +63,9 @@ const render = ({
                             shape={shape}
                             underlayColor={underlayColor}
                         />
-                    </AnimatedContent>
-                </Tooltip>
-            </TouchableRipple>
+                    </Content>
+                </AnimatedTouchableRipple>
+            </Tooltip>
         </Container>
     );
 };

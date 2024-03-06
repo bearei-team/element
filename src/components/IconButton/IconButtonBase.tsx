@@ -38,6 +38,7 @@ interface IconButtonBaseProps extends IconButtonProps {
 interface InitialState {
     eventName: EventName;
     layout: LayoutRectangle;
+    tooltipVisible?: boolean;
 }
 
 interface ProcessEventOptions {
