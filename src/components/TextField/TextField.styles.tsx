@@ -150,11 +150,16 @@ export const Input = styled(TextInput)<TextInputProps>`
 
     ${({theme}) => css`
         font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
-        font-style: ${theme.typography.body.large.style};
-        font-weight: ${theme.typography.body.large.weight};
-        letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
-        padding: ${theme.spacing.none}px;
     `};
+
+    ${({theme, secureTextEntry}) =>
+        !secureTextEntry &&
+        css`
+            font-style: ${theme.typography.body.large.style};
+            font-weight: ${theme.typography.body.large.weight};
+            letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
+            padding: ${theme.spacing.none}px;
+        `};
 
     ${({multilineText, theme}) =>
         multilineText &&

@@ -148,13 +148,7 @@ const processChangeText = ({setState, onChangeText}: ProcessChangeTextOptions, t
 };
 
 const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-const renderTextInput = ({
-    id,
-    renderStyle,
-    multiline,
-    secureTextEntry,
-    ...inputProps
-}: RenderTextInputProps) => (
+const renderTextInput = ({id, renderStyle, multiline, ...inputProps}: RenderTextInputProps) => (
     <AnimatedTextInput
         {...inputProps}
         style={renderStyle}
@@ -169,7 +163,6 @@ const renderTextInput = ({
          */
         // @ts-ignore
         enableFocusRing={false}
-        secureTextEntry={secureTextEntry}
     />
 );
 
