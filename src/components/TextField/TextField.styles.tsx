@@ -101,6 +101,7 @@ export const Trailing = styled.View`
 export const Leading = styled(Trailing)``;
 export const Content = styled.View<ContentProps>`
     flex: 1;
+    pointer-events: none;
 
     ${({theme}) => css`
         height: ${theme.adaptFontSize(theme.spacing.small * 6)}px;
@@ -148,13 +149,10 @@ export const Control = styled.View<ControlProps>`
 export const Input = styled(TextInput)<TextInputProps>`
     flex: 1;
 
-    ${({theme}) => css`
-        font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
-    `};
-
     ${({theme, secureTextEntry}) =>
         !secureTextEntry &&
         css`
+            font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
             font-style: ${theme.typography.body.large.style};
             font-weight: ${theme.typography.body.large.weight};
             letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;

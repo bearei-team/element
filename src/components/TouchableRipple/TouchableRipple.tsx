@@ -1,13 +1,15 @@
 import {FC, forwardRef, memo} from 'react';
 import {View} from 'react-native';
-import {Container, Content} from './TouchableRipple.styles';
+import {Container, Content, Inner} from './TouchableRipple.styles';
 import {RenderProps, TouchableRippleBase, TouchableRippleProps} from './TouchableRippleBase';
 
 const render = ({id, children, shape, onEvent, ripples, ...containerProps}: RenderProps) => (
-    <Container {...containerProps} {...onEvent} testID={`touchableRipple--${id}`}>
-        <Content shape={shape} testID={`touchableRipple__content--${id}`}>
-            {children}
-            {ripples}
+    <Container {...containerProps} shape={shape} testID={`touchableRipple--${id}`}>
+        <Content {...onEvent} testID={`touchableRipple__content--${id}`}>
+            <Inner testID={`touchableRipple__inner--${id}`}>
+                {children}
+                {ripples}
+            </Inner>
         </Content>
     </Container>
 );

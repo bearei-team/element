@@ -1,4 +1,3 @@
-import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './ButtonBase';
@@ -12,7 +11,7 @@ interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
     renderStyle: {width?: number};
 }
 
-export const Container = styled(View)<ContainerProps>`
+export const Container = styled(Shape)<ContainerProps>`
     ${({block, renderStyle}) => {
         const {width = 0} = renderStyle;
 
@@ -33,7 +32,6 @@ export const Content = styled(Shape)<ContentProps>`
     justify-content: center;
     pointer-events: none;
     position: relative;
-    z-index: 1;
 
     ${({theme, iconShow}) =>
         iconShow &&

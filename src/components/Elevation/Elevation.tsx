@@ -17,7 +17,11 @@ const render = ({
     const {height, opacity0, opacity1, width} = renderStyle;
 
     return (
-        <Container {...containerProps} testID={`elevation--${id}`} renderStyle={{width, height}}>
+        <Container
+            {...containerProps}
+            testID={`elevation--${id}`}
+            shape={shape}
+            renderStyle={{width, height}}>
             <Content onLayout={onLayout} shape={shape} testID={`elevation__content--${id}`}>
                 {children}
             </Content>

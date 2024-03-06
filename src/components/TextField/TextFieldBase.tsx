@@ -38,7 +38,7 @@ export interface RenderProps extends TextFieldProps {
     contentSize?: Partial<TextInputContentSizeChangeEventData['contentSize']>;
     eventName: EventName;
     input: React.JSX.Element;
-    onEvent: OnEvent;
+    onEvent: Omit<OnEvent, 'onBlur' | 'onFocus'>;
     state: State;
     underlayColor: string;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
@@ -101,7 +101,6 @@ const processStateChange = (
     {event, eventName, setState, ref}: ProcessStateChangeOptions,
 ) => {
     const nextEvent = {
-        focus: () => processFocus(ref),
         layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () => processFocus(ref),
     } as Record<EventName, () => void>;
@@ -292,7 +291,7 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
         labelText,
         leading,
         multiline,
-        onEvent: {...onEvent, onBlur, onFocus},
+        onEvent: {...onEvent},
         renderStyle: {
             activeIndicatorBackgroundColor,
             activeIndicatorHeight,

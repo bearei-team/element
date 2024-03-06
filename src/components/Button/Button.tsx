@@ -39,6 +39,7 @@ const render = ({
             block={block}
             onLayout={onLayout}
             renderStyle={{width: contentWidth}}
+            shape={shape}
             testID={`button--${id}`}>
             <Elevation level={elevation} shape={shape}>
                 <TouchableRipple
