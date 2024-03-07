@@ -6,7 +6,6 @@ import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon, LabelText} from './Chip.styles';
 import {ChipBase, ChipProps, RenderProps} from './ChipBase';
 
-const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     active,
@@ -32,7 +31,7 @@ const render = ({
     return (
         <Container accessibilityLabel={labelText} testID={`chip--${id}`}>
             <Elevation level={elevation} shape={shape}>
-                <AnimatedTouchableRipple
+                <TouchableRipple
                     {...onEvent}
                     active={active}
                     disabled={disabled}
@@ -74,7 +73,7 @@ const render = ({
                             underlayColor={underlayColor}
                         />
                     </Content>
-                </AnimatedTouchableRipple>
+                </TouchableRipple>
             </Elevation>
         </Container>
     );

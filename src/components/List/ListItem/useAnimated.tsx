@@ -30,11 +30,11 @@ const processCloseAnimated = (
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {
-        trailingOpacityAnimated,
-        eventName = 'none',
-        trailingEventName,
         close,
+        eventName = 'none',
         state,
+        trailingEventName,
+        trailingOpacityAnimated,
     }: ProcessAnimatedTimingOptions,
 ) => {
     const closeIconValue = state !== 'enabled' ? 1 : 0;

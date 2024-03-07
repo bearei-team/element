@@ -38,7 +38,7 @@ export interface RenderProps extends SearchProps {
     input: React.JSX.Element;
     layout: LayoutRectangle;
     listVisible?: boolean;
-    onEvent: OnEvent;
+    onEvent: Omit<OnEvent, 'onBlur' | 'onFocus'>;
     underlayColor: string;
 }
 
@@ -72,6 +72,7 @@ type RenderSearchListOptions = SearchProps & {
     containerPageX?: number;
     containerPageY?: number;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {width?: number};
+    visible?: boolean;
 };
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
@@ -80,7 +81,6 @@ const processStateChange = (
     {eventName, ref, setState}: ProcessStateChangeOptions,
 ) => {
     const nextEvent = {
-        focus: () => processFocus(ref),
         pressOut: () => processFocus(ref),
     } as Record<EventName, () => void>;
 
@@ -193,6 +193,7 @@ const renderSearchList = ({
     id,
     onActive,
     renderStyle,
+    visible,
 }: RenderSearchListOptions) => {
     const {height, width} = renderStyle;
 
@@ -203,7 +204,8 @@ const renderSearchList = ({
             containerPageY={containerPageY}
             renderStyle={{width}}
             style={{height}}
-            testID={`search__list--${id}`}>
+            testID={`search__list--${id}`}
+            visible={visible}>
             <List
                 activeKey={activeKey}
                 data={data}
@@ -319,7 +321,7 @@ export const SearchBase: FC<SearchBaseProps> = ({
         leading,
         listVisible,
         onActive,
-        onEvent: {onBlur, onFocus, ...onEvent},
+        onEvent: {...onEvent},
         placeholder,
         trailing,
         underlayColor,

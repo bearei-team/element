@@ -6,7 +6,6 @@ import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon, LabelText} from './FAB.styles';
 import {FABBase, FABProps, RenderProps} from './FABBase';
 
-const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     accessibilityLabel,
@@ -32,7 +31,7 @@ const render = ({
             accessibilityRole="button"
             testID={`fab--${id}`}>
             <Elevation level={elevation} shape={shape}>
-                <AnimatedTouchableRipple
+                <TouchableRipple
                     {...onTouchableRippleEvent}
                     shape={shape}
                     underlayColor={underlayColor}
@@ -66,7 +65,7 @@ const render = ({
                             underlayColor={underlayColor}
                         />
                     </Content>
-                </AnimatedTouchableRipple>
+                </TouchableRipple>
             </Elevation>
         </Container>
     );

@@ -14,4 +14,11 @@ export const Container = styled.View<ContainerProps>`
             left: ${theme.adaptSize(theme.spacing.none)}px;
             top: ${theme.adaptSize(theme.spacing.none)}px;
         `}
+
+    ${({visible = false}) =>
+        !visible &&
+        css`
+            pointer-events: none;
+            top: -100%;
+        `}
 `;

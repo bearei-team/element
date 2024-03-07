@@ -1,5 +1,5 @@
 import {FC, forwardRef, memo} from 'react';
-import {Animated, View} from 'react-native';
+import {View} from 'react-native';
 import {Hovered} from '../Hovered/Hovered';
 import {Tooltip} from '../Tooltip/Tooltip';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
@@ -10,7 +10,6 @@ import {IconButtonBase, IconButtonProps, IconButtonType, RenderProps} from './Ic
  * TODO: Selected
  */
 
-const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
 const render = ({
     disabled,
     eventName,
@@ -41,7 +40,7 @@ const render = ({
                 supportingText={supportingText}
                 type="plain"
                 visible={tooltipVisible}>
-                <AnimatedTouchableRipple
+                <TouchableRipple
                     {...onEvent}
                     disabled={disabled}
                     shape={shape}
@@ -64,7 +63,7 @@ const render = ({
                             underlayColor={underlayColor}
                         />
                     </Content>
-                </AnimatedTouchableRipple>
+                </TouchableRipple>
             </Tooltip>
         </Container>
     );

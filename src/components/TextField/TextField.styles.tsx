@@ -14,9 +14,7 @@ type LabelTextProps = {
 } & TypographyProps;
 
 interface ActiveIndicatorProps {
-    renderStyle?: {
-        width?: number;
-    };
+    renderStyle?: {width?: number};
 }
 
 type ContentProps = Pick<RenderProps, 'multiline'>;

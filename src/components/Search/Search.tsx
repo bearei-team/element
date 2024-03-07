@@ -22,7 +22,6 @@ const render = ({
     ...containerProps
 }: RenderProps) => {
     const shape = listVisible ? 'extraLargeTop' : 'extraLarge';
-    const {onBlur, onFocus, ...headerEvent} = onEvent;
     const {height, width} = layout;
 
     return (
@@ -32,11 +31,9 @@ const render = ({
             shape={shape}
             testID={`search__inner--${id}`}>
             <Inner
-                {...headerEvent}
+                {...onEvent}
                 accessibilityLabel={placeholder}
                 accessibilityRole="keyboardkey"
-                onBlur={onBlur}
-                onFocus={onFocus}
                 testID={`search__inner--${id}`}
                 trailingShow={!!trailing}>
                 <Leading testID={`search__leading--${id}`}>

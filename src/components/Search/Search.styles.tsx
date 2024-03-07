@@ -14,6 +14,7 @@ type SearchListProps = {
     renderStyle?: {
         width?: number;
     };
+    visible?: boolean;
 };
 
 export const Container = styled(Shape)`
@@ -65,6 +66,7 @@ export const Content = styled.View`
     display: flex;
     flex-direction: row;
     flex: 1;
+    pointer-events: none;
 
     ${({theme}) =>
         css`
@@ -88,14 +90,19 @@ export const Input = styled(TextInput)`
 
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurface};
-        font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
-        font-style: ${theme.typography.body.large.style};
-        font-weight: ${theme.typography.body.large.weight};
-        letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
-        line-height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
-        min-height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
-        padding: ${theme.spacing.none}px;
     `};
+
+    ${({theme, secureTextEntry}) =>
+        !secureTextEntry &&
+        css`
+            font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
+            font-style: ${theme.typography.body.large.style};
+            font-weight: ${theme.typography.body.large.weight};
+            letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
+            line-height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
+            min-height: ${theme.adaptSize(theme.typography.body.large.lineHeight)}px;
+            padding: ${theme.spacing.none}px;
+        `};
 `;
 
 export const Trailing = styled(Leading)``;
@@ -114,4 +121,11 @@ export const SearchList = styled.View<SearchListProps>`
         left: ${containerPageY}px;
         top: ${containerPageX + containerHeight}px;
     `};
+
+    ${({visible}) =>
+        !visible &&
+        css`
+            top: -100%;
+            pointer-events: none;
+        `};
 `;

@@ -35,13 +35,13 @@ export interface RenderProps extends ListItemProps {
     activeColor: string;
     eventName: EventName;
     onEvent: OnEvent;
-    touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         height: number;
         trailingOpacity: AnimatedInterpolation;
         containerHeight: AnimatedInterpolation;
         width: number;
     };
+    touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     underlayColor: string;
 }
 
@@ -50,13 +50,13 @@ interface ListItemBaseProps extends ListItemProps {
 }
 
 interface InitialState {
-    touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
+    active?: boolean;
     eventName: EventName;
     layout: LayoutRectangle;
     state: State;
     status: ComponentStatus;
+    touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     trailingEventName: EventName;
-    active?: boolean;
 }
 
 interface ProcessEventOptions {
@@ -218,9 +218,8 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
         active,
         activeColor,
         eventName,
-        onEvent,
-        touchableLocation,
         id,
+        onEvent,
         renderStyle: {
             containerHeight: height,
             height: layout.height,
@@ -228,6 +227,7 @@ export const ListItemBase: FC<ListItemBaseProps> = ({
             width: layout.width,
         },
         supportingText,
+        touchableLocation,
         trailing: trailingElement,
         underlayColor,
     });

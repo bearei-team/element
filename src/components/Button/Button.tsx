@@ -6,7 +6,6 @@ import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
 import {Container, Content, Icon, LabelText} from './Button.styles';
 import {ButtonBase, ButtonProps, RenderProps} from './ButtonBase';
 
-const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     block,
@@ -41,7 +40,7 @@ const render = ({
             renderStyle={{width: contentWidth}}
             testID={`button--${id}`}>
             <Elevation level={elevation} shape={shape}>
-                <AnimatedTouchableRipple
+                <TouchableRipple
                     {...onTouchableRippleEvent}
                     style={{
                         ...(typeof style === 'object' && style),
@@ -79,7 +78,7 @@ const render = ({
                             underlayColor={underlayColor}
                         />
                     </Content>
-                </AnimatedTouchableRipple>
+                </TouchableRipple>
             </Elevation>
         </Container>
     );

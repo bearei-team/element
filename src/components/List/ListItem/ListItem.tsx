@@ -47,10 +47,10 @@ const render = ({
             <TouchableRipple
                 {...onTouchableRippleEvent}
                 active={active}
-                touchableLocation={touchableLocation}
                 shape={shape}
+                touchableLocation={touchableLocation}
                 underlayColor={activeColor}>
-                <Inner {...innerProps} onLayout={onLayout}>
+                <Inner {...innerProps} onLayout={onLayout} testID={`listItem__inner--${id}`}>
                     {leading && <Leading testID={`listItem__leading--${id}`}>{leading}</Leading>}
 
                     <Content
@@ -78,10 +78,10 @@ const render = ({
                     </Content>
 
                     {trailing && (
-                        <Trailing>
+                        <Trailing testID={`listItem__trailing--${id}`}>
                             <AnimatedTrailingInner
                                 style={{opacity: trailingOpacity}}
-                                testID={`listItem__trailing--${id}`}>
+                                testID={`listItem__trailingInner--${id}`}>
                                 {trailing}
                             </AnimatedTrailingInner>
                         </Trailing>
