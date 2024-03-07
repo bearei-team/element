@@ -21,6 +21,7 @@ import Menu from '@material-design-icons/svg/outlined/menu.svg';
 import MenuOpen from '@material-design-icons/svg/outlined/menu_open.svg';
 import NewLabel from '@material-design-icons/svg/outlined/new_label.svg';
 import OpenInBrowser from '@material-design-icons/svg/outlined/open_in_browser.svg';
+import OtherHouses from '@material-design-icons/svg/outlined/other_houses.svg';
 import RadioButtonChecked from '@material-design-icons/svg/outlined/radio_button_checked.svg';
 import RadioButtonUnchecked from '@material-design-icons/svg/outlined/radio_button_unchecked.svg';
 import Refresh from '@material-design-icons/svg/outlined/refresh.svg';
@@ -33,6 +34,7 @@ import StarBorder from '@material-design-icons/svg/outlined/star_border.svg';
 
 export const outlined = {
     svg: {
+        otherHouses: OtherHouses,
         bookmarkAdd: BookmarkAdd,
         addHome: AddHome,
         arrowBack: ArrowBack,

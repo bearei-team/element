@@ -21,6 +21,7 @@ import Menu from '@material-design-icons/svg/sharp/menu.svg';
 import MenuOpen from '@material-design-icons/svg/sharp/menu_open.svg';
 import NewLabel from '@material-design-icons/svg/sharp/new_label.svg';
 import OpenInBrowser from '@material-design-icons/svg/sharp/open_in_browser.svg';
+import OtherHouses from '@material-design-icons/svg/sharp/other_houses.svg';
 import RadioButtonChecked from '@material-design-icons/svg/sharp/radio_button_checked.svg';
 import RadioButtonUnchecked from '@material-design-icons/svg/sharp/radio_button_unchecked.svg';
 import Refresh from '@material-design-icons/svg/sharp/refresh.svg';
@@ -33,6 +34,7 @@ import StarBorder from '@material-design-icons/svg/sharp/star_border.svg';
 
 export const sharp = {
     svg: {
+        otherHouses: OtherHouses,
         bookmarkAdd: BookmarkAdd,
         addHome: AddHome,
         arrowBack: ArrowBack,

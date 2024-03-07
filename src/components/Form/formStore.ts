@@ -23,7 +23,7 @@ interface FieldEntity {
 }
 
 interface SetFieldValueOptions {
-    response?: boolean;
+    updateComponent?: boolean;
     skipValidate?: boolean;
 }
 
@@ -154,10 +154,16 @@ export const formStore = <T extends Store>(): FormStore<T> => {
 
     const setFieldValue = (
         value = {} as T,
-        {response = true, skipValidate = false} = {} as SetFieldValueOptions,
+        {updateComponent = true, skipValidate = false} = {} as SetFieldValueOptions,
     ) => {
         const {onValueChange} = callback;
         const entities = getFieldEntities();
+        const processStoreUpdate = (onStoreChange?: (changedValue: T, value: T) => void) => {
+            store = {...store, ...value};
+
+            onStoreChange?.(value, store);
+        };
+
         const processValidateResult = (entity: FieldEntity, err?: FieldError) => {
             const name = entity.props.name;
 
@@ -165,12 +171,14 @@ export const formStore = <T extends Store>(): FormStore<T> => {
                 return;
             }
 
+            processStoreUpdate();
             setFieldError({[name]: err} as Error<T>);
             setFieldTouched(name, true);
+
             entity.onFormStoreChange();
         };
 
-        const processResponse = async (name: keyof T) => {
+        const processUpdateComponent = async (name: keyof T) => {
             const entity = entities.find(({props}) => props.name === name);
 
             if (!entity) {
@@ -184,12 +192,11 @@ export const formStore = <T extends Store>(): FormStore<T> => {
                       .then(err => processValidateResult(entity, err));
         };
 
-        response &&
-            Promise.all(Object.keys(value).map(processResponse)).then(() =>
-                onValueChange?.(value, store),
-            );
-
-        store = {...store, ...value};
+        updateComponent
+            ? Promise.all(Object.keys(value).map(processUpdateComponent)).then(() =>
+                  onValueChange?.(value, store),
+              )
+            : processStoreUpdate(onValueChange);
     };
 
     const setInitialValue = (value = {} as T, initialized?: boolean) => {
@@ -216,7 +223,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
 
         fieldEntities = [...entities, entity];
 
-        setFieldValue({[name]: undefined} as T, {response: false});
+        setFieldValue({[name]: undefined} as T, {updateComponent: false});
         setFieldError({[name]: undefined} as Error<T>);
 
         return {
@@ -241,7 +248,7 @@ export const formStore = <T extends Store>(): FormStore<T> => {
             const {[signOutName]: _signOutError, ...nextError} = error;
             const {[signOutName]: _signOutStore, ...nextFormStore} = store;
 
-            setFieldValue(nextFormStore as T, {response: false});
+            setFieldValue(nextFormStore as T, {updateComponent: false});
             setFieldError(nextError as Error<T>);
 
             fieldEntities = entities.filter(({props}) => props.name !== signOutName);
