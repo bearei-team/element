@@ -23,8 +23,8 @@ export const Container = styled(Shape)<ContainerProps>`
         const {width = 0, height = 0} = renderStyle;
 
         return css`
-            height: ${height};
-            width: ${width};
+            height: ${height}px;
+            width: ${width}px;
         `;
     }}
 
