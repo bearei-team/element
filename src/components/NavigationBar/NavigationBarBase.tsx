@@ -206,7 +206,7 @@ export const NavigationBarBase: FC<NavigationBaseProps> = ({
         processInit({setState}, dataSources);
     }, [dataSources, setState]);
 
-    if (status === 'idle') {
+    if (status === 'idle' || (typeof defaultActiveKey === 'string' && !activeKey)) {
         return <></>;
     }
 

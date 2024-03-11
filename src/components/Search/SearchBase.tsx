@@ -97,8 +97,8 @@ const processStateChange = (
 };
 
 const processChangeText = (
-    text: string,
     {setState, data = [], onChangeText}: ProcessChangeTextOptions,
+    text?: string,
 ) => {
     const matchedData = text
         ? data.filter(({headline, supportingText}) => {
@@ -123,9 +123,11 @@ const processChangeText = (
 
         JSON.stringify(sortedMatchedData) !== JSON.stringify(sortedDraftData) &&
             (draft.data = matchedData);
+
+        draft.value = typeof text === 'undefined' ? '' : text;
     });
 
-    onChangeText?.(text);
+    typeof text === 'string' && onChangeText?.(text);
 };
 
 const processListVisible = ({setState}: ProcessListVisibleOptions, data?: ListDataSource[]) =>
@@ -215,19 +217,23 @@ const renderSearchList = ({
         </AnimatedSearchList>
     );
 };
+
 export const SearchBase: FC<SearchBaseProps> = ({
     activeKey,
     data: dataSources,
     defaultActiveKey,
+    defaultValue,
     leading,
     onActive,
+    onChangeText: onChangeTextSource,
     placeholder,
     ref,
     render,
     trailing,
+    value: valueSource,
     ...textInputProps
 }) => {
-    const [{status, data, eventName, layout, listVisible, state}, setState] =
+    const [{value, status, data, eventName, layout, listVisible, state}, setState] =
         useImmer<InitialState>({
             data: [],
             eventName: 'none',
@@ -235,6 +241,7 @@ export const SearchBase: FC<SearchBaseProps> = ({
             listVisible: undefined,
             state: 'enabled',
             status: 'idle',
+            value: '',
         });
 
     const [{listHeight}] = useAnimated({listVisible});
@@ -253,8 +260,16 @@ export const SearchBase: FC<SearchBaseProps> = ({
 
     const [{onBlur, onFocus, ...onEvent}] = useOnEvent({...textInputProps, onStateChange});
     const onChangeText = useCallback(
-        (text: string) => processChangeText(text, {data: dataSources, setState}),
-        [dataSources, setState],
+        (text?: string) =>
+            processChangeText(
+                {
+                    data: dataSources,
+                    onChangeText: onChangeTextSource,
+                    setState,
+                },
+                text,
+            ),
+        [dataSources, onChangeTextSource, setState],
     );
 
     const input = useMemo(
@@ -268,6 +283,7 @@ export const SearchBase: FC<SearchBaseProps> = ({
                 placeholder,
                 placeholderTextColor,
                 ref: inputRef,
+                value,
             }),
         [
             id,
@@ -278,6 +294,7 @@ export const SearchBase: FC<SearchBaseProps> = ({
             placeholder,
             placeholderTextColor,
             textInputProps,
+            value,
         ],
     );
 
@@ -296,6 +313,10 @@ export const SearchBase: FC<SearchBaseProps> = ({
             }),
         [activeKey, data, defaultActiveKey, id, layout, listHeight, onActive],
     );
+
+    useEffect(() => {
+        onChangeText(valueSource ?? defaultValue);
+    }, [valueSource, defaultValue, onChangeText]);
 
     useEffect(() => {
         processListVisible({setState, state}, data);

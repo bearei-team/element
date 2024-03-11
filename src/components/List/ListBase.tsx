@@ -165,7 +165,7 @@ export const ListBase: FC<ListBaseProps> = ({
         processInit({setState}, dataSources);
     }, [dataSources, setState]);
 
-    if (status === 'idle') {
+    if (status === 'idle' || (typeof defaultActiveKey === 'string' && !activeKey)) {
         return <></>;
     }
 
