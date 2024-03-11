@@ -1,4 +1,4 @@
-import {FC, RefAttributes, useCallback, useEffect, useId, useMemo} from 'react';
+import {RefAttributes, forwardRef, useCallback, useEffect, useId, useMemo} from 'react';
 import {LayoutChangeEvent, LayoutRectangle, View, ViewProps} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
@@ -149,79 +149,84 @@ const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSour
         draft.status = 'succeeded';
     });
 
-export const NavigationBarBase: FC<NavigationBaseProps> = ({
-    activeKey: activeKeySource,
-    block,
-    data: dataSources,
-    defaultActiveKey,
-    render,
-    onActive: onActiveSource,
-    type,
-    ...renderProps
-}) => {
-    const [{activeKey, data, layout, destinationLayout, status}, setState] = useImmer<InitialState>(
+export const NavigationBarBase = forwardRef<View, NavigationBaseProps>(
+    (
         {
-            activeKey: undefined,
-            data: [],
-            status: 'idle',
-            layout: {} as LayoutRectangle,
-            destinationLayout: {} as LayoutRectangle,
+            activeKey: activeKeySource,
+            block,
+            data: dataSources,
+            defaultActiveKey,
+            render,
+            onActive: onActiveSource,
+            type,
+            ...renderProps
         },
-    );
+        ref,
+    ) => {
+        const [{activeKey, data, layout, destinationLayout, status}, setState] =
+            useImmer<InitialState>({
+                activeKey: undefined,
+                data: [],
+                status: 'idle',
+                layout: {} as LayoutRectangle,
+                destinationLayout: {} as LayoutRectangle,
+            });
 
-    const id = useId();
-    const onActive = useCallback(
-        (value?: string) => processActive({onActive: onActiveSource, setState}, value),
-        [onActiveSource, setState],
-    );
+        const id = useId();
+        const onActive = useCallback(
+            (value?: string) => processActive({onActive: onActiveSource, setState}, value),
+            [onActiveSource, setState],
+        );
 
-    const onDestinationLayout = useCallback(
-        (event: LayoutChangeEvent) => processDestinationLayout(event, {block, setState}),
-        [block, setState],
-    );
+        const onDestinationLayout = useCallback(
+            (event: LayoutChangeEvent) => processDestinationLayout(event, {block, setState}),
+            [block, setState],
+        );
 
-    const onStateChange = useCallback(
-        (state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange(state, {...options, block, setState}),
-        [block, setState],
-    );
+        const onStateChange = useCallback(
+            (state: State, options = {} as OnStateChangeOptions) =>
+                processStateChange(state, {...options, block, setState}),
+            [block, setState],
+        );
 
-    const [onEvent] = useOnEvent({...renderProps, onStateChange});
-    const children = useMemo(
-        () =>
-            renderItems(status, {
-                activeKey,
-                data,
-                onActive,
-                type,
-            }),
-        [activeKey, type, data, onActive, status],
-    );
+        const [onEvent] = useOnEvent({...renderProps, onStateChange});
+        const children = useMemo(
+            () =>
+                renderItems(status, {
+                    activeKey,
+                    data,
+                    onActive,
+                    type,
+                }),
+            [activeKey, type, data, onActive, status],
+        );
 
-    useEffect(() => {
-        onActive(activeKeySource ?? defaultActiveKey);
-    }, [activeKeySource, defaultActiveKey, onActive]);
+        useEffect(() => {
+            onActive(activeKeySource ?? defaultActiveKey);
+        }, [activeKeySource, defaultActiveKey, onActive]);
 
-    useEffect(() => {
-        processInit({setState}, dataSources);
-    }, [dataSources, setState]);
+        useEffect(() => {
+            processInit({setState}, dataSources);
+        }, [dataSources, setState]);
 
-    if (status === 'idle' || (typeof defaultActiveKey === 'string' && !activeKey)) {
-        return <></>;
-    }
+        if (status === 'idle' || (typeof defaultActiveKey === 'string' && !activeKey)) {
+            return <></>;
+        }
 
-    return render({
-        ...renderProps,
-        children,
-        id,
-        onDestinationLayout,
-        onEvent,
-        block,
-        renderStyle: {
-            destinationHeight: destinationLayout.height,
-            destinationWidth: destinationLayout.width,
-            height: layout.height,
-            width: layout.width,
-        },
-    });
-};
+        return render({
+            ...renderProps,
+            children,
+            id,
+            onDestinationLayout,
+            onEvent,
+            block,
+            ref,
+            renderStyle: {
+                destinationHeight: destinationLayout.height,
+                destinationWidth: destinationLayout.width,
+                height: layout.height,
+                width: layout.width,
+            },
+        });
+    },
+);

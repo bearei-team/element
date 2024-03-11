@@ -1,4 +1,4 @@
-import {FC, RefAttributes, cloneElement, useCallback, useId, useMemo} from 'react';
+import {RefAttributes, cloneElement, forwardRef, useCallback, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -119,70 +119,76 @@ const processStateChange = ({
     });
 };
 
-export const NavigationRailItemBase: FC<NavigationRailItemBaseProps> = ({
-    activeIcon = <Icon type="filled" name="circle" />,
-    activeKey,
-    dataKey,
-    icon = <Icon type="outlined" name="circle" />,
-    onActive,
-    render,
-    type = 'segment',
-    ...renderProps
-}) => {
-    const [{eventName, layout, touchableLocation}, setState] = useImmer<InitialState>({
-        eventName: 'none',
-        layout: {} as LayoutRectangle,
-        touchableLocation: {} as InitialState['touchableLocation'],
-    });
-
-    const id = useId();
-    const theme = useTheme();
-    const activeColor = theme.palette.secondary.secondaryContainer;
-    const underlayColor = theme.palette.surface.onSurface;
-    const active = activeKey === dataKey;
-    const [{height, color}] = useAnimated({active, type});
-    const iconLayout = useMemo(
-        () => ({
-            width: theme.adaptSize(theme.spacing.large),
-            height: theme.adaptSize(theme.spacing.large),
-        }),
-        [theme],
-    );
-
-    const onStateChange = useCallback(
-        (_state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange({...options, activeKey, dataKey, onActive, setState}),
-        [activeKey, dataKey, onActive, setState],
-    );
-
-    const [onEvent] = useOnEvent({...renderProps, disabled: false, onStateChange});
-    const activeIconElement = useMemo(
-        () => cloneElement<IconProps>(activeIcon, {renderStyle: {...iconLayout}, eventName}),
-        [activeIcon, eventName, iconLayout],
-    );
-
-    const iconElement = useMemo(
-        () => cloneElement<IconProps>(icon, {renderStyle: {...iconLayout}, eventName}),
-        [eventName, icon, iconLayout],
-    );
-
-    return render({
-        ...renderProps,
-        active,
-        activeColor,
-        activeIcon: activeIconElement,
-        type,
-        eventName,
-        icon: iconElement,
-        id,
-        onEvent,
-        touchableLocation,
-        renderStyle: {
-            color,
-            height: layout.height,
-            labelHeight: height,
-            width: layout.width,
+export const NavigationRailItemBase = forwardRef<View, NavigationRailItemBaseProps>(
+    (
+        {
+            activeIcon = <Icon type="filled" name="circle" />,
+            activeKey,
+            dataKey,
+            icon = <Icon type="outlined" name="circle" />,
+            onActive,
+            render,
+            type = 'segment',
+            ...renderProps
         },
-        underlayColor,
-    });
-};
+        ref,
+    ) => {
+        const [{eventName, layout, touchableLocation}, setState] = useImmer<InitialState>({
+            eventName: 'none',
+            layout: {} as LayoutRectangle,
+            touchableLocation: {} as InitialState['touchableLocation'],
+        });
+
+        const id = useId();
+        const theme = useTheme();
+        const activeColor = theme.palette.secondary.secondaryContainer;
+        const underlayColor = theme.palette.surface.onSurface;
+        const active = activeKey === dataKey;
+        const [{height, color}] = useAnimated({active, type});
+        const iconLayout = useMemo(
+            () => ({
+                width: theme.adaptSize(theme.spacing.large),
+                height: theme.adaptSize(theme.spacing.large),
+            }),
+            [theme],
+        );
+
+        const onStateChange = useCallback(
+            (_state: State, options = {} as OnStateChangeOptions) =>
+                processStateChange({...options, activeKey, dataKey, onActive, setState}),
+            [activeKey, dataKey, onActive, setState],
+        );
+
+        const [onEvent] = useOnEvent({...renderProps, disabled: false, onStateChange});
+        const activeIconElement = useMemo(
+            () => cloneElement<IconProps>(activeIcon, {renderStyle: {...iconLayout}, eventName}),
+            [activeIcon, eventName, iconLayout],
+        );
+
+        const iconElement = useMemo(
+            () => cloneElement<IconProps>(icon, {renderStyle: {...iconLayout}, eventName}),
+            [eventName, icon, iconLayout],
+        );
+
+        return render({
+            ...renderProps,
+            active,
+            activeColor,
+            activeIcon: activeIconElement,
+            eventName,
+            icon: iconElement,
+            id,
+            onEvent,
+            ref,
+            renderStyle: {
+                color,
+                height: layout.height,
+                labelHeight: height,
+                width: layout.width,
+            },
+            touchableLocation,
+            type,
+            underlayColor,
+        });
+    },
+);

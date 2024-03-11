@@ -1,4 +1,4 @@
-import {FC, RefAttributes, useId} from 'react';
+import {RefAttributes, forwardRef, useId} from 'react';
 import {View, ViewProps} from 'react-native';
 import {Size} from '../Common/interface';
 
@@ -13,18 +13,16 @@ interface BadgeBaseProps extends BadgeProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const BadgeBase: FC<BadgeBaseProps> = ({
-    labelText = 0,
-    render,
-    size = 'medium',
-    ...renderProps
-}) => {
-    const id = useId();
+export const BadgeBase = forwardRef<View, BadgeBaseProps>(
+    ({labelText = 0, render, size = 'medium', ...renderProps}, ref) => {
+        const id = useId();
 
-    return render({
-        ...renderProps,
-        id,
-        labelText: Number(labelText) > 999 ? '999+' : labelText,
-        size,
-    });
-};
+        return render({
+            ...renderProps,
+            id,
+            labelText: Number(labelText) > 999 ? '999+' : labelText,
+            ref,
+            size,
+        });
+    },
+);

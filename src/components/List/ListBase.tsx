@@ -1,4 +1,4 @@
-import {FC, RefAttributes, useCallback, useEffect, useId} from 'react';
+import {RefAttributes, forwardRef, useCallback, useEffect, useId} from 'react';
 import {FlatList, FlatListProps, ListRenderItemInfo} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {ComponentStatus} from '../Common/interface';
@@ -114,65 +114,71 @@ const renderItem = ({
     />
 );
 
-export const ListBase: FC<ListBaseProps> = ({
-    activeKey: activeKeySource,
-    close,
-    data: dataSources,
-    defaultActiveKey,
-    gap,
-    render,
-    supportingTextNumberOfLines,
-    onActive: onActiveSource,
-    onClose: onCloseSource,
-    ...renderProps
-}) => {
-    const [{data, status, activeKey}, setState] = useImmer<InitialState>({
-        activeKey: undefined,
-        data: [],
-        status: 'idle',
-    });
+export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
+    (
+        {
+            activeKey: activeKeySource,
+            close,
+            data: dataSources,
+            defaultActiveKey,
+            gap,
+            render,
+            supportingTextNumberOfLines,
+            onActive: onActiveSource,
+            onClose: onCloseSource,
+            ...renderProps
+        },
+        ref,
+    ) => {
+        const [{data, status, activeKey}, setState] = useImmer<InitialState>({
+            activeKey: undefined,
+            data: [],
+            status: 'idle',
+        });
 
-    const id = useId();
-    const onActive = useCallback(
-        (value?: string) => processActive({onActive: onActiveSource, setState}, value),
-        [onActiveSource, setState],
-    );
+        const id = useId();
+        const onActive = useCallback(
+            (value?: string) => processActive({onActive: onActiveSource, setState}, value),
+            [onActiveSource, setState],
+        );
 
-    const onClose = useCallback(
-        (value?: string) => processClose({onClose: onCloseSource, setState}, value),
-        [onCloseSource, setState],
-    );
+        const onClose = useCallback(
+            (value?: string) => processClose({onClose: onCloseSource, setState}, value),
+            [onCloseSource, setState],
+        );
 
-    const processRenderItem = useCallback(
-        (options: ListRenderItemInfo<ListDataSource>) =>
-            renderItem({
-                ...options,
-                activeKey,
-                close,
-                gap,
-                onActive,
-                onClose,
-                supportingTextNumberOfLines,
-            }),
-        [activeKey, close, gap, onActive, onClose, supportingTextNumberOfLines],
-    );
+        const processRenderItem = useCallback(
+            (options: ListRenderItemInfo<ListDataSource>) =>
+                renderItem({
+                    ...options,
+                    activeKey,
+                    close,
+                    gap,
+                    onActive,
+                    onClose,
+                    supportingTextNumberOfLines,
+                }),
+            [activeKey, close, gap, onActive, onClose, supportingTextNumberOfLines],
+        );
 
-    useEffect(() => {
-        onActive(activeKeySource ?? defaultActiveKey);
-    }, [activeKeySource, defaultActiveKey, onActive]);
+        useEffect(() => {
+            onActive(activeKeySource ?? defaultActiveKey);
+        }, [activeKeySource, defaultActiveKey, onActive]);
 
-    useEffect(() => {
-        processInit({setState}, dataSources);
-    }, [dataSources, setState]);
+        useEffect(() => {
+            processInit({setState}, dataSources);
+        }, [dataSources, setState]);
 
-    if (status === 'idle' || (typeof defaultActiveKey === 'string' && !activeKey)) {
-        return <></>;
-    }
+        if (status === 'idle' || (typeof defaultActiveKey === 'string' && !activeKey)) {
+            return <></>;
+        }
 
-    return render({
-        ...renderProps,
-        data,
-        id,
-        renderItem: processRenderItem,
-    });
-};
+        return render({
+            ...renderProps,
+            data,
+            id,
+            ref,
+            renderItem: processRenderItem,
+        });
+    },
+);

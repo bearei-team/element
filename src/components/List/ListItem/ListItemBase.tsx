@@ -1,10 +1,11 @@
-import {FC, useCallback, useId, useMemo} from 'react';
+import {forwardRef, useCallback, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
     LayoutChangeEvent,
     LayoutRectangle,
     NativeTouchEvent,
+    View,
     ViewStyle,
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
@@ -149,86 +150,95 @@ const processTrailingHoverIn = ({setState}: ProcessEventOptions) =>
 const processTrailingHoverOut = ({setState}: ProcessEventOptions) =>
     processTrailingEvent('hoverOut', {setState});
 
-export const ListItemBase: FC<ListItemBaseProps> = ({
-    activeKey,
-    close,
-    dataKey,
-    onActive,
-    onClose,
-    render,
-    supportingText,
-    trailing,
-    ...renderProps
-}) => {
-    const [{touchableLocation, eventName, layout, state, trailingEventName}, setState] =
-        useImmer<InitialState>({
-            eventName: 'none',
-            layout: {} as LayoutRectangle,
-            state: 'enabled',
-            status: 'idle',
-            touchableLocation: {} as InitialState['touchableLocation'],
-            trailingEventName: 'none',
+export const ListItemBase = forwardRef<View, ListItemBaseProps>(
+    (
+        {
+            activeKey,
+            close,
+            dataKey,
+            onActive,
+            onClose,
+            render,
+            supportingText,
+            trailing,
+            ...renderProps
+        },
+        ref,
+    ) => {
+        const [{touchableLocation, eventName, layout, state, trailingEventName}, setState] =
+            useImmer<InitialState>({
+                eventName: 'none',
+                layout: {} as LayoutRectangle,
+                state: 'enabled',
+                status: 'idle',
+                touchableLocation: {} as InitialState['touchableLocation'],
+                trailingEventName: 'none',
+            });
+
+        const id = useId();
+        const theme = useTheme();
+        const activeColor = theme.palette.secondary.secondaryContainer;
+        const underlayColor = theme.palette.surface.onSurface;
+        const active = activeKey === dataKey;
+        const [{height, onCloseAnimated, trailingOpacity}] = useAnimated({
+            close,
+            eventName,
+            layoutHeight: layout?.height,
+            state,
+            trailingEventName,
         });
 
-    const id = useId();
-    const theme = useTheme();
-    const activeColor = theme.palette.secondary.secondaryContainer;
-    const underlayColor = theme.palette.surface.onSurface;
-    const active = activeKey === dataKey;
-    const [{height, onCloseAnimated, trailingOpacity}] = useAnimated({
-        close,
-        eventName,
-        layoutHeight: layout?.height,
-        state,
-        trailingEventName,
-    });
+        const onStateChange = useCallback(
+            (nextState: State, options = {} as OnStateChangeOptions) =>
+                processStateChange(nextState, {...options, activeKey, dataKey, setState, onActive}),
+            [activeKey, dataKey, onActive, setState],
+        );
 
-    const onStateChange = useCallback(
-        (nextState: State, options = {} as OnStateChangeOptions) =>
-            processStateChange(nextState, {...options, activeKey, dataKey, setState, onActive}),
-        [activeKey, dataKey, onActive, setState],
-    );
+        const [onEvent] = useOnEvent({...renderProps, onStateChange});
+        const onTrailingHoverIn = useCallback(() => processTrailingHoverIn({setState}), [setState]);
+        const onTrailingHoverOut = useCallback(
+            () => processTrailingHoverOut({setState}),
+            [setState],
+        );
+        const onTrailingPressOut = useCallback(
+            () => processTrailingPressOut({close, dataKey, onCloseAnimated, onClose, setState}),
+            [close, dataKey, onClose, onCloseAnimated, setState],
+        );
 
-    const [onEvent] = useOnEvent({...renderProps, onStateChange});
-    const onTrailingHoverIn = useCallback(() => processTrailingHoverIn({setState}), [setState]);
-    const onTrailingHoverOut = useCallback(() => processTrailingHoverOut({setState}), [setState]);
-    const onTrailingPressOut = useCallback(
-        () => processTrailingPressOut({close, dataKey, onCloseAnimated, onClose, setState}),
-        [close, dataKey, onClose, onCloseAnimated, setState],
-    );
+        const trailingElement = useMemo(
+            () =>
+                close ? (
+                    <IconButton
+                        icon={<Icon name={active ? 'remove' : 'close'} type="filled" />}
+                        onHoverIn={onTrailingHoverIn}
+                        onHoverOut={onTrailingHoverOut}
+                        onPressOut={onTrailingPressOut}
+                        type="standard"
+                    />
+                ) : (
+                    trailing
+                ),
+            [active, close, onTrailingHoverIn, onTrailingHoverOut, onTrailingPressOut, trailing],
+        );
 
-    const trailingElement = useMemo(
-        () =>
-            close ? (
-                <IconButton
-                    icon={<Icon name={active ? 'remove' : 'close'} type="filled" />}
-                    onHoverIn={onTrailingHoverIn}
-                    onHoverOut={onTrailingHoverOut}
-                    onPressOut={onTrailingPressOut}
-                    type="standard"
-                />
-            ) : (
-                trailing
-            ),
-        [active, close, onTrailingHoverIn, onTrailingHoverOut, onTrailingPressOut, trailing],
-    );
-
-    return render({
-        ...renderProps,
-        active,
-        activeColor,
-        eventName,
-        id,
-        onEvent,
-        renderStyle: {
-            containerHeight: height,
-            height: layout.height,
-            trailingOpacity,
-            width: layout.width,
-        },
-        supportingText,
-        touchableLocation,
-        trailing: trailingElement,
-        underlayColor,
-    });
-};
+        return render({
+            ...renderProps,
+            active,
+            activeColor,
+            eventName,
+            id,
+            onEvent,
+            ref,
+            renderStyle: {
+                containerHeight: height,
+                height: layout.height,
+                trailingOpacity,
+                width: layout.width,
+            },
+            supportingText,
+            touchableLocation,
+            trailing: trailingElement,
+            underlayColor,
+        });
+    },
+);

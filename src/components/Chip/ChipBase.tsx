@@ -1,4 +1,4 @@
-import {FC, useCallback, useEffect, useId} from 'react';
+import {forwardRef, useCallback, useEffect, useId} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -6,6 +6,7 @@ import {
     LayoutRectangle,
     NativeTouchEvent,
     TextStyle,
+    View,
     ViewStyle,
 } from 'react-native';
 import {useTheme} from 'styled-components/native';
@@ -175,86 +176,92 @@ const processActive = ({active, setState}: ProcessActiveOptions) => {
         });
 };
 
-export const ChipBase: FC<ChipBaseProps> = ({
-    active: activeSource,
-    defaultActive,
-    disabled,
-    elevated = false,
-    fill,
-    icon,
-    labelText = 'Label',
-    render,
-    type = 'filter',
-    ...renderProps
-}) => {
-    const [{active, touchableLocation, elevation, eventName, layout, status}, setState] =
-        useImmer<InitialState>({
-            active: undefined,
-            touchableLocation: undefined,
-            elevation: undefined,
-            eventName: 'none',
-            layout: {} as LayoutRectangle,
-            status: 'idle',
-        });
-
-    const theme = useTheme();
-    const id = useId();
-    const [underlayColor] = useUnderlayColor({type, elevated});
-    const activeColor = theme.palette.secondary.secondaryContainer;
-    const onStateChange = useCallback(
-        (state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange(state, {...options, elevated, setState}),
-        [setState, elevated],
-    );
-
-    const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
-    const [{backgroundColor, borderColor, color}] = useAnimated({disabled, eventName, type});
-    const [iconElement] = useIcon({eventName, type, icon, disabled, fill});
-    const [border] = useBorder({borderColor});
-
-    useEffect(() => {
-        processDisabledElevation({elevated, setState}, disabled);
-    }, [disabled, elevated, setState]);
-
-    useEffect(() => {
-        processDisabled({setState}, disabled);
-    }, [disabled, setState]);
-
-    useEffect(() => {
-        processActive({
-            active: activeSource ?? defaultActive,
-            setState,
-        });
-    }, [activeSource, defaultActive, setState]);
-
-    useEffect(() => {
-        processInit({elevated, setState});
-    }, [activeSource, defaultActive, elevated, setState]);
-
-    if (status === 'idle') {
-        return <></>;
-    }
-
-    return render({
-        ...renderProps,
-        active,
-        activeColor,
-        touchableLocation,
-        disabled,
-        elevation,
-        eventName,
-        icon: iconElement,
-        id,
-        labelText,
-        onEvent,
-        type,
-        underlayColor,
-        renderStyle: {
-            ...border,
-            backgroundColor,
-            color,
-            height: layout.height,
-            width: layout.width,
+export const ChipBase = forwardRef<View, ChipBaseProps>(
+    (
+        {
+            active: activeSource,
+            defaultActive,
+            disabled,
+            elevated = false,
+            fill,
+            icon,
+            labelText = 'Label',
+            render,
+            type = 'filter',
+            ...renderProps
         },
-    });
-};
+        ref,
+    ) => {
+        const [{active, touchableLocation, elevation, eventName, layout, status}, setState] =
+            useImmer<InitialState>({
+                active: undefined,
+                touchableLocation: undefined,
+                elevation: undefined,
+                eventName: 'none',
+                layout: {} as LayoutRectangle,
+                status: 'idle',
+            });
+
+        const theme = useTheme();
+        const id = useId();
+        const [underlayColor] = useUnderlayColor({type, elevated});
+        const activeColor = theme.palette.secondary.secondaryContainer;
+        const onStateChange = useCallback(
+            (state: State, options = {} as OnStateChangeOptions) =>
+                processStateChange(state, {...options, elevated, setState}),
+            [setState, elevated],
+        );
+
+        const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
+        const [{backgroundColor, borderColor, color}] = useAnimated({disabled, eventName, type});
+        const [iconElement] = useIcon({eventName, type, icon, disabled, fill});
+        const [border] = useBorder({borderColor});
+
+        useEffect(() => {
+            processDisabledElevation({elevated, setState}, disabled);
+        }, [disabled, elevated, setState]);
+
+        useEffect(() => {
+            processDisabled({setState}, disabled);
+        }, [disabled, setState]);
+
+        useEffect(() => {
+            processActive({
+                active: activeSource ?? defaultActive,
+                setState,
+            });
+        }, [activeSource, defaultActive, setState]);
+
+        useEffect(() => {
+            processInit({elevated, setState});
+        }, [activeSource, defaultActive, elevated, setState]);
+
+        if (status === 'idle') {
+            return <></>;
+        }
+
+        return render({
+            ...renderProps,
+            active,
+            activeColor,
+            disabled,
+            elevation,
+            eventName,
+            icon: iconElement,
+            id,
+            labelText,
+            onEvent,
+            ref,
+            renderStyle: {
+                ...border,
+                backgroundColor,
+                color,
+                height: layout.height,
+                width: layout.width,
+            },
+            touchableLocation,
+            type,
+            underlayColor,
+        });
+    },
+);

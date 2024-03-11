@@ -66,7 +66,6 @@ export const Content = styled.View`
     display: flex;
     flex-direction: row;
     flex: 1;
-    pointer-events: none;
 
     ${({theme}) =>
         css`

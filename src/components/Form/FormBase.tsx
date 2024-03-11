@@ -1,4 +1,4 @@
-import {RefAttributes, useEffect, useId, useMemo} from 'react';
+import {ForwardedRef, RefAttributes, forwardRef, useEffect, useId, useMemo} from 'react';
 import {Updater, useImmer} from 'use-immer';
 import {ComponentStatus} from '../Common/interface';
 
@@ -64,16 +64,19 @@ const renderChildren = (status: ComponentStatus, {items}: RenderChildrenOptions)
     status === 'succeeded' &&
     items?.map((item, index) => <FormItem {...item} key={item.name ?? index} />);
 
-export const FormBase = <T extends Store = Store>({
-    form,
-    initialValue,
-    items,
-    onFinish,
-    onFinishFailed,
-    onValueChange,
-    render,
-    ...renderProps
-}: FormBaseProps<T>) => {
+const FormBaseInner = <T extends Store = Store>(
+    {
+        form,
+        initialValue,
+        items,
+        onFinish,
+        onFinishFailed,
+        onValueChange,
+        render,
+        ...renderProps
+    }: FormBaseProps<T>,
+    ref: ForwardedRef<View>,
+) => {
     const [{status}, setState] = useImmer<InitialState>({status: 'idle'});
     const [formStore] = useForm<T>(form);
     const {setCallback, setInitialValue} = formStore;
@@ -97,5 +100,8 @@ export const FormBase = <T extends Store = Store>({
         children,
         form: formStore,
         id,
+        ref,
     });
 };
+
+export const FormBase = forwardRef(FormBaseInner) as typeof FormBaseInner;

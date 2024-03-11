@@ -1,4 +1,4 @@
-import {FC, RefAttributes, useId} from 'react';
+import {RefAttributes, forwardRef, useId} from 'react';
 import {Animated, View, ViewProps, ViewStyle} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
 import {EventName} from '../Common/interface';
@@ -26,19 +26,16 @@ interface HoveredBaseProps extends HoveredProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const HoveredBase: FC<HoveredBaseProps> = ({
-    eventName,
-    opacities,
-    render,
-    renderStyle,
-    ...renderProps
-}) => {
-    const [{opacity}] = useAnimated({eventName, opacities});
-    const id = useId();
+export const HoveredBase = forwardRef<Animated.LegacyRef<View>, HoveredBaseProps>(
+    ({eventName, opacities, render, renderStyle, ...renderProps}, ref) => {
+        const [{opacity}] = useAnimated({eventName, opacities});
+        const id = useId();
 
-    return render({
-        ...renderProps,
-        id,
-        renderStyle: {...renderStyle, opacity},
-    });
-};
+        return render({
+            ...renderProps,
+            id,
+            ref,
+            renderStyle: {...renderStyle, opacity},
+        });
+    },
+);

@@ -1,4 +1,4 @@
-import {FC, RefAttributes, useId, useMemo} from 'react';
+import {RefAttributes, forwardRef, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -44,86 +44,92 @@ interface SheetBaseProps extends SheetProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const SheetBase: FC<SheetBaseProps> = ({
-    backIcon,
-    closeIcon,
-    headlineText = 'Title',
-    onClose,
-    onPrimaryButtonPress,
-    onSecondaryButtonPress,
-    position = 'horizontalEnd',
-    primaryButton,
-    primaryButtonLabelText = 'Save',
-    render,
-    secondaryButton,
-    secondaryButtonLabelText = 'Cancel',
-    visible,
-    ...renderProps
-}) => {
-    const [{backgroundColor, innerTranslateX}] = useAnimated({
-        position,
-        visible,
-    });
+export const SheetBase = forwardRef<View, SheetBaseProps>(
+    (
+        {
+            backIcon,
+            closeIcon,
+            headlineText = 'Title',
+            onClose,
+            onPrimaryButtonPress,
+            onSecondaryButtonPress,
+            position = 'horizontalEnd',
+            primaryButton,
+            primaryButtonLabelText = 'Save',
+            render,
+            secondaryButton,
+            secondaryButtonLabelText = 'Cancel',
+            visible,
+            ...renderProps
+        },
+        ref,
+    ) => {
+        const [{backgroundColor, innerTranslateX}] = useAnimated({
+            position,
+            visible,
+        });
 
-    const id = useId();
-    const backIconElement = useMemo(
-        () =>
-            backIcon ?? (
-                <IconButton
-                    icon={<Icon type="filled" name="arrowBack" />}
-                    onPressOut={onClose}
-                    type="standard"
-                />
-            ),
-        [backIcon, onClose],
-    );
+        const id = useId();
+        const backIconElement = useMemo(
+            () =>
+                backIcon ?? (
+                    <IconButton
+                        icon={<Icon type="filled" name="arrowBack" />}
+                        onPressOut={onClose}
+                        type="standard"
+                    />
+                ),
+            [backIcon, onClose],
+        );
 
-    const closeIconElement = useMemo(
-        () =>
-            closeIcon ?? (
-                <IconButton
-                    icon={<Icon type="filled" name="close" />}
-                    onPressOut={onClose}
-                    type="standard"
-                />
-            ),
-        [closeIcon, onClose],
-    );
+        const closeIconElement = useMemo(
+            () =>
+                closeIcon ?? (
+                    <IconButton
+                        icon={<Icon type="filled" name="close" />}
+                        onPressOut={onClose}
+                        type="standard"
+                    />
+                ),
+            [closeIcon, onClose],
+        );
 
-    const primaryButtonElement = useMemo(
-        () =>
-            primaryButton ?? (
-                <Button
-                    labelText={primaryButtonLabelText}
-                    onPress={onPrimaryButtonPress}
-                    type="filled"
-                />
-            ),
-        [onPrimaryButtonPress, primaryButton, primaryButtonLabelText],
-    );
+        const primaryButtonElement = useMemo(
+            () =>
+                primaryButton ?? (
+                    <Button
+                        labelText={primaryButtonLabelText}
+                        onPress={onPrimaryButtonPress}
+                        type="filled"
+                    />
+                ),
+            [onPrimaryButtonPress, primaryButton, primaryButtonLabelText],
+        );
 
-    const secondaryButtonElement = useMemo(
-        () =>
-            secondaryButton ?? (
-                <Button
-                    labelText={secondaryButtonLabelText}
-                    onPress={onSecondaryButtonPress}
-                    type="outlined"
-                />
-            ),
-        [onSecondaryButtonPress, secondaryButton, secondaryButtonLabelText],
-    );
+        const secondaryButtonElement = useMemo(
+            () =>
+                secondaryButton ?? (
+                    <Button
+                        labelText={secondaryButtonLabelText}
+                        onPress={onSecondaryButtonPress}
+                        type="outlined"
+                    />
+                ),
+            [onSecondaryButtonPress, secondaryButton, secondaryButtonLabelText],
+        );
 
-    return render({
-        ...renderProps,
-        backIcon: backIconElement,
-        closeIcon: closeIconElement,
-        headlineText,
-        position,
-        primaryButton: primaryButtonElement,
-        renderStyle: {backgroundColor, innerTranslateX},
-        secondaryButton: secondaryButtonElement,
-        visible,
-        id,
-    });
-};
+        return render({
+            ...renderProps,
+            backIcon: backIconElement,
+            closeIcon: closeIconElement,
+            headlineText,
+            id,
+            position,
+            primaryButton: primaryButtonElement,
+            ref,
+            renderStyle: {backgroundColor, innerTranslateX},
+            secondaryButton: secondaryButtonElement,
+            visible,
+        });
+    },
+);

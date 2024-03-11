@@ -1,5 +1,5 @@
 import {RuleItem, ValidateError} from 'async-validator';
-import {FC, RefAttributes, useCallback, useEffect, useId, useMemo} from 'react';
+import {RefAttributes, forwardRef, useCallback, useEffect, useId, useMemo} from 'react';
 import {View, ViewProps} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {ValidateOptions, validate} from '../../../utils/validate.utils';
@@ -106,62 +106,63 @@ const processInit = (
     });
 };
 
-export const FormItemBase: FC<FormItemBaseProps> = ({
-    labelText,
-    name,
-    render,
-    renderControl,
-    rules,
-    validateFirst,
-    ...renderProps
-}) => {
-    const [{signOut, status}, setState] = useImmer<InitialState>({
-        shouldUpdate: {},
-        signOut: undefined,
-        status: 'idle',
-    });
+export const FormItemBase = forwardRef<View, FormItemBaseProps>(
+    ({labelText, name, render, renderControl, rules, validateFirst, ...renderProps}, ref) => {
+        const [{signOut, status}, setState] = useImmer<InitialState>({
+            shouldUpdate: {},
+            signOut: undefined,
+            status: 'idle',
+        });
 
-    const id = useId();
-    const {getFieldError, getFieldValue, setFieldValue, signInField, getInitialValue} =
-        useFormContext();
+        const id = useId();
+        const {getFieldError, getFieldValue, setFieldValue, signInField, getInitialValue} =
+            useFormContext();
 
-    const errors = getFieldError(name)?.errors;
-    const value = getFieldValue(name) ?? getInitialValue(name);
-    const onValueChange = useCallback(
-        (nextValue?: unknown) => processValueChange({name, setFieldValue}, nextValue),
-        [name, setFieldValue],
-    );
+        const errors = getFieldError(name)?.errors;
+        const value = getFieldValue(name) ?? getInitialValue(name);
+        const onValueChange = useCallback(
+            (nextValue?: unknown) => processValueChange({name, setFieldValue}, nextValue),
+            [name, setFieldValue],
+        );
 
-    const fieldValidate = useCallback(
-        (nextValue: unknown) => processValidate(nextValue, {name, rules, validateFirst}),
-        [name, rules, validateFirst],
-    );
+        const fieldValidate = useCallback(
+            (nextValue: unknown) => processValidate(nextValue, {name, rules, validateFirst}),
+            [name, rules, validateFirst],
+        );
 
-    const children = useMemo(
-        () =>
-            renderControl?.({
-                errorMessage: errors?.[0].message,
-                errors,
-                labelText,
-                onValueChange,
-                value,
-            }),
-        [renderControl, errors, labelText, onValueChange, value],
-    );
+        const children = useMemo(
+            () =>
+                renderControl?.({
+                    errorMessage: errors?.[0].message,
+                    errors,
+                    labelText,
+                    onValueChange,
+                    value,
+                }),
+            [renderControl, errors, labelText, onValueChange, value],
+        );
 
-    useEffect(() => {
-        processInit(signInField, {name, rules, setState, validateFirst, validate: fieldValidate});
-    }, [fieldValidate, name, rules, setState, signInField, validateFirst]);
+        useEffect(() => {
+            processInit(signInField, {
+                name,
+                rules,
+                setState,
+                validateFirst,
+                validate: fieldValidate,
+            });
+        }, [fieldValidate, name, rules, setState, signInField, validateFirst]);
 
-    useEffect(() => () => signOut?.(), [signOut]);
+        useEffect(() => () => signOut?.(), [signOut]);
 
-    if (status === 'idle') {
-        return <></>;
-    }
+        if (status === 'idle') {
+            return <></>;
+        }
 
-    return render({
-        ...renderProps,
-        children,
-        id,
-    });
-};
+        return render({
+            ...renderProps,
+            children,
+            ref,
+            id,
+        });
+    },
+);

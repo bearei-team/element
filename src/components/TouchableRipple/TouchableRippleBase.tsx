@@ -1,4 +1,4 @@
-import {FC, RefAttributes, useCallback, useEffect, useId, useMemo} from 'react';
+import {RefAttributes, forwardRef, useCallback, useEffect, useId, useMemo} from 'react';
 import {
     GestureResponderEvent,
     LayoutChangeEvent,
@@ -151,56 +151,62 @@ const renderRipples = (
     ));
 };
 
-export const TouchableRippleBase: FC<TouchableRippleBaseProps> = ({
-    active: activeSource,
-    centered,
-    defaultActive,
-    disabled,
-    render,
-    touchableLocation,
-    underlayColor,
-    ...renderProps
-}) => {
-    const [{rippleSequence, layout}, setState] = useImmer<InitialState>({
-        layout: {} as LayoutRectangle,
-        rippleSequence: {} as RippleSequence,
-    });
+export const TouchableRippleBase = forwardRef<View, TouchableRippleBaseProps>(
+    (
+        {
+            active: activeSource,
+            centered,
+            defaultActive,
+            disabled,
+            render,
+            touchableLocation,
+            underlayColor,
+            ...renderProps
+        },
+        ref,
+    ) => {
+        const [{rippleSequence, layout}, setState] = useImmer<InitialState>({
+            layout: {} as LayoutRectangle,
+            rippleSequence: {} as RippleSequence,
+        });
 
-    const id = useId();
-    const active = activeSource ?? defaultActive;
-    const onStateChange = useCallback(
-        (_state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange({...options, setState, active}),
-        [active, setState],
-    );
+        const id = useId();
+        const active = activeSource ?? defaultActive;
+        const onStateChange = useCallback(
+            (_state: State, options = {} as OnStateChangeOptions) =>
+                processStateChange({...options, setState, active}),
+            [active, setState],
+        );
 
-    const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
-    const onEntryAnimatedFinished = useCallback(
-        (sequence: string, exitAnimated: ExitAnimated) =>
-            processEntryAnimatedFinished(sequence, {exitAnimated, setState}),
-        [setState],
-    );
+        const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
+        const onEntryAnimatedFinished = useCallback(
+            (sequence: string, exitAnimated: ExitAnimated) =>
+                processEntryAnimatedFinished(sequence, {exitAnimated, setState}),
+            [setState],
+        );
 
-    const ripples = useMemo(
-        () =>
-            renderRipples(rippleSequence, {
-                active,
-                centered,
-                onEntryAnimatedFinished,
-                touchableLayout: layout,
-                underlayColor,
-            }),
-        [active, centered, layout, onEntryAnimatedFinished, rippleSequence, underlayColor],
-    );
+        const ripples = useMemo(
+            () =>
+                renderRipples(rippleSequence, {
+                    active,
+                    centered,
+                    onEntryAnimatedFinished,
+                    touchableLayout: layout,
+                    underlayColor,
+                }),
+            [active, centered, layout, onEntryAnimatedFinished, rippleSequence, underlayColor],
+        );
 
-    useEffect(() => {
-        processActive({active, setState, touchableLocation});
-    }, [active, setState, touchableLocation]);
+        useEffect(() => {
+            processActive({active, setState, touchableLocation});
+        }, [active, setState, touchableLocation]);
 
-    return render({
-        ...renderProps,
-        id,
-        onEvent,
-        ripples,
-    });
-};
+        return render({
+            ...renderProps,
+            id,
+            onEvent,
+            ref,
+            ripples,
+        });
+    },
+);

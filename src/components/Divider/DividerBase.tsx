@@ -1,4 +1,4 @@
-import {FC, RefAttributes, useId} from 'react';
+import {RefAttributes, forwardRef, useId} from 'react';
 import {View, ViewProps} from 'react-native';
 import {Layout, Size} from '../Common/interface';
 
@@ -15,20 +15,17 @@ export interface DividerBaseProps extends DividerProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const DividerBase: FC<DividerBaseProps> = ({
-    layout,
-    render,
-    size,
-    subheader,
-    ...renderProps
-}) => {
-    const id = useId();
+export const DividerBase = forwardRef<View, DividerBaseProps>(
+    ({layout, render, size, subheader, ...renderProps}, ref) => {
+        const id = useId();
 
-    return render({
-        ...renderProps,
-        id,
-        layout,
-        size: subheader && layout === 'horizontal' ? 'small' : size,
-        subheader,
-    });
-};
+        return render({
+            ...renderProps,
+            id,
+            layout,
+            ref,
+            size: subheader && layout === 'horizontal' ? 'small' : size,
+            subheader,
+        });
+    },
+);

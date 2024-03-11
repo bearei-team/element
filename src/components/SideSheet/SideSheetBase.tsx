@@ -1,4 +1,5 @@
-import {FC, useCallback, useEffect, useId, useMemo} from 'react';
+import {forwardRef, useCallback, useEffect, useId, useMemo} from 'react';
+import {View} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
 import {SheetProps} from './Sheet/Sheet';
@@ -58,40 +59,45 @@ const processEmit = (sheet: React.JSX.Element, {visible, id}: ProcessEmitOptions
 const processUnmount = (id: string) =>
     emitter.emit('modal', {id: `sideSheet__${id}`, element: undefined});
 
-export const SideSheetBase: FC<SideSheetBaseProps> = ({
-    defaultVisible,
-    onClose: onCloseSource,
-    onOpen,
-    render,
-    visible: visibleSource,
-    ...renderProps
-}) => {
-    const [{visible}, setState] = useImmer<InitialState>({
-        visible: undefined,
-    });
+export const SideSheetBase = forwardRef<View, SideSheetBaseProps>(
+    (
+        {
+            defaultVisible,
+            onClose: onCloseSource,
+            onOpen,
+            render,
+            visible: visibleSource,
+            ...renderProps
+        },
+        ref,
+    ) => {
+        const [{visible}, setState] = useImmer<InitialState>({
+            visible: undefined,
+        });
 
-    const id = useId();
-    const onClose = useCallback(
-        () => processClose({setState, onClose: onCloseSource}),
-        [onCloseSource, setState],
-    );
+        const id = useId();
+        const onClose = useCallback(
+            () => processClose({setState, onClose: onCloseSource}),
+            [onCloseSource, setState],
+        );
 
-    const sheet = useMemo(
-        () => render({...renderProps, id, visible, onClose}),
-        [id, onClose, render, renderProps, visible],
-    );
+        const sheet = useMemo(
+            () => render({...renderProps, id, visible, onClose, ref}),
+            [id, onClose, ref, render, renderProps, visible],
+        );
 
-    useEffect(() => {
-        processVisible({setState, onOpen}, visibleSource ?? defaultVisible);
-    }, [setState, onOpen, visibleSource, defaultVisible]);
+        useEffect(() => {
+            processVisible({setState, onOpen}, visibleSource ?? defaultVisible);
+        }, [setState, onOpen, visibleSource, defaultVisible]);
 
-    useEffect(() => {
-        processEmit(sheet, {id, visible});
-    }, [id, sheet, visible]);
+        useEffect(() => {
+            processEmit(sheet, {id, visible});
+        }, [id, sheet, visible]);
 
-    useEffect(() => {
-        return () => processUnmount(id);
-    }, [id]);
+        useEffect(() => {
+            return () => processUnmount(id);
+        }, [id]);
 
-    return <></>;
-};
+        return <></>;
+    },
+);

@@ -1,10 +1,11 @@
-import {FC, useCallback, useEffect, useId, useMemo} from 'react';
+import {forwardRef, useCallback, useEffect, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
     LayoutChangeEvent,
     LayoutRectangle,
     TextStyle,
+    View,
     ViewStyle,
 } from 'react-native';
 import {Updater, useImmer} from 'use-immer';
@@ -169,115 +170,122 @@ const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
         draft.status === 'succeeded' && (draft.eventName = 'none');
     });
 
-export const CardBase: FC<CardBaseProps> = ({
-    block,
-    disabled,
-    onPrimaryButtonPress,
-    onSecondaryButtonPress,
-    primaryButton,
-    primaryButtonLabelText = 'Save',
-    render,
-    secondaryButton,
-    secondaryButtonLabelText = 'Cancel',
-    titleText = 'Title',
-    type = 'filled',
-    ...renderProps
-}) => {
-    const [{elevation, eventName, layout, status, innerLayout}, setState] = useImmer<InitialState>({
-        elevation: undefined,
-        eventName: 'none',
-        innerLayout: {} as LayoutRectangle,
-        layout: {} as LayoutRectangle,
-        status: 'idle',
-    });
-
-    const id = useId();
-    const [underlayColor] = useUnderlayColor({type});
-    const onInnerLayout = useCallback(
-        (event: LayoutChangeEvent) => processInnerLayout(event, {block, setState}),
-        [block, setState],
-    );
-
-    const onStateChange = useCallback(
-        (state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange(state, {...options, type, block, setState}),
-        [block, setState, type],
-    );
-
-    const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
-    const [{backgroundColor, borderColor, titleColor, subColor}] = useAnimated({
-        disabled,
-        eventName,
-        type,
-    });
-
-    const [border] = useBorder({borderColor});
-    const primaryButtonElement = useMemo(
-        () =>
-            primaryButton ?? (
-                <Button
-                    disabled={disabled}
-                    labelText={primaryButtonLabelText}
-                    onPress={onPrimaryButtonPress}
-                    type="filled"
-                />
-            ),
-        [disabled, onPrimaryButtonPress, primaryButton, primaryButtonLabelText],
-    );
-
-    const secondaryButtonElement = useMemo(
-        () =>
-            secondaryButton ?? (
-                <Button
-                    disabled={disabled}
-                    labelText={secondaryButtonLabelText}
-                    onPress={onSecondaryButtonPress}
-                    type="outlined"
-                />
-            ),
-        [disabled, onSecondaryButtonPress, secondaryButton, secondaryButtonLabelText],
-    );
-
-    useEffect(() => {
-        processDisabledElevation({setState, type}, disabled);
-    }, [disabled, setState, type]);
-
-    useEffect(() => {
-        processDisabled({setState}, disabled);
-    }, [disabled, setState]);
-
-    useEffect(() => {
-        processInit({setState, type, disabled});
-    }, [disabled, setState, type]);
-
-    if (status === 'idle') {
-        return <></>;
-    }
-
-    return render({
-        ...renderProps,
-        block,
-        disabled,
-        elevation,
-        eventName,
-        id,
-        onEvent,
-        onInnerLayout,
-        primaryButton: primaryButtonElement,
-        secondaryButton: secondaryButtonElement,
-        titleText,
-        type,
-        underlayColor,
-        renderStyle: {
-            ...border,
-            backgroundColor,
-            borderColor,
-            height: layout.height,
-            innerHeight: innerLayout.height,
-            innerWidth: innerLayout.width,
-            subColor,
-            titleColor,
-            width: layout.width,
+export const CardBase = forwardRef<View, CardBaseProps>(
+    (
+        {
+            block,
+            disabled,
+            onPrimaryButtonPress,
+            onSecondaryButtonPress,
+            primaryButton,
+            primaryButtonLabelText = 'Save',
+            render,
+            secondaryButton,
+            secondaryButtonLabelText = 'Cancel',
+            titleText = 'Title',
+            type = 'filled',
+            ...renderProps
         },
-    });
-};
+        ref,
+    ) => {
+        const [{elevation, eventName, layout, status, innerLayout}, setState] =
+            useImmer<InitialState>({
+                elevation: undefined,
+                eventName: 'none',
+                innerLayout: {} as LayoutRectangle,
+                layout: {} as LayoutRectangle,
+                status: 'idle',
+            });
+
+        const id = useId();
+        const [underlayColor] = useUnderlayColor({type});
+        const onInnerLayout = useCallback(
+            (event: LayoutChangeEvent) => processInnerLayout(event, {block, setState}),
+            [block, setState],
+        );
+
+        const onStateChange = useCallback(
+            (state: State, options = {} as OnStateChangeOptions) =>
+                processStateChange(state, {...options, type, block, setState}),
+            [block, setState, type],
+        );
+
+        const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
+        const [{backgroundColor, borderColor, titleColor, subColor}] = useAnimated({
+            disabled,
+            eventName,
+            type,
+        });
+
+        const [border] = useBorder({borderColor});
+        const primaryButtonElement = useMemo(
+            () =>
+                primaryButton ?? (
+                    <Button
+                        disabled={disabled}
+                        labelText={primaryButtonLabelText}
+                        onPress={onPrimaryButtonPress}
+                        type="filled"
+                    />
+                ),
+            [disabled, onPrimaryButtonPress, primaryButton, primaryButtonLabelText],
+        );
+
+        const secondaryButtonElement = useMemo(
+            () =>
+                secondaryButton ?? (
+                    <Button
+                        disabled={disabled}
+                        labelText={secondaryButtonLabelText}
+                        onPress={onSecondaryButtonPress}
+                        type="outlined"
+                    />
+                ),
+            [disabled, onSecondaryButtonPress, secondaryButton, secondaryButtonLabelText],
+        );
+
+        useEffect(() => {
+            processDisabledElevation({setState, type}, disabled);
+        }, [disabled, setState, type]);
+
+        useEffect(() => {
+            processDisabled({setState}, disabled);
+        }, [disabled, setState]);
+
+        useEffect(() => {
+            processInit({setState, type, disabled});
+        }, [disabled, setState, type]);
+
+        if (status === 'idle') {
+            return <></>;
+        }
+
+        return render({
+            ...renderProps,
+            block,
+            disabled,
+            elevation,
+            eventName,
+            id,
+            onEvent,
+            onInnerLayout,
+            primaryButton: primaryButtonElement,
+            ref,
+            secondaryButton: secondaryButtonElement,
+            titleText,
+            type,
+            underlayColor,
+            renderStyle: {
+                ...border,
+                backgroundColor,
+                borderColor,
+                height: layout.height,
+                innerHeight: innerLayout.height,
+                innerWidth: innerLayout.width,
+                subColor,
+                titleColor,
+                width: layout.width,
+            },
+        });
+    },
+);

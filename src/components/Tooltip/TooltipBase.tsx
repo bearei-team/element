@@ -1,4 +1,13 @@
-import {FC, RefAttributes, useCallback, useEffect, useId, useMemo, useRef} from 'react';
+import {
+    RefAttributes,
+    forwardRef,
+    useCallback,
+    useEffect,
+    useId,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
@@ -117,64 +126,74 @@ const processStateChange = ({
 const processUnmount = (id: string) =>
     emitter.emit('modal', {id: `tooltip__supporting--${id}`, element: undefined});
 
-export const TooltipBase: FC<TooltipBaseProps> = ({
-    defaultVisible,
-    onVisible: onVisibleSource,
-    ref: refSource,
-    render,
-    visible: visibleSource,
-    disabled = false,
-    eventName: eventNameSource,
-    ...renderProps
-}) => {
-    const [{layout, visible}, setState] = useImmer<InitialState>({
-        layout: {} as LayoutRectangle,
-        visible: undefined,
-    });
-
-    const containerRef = useRef<View>(null);
-    const id = useId();
-    const ref = (refSource ?? containerRef) as React.RefObject<View>;
-    const debounceProcessVisible = useMemo(() => debounce(processVisible, 100), []);
-    const onVisible = useCallback(
-        (value?: boolean) => debounceProcessVisible({setState, onVisible: onVisibleSource}, value),
-        [debounceProcessVisible, onVisibleSource, setState],
-    );
-
-    const onStateChange = useCallback(
-        (_state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange({...options, setState, debounceProcessVisible}),
-        [debounceProcessVisible, setState],
-    );
-
-    const onEventNameChange = useCallback(
-        (eventName?: EventName) =>
-            processEventNameChange({setState, debounceProcessVisible}, eventName),
-        [debounceProcessVisible, setState],
-    );
-
-    const [onEvent] = useOnEvent({...renderProps, onStateChange, disabled});
-
-    useEffect(() => {
-        onVisible(visibleSource ?? defaultVisible);
-    }, [onVisible, visibleSource, defaultVisible]);
-
-    useEffect(() => {
-        onEventNameChange(eventNameSource);
-    }, [eventNameSource, onEventNameChange]);
-
-    useEffect(() => {
-        return () => processUnmount(id);
-    }, [id]);
-
-    return render({
-        ...renderProps,
-        containerCurrent: ref.current,
-        id,
-        onEvent,
-        onVisible,
+export const TooltipBase = forwardRef<View, TooltipBaseProps>(
+    (
+        {
+            defaultVisible,
+            onVisible: onVisibleSource,
+            render,
+            visible: visibleSource,
+            disabled = false,
+            eventName: eventNameSource,
+            ...renderProps
+        },
         ref,
-        renderStyle: {width: layout.width, height: layout.height},
-        visible,
-    });
-};
+    ) => {
+        const [{layout, visible}, setState] = useImmer<InitialState>({
+            layout: {} as LayoutRectangle,
+            visible: undefined,
+        });
+
+        const containerRef = useRef<View>(null);
+        const id = useId();
+        const debounceProcessVisible = useMemo(() => debounce(processVisible, 100), []);
+        const onVisible = useCallback(
+            (value?: boolean) =>
+                debounceProcessVisible({setState, onVisible: onVisibleSource}, value),
+            [debounceProcessVisible, onVisibleSource, setState],
+        );
+
+        const onStateChange = useCallback(
+            (_state: State, options = {} as OnStateChangeOptions) =>
+                processStateChange({...options, setState, debounceProcessVisible}),
+            [debounceProcessVisible, setState],
+        );
+
+        const onEventNameChange = useCallback(
+            (eventName?: EventName) =>
+                processEventNameChange({setState, debounceProcessVisible}, eventName),
+            [debounceProcessVisible, setState],
+        );
+
+        const [onEvent] = useOnEvent({...renderProps, onStateChange, disabled});
+
+        useImperativeHandle(
+            ref,
+            () => (containerRef?.current ? containerRef?.current : {}) as View,
+            [],
+        );
+
+        useEffect(() => {
+            onVisible(visibleSource ?? defaultVisible);
+        }, [onVisible, visibleSource, defaultVisible]);
+
+        useEffect(() => {
+            onEventNameChange(eventNameSource);
+        }, [eventNameSource, onEventNameChange]);
+
+        useEffect(() => {
+            return () => processUnmount(id);
+        }, [id]);
+
+        return render({
+            ...renderProps,
+            containerCurrent: containerRef.current,
+            id,
+            onEvent,
+            onVisible,
+            ref: containerRef,
+            renderStyle: {width: layout.width, height: layout.height},
+            visible,
+        });
+    },
+);

@@ -1,4 +1,4 @@
-import {FC, useId} from 'react';
+import {forwardRef, useId} from 'react';
 import {
     Animated,
     LayoutRectangle,
@@ -30,48 +30,54 @@ interface RippleBaseProps extends RippleProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const RippleBase: FC<RippleBaseProps> = ({
-    active,
-    centered,
-    touchableLocation = {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
-    onEntryAnimatedFinished,
-    render,
-    sequence,
-    touchableLayout,
-    underlayColor,
-    ...renderProps
-}) => {
-    const id = useId();
-    const {width = 0, height = 0} = touchableLayout ?? {};
-    const centerX = width / 2;
-    const centerY = height / 2;
-    const {locationX = 0, locationY = 0} = centered
-        ? {locationX: centerX, locationY: centerY}
-        : touchableLocation;
-
-    const offsetX = Math.abs(centerX - locationX);
-    const offsetY = Math.abs(centerY - locationY);
-    const radius = Math.sqrt(Math.pow(centerX + offsetX, 2) + Math.pow(centerY + offsetY, 2));
-    const diameter = radius * 2;
-    const [{opacity, scale}] = useAnimated({
-        active,
-        minDuration: diameter,
-        onEntryAnimatedFinished,
-        sequence,
-    });
-
-    return render({
-        ...renderProps,
-        active,
-        id,
-        renderStyle: {
-            height: diameter,
-            opacity,
-            transform: [{translateY: -radius}, {translateX: -radius}, {scale}],
-            width: diameter,
+export const RippleBase = forwardRef<View, RippleBaseProps>(
+    (
+        {
+            active,
+            centered,
+            touchableLocation = {} as Pick<NativeTouchEvent, 'locationX' | 'locationY'>,
+            onEntryAnimatedFinished,
+            render,
+            sequence,
+            touchableLayout,
+            underlayColor,
+            ...renderProps
         },
-        locationX,
-        locationY,
-        underlayColor,
-    });
-};
+        ref,
+    ) => {
+        const id = useId();
+        const {width = 0, height = 0} = touchableLayout ?? {};
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const {locationX = 0, locationY = 0} = centered
+            ? {locationX: centerX, locationY: centerY}
+            : touchableLocation;
+
+        const offsetX = Math.abs(centerX - locationX);
+        const offsetY = Math.abs(centerY - locationY);
+        const radius = Math.sqrt(Math.pow(centerX + offsetX, 2) + Math.pow(centerY + offsetY, 2));
+        const diameter = radius * 2;
+        const [{opacity, scale}] = useAnimated({
+            active,
+            minDuration: diameter,
+            onEntryAnimatedFinished,
+            sequence,
+        });
+
+        return render({
+            ...renderProps,
+            active,
+            id,
+            ref,
+            renderStyle: {
+                height: diameter,
+                opacity,
+                transform: [{translateY: -radius}, {translateX: -radius}, {scale}],
+                width: diameter,
+            },
+            locationX,
+            locationY,
+            underlayColor,
+        });
+    },
+);

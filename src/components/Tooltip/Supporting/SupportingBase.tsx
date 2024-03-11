@@ -1,4 +1,4 @@
-import {FC, RefAttributes, useCallback, useEffect, useId, useMemo} from 'react';
+import {RefAttributes, forwardRef, useCallback, useEffect, useId, useMemo} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
@@ -101,58 +101,56 @@ const processContainerLayout = (
         }),
     );
 
-export const SupportingBase: FC<SupportingBaseProps> = ({
-    containerCurrent,
-    onVisible,
-    render,
-    visible,
-    ...renderProps
-}) => {
-    const [{containerLayout, layout, status}, setState] = useImmer<InitialState>({
-        containerLayout: {} as InitialState['containerLayout'],
-        layout: {} as LayoutRectangle,
-        status: 'idle',
-    });
+export const SupportingBase = forwardRef<View, SupportingBaseProps>(
+    ({containerCurrent, onVisible, render, visible, ...renderProps}, ref) => {
+        const [{containerLayout, layout, status}, setState] = useImmer<InitialState>({
+            containerLayout: {} as InitialState['containerLayout'],
+            layout: {} as LayoutRectangle,
+            status: 'idle',
+        });
 
-    const id = useId();
-    const [{opacity}] = useAnimated({visible});
-    const onStateChange = useCallback(
-        (_state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange({...options, setState, onVisible}),
-        [onVisible, setState],
-    );
+        const id = useId();
+        const [{opacity}] = useAnimated({visible});
+        const onStateChange = useCallback(
+            (_state: State, options = {} as OnStateChangeOptions) =>
+                processStateChange({...options, setState, onVisible}),
+            [onVisible, setState],
+        );
 
-    const [onEvent] = useOnEvent({...renderProps, onStateChange});
-    const supporting = useMemo(
-        () =>
-            render({
-                ...renderProps,
+        const [onEvent] = useOnEvent({...renderProps, onStateChange});
+        const supporting = useMemo(
+            () =>
+                render({
+                    ...renderProps,
+                    containerLayout,
+                    id,
+                    onEvent,
+                    ref,
+                    renderStyle: {opacity, width: layout.width, height: layout.height},
+                    visible,
+                }),
+            [
                 containerLayout,
                 id,
+                layout.height,
+                layout.width,
                 onEvent,
-                renderStyle: {opacity, width: layout.width, height: layout.height},
+                opacity,
+                ref,
+                render,
+                renderProps,
                 visible,
-            }),
-        [
-            containerLayout,
-            id,
-            layout.height,
-            layout.width,
-            onEvent,
-            opacity,
-            render,
-            renderProps,
-            visible,
-        ],
-    );
+            ],
+        );
 
-    useEffect(() => {
-        processContainerLayout(containerCurrent, {setState, visible});
-    }, [containerCurrent, setState, visible]);
+        useEffect(() => {
+            processContainerLayout(containerCurrent, {setState, visible});
+        }, [containerCurrent, setState, visible]);
 
-    useEffect(() => {
-        processEmit(supporting, {id, status});
-    }, [id, status, supporting]);
+        useEffect(() => {
+            processEmit(supporting, {id, status});
+        }, [id, status, supporting]);
 
-    return <></>;
-};
+        return <></>;
+    },
+);

@@ -1,5 +1,12 @@
-import {FC, useCallback, useEffect, useId} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
+import {forwardRef, useCallback, useEffect, useId} from 'react';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    TextStyle,
+    View,
+    ViewStyle,
+} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
@@ -129,65 +136,76 @@ const processIndeterminate = ({setState}: ProcessEventOptions, indeterminate?: b
         draft.type = draft.active ? 'selected' : 'unselected';
     });
 
-export const CheckboxBase: FC<CheckboxBaseProps> = ({
-    active: activeSource,
-    defaultActive,
-    disabled,
-    error,
-    indeterminate,
-    onActive,
-    render,
-    ...renderProps
-}) => {
-    const [{active, eventName, layout, status, type}, setState] = useImmer<InitialState>({
-        active: undefined,
-        eventName: 'none',
-        layout: {} as LayoutRectangle,
-        status: 'idle',
-        type: 'unselected',
-    });
+export const CheckboxBase = forwardRef<View, CheckboxBaseProps>(
+    (
+        {
+            active: activeSource,
+            defaultActive,
+            disabled,
+            error,
+            indeterminate,
+            onActive,
+            render,
+            ...renderProps
+        },
+        ref,
+    ) => {
+        const [{active, eventName, layout, status, type}, setState] = useImmer<InitialState>({
+            active: undefined,
+            eventName: 'none',
+            layout: {} as LayoutRectangle,
+            status: 'idle',
+            type: 'unselected',
+        });
 
-    const id = useId();
-    const theme = useTheme();
-    const checkUnderlayColor =
-        type === 'unselected'
-            ? theme.palette.surface.onSurfaceVariant
-            : theme.palette.primary.primary;
+        const id = useId();
+        const theme = useTheme();
+        const checkUnderlayColor =
+            type === 'unselected'
+                ? theme.palette.surface.onSurfaceVariant
+                : theme.palette.primary.primary;
 
-    const underlayColor = error ? theme.palette.error.error : checkUnderlayColor;
-    const [icon] = useIcon({disabled, error, eventName, type});
-    const onStateChange = useCallback(
-        (_state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange({...options, active, indeterminate, onActive, setState}),
-        [active, indeterminate, onActive, setState],
-    );
+        const underlayColor = error ? theme.palette.error.error : checkUnderlayColor;
+        const [icon] = useIcon({disabled, error, eventName, type});
+        const onStateChange = useCallback(
+            (_state: State, options = {} as OnStateChangeOptions) =>
+                processStateChange({...options, active, indeterminate, onActive, setState}),
+            [active, indeterminate, onActive, setState],
+        );
 
-    const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
+        const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
 
-    useEffect(() => {
-        processActive({active: activeSource ?? defaultActive, indeterminate, setState, onActive});
-    }, [activeSource, defaultActive, indeterminate, onActive, setState]);
+        useEffect(() => {
+            processActive({
+                active: activeSource ?? defaultActive,
+                indeterminate,
+                setState,
+                onActive,
+            });
+        }, [activeSource, defaultActive, indeterminate, onActive, setState]);
 
-    useEffect(() => {
-        processIndeterminate({setState}, indeterminate);
-    }, [indeterminate, setState]);
+        useEffect(() => {
+            processIndeterminate({setState}, indeterminate);
+        }, [indeterminate, setState]);
 
-    useEffect(() => {
-        processInit({indeterminate, setState});
-    }, [activeSource, defaultActive, indeterminate, setState]);
+        useEffect(() => {
+            processInit({indeterminate, setState});
+        }, [activeSource, defaultActive, indeterminate, setState]);
 
-    if (status === 'idle') {
-        return <></>;
-    }
+        if (status === 'idle') {
+            return <></>;
+        }
 
-    return render({
-        ...renderProps,
-        disabled,
-        eventName,
-        icon,
-        id,
-        onEvent,
-        renderStyle: {height: layout.height, width: layout.width},
-        underlayColor,
-    });
-};
+        return render({
+            ...renderProps,
+            disabled,
+            eventName,
+            icon,
+            id,
+            onEvent,
+            ref,
+            renderStyle: {height: layout.height, width: layout.width},
+            underlayColor,
+        });
+    },
+);

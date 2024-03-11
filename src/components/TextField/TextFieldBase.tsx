@@ -1,4 +1,14 @@
-import {FC, RefAttributes, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
+import {
+    RefAttributes,
+    RefObject,
+    forwardRef,
+    useCallback,
+    useEffect,
+    useId,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
@@ -165,92 +175,110 @@ const renderTextInput = ({id, renderStyle, multiline, ...inputProps}: RenderText
     />
 );
 
-export const TextFieldBase: FC<TextFieldBaseProps> = ({
-    defaultValue,
-    disabled,
-    error,
-    labelText = 'Label',
-    leading,
-    multiline,
-    onChangeText: onChangeTextSource,
-    onContentSizeChange: onContentSizeChangeSource,
-    placeholder,
-    ref,
-    render,
-    supportingText,
-    trailing,
-    type = 'filled',
-    value: valueSource,
-    ...textInputProps
-}) => {
-    const [{layout, eventName, state, contentSize, value}, setState] = useImmer<InitialState>({
-        contentSize: undefined,
-        eventName: 'none',
-        layout: {} as LayoutRectangle,
-        state: 'enabled',
-        value: '',
-    });
-
-    const id = useId();
-    const textFieldRef = useRef<TextInput>(null);
-    const inputRef = (ref ?? textFieldRef) as RefObject<TextInput>;
-    const theme = useTheme();
-    const placeholderTextColor =
-        state === 'disabled'
-            ? theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38)
-            : theme.palette.surface.onSurfaceVariant;
-
-    const underlayColor = theme.palette.surface.onSurface;
-    const onContentSizeChange = useCallback(
-        (event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>) =>
-            processContentSizeChange(event, {
-                onContentSizeChange: onContentSizeChangeSource,
-                setState,
-            }),
-        [onContentSizeChangeSource, setState],
-    );
-
-    const onChangeText = useCallback(
-        (text?: string) => processChangeText({onChangeText: onChangeTextSource, setState}, text),
-        [onChangeTextSource, setState],
-    );
-
-    const onStateChange = useCallback(
-        (nextState: State, options = {} as OnStateChangeOptions) =>
-            processStateChange(nextState, {...options, setState, ref: inputRef}),
-        [inputRef, setState],
-    );
-
-    const [{onBlur, onFocus, ...onEvent}] = useOnEvent({...textInputProps, onStateChange});
-    const [
+export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
+    (
         {
-            activeIndicatorBackgroundColor,
-            activeIndicatorHeight,
-            backgroundColor,
-            inputColor,
-            labelTextColor,
-            labelTextHeight,
-            labelTextLetterSpacing,
-            labelTextLineHeight,
-            labelTextSize,
-            labelTextTop,
-            supportingTextColor,
+            defaultValue,
+            disabled,
+            error,
+            labelText = 'Label',
+            leading,
+            multiline,
+            onChangeText: onChangeTextSource,
+            onContentSizeChange: onContentSizeChangeSource,
+            placeholder,
+            render,
+            supportingText,
+            trailing,
+            type = 'filled',
+            value: valueSource,
+            ...textInputProps
         },
-    ] = useAnimated({
-        disabled,
-        error,
-        eventName,
-        filled: [valueSource, defaultValue, placeholder, value].some(item => item),
-        state,
-        type,
-    });
+        ref,
+    ) => {
+        const [{layout, eventName, state, contentSize, value}, setState] = useImmer<InitialState>({
+            contentSize: undefined,
+            eventName: 'none',
+            layout: {} as LayoutRectangle,
+            state: 'enabled',
+            value: '',
+        });
 
-    const input = useMemo(
-        () =>
-            renderTextInput({
-                ...textInputProps,
+        const id = useId();
+        const textFieldRef = useRef<TextInput>(null);
+        const theme = useTheme();
+        const placeholderTextColor =
+            state === 'disabled'
+                ? theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38)
+                : theme.palette.surface.onSurfaceVariant;
+
+        const underlayColor = theme.palette.surface.onSurface;
+        const onContentSizeChange = useCallback(
+            (event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>) =>
+                processContentSizeChange(event, {
+                    onContentSizeChange: onContentSizeChangeSource,
+                    setState,
+                }),
+            [onContentSizeChangeSource, setState],
+        );
+
+        const onChangeText = useCallback(
+            (text?: string) =>
+                processChangeText({onChangeText: onChangeTextSource, setState}, text),
+            [onChangeTextSource, setState],
+        );
+
+        const onStateChange = useCallback(
+            (nextState: State, options = {} as OnStateChangeOptions) =>
+                processStateChange(nextState, {...options, setState, ref: textFieldRef}),
+            [setState],
+        );
+
+        const [{onBlur, onFocus, ...onEvent}] = useOnEvent({...textInputProps, onStateChange});
+        const [
+            {
+                activeIndicatorBackgroundColor,
+                activeIndicatorHeight,
+                backgroundColor,
+                inputColor,
+                labelTextColor,
+                labelTextHeight,
+                labelTextLetterSpacing,
+                labelTextLineHeight,
+                labelTextSize,
+                labelTextTop,
+                supportingTextColor,
+            },
+        ] = useAnimated({
+            disabled,
+            error,
+            eventName,
+            filled: [valueSource, defaultValue, placeholder, value].some(item => item),
+            state,
+            type,
+        });
+
+        const input = useMemo(
+            () =>
+                renderTextInput({
+                    ...textInputProps,
+                    disabled,
+                    id,
+                    multiline,
+                    onBlur,
+                    onChangeText,
+                    onContentSizeChange,
+                    onFocus,
+                    placeholder,
+                    placeholderTextColor,
+                    ref: textFieldRef,
+                    renderStyle: {color: inputColor},
+                    value,
+                }),
+            [
                 disabled,
                 id,
+                inputColor,
                 multiline,
                 onBlur,
                 onChangeText,
@@ -258,57 +286,48 @@ export const TextFieldBase: FC<TextFieldBaseProps> = ({
                 onFocus,
                 placeholder,
                 placeholderTextColor,
-                ref: inputRef,
-                renderStyle: {color: inputColor},
+                textInputProps,
                 value,
-            }),
-        [
-            disabled,
+            ],
+        );
+
+        useImperativeHandle(
+            ref,
+            () => (textFieldRef?.current ? textFieldRef?.current : {}) as TextInput,
+            [],
+        );
+
+        useEffect(() => {
+            onChangeText(valueSource ?? defaultValue);
+        }, [valueSource, defaultValue, onChangeText]);
+
+        return render({
+            contentSize,
+            eventName,
             id,
-            inputColor,
-            inputRef,
+            input,
+            labelText,
+            leading,
             multiline,
-            onBlur,
-            onChangeText,
-            onContentSizeChange,
-            onFocus,
-            placeholder,
-            placeholderTextColor,
-            textInputProps,
-            value,
-        ],
-    );
-
-    useEffect(() => {
-        onChangeText(valueSource ?? defaultValue);
-    }, [valueSource, defaultValue, onChangeText]);
-
-    return render({
-        contentSize,
-        eventName,
-        id,
-        input,
-        labelText,
-        leading,
-        multiline,
-        onEvent: {...onEvent},
-        renderStyle: {
-            activeIndicatorBackgroundColor,
-            activeIndicatorHeight,
-            backgroundColor,
-            height: layout.height,
-            labelTextColor,
-            labelTextHeight,
-            labelTextLetterSpacing,
-            labelTextLineHeight,
-            labelTextSize,
-            labelTextTop,
-            supportingTextColor,
-            width: layout.width,
-        },
-        state,
-        supportingText,
-        trailing,
-        underlayColor,
-    });
-};
+            onEvent: {...onEvent},
+            renderStyle: {
+                activeIndicatorBackgroundColor,
+                activeIndicatorHeight,
+                backgroundColor,
+                height: layout.height,
+                labelTextColor,
+                labelTextHeight,
+                labelTextLetterSpacing,
+                labelTextLineHeight,
+                labelTextSize,
+                labelTextTop,
+                supportingTextColor,
+                width: layout.width,
+            },
+            state,
+            supportingText,
+            trailing,
+            underlayColor,
+        });
+    },
+);

@@ -59,9 +59,9 @@ const render = ({
     );
 };
 
-const ForwardRefInner = forwardRef<TextInput, SearchProps>((props, ref) => (
+const ForwardRefSearch = forwardRef<TextInput, SearchProps>((props, ref) => (
     <SearchBase {...props} ref={ref} render={render} />
 ));
 
-export const Search: FC<SearchProps> = memo(ForwardRefInner);
+export const Search: FC<SearchProps> = memo(ForwardRefSearch);
 export type {SearchProps};

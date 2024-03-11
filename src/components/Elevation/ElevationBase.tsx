@@ -1,4 +1,4 @@
-import {FC, RefAttributes, useCallback, useId} from 'react';
+import {RefAttributes, forwardRef, useCallback, useId} from 'react';
 import {
     Animated,
     LayoutChangeEvent,
@@ -60,37 +60,35 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
 const processStateChange = ({event, eventName, setState}: ProcessStateChangeOptions) =>
     eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
 
-export const ElevationBase: FC<ElevationBaseProps> = ({
-    defaultLevel,
-    level: levelSource,
-    render,
-    ...renderProps
-}) => {
-    const [{layout}, setState] = useImmer<InitialState>({
-        layout: {} as LayoutRectangle,
-    });
+export const ElevationBase = forwardRef<View, ElevationBaseProps>(
+    ({defaultLevel, level: levelSource, render, ...renderProps}, ref) => {
+        const [{layout}, setState] = useImmer<InitialState>({
+            layout: {} as LayoutRectangle,
+        });
 
-    const id = useId();
-    const level = levelSource ?? defaultLevel;
-    const [{shadow0Opacity, shadow1Opacity}] = useAnimated({level});
-    const onStateChange = useCallback(
-        (_state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange({...options, setState}),
-        [setState],
-    );
+        const id = useId();
+        const level = levelSource ?? defaultLevel;
+        const [{shadow0Opacity, shadow1Opacity}] = useAnimated({level});
+        const onStateChange = useCallback(
+            (_state: State, options = {} as OnStateChangeOptions) =>
+                processStateChange({...options, setState}),
+            [setState],
+        );
 
-    const [onEvent] = useOnEvent({...renderProps, onStateChange});
+        const [onEvent] = useOnEvent({...renderProps, onStateChange});
 
-    return render({
-        ...renderProps,
-        id,
-        level,
-        onEvent,
-        renderStyle: {
-            height: layout.height,
-            opacity0: shadow0Opacity,
-            opacity1: shadow1Opacity,
-            width: layout.width,
-        },
-    });
-};
+        return render({
+            ...renderProps,
+            id,
+            level,
+            onEvent,
+            ref,
+            renderStyle: {
+                height: layout.height,
+                opacity0: shadow0Opacity,
+                opacity1: shadow1Opacity,
+                width: layout.width,
+            },
+        });
+    },
+);

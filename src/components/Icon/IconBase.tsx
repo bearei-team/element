@@ -1,4 +1,4 @@
-import {FC, RefAttributes, useId} from 'react';
+import {RefAttributes, forwardRef, useId} from 'react';
 import {Animated, View, ViewProps, ViewStyle} from 'react-native';
 import {SvgProps} from 'react-native-svg';
 import {useTheme} from 'styled-components/native';
@@ -28,31 +28,29 @@ interface IconBaseProps extends IconProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const IconBase: FC<IconBaseProps> = ({
-    eventName,
-    fill,
-    name = 'circle',
-    render,
-    renderStyle,
-    type = 'outlined',
-    ...renderProps
-}) => {
-    const id = useId();
-    const SvgIcon = icon?.[type]?.svg?.[name];
-    const theme = useTheme();
-    const [{scale}] = useAnimated({eventName});
+export const IconBase = forwardRef<View, IconBaseProps>(
+    (
+        {eventName, fill, name = 'circle', render, renderStyle, type = 'outlined', ...renderProps},
+        ref,
+    ) => {
+        const id = useId();
+        const SvgIcon = icon?.[type]?.svg?.[name];
+        const theme = useTheme();
+        const [{scale}] = useAnimated({eventName});
 
-    return render({
-        ...renderProps,
-        id,
-        renderStyle: {...renderStyle, transform: [{scale}]},
-        children: SvgIcon && (
-            <SvgIcon
-                fill={fill ?? theme.palette.surface.onSurfaceVariant}
-                height="100%"
-                viewBox="0 0 24 24"
-                width="100%"
-            />
-        ),
-    });
-};
+        return render({
+            ...renderProps,
+            id,
+            ref,
+            renderStyle: {...renderStyle, transform: [{scale}]},
+            children: SvgIcon && (
+                <SvgIcon
+                    fill={fill ?? theme.palette.surface.onSurfaceVariant}
+                    height="100%"
+                    viewBox="0 0 24 24"
+                    width="100%"
+                />
+            ),
+        });
+    },
+);

@@ -1,5 +1,12 @@
-import {FC, useCallback, useEffect, useId} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
+import {forwardRef, useCallback, useEffect, useId} from 'react';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    TextStyle,
+    View,
+    ViewStyle,
+} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {EventName, State} from '../Common/interface';
@@ -73,56 +80,62 @@ const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
         draft.eventName = 'none';
     });
 
-export const IconButtonBase: FC<IconButtonBaseProps> = ({
-    defaultTooltipVisible,
-    disabled = false,
-    fill,
-    icon,
-    render,
-    renderStyle,
-    tooltipVisible: tooltipVisibleSource,
-    type = 'filled',
-    ...renderProps
-}) => {
-    const [{eventName, layout}, setState] = useImmer<InitialState>({
-        eventName: 'none',
-        layout: {} as LayoutRectangle,
-    });
-
-    const tooltipVisible = tooltipVisibleSource ?? defaultTooltipVisible;
-    const id = useId();
-    const [underlayColor] = useUnderlayColor({type});
-    const onStateChange = useCallback(
-        (_state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange({...options, setState}),
-        [setState],
-    );
-
-    const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
-    const [{backgroundColor, borderColor}] = useAnimated({disabled, type});
-    const [iconElement] = useIcon({eventName, type, icon, disabled, fill, layout});
-    const [border] = useBorder({borderColor});
-
-    useEffect(() => {
-        processDisabled({setState}, disabled);
-    }, [disabled, setState]);
-
-    return render({
-        ...renderProps,
-        disabled,
-        eventName,
-        icon: iconElement,
-        id,
-        onEvent,
-        tooltipVisible,
-        type,
-        underlayColor,
-        renderStyle: {
-            ...renderStyle,
-            ...border,
-            backgroundColor,
-            layoutHeight: layout.height,
-            layoutWidth: layout.width,
+export const IconButtonBase = forwardRef<View, IconButtonBaseProps>(
+    (
+        {
+            defaultTooltipVisible,
+            disabled = false,
+            fill,
+            icon,
+            render,
+            renderStyle,
+            tooltipVisible: tooltipVisibleSource,
+            type = 'filled',
+            ...renderProps
         },
-    });
-};
+        ref,
+    ) => {
+        const [{eventName, layout}, setState] = useImmer<InitialState>({
+            eventName: 'none',
+            layout: {} as LayoutRectangle,
+        });
+
+        const tooltipVisible = tooltipVisibleSource ?? defaultTooltipVisible;
+        const id = useId();
+        const [underlayColor] = useUnderlayColor({type});
+        const onStateChange = useCallback(
+            (_state: State, options = {} as OnStateChangeOptions) =>
+                processStateChange({...options, setState}),
+            [setState],
+        );
+
+        const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
+        const [{backgroundColor, borderColor}] = useAnimated({disabled, type});
+        const [iconElement] = useIcon({eventName, type, icon, disabled, fill, layout});
+        const [border] = useBorder({borderColor});
+
+        useEffect(() => {
+            processDisabled({setState}, disabled);
+        }, [disabled, setState]);
+
+        return render({
+            ...renderProps,
+            disabled,
+            eventName,
+            icon: iconElement,
+            id,
+            onEvent,
+            ref,
+            renderStyle: {
+                ...renderStyle,
+                ...border,
+                backgroundColor,
+                layoutHeight: layout.height,
+                layoutWidth: layout.width,
+            },
+            tooltipVisible,
+            type,
+            underlayColor,
+        });
+    },
+);

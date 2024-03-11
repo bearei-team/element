@@ -1,4 +1,14 @@
-import {FC, RefAttributes, RefObject, useCallback, useEffect, useId, useMemo, useRef} from 'react';
+import {
+    RefAttributes,
+    RefObject,
+    forwardRef,
+    useCallback,
+    useEffect,
+    useId,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+} from 'react';
 import {
     Animated,
     LayoutRectangle,
@@ -167,10 +177,10 @@ const processEmit = (element: React.JSX.Element, {id, status, listVisible}: Proc
 const processUnmount = (id: string) =>
     emitter.emit('modal', {id: `search__list--${id}`, element: undefined});
 
-const renderTextInput = ({id, ...inputProps}: RenderTextInputOptions) => (
+const renderTextInput = ({id, ...props}: RenderTextInputOptions) => (
     <TextField testID={`search__control--${id}`}>
         <Input
-            {...inputProps}
+            {...props}
             testID={`search__input--${id}`}
             /**
              * enableFocusRing is used to disable the focus style in macOS,
@@ -218,137 +228,145 @@ const renderSearchList = ({
     );
 };
 
-export const SearchBase: FC<SearchBaseProps> = ({
-    activeKey,
-    data: dataSources,
-    defaultActiveKey,
-    defaultValue,
-    leading,
-    onActive,
-    onChangeText: onChangeTextSource,
-    placeholder,
-    ref,
-    render,
-    trailing,
-    value: valueSource,
-    ...textInputProps
-}) => {
-    const [{value, status, data, eventName, layout, listVisible, state}, setState] =
-        useImmer<InitialState>({
-            data: [],
-            eventName: 'none',
-            layout: {} as InitialState['layout'],
-            listVisible: undefined,
-            state: 'enabled',
-            status: 'idle',
-            value: '',
-        });
+export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
+    (
+        {
+            activeKey,
+            data: dataSources,
+            defaultActiveKey,
+            defaultValue,
+            leading,
+            onActive,
+            onChangeText: onChangeTextSource,
+            placeholder,
+            render,
+            trailing,
+            value: valueSource,
+            ...textInputProps
+        },
+        ref,
+    ) => {
+        const [{value, status, data, eventName, layout, listVisible, state}, setState] =
+            useImmer<InitialState>({
+                data: [],
+                eventName: 'none',
+                layout: {} as InitialState['layout'],
+                listVisible: undefined,
+                state: 'enabled',
+                status: 'idle',
+                value: '',
+            });
 
-    const [{listHeight}] = useAnimated({listVisible});
-    const containerRef = useRef<View>(null);
-    const id = useId();
-    const searchRef = useRef<TextInput>(null);
-    const inputRef = (ref ?? searchRef) as RefObject<TextInput>;
-    const theme = useTheme();
-    const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
-    const underlayColor = theme.palette.surface.onSurface;
-    const onStateChange = useCallback(
-        (nextState: State, options = {} as OnStateChangeOptions) =>
-            processStateChange(nextState, {...options, ref: searchRef, setState}),
-        [setState],
-    );
+        const [{listHeight}] = useAnimated({listVisible});
+        const containerRef = useRef<View>(null);
+        const id = useId();
+        const inputRef = useRef<TextInput>(null);
+        const theme = useTheme();
+        const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
+        const underlayColor = theme.palette.surface.onSurface;
+        const onStateChange = useCallback(
+            (nextState: State, options = {} as OnStateChangeOptions) =>
+                processStateChange(nextState, {...options, ref: inputRef, setState}),
+            [setState],
+        );
 
-    const [{onBlur, onFocus, ...onEvent}] = useOnEvent({...textInputProps, onStateChange});
-    const onChangeText = useCallback(
-        (text?: string) =>
-            processChangeText(
-                {
-                    data: dataSources,
-                    onChangeText: onChangeTextSource,
-                    setState,
-                },
-                text,
-            ),
-        [dataSources, onChangeTextSource, setState],
-    );
+        const [{onBlur, onFocus, ...onEvent}] = useOnEvent({...textInputProps, onStateChange});
+        const onChangeText = useCallback(
+            (text?: string) =>
+                processChangeText(
+                    {
+                        data: dataSources,
+                        onChangeText: onChangeTextSource,
+                        setState,
+                    },
+                    text,
+                ),
+            [dataSources, onChangeTextSource, setState],
+        );
 
-    const input = useMemo(
-        () =>
-            renderTextInput({
-                ...textInputProps,
+        const input = useMemo(
+            () =>
+                renderTextInput({
+                    ...textInputProps,
+                    id,
+                    onBlur,
+                    onChangeText,
+                    onFocus,
+                    placeholder,
+                    placeholderTextColor,
+                    ref: inputRef,
+                    value,
+                }),
+            [
                 id,
                 onBlur,
                 onChangeText,
                 onFocus,
                 placeholder,
                 placeholderTextColor,
-                ref: inputRef,
+                textInputProps,
                 value,
-            }),
-        [
+            ],
+        );
+
+        const searchList = useMemo(
+            () =>
+                renderSearchList({
+                    activeKey,
+                    containerHeight: layout.height,
+                    containerPageX: layout.pageX,
+                    containerPageY: layout.pageY,
+                    data,
+                    defaultActiveKey,
+                    id,
+                    onActive,
+                    renderStyle: {height: listHeight, width: layout.width},
+                }),
+            [activeKey, data, defaultActiveKey, id, layout, listHeight, onActive],
+        );
+
+        useImperativeHandle(
+            ref,
+            () => (inputRef?.current ? inputRef?.current : {}) as TextInput,
+            [],
+        );
+
+        useEffect(() => {
+            onChangeText(valueSource ?? defaultValue);
+        }, [valueSource, defaultValue, onChangeText]);
+
+        useEffect(() => {
+            processListVisible({setState, state}, data);
+        }, [data, setState, state]);
+
+        useEffect(() => {
+            processContainerLayout({setState}, containerRef?.current);
+        }, [setState]);
+
+        useEffect(() => {
+            processEmit(searchList, {status, id, listVisible});
+
+            return () => processUnmount(id);
+        }, [id, listVisible, searchList, status]);
+
+        return render({
+            containerRef,
+            data,
+            eventName,
             id,
-            inputRef,
-            onBlur,
-            onChangeText,
-            onFocus,
+            input,
+            layout,
+            leading,
+            listVisible,
+            onActive,
+            onEvent: {...onEvent},
             placeholder,
-            placeholderTextColor,
-            textInputProps,
-            value,
-        ],
-    );
-
-    const searchList = useMemo(
-        () =>
-            renderSearchList({
-                activeKey,
-                containerHeight: layout.height,
-                containerPageX: layout.pageX,
-                containerPageY: layout.pageY,
-                data,
-                defaultActiveKey,
-                id,
-                onActive,
-                renderStyle: {height: listHeight, width: layout.width},
-            }),
-        [activeKey, data, defaultActiveKey, id, layout, listHeight, onActive],
-    );
-
-    useEffect(() => {
-        onChangeText(valueSource ?? defaultValue);
-    }, [valueSource, defaultValue, onChangeText]);
-
-    useEffect(() => {
-        processListVisible({setState, state}, data);
-    }, [data, setState, state]);
-
-    useEffect(() => {
-        processContainerLayout({setState}, containerRef?.current);
-    }, [containerRef, setState, listVisible]);
-
-    useEffect(() => {
-        processEmit(searchList, {status, id, listVisible});
-
-        return () => processUnmount(id);
-    }, [id, listVisible, searchList, status]);
-
-    return render({
-        containerRef,
-        data,
-        eventName,
-        id,
-        input,
-        layout,
-        leading,
-        listVisible,
-        onActive,
-        onEvent: {...onEvent},
-        placeholder,
-        trailing,
-        underlayColor,
-        iconRenderStyle: {
-            height: theme.adaptSize(theme.spacing.large),
-            width: theme.adaptSize(theme.spacing.large),
-        },
-    });
-};
+            trailing,
+            underlayColor,
+            iconRenderStyle: {
+                height: theme.adaptSize(theme.spacing.large),
+                width: theme.adaptSize(theme.spacing.large),
+            },
+        });
+    },
+);

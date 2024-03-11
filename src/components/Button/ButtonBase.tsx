@@ -1,5 +1,12 @@
-import {FC, useCallback, useEffect, useId} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
+import {forwardRef, useCallback, useEffect, useId} from 'react';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    TextStyle,
+    View,
+    ViewStyle,
+} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ComponentStatus, EventName, State} from '../Common/interface';
@@ -155,79 +162,77 @@ const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
         draft.eventName = 'none';
     });
 
-export const ButtonBase: FC<ButtonBaseProps> = ({
-    block,
-    disabled,
-    icon,
-    labelText = 'Label',
-    render,
-    type = 'filled',
-    ...renderProps
-}) => {
-    const [{contentLayout, elevation, eventName, layout, status}, setState] =
-        useImmer<InitialState>({
-            contentLayout: {} as LayoutRectangle,
-            elevation: undefined,
-            eventName: 'none',
-            layout: {} as LayoutRectangle,
-            status: 'idle',
+export const ButtonBase = forwardRef<View, ButtonBaseProps>(
+    (
+        {block, disabled, icon, labelText = 'Label', render, type = 'filled', ...renderProps},
+        ref,
+    ) => {
+        const [{contentLayout, elevation, eventName, layout, status}, setState] =
+            useImmer<InitialState>({
+                contentLayout: {} as LayoutRectangle,
+                elevation: undefined,
+                eventName: 'none',
+                layout: {} as LayoutRectangle,
+                status: 'idle',
+            });
+
+        const id = useId();
+        const [underlayColor] = useUnderlayColor({type});
+        const onContentLayout = useCallback(
+            (event: LayoutChangeEvent) => processContentLayout(event, {block, setState}),
+            [block, setState],
+        );
+
+        const onStateChange = useCallback(
+            (state: State, options = {} as OnStateChangeOptions) =>
+                processStateChange(state, {...options, block, type, setState}),
+            [block, setState, type],
+        );
+
+        const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
+        const [{backgroundColor, borderColor, color}] = useAnimated({disabled, eventName, type});
+        const [iconElement] = useIcon({eventName, type, icon, disabled});
+        const [border] = useBorder({type, borderColor});
+
+        useEffect(() => {
+            processDisabledElevation({setState, type}, disabled);
+        }, [disabled, setState, type]);
+
+        useEffect(() => {
+            processDisabled({setState}, disabled);
+        }, [disabled, setState]);
+
+        useEffect(() => {
+            processInit({type, setState, disabled});
+        }, [disabled, setState, type]);
+
+        if (status === 'idle') {
+            return <></>;
+        }
+
+        return render({
+            ...renderProps,
+            block,
+            disabled,
+            elevation,
+            eventName,
+            icon: iconElement,
+            id,
+            labelText,
+            onContentLayout,
+            onEvent,
+            ref,
+            renderStyle: {
+                ...border,
+                backgroundColor,
+                color,
+                contentHeight: contentLayout.height,
+                contentWidth: contentLayout.width,
+                height: layout.height,
+                width: layout.width,
+            },
+            type,
+            underlayColor,
         });
-
-    const id = useId();
-    const [underlayColor] = useUnderlayColor({type});
-    const onContentLayout = useCallback(
-        (event: LayoutChangeEvent) => processContentLayout(event, {block, setState}),
-        [block, setState],
-    );
-
-    const onStateChange = useCallback(
-        (state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange(state, {...options, block, type, setState}),
-        [block, setState, type],
-    );
-
-    const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
-    const [{backgroundColor, borderColor, color}] = useAnimated({disabled, eventName, type});
-    const [iconElement] = useIcon({eventName, type, icon, disabled});
-    const [border] = useBorder({type, borderColor});
-
-    useEffect(() => {
-        processDisabledElevation({setState, type}, disabled);
-    }, [disabled, setState, type]);
-
-    useEffect(() => {
-        processDisabled({setState}, disabled);
-    }, [disabled, setState]);
-
-    useEffect(() => {
-        processInit({type, setState, disabled});
-    }, [disabled, setState, type]);
-
-    if (status === 'idle') {
-        return <></>;
-    }
-
-    return render({
-        ...renderProps,
-        block,
-        disabled,
-        elevation,
-        eventName,
-        icon: iconElement,
-        id,
-        labelText,
-        onContentLayout,
-        onEvent,
-        renderStyle: {
-            ...border,
-            backgroundColor,
-            color,
-            contentHeight: contentLayout.height,
-            contentWidth: contentLayout.width,
-            height: layout.height,
-            width: layout.width,
-        },
-        type,
-        underlayColor,
-    });
-};
+    },
+);

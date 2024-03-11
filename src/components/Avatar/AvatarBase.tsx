@@ -1,4 +1,4 @@
-import {FC, RefAttributes, useId} from 'react';
+import {RefAttributes, forwardRef, useId} from 'react';
 import {View, ViewProps} from 'react-native';
 
 export interface AvatarProps extends Partial<ViewProps & RefAttributes<View>> {
@@ -11,12 +11,15 @@ interface AvatarBaseProps extends AvatarProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const AvatarBase: FC<AvatarBaseProps> = ({labelText = 'A', render, ...renderProps}) => {
-    const id = useId();
+export const AvatarBase = forwardRef<View, AvatarBaseProps>(
+    ({labelText = 'A', render, ...renderProps}, ref) => {
+        const id = useId();
 
-    return render({
-        ...renderProps,
-        id,
-        labelText,
-    });
-};
+        return render({
+            ...renderProps,
+            id,
+            labelText,
+            ref,
+        });
+    },
+);

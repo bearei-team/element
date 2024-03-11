@@ -1,5 +1,12 @@
-import {FC, useCallback, useEffect, useId} from 'react';
-import {Animated, LayoutChangeEvent, LayoutRectangle, TextStyle, ViewStyle} from 'react-native';
+import {forwardRef, useCallback, useEffect, useId} from 'react';
+import {
+    Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
+    TextStyle,
+    View,
+    ViewStyle,
+} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ComponentStatus, EventName, Size, State} from '../Common/interface';
@@ -125,65 +132,60 @@ const processInit = ({elevated, setState, disabled}: ProcessInitOptions) =>
         draft.status = 'succeeded';
     });
 
-export const FABBase: FC<FABBaseProps> = ({
-    disabled,
-    elevated = true,
-    icon,
-    render,
-    size,
-    type = 'primary',
-    ...renderProps
-}) => {
-    const [{elevation, layout, eventName, status}, setState] = useImmer<InitialState>({
-        elevation: undefined,
-        eventName: 'none',
-        layout: {} as LayoutRectangle,
-        status: 'idle',
-    });
+export const FABBase = forwardRef<View, FABBaseProps>(
+    ({disabled, elevated = true, icon, render, size, type = 'primary', ...renderProps}, ref) => {
+        const [{elevation, layout, eventName, status}, setState] = useImmer<InitialState>({
+            elevation: undefined,
+            eventName: 'none',
+            layout: {} as LayoutRectangle,
+            status: 'idle',
+        });
 
-    const [underlayColor] = useUnderlayColor({type});
-    const id = useId();
-    const onStateChange = useCallback(
-        (state: State, options = {} as OnStateChangeOptions) =>
-            processStateChange(state, {...options, elevated, setState}),
-        [elevated, setState],
-    );
+        const [underlayColor] = useUnderlayColor({type});
+        const id = useId();
+        const onStateChange = useCallback(
+            (state: State, options = {} as OnStateChangeOptions) =>
+                processStateChange(state, {...options, elevated, setState}),
+            [elevated, setState],
+        );
 
-    const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
-    const [{backgroundColor, color}] = useAnimated({disabled, type});
-    const [iconElement] = useIcon({eventName, type, icon, disabled, size});
+        const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
+        const [{backgroundColor, color}] = useAnimated({disabled, type});
+        const [iconElement] = useIcon({eventName, type, icon, disabled, size});
 
-    useEffect(() => {
-        processDisabledElevation({elevated, setState}, disabled);
-    }, [disabled, elevated, setState]);
+        useEffect(() => {
+            processDisabledElevation({elevated, setState}, disabled);
+        }, [disabled, elevated, setState]);
 
-    useEffect(() => {
-        processDisabled({setState}, disabled);
-    }, [disabled, setState]);
+        useEffect(() => {
+            processDisabled({setState}, disabled);
+        }, [disabled, setState]);
 
-    useEffect(() => {
-        processInit({elevated, setState, disabled});
-    }, [disabled, setState, elevated]);
+        useEffect(() => {
+            processInit({elevated, setState, disabled});
+        }, [disabled, setState, elevated]);
 
-    if (status === 'idle') {
-        return <></>;
-    }
+        if (status === 'idle') {
+            return <></>;
+        }
 
-    return render({
-        ...renderProps,
-        elevation,
-        eventName,
-        icon: iconElement,
-        id,
-        onEvent,
-        size,
-        type,
-        underlayColor,
-        renderStyle: {
-            backgroundColor,
-            color,
-            height: layout?.height,
-            width: layout?.width,
-        },
-    });
-};
+        return render({
+            ...renderProps,
+            elevation,
+            eventName,
+            icon: iconElement,
+            id,
+            onEvent,
+            ref,
+            renderStyle: {
+                backgroundColor,
+                color,
+                height: layout?.height,
+                width: layout?.width,
+            },
+            size,
+            type,
+            underlayColor,
+        });
+    },
+);

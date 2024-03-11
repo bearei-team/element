@@ -1,4 +1,12 @@
-import {FC, RefAttributes, cloneElement, useCallback, useEffect, useId, useMemo} from 'react';
+import {
+    RefAttributes,
+    cloneElement,
+    forwardRef,
+    useCallback,
+    useEffect,
+    useId,
+    useMemo,
+} from 'react';
 import {View, ViewProps} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {ComponentStatus} from '../Common/interface';
@@ -93,55 +101,61 @@ const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSour
         draft.status = 'succeeded';
     });
 
-export const NavigationRailBase: FC<NavigationBaseProps> = ({
-    activeKey: activeKeySource,
-    data: dataSources,
-    defaultActiveKey,
-    fab,
-    onActive: onActiveSource,
-    render,
-    type,
-    ...renderProps
-}) => {
-    const [{activeKey, data, status}, setState] = useImmer<InitialState>({
-        activeKey: undefined,
-        data: [],
-        status: 'idle',
-    });
+export const NavigationRailBase = forwardRef<View, NavigationBaseProps>(
+    (
+        {
+            activeKey: activeKeySource,
+            data: dataSources,
+            defaultActiveKey,
+            fab,
+            onActive: onActiveSource,
+            render,
+            type,
+            ...renderProps
+        },
+        ref,
+    ) => {
+        const [{activeKey, data, status}, setState] = useImmer<InitialState>({
+            activeKey: undefined,
+            data: [],
+            status: 'idle',
+        });
 
-    const id = useId();
-    const onActive = useCallback(
-        (value?: string) => processActive({onActive: onActiveSource, setState}, value),
-        [onActiveSource, setState],
-    );
+        const id = useId();
+        const onActive = useCallback(
+            (value?: string) => processActive({onActive: onActiveSource, setState}, value),
+            [onActiveSource, setState],
+        );
 
-    const children = useMemo(
-        () =>
-            renderItems(status, {
-                activeKey,
-                data,
-                onActive,
-                type,
-            }),
-        [activeKey, type, data, onActive, status],
-    );
+        const children = useMemo(
+            () =>
+                renderItems(status, {
+                    activeKey,
+                    data,
+                    onActive,
+                    type,
+                }),
+            [activeKey, type, data, onActive, status],
+        );
 
-    useEffect(() => {
-        onActive(activeKeySource ?? defaultActiveKey);
-    }, [activeKeySource, defaultActiveKey, onActive]);
+        useEffect(() => {
+            onActive(activeKeySource ?? defaultActiveKey);
+        }, [activeKeySource, defaultActiveKey, onActive]);
 
-    useEffect(() => {
-        processInit({setState}, dataSources);
-    }, [dataSources, setState]);
+        useEffect(() => {
+            processInit({setState}, dataSources);
+        }, [dataSources, setState]);
 
-    if (status === 'idle' || (typeof defaultActiveKey === 'string' && !activeKey)) {
-        return <></>;
-    }
+        if (status === 'idle' || (typeof defaultActiveKey === 'string' && !activeKey)) {
+            return <></>;
+        }
 
-    return render({
-        ...renderProps,
-        children,
-        fab: processFAB(fab),
-        id,
-    });
-};
+        return render({
+            ...renderProps,
+            children,
+            fab: processFAB(fab),
+            id,
+            ref,
+        });
+    },
+);
