@@ -8,8 +8,6 @@ export const Container = styled(View)`
 
     ${({theme}) => css`
         width: ${theme.adaptSize(theme.spacing.small * 10)}px;
-        padding: ${theme.adaptSize(theme.spacing.small * 6 + theme.spacing.extraSmall)}px
-            ${theme.adaptSize(theme.spacing.none)}px ${theme.adaptSize(theme.spacing.small * 7)}px;
     `}
 `;
 

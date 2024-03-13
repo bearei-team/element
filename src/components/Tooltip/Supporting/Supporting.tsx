@@ -36,21 +36,24 @@ const render = ({
             style={{
                 opacity: renderOpacity,
 
-                /**
-                 * HACK:
-                 *
+                /** ts
                  * The transform property in react-native-macos 0.72.* has various bugs that cause
                  * problems when using transform to implement offsets. Here is a temporary implementation
                  * using margin.
+                 *
+                 * Original realization:
+                 * @example
+                 * ```ts
+                 *  transform: supportingPosition?.startsWith('vertical')
+                 *      ? [{translateX: -(width / 2)}]
+                 *      : [{translateY: -(height / 2)}]
+                 * ```
                  */
                 ...(supportingPosition?.startsWith('vertical')
                     ? {marginLeft: -(width / 2)}
                     : {marginTop: -(height / 2)}),
-                // transform: supportingPosition?.startsWith('vertical')
-                //     ? [{translateX: -(width / 2)}]
-                //     : [{translateY: -(height / 2)}],
             }}>
-            <Inner {...onEvent} testID={`tooltip__supportingInner--${id}`} visible={visible}>
+            <Inner {...onEvent} testID={`tooltip__supportingInner--${id}`}>
                 <SupportingText
                     ellipsizeMode="tail"
                     numberOfLines={1}

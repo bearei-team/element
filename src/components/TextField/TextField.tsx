@@ -43,7 +43,6 @@ const render = ({
         labelTextColor,
         labelTextHeight,
         labelTextLetterSpacing,
-        labelTextLineHeight,
         labelTextSize,
         labelTextTop,
         supportingTextColor,
@@ -101,7 +100,6 @@ const render = ({
                                 fontSize: labelTextSize,
                                 height: labelTextHeight,
                                 letterSpacing: labelTextLetterSpacing,
-                                lineHeight: labelTextLineHeight,
                                 top: labelTextTop,
                             }}>
                             {labelText}

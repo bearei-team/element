@@ -166,15 +166,28 @@ export const useAnimated = ({
 }: UseAnimatedOptions) => {
     const theme = useTheme();
     const disabledAnimatedValue = disabled ? 0 : 1;
+    const defaultAnimatedValue = {
+        activeIndicatorAnimated: error ? 1 : 0,
+        colorAnimated: error ? 3 : 1,
+        inputAnimated: error ? 3 : 1,
+        supportingTextAnimated: error ? 2 : 1,
+    };
+
     const [activeIndicatorAnimated] = useAnimatedValue(
-        disabled ? disabledAnimatedValue : error ? 1 : 0,
+        disabled ? disabledAnimatedValue : defaultAnimatedValue.activeIndicatorAnimated,
     );
 
     const [backgroundColorAnimated] = useAnimatedValue(disabledAnimatedValue);
-    const [colorAnimated] = useAnimatedValue(disabled ? disabledAnimatedValue : error ? 3 : 1);
-    const [inputAnimated] = useAnimatedValue(disabled ? disabledAnimatedValue : error ? 3 : 1);
+    const [colorAnimated] = useAnimatedValue(
+        disabled ? disabledAnimatedValue : defaultAnimatedValue.colorAnimated,
+    );
+
+    const [inputAnimated] = useAnimatedValue(
+        disabled ? disabledAnimatedValue : defaultAnimatedValue.inputAnimated,
+    );
+
     const [supportingTextAnimated] = useAnimatedValue(
-        disabled ? disabledAnimatedValue : error ? 2 : 1,
+        disabled ? disabledAnimatedValue : defaultAnimatedValue.supportingTextAnimated,
     );
 
     const animatedTiming = createAnimatedTiming(theme);
@@ -246,14 +259,6 @@ export const useAnimated = ({
         outputRange: [
             theme.adaptFontSize(theme.typography.body.small.size),
             theme.adaptFontSize(theme.typography.body.large.size),
-        ],
-    });
-
-    const labelTextLineHeight = labelAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [
-            theme.adaptSize(theme.typography.body.small.lineHeight),
-            theme.adaptSize(theme.typography.body.large.lineHeight),
         ],
     });
 
@@ -393,7 +398,6 @@ export const useAnimated = ({
             labelTextColor,
             labelTextHeight,
             labelTextLetterSpacing,
-            labelTextLineHeight,
             labelTextSize,
             labelTextTop,
             supportingTextColor,

@@ -25,7 +25,6 @@ export const Content = styled(Shape)<ContentProps>`
         `}
 
     ${({theme}) => css`
-        gap: ${theme.adaptSize(theme.spacing.small)}px;
         height: ${theme.adaptSize(theme.spacing.small * 4)}px;
     `}
 

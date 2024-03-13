@@ -42,6 +42,7 @@ interface InitialState {
     containerLayout: LayoutRectangle & {pageX: number; pageY: number};
     layout: LayoutRectangle;
     status: ComponentStatus;
+    wasVisible: boolean;
 }
 
 interface ProcessEventOptions {
@@ -69,12 +70,18 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
 
 const processStateChange = ({event, eventName, setState, onVisible}: ProcessStateChangeOptions) => {
     eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
-    ['hoverIn', 'hoverOut'].includes(eventName) && onVisible(eventName === 'hoverIn');
+    ['hoverIn', 'hoverOut', 'pressIn'].includes(eventName) && onVisible(eventName === 'hoverIn');
 };
 
 const processEmit = (supporting: React.JSX.Element, {id, status}: ProcessEmitOptions) =>
     status === 'succeeded' &&
     emitter.emit('modal', {id: `tooltip__supporting--${id}`, element: supporting});
+
+const processWasVisible = ({setState}: ProcessEventOptions, visible?: boolean) =>
+    typeof visible === 'boolean' &&
+    setState(draft => {
+        draft.wasVisible !== visible && (draft.wasVisible = visible);
+    });
 
 const processContainerLayout = (
     containerCurrent: View | null,
@@ -103,14 +110,20 @@ const processContainerLayout = (
 
 export const SupportingBase = forwardRef<View, SupportingBaseProps>(
     ({containerCurrent, onVisible, render, visible, ...renderProps}, ref) => {
-        const [{containerLayout, layout, status}, setState] = useImmer<InitialState>({
+        const [{containerLayout, layout, status, wasVisible}, setState] = useImmer<InitialState>({
             containerLayout: {} as InitialState['containerLayout'],
             layout: {} as LayoutRectangle,
             status: 'idle',
+            wasVisible: true,
         });
 
         const id = useId();
-        const [{opacity}] = useAnimated({visible});
+        const onWasVisible = useCallback(
+            (value?: boolean) => processWasVisible({setState}, value),
+            [setState],
+        );
+
+        const [{opacity}] = useAnimated({visible, onWasVisible});
         const onStateChange = useCallback(
             (_state: State, options = {} as OnStateChangeOptions) =>
                 processStateChange({...options, setState, onVisible}),
@@ -127,7 +140,7 @@ export const SupportingBase = forwardRef<View, SupportingBaseProps>(
                     onEvent,
                     ref,
                     renderStyle: {opacity, width: layout.width, height: layout.height},
-                    visible,
+                    visible: typeof visible === 'boolean' && visible ? visible : wasVisible,
                 }),
             [
                 containerLayout,
@@ -140,6 +153,7 @@ export const SupportingBase = forwardRef<View, SupportingBaseProps>(
                 render,
                 renderProps,
                 visible,
+                wasVisible,
             ],
         );
 

@@ -109,7 +109,7 @@ const processEventNameChange = (
     eventName?: EventName,
 ) =>
     eventName &&
-    ['hoverIn', 'hoverOut'].includes(eventName) &&
+    ['hoverIn', 'hoverOut', 'pressIn'].includes(eventName) &&
     debounceProcessVisible({setState}, eventName === 'hoverIn');
 
 const processStateChange = ({
@@ -119,8 +119,8 @@ const processStateChange = ({
     debounceProcessVisible,
 }: ProcessStateChangeOptions) => {
     eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
-    ['hoverIn', 'hoverOut'].includes(eventName) &&
-        processEventNameChange({setState, debounceProcessVisible}, eventName);
+
+    processEventNameChange({setState, debounceProcessVisible}, eventName);
 };
 
 const processUnmount = (id: string) =>
@@ -165,7 +165,11 @@ export const TooltipBase = forwardRef<View, TooltipBaseProps>(
             [debounceProcessVisible, setState],
         );
 
-        const [onEvent] = useOnEvent({...renderProps, onStateChange, disabled});
+        const [onEvent] = useOnEvent({
+            ...renderProps,
+            onStateChange,
+            disabled: typeof eventNameSource === 'string' ? true : disabled,
+        });
 
         useImperativeHandle(
             ref,

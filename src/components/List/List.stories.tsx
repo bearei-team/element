@@ -1,4 +1,6 @@
 import {Meta, StoryObj} from '@storybook/react';
+import {View} from 'react-native';
+import {Icon} from '../Icon/Icon';
 import {List, ListProps} from './List';
 
 export default {
@@ -30,6 +32,42 @@ export const Headline: StoryObj<ListProps> = {
                 key: 'TitleD',
                 headline: 'TitleD',
                 supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+            },
+        ],
+    },
+};
+
+export const Size: StoryObj<ListProps> = {
+    args: {
+        close: true,
+        defaultActiveKey: 'TitleB',
+        activeKey: 'TitleA',
+        size: 'small',
+        gap: 8,
+        shape: 'extraSmall',
+        data: [
+            {
+                key: 'TitleA',
+                headline: '怪物总选举 - 第10名~第1名',
+                leading: <View style={{backgroundColor: 'red', width: 24, height: 24}}></View>,
+            },
+            {
+                key: 'TitleB',
+                headline: 'TitleB',
+                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                leading: <Icon name="addHome" renderStyle={{width: 24, height: 24}} />,
+            },
+            {
+                key: 'TitleC',
+                headline: 'TitleC',
+                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                leading: <Icon name="addHome" renderStyle={{width: 24, height: 24}} />,
+            },
+            {
+                key: 'TitleD',
+                headline: 'TitleD',
+                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                leading: <Icon name="addHome" renderStyle={{width: 24, height: 24}} />,
             },
         ],
     },

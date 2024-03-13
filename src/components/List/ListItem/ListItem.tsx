@@ -3,6 +3,7 @@ import {Animated, View} from 'react-native';
 import {Hovered} from '../../Hovered/Hovered';
 import {TouchableRipple} from '../../TouchableRipple/TouchableRipple';
 import {
+    Bc,
     Container,
     Content,
     Headline,
@@ -32,6 +33,7 @@ const render = ({
     supportingTextNumberOfLines,
     trailing,
     underlayColor,
+    size,
     ...innerProps
 }: RenderProps) => {
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
@@ -44,56 +46,69 @@ const render = ({
             gap={gap}
             style={{height: containerHeight}}
             testID={`listItem--${id}`}>
-            <TouchableRipple
-                {...onTouchableRippleEvent}
-                active={active}
-                shape={shape}
-                touchableLocation={touchableLocation}
-                underlayColor={activeColor}>
-                <Inner {...innerProps} onLayout={onLayout} testID={`listItem__inner--${id}`}>
-                    {leading && <Leading testID={`listItem__leading--${id}`}>{leading}</Leading>}
-
-                    <Content
-                        supportingTextShow={!!supportingText}
-                        testID={`listItem__content--${id}`}>
-                        <Headline
-                            ellipsizeMode="tail"
-                            numberOfLines={1}
-                            size="large"
-                            testID={`listItem__headline--${id}`}
-                            type="body">
-                            {headline}
-                        </Headline>
-
-                        {supportingText && (
-                            <SupportingText
-                                ellipsizeMode="tail"
-                                numberOfLines={supportingTextNumberOfLines}
-                                size="medium"
-                                testID={`listItem__supportingText--${id}`}
-                                type="body">
-                                {supportingText}
-                            </SupportingText>
+            <Bc shape={shape}>
+                <TouchableRipple
+                    {...onTouchableRippleEvent}
+                    active={active}
+                    shape={shape}
+                    touchableLocation={touchableLocation}
+                    underlayColor={activeColor}>
+                    <Inner
+                        {...innerProps}
+                        size={size}
+                        onLayout={onLayout}
+                        testID={`listItem__inner--${id}`}>
+                        {leading && (
+                            <Leading size={size} testID={`listItem__leading--${id}`}>
+                                {leading}
+                            </Leading>
                         )}
-                    </Content>
 
-                    {trailing && (
-                        <Trailing testID={`listItem__trailing--${id}`}>
-                            <AnimatedTrailingInner
-                                style={{opacity: trailingOpacity}}
-                                testID={`listItem__trailingInner--${id}`}>
-                                {trailing}
-                            </AnimatedTrailingInner>
-                        </Trailing>
-                    )}
+                        <Content
+                            size={size}
+                            supportingTextShow={!!supportingText}
+                            testID={`listItem__content--${id}`}>
+                            <Headline
+                                ellipsizeMode="tail"
+                                numberOfLines={1}
+                                size={size === 'small' ? 'medium' : 'large'}
+                                testID={`listItem__headline--${id}`}
+                                type={size === 'small' ? 'label' : 'body'}>
+                                {headline}
+                            </Headline>
 
-                    <Hovered
-                        eventName={eventName}
-                        renderStyle={{width, height}}
-                        underlayColor={underlayColor}
-                    />
-                </Inner>
-            </TouchableRipple>
+                            {supportingText && size !== 'small' && (
+                                <SupportingText
+                                    ellipsizeMode="tail"
+                                    numberOfLines={supportingTextNumberOfLines}
+                                    size="medium"
+                                    testID={`listItem__supportingText--${id}`}
+                                    type="body">
+                                    {supportingText}
+                                </SupportingText>
+                            )}
+                        </Content>
+
+                        {trailing && (
+                            <Trailing testID={`listItem__trailing--${id}`}>
+                                <AnimatedTrailingInner
+                                    size={size}
+                                    style={{opacity: trailingOpacity}}
+                                    testID={`listItem__trailingInner--${id}`}>
+                                    {trailing}
+                                </AnimatedTrailingInner>
+                            </Trailing>
+                        )}
+
+                        <Hovered
+                            eventName={eventName}
+                            renderStyle={{width, height}}
+                            shape={shape}
+                            underlayColor={underlayColor}
+                        />
+                    </Inner>
+                </TouchableRipple>
+            </Bc>
         </AnimatedContainer>
     );
 };

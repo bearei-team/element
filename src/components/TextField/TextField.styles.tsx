@@ -99,7 +99,6 @@ export const Trailing = styled.View`
 export const Leading = styled(Trailing)``;
 export const Content = styled.View<ContentProps>`
     flex: 1;
-    pointer-events: none;
 
     ${({theme}) => css`
         height: ${theme.adaptFontSize(theme.spacing.small * 6)}px;

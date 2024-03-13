@@ -353,6 +353,10 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
             containerRef,
             data,
             eventName,
+            iconRenderStyle: {
+                height: theme.adaptSize(theme.spacing.large),
+                width: theme.adaptSize(theme.spacing.large),
+            },
             id,
             input,
             layout,
@@ -363,10 +367,6 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
             placeholder,
             trailing,
             underlayColor,
-            iconRenderStyle: {
-                height: theme.adaptSize(theme.spacing.large),
-                width: theme.adaptSize(theme.spacing.large),
-            },
         });
     },
 );

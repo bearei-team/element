@@ -17,7 +17,14 @@ type BaseProps = Partial<
         RefAttributes<FlatList<ListDataSource>> &
         Pick<
             ListItemProps,
-            'activeKey' | 'close' | 'onActive' | 'onClose' | 'supportingTextNumberOfLines' | 'gap'
+            | 'activeKey'
+            | 'close'
+            | 'onActive'
+            | 'onClose'
+            | 'supportingTextNumberOfLines'
+            | 'gap'
+            | 'size'
+            | 'shape'
         >
 >;
 export interface ListProps extends BaseProps {
@@ -40,6 +47,8 @@ type RenderItemOptions = ListRenderItemInfo<ListDataSource> &
         | 'onActive'
         | 'onClose'
         | 'supportingTextNumberOfLines'
+        | 'size'
+        | 'shape'
     >;
 
 interface InitialState {
@@ -97,7 +106,9 @@ const renderItem = ({
     item,
     onActive,
     onClose,
+    size,
     supportingTextNumberOfLines,
+    shape,
 }: RenderItemOptions) => (
     <ListItem
         {...item}
@@ -111,6 +122,8 @@ const renderItem = ({
         key={item.key}
         onActive={onActive}
         onClose={onClose}
+        shape={shape}
+        size={size}
     />
 );
 
@@ -126,6 +139,8 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
             supportingTextNumberOfLines,
             onActive: onActiveSource,
             onClose: onCloseSource,
+            size,
+            shape,
             ...renderProps
         },
         ref,
@@ -156,9 +171,11 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
                     gap,
                     onActive,
                     onClose,
+                    shape,
+                    size,
                     supportingTextNumberOfLines,
                 }),
-            [activeKey, close, gap, onActive, onClose, supportingTextNumberOfLines],
+            [activeKey, close, gap, onActive, onClose, shape, size, supportingTextNumberOfLines],
         );
 
         useEffect(() => {

@@ -1,26 +1,31 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {Typography} from '../../Common/Common.styles';
+import {Shape, Typography} from '../../Common/Common.styles';
 import {RenderProps} from './ListItemBase';
 
 type ContainerProps = Pick<RenderProps, 'gap'>;
-interface ContentProps {
+type ContentProps = {
     supportingTextShow?: boolean;
-}
+} & Pick<RenderProps, 'size'>;
+
+type InnerProps = Pick<RenderProps, 'size'>;
+type LeadingProps = Pick<RenderProps, 'size'>;
 
 export const Container = styled(View)<ContainerProps>`
     overflow: hidden;
 
-    ${({theme}) => css`
-        background-color: ${theme.palette.surface.surface};
-    `};
-
     ${({gap = 0}) => css`
-        margin-bottom: ${gap}px;
+        padding-bottom: ${gap};
     `};
 `;
 
-export const Inner = styled.View`
+export const Bc = styled(Shape)`
+    ${({theme}) => css`
+        background-color: ${theme.palette.surface.surface};
+    `};
+`;
+
+export const Inner = styled.View<InnerProps>`
     align-items: flex-start;
     display: flex;
     flex-direction: row;
@@ -28,40 +33,87 @@ export const Inner = styled.View`
     position: relative;
     z-index: 1;
 
-    ${({theme}) => css`
-        gap: ${theme.adaptSize(theme.spacing.medium)}px;
-        padding: ${theme.adaptSize(theme.spacing.small)}px
-            ${theme.adaptSize(theme.spacing.medium)}px;
+    ${({theme, size = 'medium'}) => {
+        const contentSize = {
+            small: css`
+                gap: ${theme.adaptSize(theme.spacing.small)}px;
+                padding: ${theme.adaptSize(theme.spacing.extraSmall + 2)}px
+                    ${theme.adaptSize(theme.spacing.medium)}px;
 
-        min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
-    `};
+                min-height: ${theme.adaptSize(theme.spacing.extraLarge)}px;
+                align-items: center;
+            `,
+            medium: css`
+                gap: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding: ${theme.adaptSize(theme.spacing.small)}px
+                    ${theme.adaptSize(theme.spacing.medium)}px;
+
+                min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+            `,
+            large: css`
+                gap: ${theme.adaptSize(theme.spacing.medium)}px;
+                padding: ${theme.adaptSize(theme.spacing.small)}px
+                    ${theme.adaptSize(theme.spacing.medium)}px;
+
+                min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+            `,
+        };
+
+        return contentSize[size];
+    }}
 `;
 
-export const Leading = styled.View`
+export const Leading = styled.View<LeadingProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
     justify-content: center;
 
-    ${({theme}) => css`
-        height: ${theme.adaptSize(theme.spacing.small * 5)}px;
-        width: ${theme.adaptSize(theme.spacing.small * 5)}px;
-    `}
+    ${({theme, size = 'medium'}) => {
+        const contentSize = {
+            small: css`
+                height: ${theme.adaptSize(theme.spacing.large)}px;
+                width: ${theme.adaptSize(theme.spacing.large)}px;
+            `,
+            medium: css`
+                height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+                width: ${theme.adaptSize(theme.spacing.small * 5)}px;
+            `,
+            large: css`
+                height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+                width: ${theme.adaptSize(theme.spacing.small * 5)}px;
+            `,
+        };
+
+        return contentSize[size];
+    }}
 `;
 
 export const Content = styled.View<ContentProps>`
-    align-self: stretch;
     display: flex;
     flex-direction: column;
     flex: 1;
     justify-content: center;
     pointer-events: none;
+    align-self: stretch;
 
-    ${({supportingTextShow, theme}) =>
-        supportingTextShow &&
-        css`
-            min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
-        `}
+    ${({theme, size = 'medium', supportingTextShow}) => {
+        const contentSize = {
+            small: css``,
+            medium:
+                supportingTextShow &&
+                css`
+                    min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+                `,
+            large:
+                supportingTextShow &&
+                css`
+                    min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+                `,
+        };
+
+        return contentSize[size];
+    }}
 `;
 
 export const Trailing = styled.View`
@@ -82,6 +134,5 @@ export const Headline = styled(Typography)`
 export const SupportingText = styled(Typography)`
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurfaceVariant};
-        height: auto;
     `}
 `;

@@ -6,7 +6,7 @@ import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTimin
 import {EventName, State} from '../../Common/interface';
 import {RenderProps} from './ListItemBase';
 
-interface UseAnimatedOptions extends Pick<RenderProps, 'close'> {
+interface UseAnimatedOptions extends Pick<RenderProps, 'close' | 'gap'> {
     eventName: EventName;
     layoutHeight?: number;
     state: State;
@@ -53,6 +53,7 @@ export const useAnimated = ({
     close,
     eventName,
     layoutHeight = 0,
+    gap = 0,
     state,
     trailingEventName,
 }: UseAnimatedOptions) => {
@@ -67,7 +68,7 @@ export const useAnimated = ({
 
     const height = heightAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, layoutHeight],
+        outputRange: [0, layoutHeight + gap],
     });
 
     const onCloseAnimated = useCallback(
