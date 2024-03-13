@@ -23,7 +23,7 @@ import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
-import {ComponentStatus, EventName, State} from '../Common/interface';
+import {ComponentStatus, EventName, Size, State} from '../Common/interface';
 import {List, ListDataSource, ListProps} from '../List/List';
 import {Input, SearchList, TextField} from './Search.styles';
 import {useAnimated} from './useAnimated';
@@ -39,6 +39,14 @@ export interface SearchProps extends BaseProps {
     disabled?: boolean;
     leading?: React.JSX.Element;
     trailing?: React.JSX.Element;
+    size?: Size;
+
+    /**
+     * The modal type has a problem with mouseover events being passed through to lower level
+     * elements in macOS. This problem is caused by the fact that react-native-macos does not
+     * implement the native modal and some of the mechanisms of the macos component itself.
+     */
+    type?: 'standard' | 'modal';
 }
 
 export interface RenderProps extends SearchProps {
@@ -49,7 +57,9 @@ export interface RenderProps extends SearchProps {
     layout: LayoutRectangle;
     listVisible?: boolean;
     onEvent: Omit<OnEvent, 'onBlur' | 'onFocus'>;
+    searchList?: React.JSX.Element;
     underlayColor: string;
+    listData: ListDataSource[];
 }
 
 interface SearchBaseProps extends SearchProps {
@@ -58,6 +68,7 @@ interface SearchBaseProps extends SearchProps {
 
 interface InitialState {
     data: ListDataSource[];
+    listData: ListDataSource[];
     eventName: EventName;
     layout: LayoutRectangle & {pageX: number; pageY: number};
     listVisible?: boolean;
@@ -71,11 +82,13 @@ interface ProcessEventOptions {
 }
 
 type ProcessChangeTextOptions = Pick<RenderProps, 'data' | 'onChangeText'> & ProcessEventOptions;
-type ProcessEmitOptions = Pick<InitialState, 'status' | 'listVisible'> & Pick<RenderProps, 'id'>;
-type ProcessListVisibleOptions = ProcessEventOptions & Pick<InitialState, 'state'>;
+type ProcessEmitOptions = Pick<InitialState, 'status' | 'listVisible'> &
+    Pick<RenderProps, 'id' | 'type'>;
+
 type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
     OnStateChangeOptions;
 
+type ProcessContainerLayoutOptions = ProcessEventOptions & Pick<InitialState, 'listVisible'>;
 type RenderTextInputOptions = SearchProps;
 type RenderSearchListOptions = SearchProps & {
     containerHeight?: number;
@@ -140,12 +153,30 @@ const processChangeText = (
     typeof text === 'string' && onChangeText?.(text);
 };
 
-const processListVisible = ({setState}: ProcessListVisibleOptions, data?: ListDataSource[]) =>
+const processListVisible = ({setState}: ProcessEventOptions, data?: ListDataSource[]) =>
     setState(draft => {
-        draft.listVisible = typeof data?.length === 'number' && data?.length !== 0;
+        if (typeof data?.length === 'number' && data?.length !== 0) {
+            draft.listVisible = true;
+            draft.listData = data;
+
+            return;
+        }
+
+        draft.listVisible = false;
     });
 
-const processContainerLayout = ({setState}: ProcessEventOptions, containerCurrent?: View | null) =>
+const processListClosed = ({setState}: ProcessEventOptions, visible?: boolean) => {
+    typeof visible === 'boolean' &&
+        setState(draft => {
+            draft.listData !== draft.data && (draft.listData = draft.data);
+        });
+};
+
+const processContainerLayout = (
+    {setState, listVisible}: ProcessContainerLayoutOptions,
+    containerCurrent?: View | null,
+) =>
+    listVisible &&
     containerCurrent?.measure((x, y, width, height, pageX, pageY) =>
         setState(draft => {
             const update =
@@ -169,13 +200,17 @@ const processContainerLayout = ({setState}: ProcessEventOptions, containerCurren
         }),
     );
 
-const processEmit = (element: React.JSX.Element, {id, status, listVisible}: ProcessEmitOptions) =>
+const processEmit = (
+    element: React.JSX.Element,
+    {id, status, listVisible, type}: ProcessEmitOptions,
+) =>
     status === 'succeeded' &&
     typeof listVisible === 'boolean' &&
+    type === 'modal' &&
     emitter.emit('modal', {id: `search__list--${id}`, element});
 
-const processUnmount = (id: string) =>
-    emitter.emit('modal', {id: `search__list--${id}`, element: undefined});
+const processUnmount = (id: string, {type}: Pick<RenderProps, 'type'>) =>
+    type === 'modal' && emitter.emit('modal', {id: `search__list--${id}`, element: undefined});
 
 const renderTextInput = ({id, ...props}: RenderTextInputOptions) => (
     <TextField testID={`search__control--${id}`}>
@@ -205,7 +240,7 @@ const renderSearchList = ({
     id,
     onActive,
     renderStyle,
-    visible,
+    type,
 }: RenderSearchListOptions) => {
     const {height, width} = renderStyle;
 
@@ -215,9 +250,11 @@ const renderSearchList = ({
             containerPageX={containerPageX}
             containerPageY={containerPageY}
             renderStyle={{width}}
+            shape="extraLargeBottom"
             style={{height}}
             testID={`search__list--${id}`}
-            visible={visible}>
+            type={type}
+            visible={!!data?.length}>
             <List
                 activeKey={activeKey}
                 data={data}
@@ -242,13 +279,16 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
             render,
             trailing,
             value: valueSource,
+            size,
+            type = 'modal',
             ...textInputProps
         },
         ref,
     ) => {
-        const [{value, status, data, eventName, layout, listVisible, state}, setState] =
+        const [{value, status, data, eventName, layout, listVisible, listData}, setState] =
             useImmer<InitialState>({
                 data: [],
+                listData: [],
                 eventName: 'none',
                 layout: {} as InitialState['layout'],
                 listVisible: undefined,
@@ -257,7 +297,6 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                 value: '',
             });
 
-        const [{listHeight}] = useAnimated({listVisible});
         const containerRef = useRef<View>(null);
         const id = useId();
         const inputRef = useRef<TextInput>(null);
@@ -270,6 +309,12 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
             [setState],
         );
 
+        const onListClosed = useCallback(
+            (visible?: boolean) => processListClosed({setState}, visible),
+            [setState],
+        );
+
+        const [{listHeight}] = useAnimated({listVisible, onListClosed});
         const [{onBlur, onFocus, ...onEvent}] = useOnEvent({...textInputProps, onStateChange});
         const onChangeText = useCallback(
             (text?: string) =>
@@ -284,6 +329,7 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
             [dataSources, onChangeTextSource, setState],
         );
 
+        const onUnmount = useCallback(() => processUnmount(id, {type}), [id, type]);
         const input = useMemo(
             () =>
                 renderTextInput({
@@ -295,6 +341,7 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                     placeholder,
                     placeholderTextColor,
                     ref: inputRef,
+                    size,
                     value,
                 }),
             [
@@ -306,6 +353,7 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                 placeholderTextColor,
                 textInputProps,
                 value,
+                size,
             ],
         );
 
@@ -316,13 +364,26 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                     containerHeight: layout.height,
                     containerPageX: layout.pageX,
                     containerPageY: layout.pageY,
-                    data,
+                    data: listData,
                     defaultActiveKey,
                     id,
                     onActive,
                     renderStyle: {height: listHeight, width: layout.width},
+                    type,
                 }),
-            [activeKey, data, defaultActiveKey, id, layout, listHeight, onActive],
+            [
+                activeKey,
+                listData,
+                defaultActiveKey,
+                id,
+                layout.height,
+                layout.pageX,
+                layout.pageY,
+                layout.width,
+                listHeight,
+                onActive,
+                type,
+            ],
         );
 
         useImperativeHandle(
@@ -336,36 +397,47 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
         }, [valueSource, defaultValue, onChangeText]);
 
         useEffect(() => {
-            processListVisible({setState, state}, data);
-        }, [data, setState, state]);
+            processListVisible({setState}, data);
+        }, [data, setState]);
 
         useEffect(() => {
-            processContainerLayout({setState}, containerRef?.current);
-        }, [setState]);
+            processContainerLayout({setState, listVisible}, containerRef.current);
+        }, [setState, listVisible]);
 
         useEffect(() => {
-            processEmit(searchList, {status, id, listVisible});
+            processEmit(searchList, {status, id, listVisible, type});
 
-            return () => processUnmount(id);
-        }, [id, listVisible, searchList, status]);
+            return () => {
+                onUnmount();
+            };
+        }, [id, listVisible, onUnmount, searchList, status, type]);
 
         return render({
             containerRef,
             data,
             eventName,
-            iconRenderStyle: {
-                height: theme.adaptSize(theme.spacing.large),
-                width: theme.adaptSize(theme.spacing.large),
-            },
+            iconRenderStyle:
+                size === 'small'
+                    ? {
+                          height: theme.adaptSize(theme.spacing.large - 4),
+                          width: theme.adaptSize(theme.spacing.large - 4),
+                      }
+                    : {
+                          height: theme.adaptSize(theme.spacing.large),
+                          width: theme.adaptSize(theme.spacing.large),
+                      },
             id,
             input,
             layout,
             leading,
-            listVisible,
+            listData,
             onActive,
             onEvent: {...onEvent},
             placeholder,
+            searchList,
+            size,
             trailing,
+            type,
             underlayColor,
         });
     },

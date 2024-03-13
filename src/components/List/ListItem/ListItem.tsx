@@ -3,7 +3,7 @@ import {Animated, View} from 'react-native';
 import {Hovered} from '../../Hovered/Hovered';
 import {TouchableRipple} from '../../TouchableRipple/TouchableRipple';
 import {
-    Bc,
+    Background,
     Container,
     Content,
     Headline,
@@ -46,7 +46,7 @@ const render = ({
             gap={gap}
             style={{height: containerHeight}}
             testID={`listItem--${id}`}>
-            <Bc shape={shape}>
+            <Background shape={shape} testID={`listItem__background--${id}`}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
                     active={active}
@@ -68,14 +68,25 @@ const render = ({
                             size={size}
                             supportingTextShow={!!supportingText}
                             testID={`listItem__content--${id}`}>
-                            <Headline
-                                ellipsizeMode="tail"
-                                numberOfLines={1}
-                                size={size === 'small' ? 'medium' : 'large'}
-                                testID={`listItem__headline--${id}`}
-                                type={size === 'small' ? 'label' : 'body'}>
-                                {headline}
-                            </Headline>
+                            {size === 'small' ? (
+                                <SupportingText
+                                    ellipsizeMode="tail"
+                                    numberOfLines={1}
+                                    size="medium"
+                                    testID={`listItem__supportingText--${id}`}
+                                    type="body">
+                                    {headline}
+                                </SupportingText>
+                            ) : (
+                                <Headline
+                                    ellipsizeMode="tail"
+                                    numberOfLines={1}
+                                    size="large"
+                                    testID={`listItem__headline--${id}`}
+                                    type="body">
+                                    {headline}
+                                </Headline>
+                            )}
 
                             {supportingText && size !== 'small' && (
                                 <SupportingText
@@ -108,7 +119,7 @@ const render = ({
                         />
                     </Inner>
                 </TouchableRipple>
-            </Bc>
+            </Background>
         </AnimatedContainer>
     );
 };

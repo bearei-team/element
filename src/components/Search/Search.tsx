@@ -12,15 +12,19 @@ const render = ({
     id,
     input,
     leading,
-    listVisible,
+    listData,
     onEvent,
     placeholder,
     trailing,
     underlayColor,
     containerRef,
     iconRenderStyle,
+    size,
+    searchList,
+    type,
     ...containerProps
 }: RenderProps) => {
+    const listVisible = !!listData.length;
     const shape = listVisible ? 'extraLargeTop' : 'extraLarge';
     const {height, width} = layout;
 
@@ -35,8 +39,9 @@ const render = ({
                 accessibilityLabel={placeholder}
                 accessibilityRole="keyboardkey"
                 testID={`search__inner--${id}`}
-                trailingShow={!!trailing}>
-                <Leading testID={`search__leading--${id}`}>
+                trailingShow={!!trailing}
+                size={size}>
+                <Leading testID={`search__leading--${id}`} size={size}>
                     {leading ?? (
                         <Icon type="outlined" name="search" renderStyle={iconRenderStyle} />
                     )}
@@ -55,6 +60,7 @@ const render = ({
             </Inner>
 
             {listVisible && <Divider size="large" block={true} />}
+            {type === 'standard' && <>{searchList}</>}
         </Container>
     );
 };

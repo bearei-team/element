@@ -106,9 +106,9 @@ const renderItem = ({
     item,
     onActive,
     onClose,
+    shape,
     size,
     supportingTextNumberOfLines,
-    shape,
 }: RenderItemOptions) => (
     <ListItem
         {...item}
@@ -135,12 +135,12 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
             data: dataSources,
             defaultActiveKey,
             gap,
-            render,
-            supportingTextNumberOfLines,
             onActive: onActiveSource,
             onClose: onCloseSource,
-            size,
+            render,
             shape,
+            size,
+            supportingTextNumberOfLines,
             ...renderProps
         },
         ref,

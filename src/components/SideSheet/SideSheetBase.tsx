@@ -95,7 +95,9 @@ export const SideSheetBase = forwardRef<View, SideSheetBaseProps>(
         }, [id, sheet, visible]);
 
         useEffect(() => {
-            return () => processUnmount(id);
+            return () => {
+                processUnmount(id);
+            };
         }, [id]);
 
         return <></>;

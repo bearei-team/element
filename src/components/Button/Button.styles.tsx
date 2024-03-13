@@ -126,7 +126,7 @@ export const Icon = styled.View`
     overflow: hidden;
 
     ${({theme}) => css`
-        height: ${theme.adaptSize(theme.spacing.large - 6)}px;
-        width: ${theme.adaptSize(theme.spacing.large - 6)}px;
+        height: ${theme.adaptSize(theme.spacing.large - 4)}px;
+        width: ${theme.adaptSize(theme.spacing.large - 4)}px;
     `}
 `;

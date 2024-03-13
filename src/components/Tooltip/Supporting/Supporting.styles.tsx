@@ -69,6 +69,7 @@ export const Container = styled(Shape)<ContainerProps>`
         !visible &&
         css`
             height: ${theme.spacing.none}px;
+            pointer-events: none;
         `}
 `;
 

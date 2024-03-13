@@ -19,7 +19,7 @@ export const Container = styled(View)<ContainerProps>`
     `};
 `;
 
-export const Bc = styled(Shape)`
+export const Background = styled(Shape)`
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surface};
     `};
@@ -37,11 +37,13 @@ export const Inner = styled.View<InnerProps>`
         const contentSize = {
             small: css`
                 gap: ${theme.adaptSize(theme.spacing.small)}px;
-                padding: ${theme.adaptSize(theme.spacing.extraSmall + 2)}px
+                padding: ${theme.adaptSize(theme.spacing.none)}px
                     ${theme.adaptSize(theme.spacing.medium)}px;
 
                 min-height: ${theme.adaptSize(theme.spacing.extraLarge)}px;
                 align-items: center;
+
+                height: ${theme.adaptSize(theme.spacing.small * 4)}px;
             `,
             medium: css`
                 gap: ${theme.adaptSize(theme.spacing.medium)}px;
@@ -72,8 +74,8 @@ export const Leading = styled.View<LeadingProps>`
     ${({theme, size = 'medium'}) => {
         const contentSize = {
             small: css`
-                height: ${theme.adaptSize(theme.spacing.large)}px;
-                width: ${theme.adaptSize(theme.spacing.large)}px;
+                height: ${theme.adaptSize(theme.spacing.large - 4)}px;
+                width: ${theme.adaptSize(theme.spacing.large - 4)}px;
             `,
             medium: css`
                 height: ${theme.adaptSize(theme.spacing.small * 5)}px;
@@ -122,9 +124,34 @@ export const Trailing = styled.View`
     display: flex;
     flex-direction: row;
     justify-content: center;
+
+    ${({theme}) => css`
+        min-height: ${theme.adaptSize(theme.spacing.large)}px;
+        min-width: ${theme.adaptSize(theme.spacing.large)}px;
+    `}
 `;
 
-export const TrailingInner = styled(Leading)``;
+export const TrailingInner = styled(Leading)`
+    ${({theme, size = 'medium'}) => {
+        const contentSize = {
+            small: css`
+                height: ${theme.adaptSize(theme.spacing.large)}px;
+                width: ${theme.adaptSize(theme.spacing.large)}px;
+            `,
+            medium: css`
+                height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+                width: ${theme.adaptSize(theme.spacing.small * 5)}px;
+            `,
+            large: css`
+                height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+                width: ${theme.adaptSize(theme.spacing.small * 5)}px;
+            `,
+        };
+
+        return contentSize[size];
+    }}
+`;
+
 export const Headline = styled(Typography)`
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurface};

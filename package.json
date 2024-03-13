@@ -38,7 +38,7 @@
         "publish": "yarn clean && yarn build && yarn npm publish --access public"
     },
     "dependencies": {
-        "@bearei/theme": "^1.4.0",
+        "@bearei/theme": "^1.4.1",
         "@material-design-icons/svg": "latest",
         "async-validator": "^4.2.5",
         "immer": "^10.0.3",

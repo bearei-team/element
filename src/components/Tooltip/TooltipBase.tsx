@@ -186,7 +186,9 @@ export const TooltipBase = forwardRef<View, TooltipBaseProps>(
         }, [eventNameSource, onEventNameChange]);
 
         useEffect(() => {
-            return () => processUnmount(id);
+            return () => {
+                processUnmount(id);
+            };
         }, [id]);
 
         return render({

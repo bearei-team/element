@@ -143,6 +143,12 @@ export const Control = styled.View<ControlProps>`
     }};
 `;
 
+/**
+ * Using secureTextEntry props in macOS with text-related styles on the input box will cause the
+ * enableFocusRing setting to be invalidated. It is uncertain whether this is a bug in
+ * react-native-macos or a native bug. As a temporary workaround, if you use secureTextEntry
+ * in macos, it does not provide text styles.
+ */
 export const Input = styled(TextInput)<TextInputProps>`
     flex: 1;
 
