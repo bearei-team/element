@@ -13,3 +13,7 @@ export const SheetSide: StoryObj<SideSheetProps> = {
 export const SheetSideFooter: StoryObj<SideSheetProps> = {
     args: {footer: true, visible: true},
 };
+
+export const SheetSideType: StoryObj<SideSheetProps> = {
+    args: {footer: true, visible: true, type: 'standard'},
+};

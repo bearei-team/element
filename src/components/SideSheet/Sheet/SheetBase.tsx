@@ -13,7 +13,6 @@ import {Icon} from '../../Icon/Icon';
 import {IconButton} from '../../IconButton/IconButton';
 import {useAnimated} from './useAnimated';
 
-type SheetType = 'side' | 'bottom';
 export interface SheetProps
     extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & ModalProps> {
     back?: boolean;
@@ -23,7 +22,6 @@ export interface SheetProps
     footer?: boolean;
     headlineText?: string;
     onClose?: () => void;
-    onOpen?: () => void;
     onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
     onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
     position?: 'horizontalStart' | 'horizontalEnd';
@@ -31,8 +29,14 @@ export interface SheetProps
     primaryButtonLabelText?: string;
     secondaryButton?: React.JSX.Element;
     secondaryButtonLabelText?: string;
-    type?: SheetType;
     visible?: boolean;
+
+    /**
+     * The modal type has a problem with mouseover events being passed through to lower level
+     * elements in macOS. This problem is caused by the fact that react-native-macos does not
+     * implement the native modal and some of the mechanisms of the macos component itself.
+     */
+    type?: 'standard' | 'modal';
 }
 
 export interface RenderProps extends SheetProps {
@@ -60,6 +64,7 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             secondaryButton,
             secondaryButtonLabelText = 'Cancel',
             visible,
+            type,
             ...renderProps
         },
         ref,
@@ -67,6 +72,7 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
         const [{backgroundColor, innerTranslateX}] = useAnimated({
             position,
             visible,
+            type,
         });
 
         const id = useId();
@@ -129,6 +135,7 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             ref,
             renderStyle: {backgroundColor, innerTranslateX},
             secondaryButton: secondaryButtonElement,
+            type,
             visible,
         });
     },

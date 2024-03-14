@@ -3,13 +3,22 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../../Common/Common.styles';
 import {RenderProps} from './SheetBase';
 
-type ContainerProps = Pick<RenderProps, 'position'>;
+type ContainerProps = Pick<RenderProps, 'position' | 'type' | 'visible'>;
 type HeaderProps = Pick<RenderProps, 'back'>;
 
 export const Container = styled(View)<ContainerProps>`
-    flex: 1;
     display: flex;
     flex-direction: row;
+    overflow: hidden;
+
+    ${({type, theme}) =>
+        type === 'modal'
+            ? css`
+                  flex: 1;
+              `
+            : css`
+                  width: ${theme.adaptSize(theme.spacing.small * 40)}px;
+              `}
 
     ${({position = 'horizontalEnd'}) => {
         const innerPosition = {
@@ -30,6 +39,7 @@ export const Inner = styled(Shape)`
 
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surfaceContainerLow};
+        min-height: ${theme.adaptSize(theme.spacing.small * 80)}px;
         padding-bottom: ${theme.adaptSize(theme.spacing.large)}px;
         width: ${theme.adaptSize(theme.spacing.small * 40)}px;
     `}

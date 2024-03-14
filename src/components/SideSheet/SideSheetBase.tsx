@@ -6,6 +6,7 @@ import {SheetProps} from './Sheet/Sheet';
 
 export interface SideSheetProps extends SheetProps {
     defaultVisible?: boolean;
+    onOpen?: () => void;
 }
 
 export type RenderProps = SideSheetProps;
@@ -21,17 +22,13 @@ interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-type ProcessEmitOptions = Pick<RenderProps, 'visible' | 'id'>;
+type ProcessEmitOptions = Pick<RenderProps, 'visible' | 'id' | 'type'>;
 type ProcessCloseOptions = Pick<RenderProps, 'onClose'> & ProcessEventOptions;
 type ProcessVisibleOptions = ProcessEventOptions & Pick<RenderProps, 'onOpen'>;
 
 const processClose = ({setState, onClose}: ProcessCloseOptions) => {
     setState(draft => {
-        if (draft.visible === false) {
-            return;
-        }
-
-        draft.visible = false;
+        draft.visible !== false && (draft.visible = false);
     });
 
     onClose?.();
@@ -43,21 +40,19 @@ const processVisible = ({setState, onOpen}: ProcessVisibleOptions, visible?: boo
     }
 
     setState(draft => {
-        if (draft.visible === visible) {
-            return;
-        }
-
-        draft.visible = visible;
+        draft.visible !== visible && (draft.visible = visible);
     });
 
     visible && onOpen?.();
 };
 
-const processEmit = (sheet: React.JSX.Element, {visible, id}: ProcessEmitOptions) =>
-    typeof visible === 'boolean' && emitter.emit('modal', {id: `sideSheet__${id}`, element: sheet});
+const processEmit = (sheet: React.JSX.Element, {visible, id, type}: ProcessEmitOptions) =>
+    typeof visible === 'boolean' &&
+    type === 'modal' &&
+    emitter.emit('modal', {id: `sideSheet__${id}`, element: sheet});
 
-const processUnmount = (id: string) =>
-    emitter.emit('modal', {id: `sideSheet__${id}`, element: undefined});
+const processUnmount = (id: string, {type}: Pick<RenderProps, 'type'>) =>
+    type === 'modal' && emitter.emit('modal', {id: `sideSheet__${id}`, element: undefined});
 
 export const SideSheetBase = forwardRef<View, SideSheetBaseProps>(
     (
@@ -66,6 +61,7 @@ export const SideSheetBase = forwardRef<View, SideSheetBaseProps>(
             onClose: onCloseSource,
             onOpen,
             render,
+            type = 'modal',
             visible: visibleSource,
             ...renderProps
         },
@@ -76,30 +72,35 @@ export const SideSheetBase = forwardRef<View, SideSheetBaseProps>(
         });
 
         const id = useId();
+        const onVisible = useCallback(
+            (value?: boolean) => processVisible({setState, onOpen}, value),
+            [onOpen, setState],
+        );
+
         const onClose = useCallback(
             () => processClose({setState, onClose: onCloseSource}),
             [onCloseSource, setState],
         );
 
         const sheet = useMemo(
-            () => render({...renderProps, id, visible, onClose, ref}),
-            [id, onClose, ref, render, renderProps, visible],
+            () => render({...renderProps, visible, onClose, type, ref}),
+            [onClose, ref, render, renderProps, type, visible],
         );
 
         useEffect(() => {
-            processVisible({setState, onOpen}, visibleSource ?? defaultVisible);
-        }, [setState, onOpen, visibleSource, defaultVisible]);
+            onVisible(visibleSource ?? defaultVisible);
+        }, [defaultVisible, onVisible, visibleSource]);
 
         useEffect(() => {
-            processEmit(sheet, {id, visible});
-        }, [id, sheet, visible]);
+            processEmit(sheet, {id, visible, type});
+        }, [id, sheet, visible, type]);
 
         useEffect(() => {
             return () => {
-                processUnmount(id);
+                processUnmount(id, {type});
             };
-        }, [id]);
+        }, [id, type]);
 
-        return <></>;
+        return type === 'standard' ? sheet : <></>;
     },
 );

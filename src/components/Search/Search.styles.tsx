@@ -108,11 +108,13 @@ export const Trailing = styled(Leading)``;
 export const SearchList = styled(Shape)<SearchListProps>`
     overflow: hidden;
 
-    ${({type}) =>
+    ${({containerPageX = 0, containerPageY = 0, containerHeight = 0, type}) =>
         type === 'modal' &&
         css`
+            left: ${containerPageY}px;
             position: absolute;
-        `}
+            top: ${containerPageX + containerHeight}px;
+        `};
 
     ${({renderStyle = {}, type}) => {
         const {width = 0} = renderStyle;
@@ -125,16 +127,8 @@ export const SearchList = styled(Shape)<SearchListProps>`
         );
     }}
 
-    ${({containerPageX = 0, containerPageY = 0, containerHeight = 0, type}) =>
-        type === 'modal' &&
-        css`
-            left: ${containerPageY}px;
-            top: ${containerPageX + containerHeight}px;
-        `};
-
-    ${({visible, type}) =>
+    ${({visible}) =>
         !visible &&
-        type === 'modal' &&
         css`
             pointer-events: none;
         `};

@@ -9,17 +9,17 @@ import {
 } from '../../../utils/animatedTiming.utils';
 import {RenderProps} from './SheetBase';
 
-type UseAnimatedOptions = Pick<RenderProps, 'visible' | 'position'>;
+type UseAnimatedOptions = Pick<RenderProps, 'visible' | 'position' | 'type'>;
 interface ScreenAnimatedOptions {
-    containerAnimated: Animated.Value;
-    innerAnimated: Animated.Value;
+    backgroundAnimated: Animated.Value;
+    translateXAnimated: Animated.Value;
 }
 
 type ProcessAnimatedTimingOptions = ScreenAnimatedOptions & Pick<UseAnimatedOptions, 'visible'>;
 
 const enterScreen = (
     animatedTiming: AnimatedTiming,
-    {containerAnimated, innerAnimated}: ScreenAnimatedOptions,
+    {backgroundAnimated, translateXAnimated}: ScreenAnimatedOptions,
 ) => {
     const animatedTimingOptions = {
         duration: 'medium3',
@@ -27,17 +27,17 @@ const enterScreen = (
         toValue: 1,
     } as AnimatedTimingOptions;
 
-    requestAnimationFrame(() =>
+    requestAnimationFrame(() => {
         Animated.parallel([
-            animatedTiming(containerAnimated, animatedTimingOptions),
-            animatedTiming(innerAnimated, animatedTimingOptions),
-        ]).start(),
-    );
+            animatedTiming(backgroundAnimated, animatedTimingOptions),
+            animatedTiming(translateXAnimated, animatedTimingOptions),
+        ]).start();
+    });
 };
 
 const exitScreen = (
     animatedTiming: AnimatedTiming,
-    {containerAnimated, innerAnimated}: ScreenAnimatedOptions,
+    {backgroundAnimated, translateXAnimated}: ScreenAnimatedOptions,
 ) => {
     const animatedTimingOptions = {
         duration: 'short3',
@@ -45,40 +45,43 @@ const exitScreen = (
         toValue: 0,
     } as AnimatedTimingOptions;
 
-    requestAnimationFrame(() =>
+    requestAnimationFrame(() => {
         Animated.parallel([
-            animatedTiming(containerAnimated, animatedTimingOptions),
-            animatedTiming(innerAnimated, animatedTimingOptions),
-        ]).start(),
-    );
+            animatedTiming(backgroundAnimated, animatedTimingOptions),
+            animatedTiming(translateXAnimated, animatedTimingOptions),
+        ]).start();
+    });
 };
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {containerAnimated, innerAnimated, visible}: ProcessAnimatedTimingOptions,
+    {backgroundAnimated, translateXAnimated, visible}: ProcessAnimatedTimingOptions,
 ) => {
-    const screenAnimatedOptions = {containerAnimated, innerAnimated};
+    const screenAnimatedOptions = {backgroundAnimated, translateXAnimated};
 
     visible
         ? enterScreen(animatedTiming, screenAnimatedOptions)
         : exitScreen(animatedTiming, screenAnimatedOptions);
 };
 
-export const useAnimated = ({visible, position}: UseAnimatedOptions) => {
+export const useAnimated = ({visible, position, type}: UseAnimatedOptions) => {
     const animatedValue = visible ? 1 : 0;
-    const [containerAnimated] = useAnimatedValue(animatedValue);
-    const [innerAnimated] = useAnimatedValue(animatedValue);
+    const [backgroundAnimated] = useAnimatedValue(animatedValue);
+    const [translateXAnimated] = useAnimatedValue(animatedValue);
+    const [] = useAnimatedValue(animatedValue);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
-    const backgroundColor = containerAnimated.interpolate({
+    const backgroundColor = backgroundAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
             theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0),
-            theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0.32),
+            type === 'standard'
+                ? theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0)
+                : theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0.32),
         ],
     });
 
-    const innerTranslateX = innerAnimated.interpolate({
+    const innerTranslateX = translateXAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
             position === 'horizontalEnd'
@@ -90,11 +93,11 @@ export const useAnimated = ({visible, position}: UseAnimatedOptions) => {
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
-            containerAnimated,
-            innerAnimated,
+            backgroundAnimated,
+            translateXAnimated,
             visible,
         });
-    }, [animatedTiming, containerAnimated, innerAnimated, visible]);
+    }, [animatedTiming, backgroundAnimated, translateXAnimated, visible]);
 
     return [{backgroundColor, innerTranslateX}];
 };

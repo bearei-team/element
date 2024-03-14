@@ -147,7 +147,8 @@ const processChangeText = (
 
         if (JSON.stringify(sortedMatchedData) !== JSON.stringify(sortedDraftData)) {
             typeof draft.data === 'undefined' && (draft.data = matchedData);
-            draft.listVisible = !!matchedData.length;
+            draft.listVisible !== !!matchedData.length &&
+                (draft.listVisible = !!matchedData.length);
         }
 
         draft.value = typeof text === 'undefined' ? '' : text;
@@ -160,7 +161,6 @@ const processListClosed = ({setState}: ProcessEventOptions, visible?: boolean) =
     typeof visible === 'boolean' &&
     setState(draft => {
         draft.data !== undefined && (draft.data = undefined);
-        draft.listVisible !== visible && (draft.listVisible = visible);
     });
 
 const processContainerLayout = (

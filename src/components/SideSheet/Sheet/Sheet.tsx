@@ -30,19 +30,26 @@ const render = ({
     renderStyle,
     secondaryButton,
     style,
+    type,
     ...innerProps
 }: RenderProps) => {
     const {backgroundColor, innerTranslateX} = renderStyle;
     const shape = position === 'horizontalStart' ? 'largeEnd' : 'largeStart';
 
     return (
-        <AnimatedContainer style={{backgroundColor}} testID={`sideSheet--${id}`}>
+        <AnimatedContainer
+            style={{
+                backgroundColor,
+                ...(type === 'standard' && {transform: [{translateX: innerTranslateX}]}),
+            }}
+            testID={`sideSheet--${id}`}
+            type={type}>
             <AnimatedInner
                 {...innerProps}
                 shape={shape}
                 style={{
                     ...(typeof style === 'object' && style),
-                    transform: [{translateX: innerTranslateX}],
+                    ...(type === 'modal' && {transform: [{translateX: innerTranslateX}]}),
                 }}
                 testID={`sideSheet__inner--${id}`}
                 accessibilityRole="alert">

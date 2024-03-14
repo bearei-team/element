@@ -113,10 +113,10 @@ const processContainerLayout = (
 export const SupportingBase = forwardRef<View, SupportingBaseProps>(
     ({containerCurrent, onVisible: onVisibleSource, render, visible, ...renderProps}, ref) => {
         const [{containerLayout, layout, status, closed}, setState] = useImmer<InitialState>({
+            closed: undefined,
             containerLayout: {} as InitialState['containerLayout'],
             layout: {} as LayoutRectangle,
             status: 'idle',
-            closed: undefined,
         });
 
         const id = useId();
