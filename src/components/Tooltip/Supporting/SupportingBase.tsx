@@ -27,6 +27,7 @@ export interface SupportingProps extends Partial<ViewProps & RefAttributes<View>
 export interface RenderProps extends Omit<SupportingProps, 'containerCurrent' | 'onVisible'> {
     containerLayout: LayoutRectangle & {pageX: number; pageY: number};
     onEvent: OnEvent;
+    closed?: boolean;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height?: number;
         opacity?: AnimatedInterpolation;
@@ -42,7 +43,8 @@ interface InitialState {
     containerLayout: LayoutRectangle & {pageX: number; pageY: number};
     layout: LayoutRectangle;
     status: ComponentStatus;
-    closed: boolean;
+    closed?: boolean;
+    visible?: boolean;
 }
 
 interface ProcessEventOptions {
@@ -77,10 +79,10 @@ const processEmit = (supporting: React.JSX.Element, {id, status}: ProcessEmitOpt
     status === 'succeeded' &&
     emitter.emit('modal', {id: `tooltip__supporting--${id}`, element: supporting});
 
-const processClosed = ({setState}: ProcessEventOptions, visible?: boolean) =>
+const processVisible = ({setState}: ProcessEventOptions, visible?: boolean) =>
     typeof visible === 'boolean' &&
     setState(draft => {
-        draft.closed !== visible && (draft.closed = visible);
+        draft.closed !== !visible && (draft.closed = !visible);
     });
 
 const processContainerLayout = (
@@ -109,25 +111,25 @@ const processContainerLayout = (
     );
 
 export const SupportingBase = forwardRef<View, SupportingBaseProps>(
-    ({containerCurrent, onVisible, render, visible, ...renderProps}, ref) => {
+    ({containerCurrent, onVisible: onVisibleSource, render, visible, ...renderProps}, ref) => {
         const [{containerLayout, layout, status, closed}, setState] = useImmer<InitialState>({
             containerLayout: {} as InitialState['containerLayout'],
             layout: {} as LayoutRectangle,
             status: 'idle',
-            closed: false,
+            closed: undefined,
         });
 
         const id = useId();
-        const onClosed = useCallback(
-            (value?: boolean) => processClosed({setState}, value),
+        const onVisible = useCallback(
+            (value?: boolean) => processVisible({setState}, value),
             [setState],
         );
 
-        const [{opacity}] = useAnimated({visible, onClosed});
+        const [{opacity}] = useAnimated({visible, onVisible});
         const onStateChange = useCallback(
             (_state: State, options = {} as OnStateChangeOptions) =>
-                processStateChange({...options, setState, onVisible}),
-            [onVisible, setState],
+                processStateChange({...options, setState, onVisible: onVisibleSource}),
+            [onVisibleSource, setState],
         );
 
         const [onEvent] = useOnEvent({...renderProps, onStateChange});
@@ -140,7 +142,7 @@ export const SupportingBase = forwardRef<View, SupportingBaseProps>(
                     onEvent,
                     ref,
                     renderStyle: {opacity, width: layout.width, height: layout.height},
-                    visible: typeof visible === 'boolean' && visible ? visible : closed,
+                    closed,
                 }),
             [
                 containerLayout,
@@ -152,10 +154,13 @@ export const SupportingBase = forwardRef<View, SupportingBaseProps>(
                 ref,
                 render,
                 renderProps,
-                visible,
                 closed,
             ],
         );
+
+        useEffect(() => {
+            onVisible(visible);
+        }, [onVisible, visible]);
 
         useEffect(() => {
             processContainerLayout({setState, visible}, containerCurrent);

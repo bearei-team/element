@@ -6,7 +6,7 @@ import {RenderProps} from './SearchBase';
 
 type InnerProps = {
     trailingShow: boolean;
-} & Pick<RenderProps, 'size'>;
+};
 
 type SearchListProps = {
     containerPageX?: number;
@@ -17,9 +17,6 @@ type SearchListProps = {
     };
     visible?: boolean;
 } & Pick<RenderProps, 'type'>;
-
-type LeadingProps = Pick<RenderProps, 'size'>;
-type InputProps = Pick<RenderProps, 'size'>;
 
 export const Container = styled(Shape)`
     align-self: stretch;
@@ -38,6 +35,7 @@ export const Inner = styled.Pressable<InnerProps>`
             gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
             padding: ${theme.adaptSize(theme.spacing.extraSmall)}px;
             background-color: ${theme.palette.surface.surfaceContainerHigh};
+            height: ${theme.adaptSize(theme.spacing.small * 7)}px;
         `};
 
     ${({theme, trailingShow}) =>
@@ -45,48 +43,18 @@ export const Inner = styled.Pressable<InnerProps>`
         css`
             padding-right: ${theme.adaptSize(theme.spacing.medium)}px;
         `}
-
-    ${({theme, size = 'medium'}) => {
-        const contentSize = {
-            small: css`
-                height: ${theme.adaptSize(theme.spacing.small * 4)}px;
-            `,
-            medium: css`
-                height: ${theme.adaptSize(theme.spacing.small * 7)}px;
-            `,
-            large: css`
-                height: ${theme.adaptSize(theme.spacing.small * 7)}px;
-            `,
-        };
-
-        return contentSize[size];
-    }}
 `;
 
-export const Leading = styled.View<LeadingProps>`
+export const Leading = styled.View`
     align-items: center;
     display: flex;
     flex-direction: row;
     justify-content: center;
 
-    ${({theme, size = 'medium'}) => {
-        const contentSize = {
-            small: css`
-                height: ${theme.adaptSize(theme.spacing.small * 6)}px;
-                width: ${theme.adaptSize(theme.spacing.small * 6)}px;
-            `,
-            medium: css`
-                height: ${theme.adaptSize(theme.spacing.small * 6)}px;
-                width: ${theme.adaptSize(theme.spacing.small * 6)}px;
-            `,
-            large: css`
-                height: ${theme.adaptSize(theme.spacing.small * 6)}px;
-                width: ${theme.adaptSize(theme.spacing.small * 6)}px;
-            `,
-        };
-
-        return contentSize[size];
-    }}
+    ${({theme}) => css`
+        height: ${theme.adaptSize(theme.spacing.small * 6)}px;
+        width: ${theme.adaptSize(theme.spacing.small * 6)}px;
+    `}
 `;
 
 export const Content = styled.View`
@@ -112,46 +80,28 @@ export const TextField = styled.View`
     `};
 `;
 
-export const Input = styled(TextInput)<InputProps>`
+export const Input = styled(TextInput)`
     flex: 1;
 
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurface};
     `};
 
-    ${({theme, size = 'medium', secureTextEntry}) => {
-        const contentSize = {
-            small: css`
-                font-size: ${theme.adaptFontSize(theme.typography.body.medium.size)}px;
-                font-style: ${theme.typography.body.medium.style};
-                font-weight: ${theme.typography.body.medium.weight};
-                letter-spacing: ${theme.adaptSize(theme.typography.body.medium.letterSpacing)}px;
-                padding: ${theme.spacing.none}px;
-            `,
-            medium: css`
-                font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
-                font-style: ${theme.typography.body.large.style};
-                font-weight: ${theme.typography.body.large.weight};
-                letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
-                padding: ${theme.spacing.none}px;
-            `,
-            large: css`
-                font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
-                font-style: ${theme.typography.body.large.style};
-                font-weight: ${theme.typography.body.large.weight};
-                letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
-                padding: ${theme.spacing.none}px;
-            `,
-        };
-
+    ${({theme, secureTextEntry}) =>
         /**
          * Using secureTextEntry props in macOS with text-related styles on the input box will cause the
          * enableFocusRing setting to be invalidated. It is uncertain whether this is a bug in
          * react-native-macos or a native bug. As a temporary workaround, if you use secureTextEntry
          * in macos, it does not provide text styles.
          */
-        return !secureTextEntry && contentSize[size];
-    }}
+        !secureTextEntry &&
+        css`
+            font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
+            font-style: ${theme.typography.body.large.style};
+            font-weight: ${theme.typography.body.large.weight};
+            letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
+            padding: ${theme.spacing.none}px;
+        `}
 `;
 
 export const Trailing = styled(Leading)``;
@@ -164,12 +114,15 @@ export const SearchList = styled(Shape)<SearchListProps>`
             position: absolute;
         `}
 
-    ${({renderStyle = {}}) => {
+    ${({renderStyle = {}, type}) => {
         const {width = 0} = renderStyle;
 
-        return css`
-            width: ${width}px;
-        `;
+        return (
+            type === 'modal' &&
+            css`
+                width: ${width}px;
+            `
+        );
     }}
 
     ${({containerPageX = 0, containerPageY = 0, containerHeight = 0, type}) =>

@@ -6,7 +6,7 @@ import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTimin
 import {RenderProps} from './SupportingBase';
 
 interface UseAnimatedOptions extends Pick<RenderProps, 'visible'> {
-    onClosed: (value?: boolean) => void;
+    onVisible: (value?: boolean) => void;
 }
 
 interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
@@ -15,21 +15,23 @@ interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {opacityAnimated, visible, onClosed}: ProcessAnimatedTimingOptions,
+    {opacityAnimated, visible, onVisible}: ProcessAnimatedTimingOptions,
 ) =>
     requestAnimationFrame(() =>
-        animatedTiming(opacityAnimated, {toValue: visible ? 1 : 0}).start(() => onClosed(visible)),
+        animatedTiming(opacityAnimated, {toValue: visible ? 1 : 0}).start(
+            () => !visible && onVisible(visible),
+        ),
     );
 
-export const useAnimated = ({visible, onClosed}: UseAnimatedOptions) => {
+export const useAnimated = ({visible, onVisible}: UseAnimatedOptions) => {
     const [opacityAnimated] = useAnimatedValue(visible ? 1 : 0);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
     const opacity = opacityAnimated.interpolate({inputRange: [0, 1], outputRange: [0, 1]});
 
     useEffect(() => {
-        processAnimatedTiming(animatedTiming, {opacityAnimated, visible, onClosed});
-    }, [animatedTiming, onClosed, opacityAnimated, visible]);
+        processAnimatedTiming(animatedTiming, {opacityAnimated, visible, onVisible});
+    }, [animatedTiming, onVisible, opacityAnimated, visible]);
 
     return [{opacity}];
 };

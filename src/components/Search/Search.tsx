@@ -7,24 +7,22 @@ import {Container, Content, Inner, Leading, Trailing} from './Search.styles';
 import {RenderProps, SearchBase, SearchProps} from './SearchBase';
 
 const render = ({
-    layout,
+    containerRef,
     eventName,
+    iconRenderStyle,
     id,
     input,
+    layout,
     leading,
-    listData,
+    listVisible,
     onEvent,
     placeholder,
-    trailing,
-    underlayColor,
-    containerRef,
-    iconRenderStyle,
-    size,
     searchList,
+    trailing,
     type,
+    underlayColor,
     ...containerProps
 }: RenderProps) => {
-    const listVisible = !!listData.length;
     const shape = listVisible ? 'extraLargeTop' : 'extraLarge';
     const {height, width} = layout;
 
@@ -39,9 +37,8 @@ const render = ({
                 accessibilityLabel={placeholder}
                 accessibilityRole="keyboardkey"
                 testID={`search__inner--${id}`}
-                trailingShow={!!trailing}
-                size={size}>
-                <Leading testID={`search__leading--${id}`} size={size}>
+                trailingShow={!!trailing}>
+                <Leading testID={`search__leading--${id}`}>
                     {leading ?? (
                         <Icon type="outlined" name="search" renderStyle={iconRenderStyle} />
                     )}

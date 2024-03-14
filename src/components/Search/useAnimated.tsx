@@ -18,8 +18,8 @@ const processAnimatedTiming = (
     {listHeightAnimated, listVisible, onListClosed}: ProcessAnimatedTimingOptions,
 ) =>
     requestAnimationFrame(() =>
-        animatedTiming(listHeightAnimated, {toValue: listVisible ? 1 : 0}).start(() =>
-            onListClosed(listVisible),
+        animatedTiming(listHeightAnimated, {toValue: listVisible ? 1 : 0}).start(
+            () => !listVisible && onListClosed(listVisible),
         ),
     );
 

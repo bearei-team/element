@@ -5,6 +5,7 @@ import {RenderProps, SupportingBase, SupportingProps} from './SupportingBase';
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const render = ({
+    closed,
     containerLayout,
     id,
     onEvent,
@@ -12,7 +13,6 @@ const render = ({
     supportingPosition = 'verticalStart',
     supportingText,
     type,
-    visible,
     ...containerProps
 }: RenderProps) => {
     const {width = 0, height = 0, opacity} = renderStyle;
@@ -32,7 +32,7 @@ const render = ({
             supportingPosition={supportingPosition}
             testID={`tooltip__supporting--${id}`}
             type={type}
-            visible={visible}
+            visible={!closed}
             style={{
                 opacity: renderOpacity,
 

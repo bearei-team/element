@@ -23,7 +23,7 @@ import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
-import {ComponentStatus, EventName, Size, State} from '../Common/interface';
+import {ComponentStatus, EventName, State} from '../Common/interface';
 import {List, ListDataSource, ListProps} from '../List/List';
 import {Input, SearchList, TextField} from './Search.styles';
 import {useAnimated} from './useAnimated';
@@ -39,7 +39,6 @@ export interface SearchProps extends BaseProps {
     disabled?: boolean;
     leading?: React.JSX.Element;
     trailing?: React.JSX.Element;
-    size?: Size;
 
     /**
      * The modal type has a problem with mouseover events being passed through to lower level
@@ -59,7 +58,6 @@ export interface RenderProps extends SearchProps {
     onEvent: Omit<OnEvent, 'onBlur' | 'onFocus'>;
     searchList?: React.JSX.Element;
     underlayColor: string;
-    listData: ListDataSource[];
 }
 
 interface SearchBaseProps extends SearchProps {
@@ -67,14 +65,13 @@ interface SearchBaseProps extends SearchProps {
 }
 
 interface InitialState {
-    data: ListDataSource[];
-    listData: ListDataSource[];
+    data?: ListDataSource[];
     eventName: EventName;
     layout: LayoutRectangle & {pageX: number; pageY: number};
-    listVisible?: boolean;
     state: State;
     status: ComponentStatus;
     value?: string;
+    listVisible?: boolean;
 }
 
 interface ProcessEventOptions {
@@ -82,13 +79,17 @@ interface ProcessEventOptions {
 }
 
 type ProcessChangeTextOptions = Pick<RenderProps, 'data' | 'onChangeText'> & ProcessEventOptions;
-type ProcessEmitOptions = Pick<InitialState, 'status' | 'listVisible'> &
-    Pick<RenderProps, 'id' | 'type'>;
+type ProcessEmitOptions = Pick<InitialState, 'status'> &
+    Pick<RenderProps, 'id' | 'type'> &
+    Pick<RenderProps, 'listVisible'>;
 
 type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
     OnStateChangeOptions;
 
-type ProcessContainerLayoutOptions = ProcessEventOptions & Pick<InitialState, 'listVisible'>;
+type ProcessContainerLayoutOptions = ProcessEventOptions &
+    Pick<RenderProps, 'listVisible'> &
+    Pick<RenderProps, 'type'>;
+
 type RenderTextInputOptions = SearchProps;
 type RenderSearchListOptions = SearchProps & {
     containerHeight?: number;
@@ -141,11 +142,13 @@ const processChangeText = (
         const processSort = (a: ListDataSource, b: ListDataSource) =>
             (a.headline?.length ?? 0) - (b.headline?.length ?? 0);
 
-        const sortedDraftData = [...draft.data].sort(processSort);
+        const sortedDraftData = [...(draft.data ?? [])].sort(processSort);
         const sortedMatchedData = [...matchedData].sort(processSort);
 
-        JSON.stringify(sortedMatchedData) !== JSON.stringify(sortedDraftData) &&
-            (draft.data = matchedData);
+        if (JSON.stringify(sortedMatchedData) !== JSON.stringify(sortedDraftData)) {
+            typeof draft.data === 'undefined' && (draft.data = matchedData);
+            draft.listVisible = !!matchedData.length;
+        }
 
         draft.value = typeof text === 'undefined' ? '' : text;
     });
@@ -153,30 +156,19 @@ const processChangeText = (
     typeof text === 'string' && onChangeText?.(text);
 };
 
-const processListVisible = ({setState}: ProcessEventOptions, data?: ListDataSource[]) =>
+const processListClosed = ({setState}: ProcessEventOptions, visible?: boolean) =>
+    typeof visible === 'boolean' &&
     setState(draft => {
-        if (typeof data?.length === 'number' && data?.length !== 0) {
-            draft.listVisible = true;
-            draft.listData = data;
-
-            return;
-        }
-
-        draft.listVisible = false;
+        draft.data !== undefined && (draft.data = undefined);
+        draft.listVisible !== visible && (draft.listVisible = visible);
     });
 
-const processListClosed = ({setState}: ProcessEventOptions, visible?: boolean) => {
-    typeof visible === 'boolean' &&
-        setState(draft => {
-            draft.listData !== draft.data && (draft.listData = draft.data);
-        });
-};
-
 const processContainerLayout = (
-    {setState, listVisible}: ProcessContainerLayoutOptions,
+    {setState, listVisible, type}: ProcessContainerLayoutOptions,
     containerCurrent?: View | null,
 ) =>
     listVisible &&
+    type === 'modal' &&
     containerCurrent?.measure((x, y, width, height, pageX, pageY) =>
         setState(draft => {
             const update =
@@ -278,17 +270,15 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
             placeholder,
             render,
             trailing,
-            value: valueSource,
-            size,
             type = 'modal',
+            value: valueSource,
             ...textInputProps
         },
         ref,
     ) => {
-        const [{value, status, data, eventName, layout, listVisible, listData}, setState] =
+        const [{value, status, data, eventName, layout, listVisible}, setState] =
             useImmer<InitialState>({
-                data: [],
-                listData: [],
+                data: undefined,
                 eventName: 'none',
                 layout: {} as InitialState['layout'],
                 listVisible: undefined,
@@ -341,7 +331,6 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                     placeholder,
                     placeholderTextColor,
                     ref: inputRef,
-                    size,
                     value,
                 }),
             [
@@ -353,7 +342,6 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                 placeholderTextColor,
                 textInputProps,
                 value,
-                size,
             ],
         );
 
@@ -364,7 +352,7 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                     containerHeight: layout.height,
                     containerPageX: layout.pageX,
                     containerPageY: layout.pageY,
-                    data: listData,
+                    data,
                     defaultActiveKey,
                     id,
                     onActive,
@@ -373,7 +361,7 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                 }),
             [
                 activeKey,
-                listData,
+                data,
                 defaultActiveKey,
                 id,
                 layout.height,
@@ -397,12 +385,8 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
         }, [valueSource, defaultValue, onChangeText]);
 
         useEffect(() => {
-            processListVisible({setState}, data);
-        }, [data, setState]);
-
-        useEffect(() => {
-            processContainerLayout({setState, listVisible}, containerRef.current);
-        }, [setState, listVisible]);
+            processContainerLayout({setState, listVisible, type}, containerRef.current);
+        }, [setState, listVisible, type]);
 
         useEffect(() => {
             processEmit(searchList, {status, id, listVisible, type});
@@ -414,28 +398,20 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
 
         return render({
             containerRef,
-            data,
             eventName,
-            iconRenderStyle:
-                size === 'small'
-                    ? {
-                          height: theme.adaptSize(theme.spacing.large - 4),
-                          width: theme.adaptSize(theme.spacing.large - 4),
-                      }
-                    : {
-                          height: theme.adaptSize(theme.spacing.large),
-                          width: theme.adaptSize(theme.spacing.large),
-                      },
+            iconRenderStyle: {
+                height: theme.adaptSize(theme.spacing.large),
+                width: theme.adaptSize(theme.spacing.large),
+            },
             id,
             input,
             layout,
             leading,
-            listData,
+            listVisible: !!data?.length,
             onActive,
             onEvent: {...onEvent},
             placeholder,
             searchList,
-            size,
             trailing,
             type,
             underlayColor,
