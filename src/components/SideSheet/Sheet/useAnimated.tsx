@@ -9,8 +9,8 @@ import {
 } from '../../../utils/animatedTiming.utils';
 import {RenderProps} from './SheetBase';
 
-type UseAnimatedOptions = Pick<RenderProps, 'visible' | 'position' | 'type'>;
-interface ScreenAnimatedOptions {
+type UseAnimatedOptions = Pick<RenderProps, 'visible' | 'position' | 'onClosed' | 'type'>;
+interface ScreenAnimatedOptions extends Pick<UseAnimatedOptions, 'onClosed'> {
     backgroundAnimated: Animated.Value;
     translateXAnimated: Animated.Value;
 }
@@ -37,7 +37,7 @@ const enterScreen = (
 
 const exitScreen = (
     animatedTiming: AnimatedTiming,
-    {backgroundAnimated, translateXAnimated}: ScreenAnimatedOptions,
+    {backgroundAnimated, translateXAnimated, onClosed}: ScreenAnimatedOptions,
 ) => {
     const animatedTimingOptions = {
         duration: 'short3',
@@ -49,26 +49,25 @@ const exitScreen = (
         Animated.parallel([
             animatedTiming(backgroundAnimated, animatedTimingOptions),
             animatedTiming(translateXAnimated, animatedTimingOptions),
-        ]).start();
+        ]).start(() => onClosed?.());
     });
 };
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {backgroundAnimated, translateXAnimated, visible}: ProcessAnimatedTimingOptions,
+    {backgroundAnimated, onClosed, translateXAnimated, visible}: ProcessAnimatedTimingOptions,
 ) => {
     const screenAnimatedOptions = {backgroundAnimated, translateXAnimated};
 
     visible
         ? enterScreen(animatedTiming, screenAnimatedOptions)
-        : exitScreen(animatedTiming, screenAnimatedOptions);
+        : exitScreen(animatedTiming, {...screenAnimatedOptions, onClosed});
 };
 
-export const useAnimated = ({visible, position, type}: UseAnimatedOptions) => {
+export const useAnimated = ({visible, position, type, onClosed}: UseAnimatedOptions) => {
     const animatedValue = visible ? 1 : 0;
     const [backgroundAnimated] = useAnimatedValue(animatedValue);
     const [translateXAnimated] = useAnimatedValue(animatedValue);
-    const [] = useAnimatedValue(animatedValue);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
     const backgroundColor = backgroundAnimated.interpolate({
@@ -96,8 +95,9 @@ export const useAnimated = ({visible, position, type}: UseAnimatedOptions) => {
             backgroundAnimated,
             translateXAnimated,
             visible,
+            onClosed,
         });
-    }, [animatedTiming, backgroundAnimated, translateXAnimated, visible]);
+    }, [animatedTiming, backgroundAnimated, onClosed, translateXAnimated, visible]);
 
     return [{backgroundColor, innerTranslateX}];
 };

@@ -31,6 +31,7 @@ const render = ({
     secondaryButton,
     style,
     type,
+    closed,
     ...innerProps
 }: RenderProps) => {
     const {backgroundColor, innerTranslateX} = renderStyle;
@@ -43,7 +44,8 @@ const render = ({
                 ...(type === 'standard' && {transform: [{translateX: innerTranslateX}]}),
             }}
             testID={`sideSheet--${id}`}
-            type={type}>
+            type={type}
+            visible={!closed}>
             <AnimatedInner
                 {...innerProps}
                 shape={shape}

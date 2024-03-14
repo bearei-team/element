@@ -68,7 +68,7 @@ export const Container = styled(Shape)<ContainerProps>`
     ${({visible = false, theme}) =>
         !visible &&
         css`
-            height: ${theme.spacing.none}px;
+            height: ${theme.adaptSize(theme.spacing.none)}px;
             pointer-events: none;
         `}
 `;

@@ -9,12 +9,16 @@ export interface SideSheetProps extends SheetProps {
     onOpen?: () => void;
 }
 
-export type RenderProps = SideSheetProps;
+export interface RenderProps extends SideSheetProps {
+    closed?: boolean;
+}
+
 interface SideSheetBaseProps extends SideSheetProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
 interface InitialState {
+    closed?: boolean;
     visible?: boolean;
 }
 
@@ -41,10 +45,16 @@ const processVisible = ({setState, onOpen}: ProcessVisibleOptions, visible?: boo
 
     setState(draft => {
         draft.visible !== visible && (draft.visible = visible);
+        visible && draft.closed !== !visible && (draft.closed = !visible);
     });
 
     visible && onOpen?.();
 };
+
+const processClosed = ({setState}: ProcessEventOptions) =>
+    setState(draft => {
+        draft.closed !== !draft.visible && (draft.closed = !draft.visible);
+    });
 
 const processEmit = (sheet: React.JSX.Element, {visible, id, type}: ProcessEmitOptions) =>
     typeof visible === 'boolean' &&
@@ -67,8 +77,9 @@ export const SideSheetBase = forwardRef<View, SideSheetBaseProps>(
         },
         ref,
     ) => {
-        const [{visible}, setState] = useImmer<InitialState>({
+        const [{visible, closed}, setState] = useImmer<InitialState>({
             visible: undefined,
+            closed: true,
         });
 
         const id = useId();
@@ -77,14 +88,15 @@ export const SideSheetBase = forwardRef<View, SideSheetBaseProps>(
             [onOpen, setState],
         );
 
+        const onClosed = useCallback(() => processClosed({setState}), [setState]);
         const onClose = useCallback(
             () => processClose({setState, onClose: onCloseSource}),
             [onCloseSource, setState],
         );
 
         const sheet = useMemo(
-            () => render({...renderProps, visible, onClose, type, ref}),
-            [onClose, ref, render, renderProps, type, visible],
+            () => render({...renderProps, visible, closed, onClose, onClosed, type, ref}),
+            [closed, onClose, onClosed, ref, render, renderProps, type, visible],
         );
 
         useEffect(() => {

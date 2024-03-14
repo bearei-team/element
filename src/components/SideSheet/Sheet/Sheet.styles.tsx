@@ -20,7 +20,7 @@ export const Container = styled(View)<ContainerProps>`
                   width: ${theme.adaptSize(theme.spacing.small * 40)}px;
               `}
 
-    ${({position = 'horizontalEnd'}) => {
+    ${({position = 'horizontalEnd', type}) => {
         const innerPosition = {
             horizontalStart: css`
                 justify-content: flex-start;
@@ -30,8 +30,17 @@ export const Container = styled(View)<ContainerProps>`
             `,
         };
 
-        return innerPosition[position];
+        return type === 'modal' && innerPosition[position];
     }}
+
+
+    ${({visible = false, theme, type}) =>
+        !visible &&
+        type === 'standard' &&
+        css`
+            height: ${theme.adaptSize(theme.spacing.none)}px;
+            pointer-events: none;
+        `}
 `;
 
 export const Inner = styled(Shape)`

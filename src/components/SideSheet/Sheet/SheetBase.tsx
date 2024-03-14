@@ -21,7 +21,9 @@ export interface SheetProps
     content?: React.JSX.Element;
     footer?: boolean;
     headlineText?: string;
+    closed?: boolean;
     onClose?: () => void;
+    onClosed?: () => void;
     onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
     onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
     position?: 'horizontalStart' | 'horizontalEnd';
@@ -64,12 +66,14 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             secondaryButton,
             secondaryButtonLabelText = 'Cancel',
             visible,
+            onClosed,
             type,
             ...renderProps
         },
         ref,
     ) => {
         const [{backgroundColor, innerTranslateX}] = useAnimated({
+            onClosed,
             position,
             visible,
             type,

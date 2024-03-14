@@ -1,7 +1,7 @@
 import styled, {css} from 'styled-components/native';
 import {RenderProps} from './SideSheetBase';
 
-type ContainerProps = Pick<RenderProps, 'visible' | 'type'>;
+type ContainerProps = Pick<RenderProps, 'visible'>;
 
 export const Container = styled.View<ContainerProps>`
     height: 100%;

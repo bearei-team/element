@@ -82,6 +82,12 @@ const processEmit = (supporting: React.JSX.Element, {id, status}: ProcessEmitOpt
 const processVisible = ({setState}: ProcessEventOptions, visible?: boolean) =>
     typeof visible === 'boolean' &&
     setState(draft => {
+        visible && draft.closed !== !visible && (draft.closed = !visible);
+    });
+
+const processClosed = ({setState}: ProcessEventOptions, visible?: boolean) =>
+    typeof visible === 'boolean' &&
+    setState(draft => {
         draft.closed !== !visible && (draft.closed = !visible);
     });
 
@@ -113,7 +119,7 @@ const processContainerLayout = (
 export const SupportingBase = forwardRef<View, SupportingBaseProps>(
     ({containerCurrent, onVisible: onVisibleSource, render, visible, ...renderProps}, ref) => {
         const [{containerLayout, layout, status, closed}, setState] = useImmer<InitialState>({
-            closed: undefined,
+            closed: true,
             containerLayout: {} as InitialState['containerLayout'],
             layout: {} as LayoutRectangle,
             status: 'idle',
@@ -125,7 +131,12 @@ export const SupportingBase = forwardRef<View, SupportingBaseProps>(
             [setState],
         );
 
-        const [{opacity}] = useAnimated({visible, onVisible});
+        const onClosed = useCallback(
+            (value?: boolean) => processClosed({setState}, value),
+            [setState],
+        );
+
+        const [{opacity}] = useAnimated({visible, onClosed});
         const onStateChange = useCallback(
             (_state: State, options = {} as OnStateChangeOptions) =>
                 processStateChange({...options, setState, onVisible: onVisibleSource}),
