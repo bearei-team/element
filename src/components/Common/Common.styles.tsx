@@ -53,6 +53,7 @@ export const Typography = styled.Text<TypographyProps>`
             font-weight: ${theme.typography[type][size].weight};
             height: ${theme.adaptSize(theme.typography[type][size].lineHeight)}px;
             letter-spacing: ${theme.adaptSize(theme.typography[type][size].letterSpacing)}px;
+            line-height: ${theme.adaptSize(theme.typography[type][size].lineHeight)}px;
         `}
 
     ${({theme, type = 'title', size = 'medium', multiline = false}) =>

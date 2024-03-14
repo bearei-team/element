@@ -39,11 +39,8 @@ export interface RenderProps extends CardProps {
     elevation: ElevationLevel;
     eventName: EventName;
     onEvent: OnEvent;
-    onInnerLayout: (event: LayoutChangeEvent) => void;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
         height: number;
-        innerHeight: number;
-        innerWidth: number;
         subColor: AnimatedInterpolation;
         titleColor: AnimatedInterpolation;
         width: number;
@@ -57,7 +54,6 @@ interface CardBaseProps extends CardProps {
 interface InitialState {
     elevation?: ElevationLevel;
     eventName: EventName;
-    innerLayout: LayoutRectangle;
     layout: LayoutRectangle;
     status: ComponentStatus;
 }
@@ -68,8 +64,7 @@ interface ProcessEventOptions {
 
 type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
 type ProcessInitOptions = Pick<RenderProps, 'type' | 'disabled'> & ProcessEventOptions;
-type ProcessInnerLayoutOptions = Omit<ProcessLayoutOptions, 'type'>;
-type ProcessLayoutOptions = Pick<RenderProps, 'block' | 'type'> & ProcessEventOptions;
+type ProcessLayoutOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
 type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) =>
@@ -99,11 +94,7 @@ const processElevation = (state: State, {type = 'filled', setState}: ProcessElev
     });
 };
 
-const processLayout = (event: LayoutChangeEvent, {block, setState}: ProcessLayoutOptions) => {
-    if (!block) {
-        return;
-    }
-
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState(draft => {
@@ -115,31 +106,12 @@ const processLayout = (event: LayoutChangeEvent, {block, setState}: ProcessLayou
     });
 };
 
-const processInnerLayout = (
-    event: LayoutChangeEvent,
-    {block, setState}: ProcessInnerLayoutOptions,
-) => {
-    if (block) {
-        return;
-    }
-
-    const nativeEventLayout = event.nativeEvent.layout;
-
-    setState(draft => {
-        const update =
-            draft.innerLayout.width !== nativeEventLayout.width ||
-            draft.innerLayout.height !== nativeEventLayout.height;
-
-        update && (draft.innerLayout = nativeEventLayout);
-    });
-};
-
 const processStateChange = (
     state: State,
-    {event, eventName, type, setState, block}: ProcessStateChangeOptions,
+    {event, eventName, type, setState}: ProcessStateChangeOptions,
 ) => {
     eventName === 'layout'
-        ? processLayout(event as LayoutChangeEvent, {block, setState})
+        ? processLayout(event as LayoutChangeEvent, {setState})
         : processElevation(state, {type, setState});
 
     setState(draft => {
@@ -173,7 +145,6 @@ const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
 export const CardBase = forwardRef<View, CardBaseProps>(
     (
         {
-            block,
             disabled,
             onPrimaryButtonPress,
             onSecondaryButtonPress,
@@ -188,26 +159,19 @@ export const CardBase = forwardRef<View, CardBaseProps>(
         },
         ref,
     ) => {
-        const [{elevation, eventName, layout, status, innerLayout}, setState] =
-            useImmer<InitialState>({
-                elevation: undefined,
-                eventName: 'none',
-                innerLayout: {} as LayoutRectangle,
-                layout: {} as LayoutRectangle,
-                status: 'idle',
-            });
+        const [{elevation, eventName, layout, status}, setState] = useImmer<InitialState>({
+            elevation: undefined,
+            eventName: 'none',
+            layout: {} as LayoutRectangle,
+            status: 'idle',
+        });
 
         const id = useId();
         const [underlayColor] = useUnderlayColor({type});
-        const onInnerLayout = useCallback(
-            (event: LayoutChangeEvent) => processInnerLayout(event, {block, setState}),
-            [block, setState],
-        );
-
         const onStateChange = useCallback(
             (state: State, options = {} as OnStateChangeOptions) =>
-                processStateChange(state, {...options, type, block, setState}),
-            [block, setState, type],
+                processStateChange(state, {...options, type, setState}),
+            [setState, type],
         );
 
         const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
@@ -262,13 +226,11 @@ export const CardBase = forwardRef<View, CardBaseProps>(
 
         return render({
             ...renderProps,
-            block,
             disabled,
             elevation,
             eventName,
             id,
             onEvent,
-            onInnerLayout,
             primaryButton: primaryButtonElement,
             ref,
             secondaryButton: secondaryButtonElement,
@@ -280,8 +242,6 @@ export const CardBase = forwardRef<View, CardBaseProps>(
                 backgroundColor,
                 borderColor,
                 height: layout.height,
-                innerHeight: innerLayout.height,
-                innerWidth: innerLayout.width,
                 subColor,
                 titleColor,
                 width: layout.width,

@@ -4,30 +4,49 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './ElevationBase';
 
-interface ContainerProps {
+type ContainerProps = {
     renderStyle?: {width?: number; height?: number};
-}
+} & Pick<RenderProps, 'block'>;
 
 interface ShadowProps extends Pick<RenderProps & ContainerProps, 'level' | 'renderStyle'> {
     shadowIndex: 0 | 1;
 }
 
+type ContentProps = ContainerProps;
+
 export const Container = styled(View)<ContainerProps>`
     position: relative;
 
-    ${({renderStyle = {}}) => {
+    ${({block, renderStyle = {}}) => {
         const {width = 0, height = 0} = renderStyle;
 
-        return css`
-            height: ${height}px;
-            width: ${width}px;
-        `;
+        return !block
+            ? css`
+                  height: ${height}px;
+                  width: ${width}px;
+              `
+            : css`
+                  align-self: stretch;
+                  flex: 1;
+              `;
     }}
 `;
 
-export const Content = styled(Shape)`
+export const Content = styled(Shape)<ContentProps>`
     position: absolute;
     z-index: 2;
+
+    ${({block, renderStyle = {}}) => {
+        const {width = 0, height = 0} = renderStyle;
+
+        return (
+            block &&
+            css`
+                height: ${height}px;
+                width: ${width}px;
+            `
+        );
+    }}
 `;
 
 export const Shadow = styled(Shape)<ShadowProps>`

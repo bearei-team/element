@@ -16,8 +16,9 @@ import {useAnimated} from './useAnimated';
 export type ElevationLevel = 0 | 1 | 2 | 3 | 4 | 5 | undefined;
 export interface ElevationProps
     extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'>> {
-    level?: ElevationLevel;
+    block?: boolean;
     defaultLevel?: ElevationLevel;
+    level?: ElevationLevel;
 }
 
 export interface RenderProps extends ElevationProps {
@@ -43,9 +44,13 @@ interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-type ProcessStateChangeOptions = OnStateChangeOptions & ProcessEventOptions;
+type ProcessStateChangeOptions = OnStateChangeOptions &
+    ProcessEventOptions &
+    Pick<RenderProps, 'block'>;
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
+type ProcessLayoutOptions = ProcessEventOptions & Pick<RenderProps, 'block'>;
+
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessLayoutOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState(draft => {

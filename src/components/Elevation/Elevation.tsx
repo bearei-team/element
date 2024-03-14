@@ -11,14 +11,25 @@ const render = ({
     onEvent,
     renderStyle,
     shape,
+    block,
     ...containerProps
 }: RenderProps) => {
     const {onLayout} = onEvent;
     const {height, opacity0, opacity1, width} = renderStyle;
 
     return (
-        <Container {...containerProps} renderStyle={{width, height}} testID={`elevation--${id}`}>
-            <Content onLayout={onLayout} shape={shape} testID={`elevation__content--${id}`}>
+        <Container
+            {...containerProps}
+            {...(block && {onLayout})}
+            block={block}
+            renderStyle={{width, height}}
+            testID={`elevation--${id}`}>
+            <Content
+                {...(!block && {onLayout})}
+                block={block}
+                renderStyle={{width, height}}
+                shape={shape}
+                testID={`elevation__content--${id}`}>
                 {children}
             </Content>
 

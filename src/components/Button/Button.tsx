@@ -15,7 +15,6 @@ const render = ({
     icon,
     id,
     labelText,
-    onContentLayout,
     onEvent,
     renderStyle,
     style,
@@ -23,21 +22,18 @@ const render = ({
     underlayColor,
     ...contentProps
 }: RenderProps) => {
-    const {backgroundColor, color, height, width, contentWidth, contentHeight, ...border} =
-        renderStyle;
-
+    const {backgroundColor, color, height, width, ...border} = renderStyle;
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
     const link = type === 'link';
     const shape = link ? 'none' : 'full';
-    const hoveredLayout = {height: height || contentHeight, width: width || contentWidth};
 
     return (
         <Container
+            {...(block && {onLayout})}
             accessibilityLabel={labelText}
             accessibilityRole="button"
             block={block}
-            onLayout={onLayout}
-            renderStyle={{width: contentWidth}}
+            renderStyle={{width}}
             testID={`button--${id}`}>
             <Elevation level={elevation} shape={shape}>
                 <TouchableRipple
@@ -52,9 +48,9 @@ const render = ({
                     underlayColor={underlayColor}>
                     <Content
                         {...contentProps}
+                        {...(!block && {onLayout})}
                         block={block}
                         iconShow={!!icon}
-                        onLayout={onContentLayout}
                         renderStyle={{width}}
                         shape={shape}
                         testID={`button__content--${id}`}
@@ -73,7 +69,7 @@ const render = ({
 
                         <Hovered
                             eventName={eventName}
-                            renderStyle={{width: hoveredLayout.width, height: hoveredLayout.height}}
+                            renderStyle={{width, height}}
                             shape={shape}
                             underlayColor={underlayColor}
                         />

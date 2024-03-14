@@ -28,7 +28,7 @@ const render = ({
     footer,
     id,
     onEvent,
-    onInnerLayout,
+
     primaryButton,
     renderStyle,
     secondaryButton,
@@ -38,26 +38,18 @@ const render = ({
     titleText,
     underlayColor,
 }: RenderProps) => {
-    const {
-        backgroundColor,
-        height,
-        innerHeight,
-        innerWidth,
-        subColor,
-        titleColor,
-        width,
-        ...border
-    } = renderStyle;
+    const {backgroundColor, height, subColor, titleColor, width, ...border} = renderStyle;
 
     const shape = 'medium';
-    const hoveredLayout = {height: height || innerHeight, width: width || innerWidth};
+
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
 
     return (
         <Container
+            {...(block && {onLayout})}
             block={block}
             onLayout={onLayout}
-            renderStyle={{width: innerWidth}}
+            renderStyle={{width}}
             testID={`card--${id}`}>
             <Elevation level={elevation} shape={shape}>
                 <TouchableRipple
@@ -71,8 +63,8 @@ const render = ({
                         backgroundColor,
                     }}>
                     <Inner
+                        {...(!block && {onLayout})}
                         shape={shape}
-                        onLayout={onInnerLayout}
                         testID={`card__inner--${id}`}
                         block={block}
                         renderStyle={{width}}>
@@ -124,7 +116,7 @@ const render = ({
 
                         <Hovered
                             eventName={eventName}
-                            renderStyle={{width: hoveredLayout.width, height: hoveredLayout.height}}
+                            renderStyle={{width, height}}
                             shape={shape}
                             underlayColor={underlayColor}
                         />

@@ -28,11 +28,8 @@ export interface ButtonProps extends TouchableRippleProps {
 export interface RenderProps extends ButtonProps {
     elevation: ElevationLevel;
     eventName: EventName;
-    onContentLayout: (event: LayoutChangeEvent) => void;
     onEvent: OnEvent;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        contentHeight: number;
-        contentWidth: number;
         height: number;
         width: number;
     };
@@ -43,7 +40,6 @@ interface ButtonBaseProps extends ButtonProps {
 }
 
 interface InitialState {
-    contentLayout: LayoutRectangle;
     elevation?: ElevationLevel;
     eventName: EventName;
     layout: LayoutRectangle;
@@ -54,13 +50,9 @@ interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
-type ProcessContentLayoutOptions = Pick<RenderProps, 'block'> & ProcessEventOptions;
 type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
 type ProcessInitOptions = Pick<RenderProps, 'type' | 'disabled'> & ProcessEventOptions;
-type ProcessLayoutOptions = Pick<RenderProps, 'block'> & ProcessEventOptions;
-type ProcessStateChangeOptions = OnStateChangeOptions &
-    ProcessLayoutOptions &
-    ProcessElevationOptions;
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessElevationOptions;
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) =>
     type === 'elevated' ? 1 : 0;
@@ -91,11 +83,7 @@ const processElevation = (state: State, {type = 'filled', setState}: ProcessElev
     });
 };
 
-const processLayout = (event: LayoutChangeEvent, {block, setState}: ProcessLayoutOptions) => {
-    if (!block) {
-        return;
-    }
-
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
 
     setState(draft => {
@@ -107,31 +95,12 @@ const processLayout = (event: LayoutChangeEvent, {block, setState}: ProcessLayou
     });
 };
 
-const processContentLayout = (
-    event: LayoutChangeEvent,
-    {block, setState}: ProcessContentLayoutOptions,
-) => {
-    if (block) {
-        return;
-    }
-
-    const nativeEventLayout = event.nativeEvent.layout;
-
-    setState(draft => {
-        const update =
-            draft.contentLayout.width !== nativeEventLayout.width ||
-            draft.contentLayout.height !== nativeEventLayout.height;
-
-        update && (draft.contentLayout = nativeEventLayout);
-    });
-};
-
 const processStateChange = (
     state: State,
-    {event, eventName, type, block, setState}: ProcessStateChangeOptions,
+    {event, eventName, type, setState}: ProcessStateChangeOptions,
 ) => {
     eventName === 'layout'
-        ? processLayout(event as LayoutChangeEvent, {block, setState})
+        ? processLayout(event as LayoutChangeEvent, {setState})
         : processElevation(state, {type, setState});
 
     setState(draft => {
@@ -163,30 +132,20 @@ const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
     });
 
 export const ButtonBase = forwardRef<View, ButtonBaseProps>(
-    (
-        {block, disabled, icon, labelText = 'Label', render, type = 'filled', ...renderProps},
-        ref,
-    ) => {
-        const [{contentLayout, elevation, eventName, layout, status}, setState] =
-            useImmer<InitialState>({
-                contentLayout: {} as LayoutRectangle,
-                elevation: undefined,
-                eventName: 'none',
-                layout: {} as LayoutRectangle,
-                status: 'idle',
-            });
+    ({disabled, icon, labelText = 'Label', render, type = 'filled', ...renderProps}, ref) => {
+        const [{elevation, eventName, layout, status}, setState] = useImmer<InitialState>({
+            elevation: undefined,
+            eventName: 'none',
+            layout: {} as LayoutRectangle,
+            status: 'idle',
+        });
 
         const id = useId();
         const [underlayColor] = useUnderlayColor({type});
-        const onContentLayout = useCallback(
-            (event: LayoutChangeEvent) => processContentLayout(event, {block, setState}),
-            [block, setState],
-        );
-
         const onStateChange = useCallback(
             (state: State, options = {} as OnStateChangeOptions) =>
-                processStateChange(state, {...options, block, type, setState}),
-            [block, setState, type],
+                processStateChange(state, {...options, type, setState}),
+            [setState, type],
         );
 
         const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
@@ -212,22 +171,18 @@ export const ButtonBase = forwardRef<View, ButtonBaseProps>(
 
         return render({
             ...renderProps,
-            block,
             disabled,
             elevation,
             eventName,
             icon: iconElement,
             id,
             labelText,
-            onContentLayout,
             onEvent,
             ref,
             renderStyle: {
                 ...border,
                 backgroundColor,
                 color,
-                contentHeight: contentLayout.height,
-                contentWidth: contentLayout.width,
                 height: layout.height,
                 width: layout.width,
             },
