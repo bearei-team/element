@@ -10,7 +10,7 @@ export interface FieldError extends Pick<ValidateOptions, 'rules'> {
 
 type Error<T> = Record<keyof T, FieldError | undefined>;
 export interface Callback<T extends Store> {
-    onFinish?: (value: T) => void;
+    onFinish?: (value: T, customData?: unknown) => void;
     onFinishFailed?: (error: Error<T>) => void;
     onValueChange?: (changedValue: T, value: T) => void;
 }
@@ -25,6 +25,11 @@ interface FieldEntity {
 interface SetFieldValueOptions {
     updateComponent?: boolean;
     skipValidate?: boolean;
+}
+
+interface SubmitOptions {
+    skipValidate?: boolean;
+    customData?: unknown;
 }
 
 export interface FormStore<T extends Store> {
@@ -46,7 +51,7 @@ export interface FormStore<T extends Store> {
     setInitialValue: (value?: T, init?: boolean) => void;
     signInField: (entity: FieldEntity) => {signOut: () => void} | undefined;
     signOutField: (name?: NamePath<T>) => void;
-    submit: (skipValidate?: boolean) => void;
+    submit: (options?: SubmitOptions) => void;
     validateField: {
         (): Promise<Error<T>>;
         (name?: (keyof T)[]): Promise<Error<T>>;
@@ -257,10 +262,10 @@ export const formStore = <T extends Store>(): FormStore<T> => {
         getFieldEntitiesName(names).forEach(processSignOut);
     };
 
-    const submit = (skipValidate = false) => {
+    const submit = ({skipValidate, customData} = {} as SubmitOptions) => {
         const {onFinish, onFinishFailed} = callback;
         const processFailed = (err: Error<T>) => onFinishFailed?.(err);
-        const processFinish = () => onFinish?.(store);
+        const processFinish = () => onFinish?.(store, customData);
 
         skipValidate
             ? processFinish()

@@ -10,15 +10,13 @@ export const Container = styled(View)<ContainerProps>`
     display: flex;
     flex-direction: row;
     overflow: hidden;
+    flex: 1;
 
     ${({type, theme}) =>
-        type === 'modal'
-            ? css`
-                  flex: 1;
-              `
-            : css`
-                  width: ${theme.adaptSize(theme.spacing.small * 40)}px;
-              `}
+        type === 'standard' &&
+        css`
+            width: ${theme.adaptSize(theme.spacing.small * 40)}px;
+        `}
 
     ${({position = 'horizontalEnd', type}) => {
         const innerPosition = {
@@ -44,13 +42,13 @@ export const Container = styled(View)<ContainerProps>`
 `;
 
 export const Inner = styled(Shape)`
-    align-self: stretch;
+    flex: 1;
 
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surfaceContainerLow};
+        max-width: ${theme.adaptSize(theme.spacing.small * 40)}px;
         min-height: ${theme.adaptSize(theme.spacing.small * 80)}px;
         padding-bottom: ${theme.adaptSize(theme.spacing.large)}px;
-        width: ${theme.adaptSize(theme.spacing.small * 40)}px;
     `}
 `;
 

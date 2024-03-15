@@ -15,7 +15,7 @@ export const Container = styled(View)<ContainerProps>`
     overflow: hidden;
 
     ${({gap = 0}) => css`
-        padding-bottom: ${gap};
+        padding-bottom: ${gap}px;
     `};
 `;
 
