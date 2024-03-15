@@ -40,6 +40,7 @@ const render = ({
         activeIndicatorHeight,
         backgroundColor,
         height,
+        labelTexLineHeight,
         labelTextColor,
         labelTextHeight,
         labelTextLetterSpacing,
@@ -100,6 +101,7 @@ const render = ({
                                 fontSize: labelTextSize,
                                 height: labelTextHeight,
                                 letterSpacing: labelTextLetterSpacing,
+                                lineHeight: labelTexLineHeight,
                                 top: labelTextTop,
                             }}>
                             {labelText}

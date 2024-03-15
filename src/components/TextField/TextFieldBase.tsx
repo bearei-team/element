@@ -55,6 +55,7 @@ export interface RenderProps extends TextFieldProps {
         activeIndicatorBackgroundColor: AnimatedInterpolation;
         activeIndicatorHeight: AnimatedInterpolation;
         height: number;
+        labelTexLineHeight: AnimatedInterpolation;
         labelTextColor: AnimatedInterpolation;
         labelTextHeight: AnimatedInterpolation;
         labelTextLetterSpacing: AnimatedInterpolation;
@@ -240,6 +241,7 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
                 activeIndicatorHeight,
                 backgroundColor,
                 inputColor,
+                labelTexLineHeight,
                 labelTextColor,
                 labelTextHeight,
                 labelTextLetterSpacing,
@@ -313,6 +315,7 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
                 activeIndicatorHeight,
                 backgroundColor,
                 height: layout.height,
+                labelTexLineHeight,
                 labelTextColor,
                 labelTextHeight,
                 labelTextLetterSpacing,

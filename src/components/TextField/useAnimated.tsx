@@ -270,6 +270,14 @@ export const useAnimated = ({
         ],
     });
 
+    const labelTexLineHeight = labelAnimated.interpolate({
+        inputRange: [0, 1],
+        outputRange: [
+            theme.adaptSize(theme.typography.body.small.lineHeight),
+            theme.adaptSize(theme.typography.body.large.lineHeight),
+        ],
+    });
+
     const labelTextLetterSpacing = labelAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
@@ -395,6 +403,7 @@ export const useAnimated = ({
             activeIndicatorHeight,
             backgroundColor,
             inputColor,
+            labelTexLineHeight,
             labelTextColor,
             labelTextHeight,
             labelTextLetterSpacing,

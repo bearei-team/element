@@ -17,11 +17,12 @@ export interface SheetProps
     extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & ModalProps> {
     back?: boolean;
     backIcon?: React.JSX.Element;
+    closed?: boolean;
     closeIcon?: React.JSX.Element;
     content?: React.JSX.Element;
+    disabledClose?: boolean;
     footer?: boolean;
     headlineText?: string;
-    closed?: boolean;
     onClose?: () => void;
     onClosed?: () => void;
     onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
@@ -68,6 +69,7 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             visible,
             onClosed,
             type,
+            disabledClose,
             ...renderProps
         },
         ref,
@@ -96,12 +98,13 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             () =>
                 closeIcon ?? (
                     <IconButton
+                        disabled={disabledClose}
                         icon={<Icon type="filled" name="close" />}
                         onPressOut={onClose}
                         type="standard"
                     />
                 ),
-            [closeIcon, onClose],
+            [closeIcon, disabledClose, onClose],
         );
 
         const primaryButtonElement = useMemo(
