@@ -25,6 +25,7 @@ const render = ({
 }: RenderProps) => {
     const shape = listVisible ? 'extraLargeTop' : 'extraLarge';
     const {height, width} = layout;
+    const {onLayout, ...onInnerEvent} = onEvent;
 
     return (
         <Container
@@ -33,7 +34,8 @@ const render = ({
             shape={shape}
             testID={`search__inner--${id}`}>
             <Inner
-                {...onEvent}
+                {...onInnerEvent}
+                {...(type === 'standard' && {onLayout})}
                 accessibilityLabel={placeholder}
                 accessibilityRole="keyboardkey"
                 testID={`search__inner--${id}`}

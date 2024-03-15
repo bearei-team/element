@@ -34,14 +34,14 @@ const render = ({
     closed,
     ...innerProps
 }: RenderProps) => {
-    const {backgroundColor, innerTranslateX} = renderStyle;
+    const {backgroundColor, innerTranslateX, width} = renderStyle;
     const shape = position === 'horizontalStart' ? 'largeEnd' : 'largeStart';
 
     return (
         <AnimatedContainer
             style={{
                 backgroundColor,
-                ...(type === 'standard' && {transform: [{translateX: innerTranslateX}]}),
+                ...(type === 'standard' && {width, transform: [{translateX: innerTranslateX}]}),
             }}
             testID={`sideSheet--${id}`}
             type={type}

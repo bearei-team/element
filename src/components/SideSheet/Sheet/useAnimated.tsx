@@ -13,13 +13,14 @@ type UseAnimatedOptions = Pick<RenderProps, 'visible' | 'position' | 'onClosed' 
 interface ScreenAnimatedOptions extends Pick<UseAnimatedOptions, 'onClosed'> {
     backgroundAnimated: Animated.Value;
     translateXAnimated: Animated.Value;
+    widthAnimated: Animated.Value;
 }
 
 type ProcessAnimatedTimingOptions = ScreenAnimatedOptions & Pick<UseAnimatedOptions, 'visible'>;
 
 const enterScreen = (
     animatedTiming: AnimatedTiming,
-    {backgroundAnimated, translateXAnimated}: ScreenAnimatedOptions,
+    {backgroundAnimated, translateXAnimated, widthAnimated}: ScreenAnimatedOptions,
 ) => {
     const animatedTimingOptions = {
         duration: 'medium3',
@@ -31,13 +32,14 @@ const enterScreen = (
         Animated.parallel([
             animatedTiming(backgroundAnimated, animatedTimingOptions),
             animatedTiming(translateXAnimated, animatedTimingOptions),
+            animatedTiming(widthAnimated, animatedTimingOptions),
         ]).start();
     });
 };
 
 const exitScreen = (
     animatedTiming: AnimatedTiming,
-    {backgroundAnimated, translateXAnimated, onClosed}: ScreenAnimatedOptions,
+    {backgroundAnimated, translateXAnimated, onClosed, widthAnimated}: ScreenAnimatedOptions,
 ) => {
     const animatedTimingOptions = {
         duration: 'short3',
@@ -49,15 +51,22 @@ const exitScreen = (
         Animated.parallel([
             animatedTiming(backgroundAnimated, animatedTimingOptions),
             animatedTiming(translateXAnimated, animatedTimingOptions),
+            animatedTiming(widthAnimated, animatedTimingOptions),
         ]).start(() => onClosed?.());
     });
 };
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {backgroundAnimated, onClosed, translateXAnimated, visible}: ProcessAnimatedTimingOptions,
+    {
+        backgroundAnimated,
+        onClosed,
+        translateXAnimated,
+        visible,
+        widthAnimated,
+    }: ProcessAnimatedTimingOptions,
 ) => {
-    const screenAnimatedOptions = {backgroundAnimated, translateXAnimated};
+    const screenAnimatedOptions = {backgroundAnimated, translateXAnimated, widthAnimated};
 
     visible
         ? enterScreen(animatedTiming, screenAnimatedOptions)
@@ -68,6 +77,7 @@ export const useAnimated = ({visible, position, type, onClosed}: UseAnimatedOpti
     const animatedValue = visible ? 1 : 0;
     const [backgroundAnimated] = useAnimatedValue(animatedValue);
     const [translateXAnimated] = useAnimatedValue(animatedValue);
+    const [widthAnimated] = useAnimatedValue(animatedValue);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
     const backgroundColor = backgroundAnimated.interpolate({
@@ -90,14 +100,23 @@ export const useAnimated = ({visible, position, type, onClosed}: UseAnimatedOpti
         ],
     });
 
+    const width = widthAnimated.interpolate({
+        inputRange: [0, 1],
+        outputRange: [
+            theme.adaptSize(theme.spacing.small * 0),
+            theme.adaptSize(theme.spacing.small * 40),
+        ],
+    });
+
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
             backgroundAnimated,
             translateXAnimated,
             visible,
             onClosed,
+            widthAnimated,
         });
-    }, [animatedTiming, backgroundAnimated, onClosed, translateXAnimated, visible]);
+    }, [animatedTiming, backgroundAnimated, onClosed, translateXAnimated, visible, widthAnimated]);
 
-    return [{backgroundColor, innerTranslateX}];
+    return [{backgroundColor, innerTranslateX, width}];
 };

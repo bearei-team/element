@@ -72,7 +72,7 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
         },
         ref,
     ) => {
-        const [{backgroundColor, innerTranslateX}] = useAnimated({
+        const [renderStyle] = useAnimated({
             onClosed,
             position,
             visible,
@@ -137,7 +137,7 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             position,
             primaryButton: primaryButtonElement,
             ref,
-            renderStyle: {backgroundColor, innerTranslateX},
+            renderStyle,
             secondaryButton: secondaryButtonElement,
             type,
             visible,

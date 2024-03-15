@@ -11,6 +11,7 @@ import {
 } from 'react';
 import {
     Animated,
+    LayoutChangeEvent,
     LayoutRectangle,
     PressableProps,
     TextInput,
@@ -67,7 +68,7 @@ interface SearchBaseProps extends SearchProps {
 interface InitialState {
     data?: ListDataSource[];
     eventName: EventName;
-    layout: LayoutRectangle & {pageX: number; pageY: number};
+    layout: LayoutRectangle & {pageX?: number; pageY?: number};
     state: State;
     status: ComponentStatus;
     value?: string;
@@ -100,11 +101,24 @@ type RenderSearchListOptions = SearchProps & {
 };
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
+const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
+
+    setState(draft => {
+        const update =
+            draft.layout.width !== nativeEventLayout.width ||
+            draft.layout.height !== nativeEventLayout.height;
+
+        update && (draft.layout = nativeEventLayout);
+    });
+};
+
 const processStateChange = (
     state: State,
-    {eventName, ref, setState}: ProcessStateChangeOptions,
+    {event, eventName, ref, setState}: ProcessStateChangeOptions,
 ) => {
     const nextEvent = {
+        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () => processFocus(ref),
     } as Record<EventName, () => void>;
 
@@ -139,17 +153,8 @@ const processChangeText = (
             return;
         }
 
-        const processSort = (a: ListDataSource, b: ListDataSource) =>
-            (a.headline?.length ?? 0) - (b.headline?.length ?? 0);
-
-        const sortedDraftData = [...(draft.data ?? [])].sort(processSort);
-        const sortedMatchedData = [...matchedData].sort(processSort);
-
-        if (JSON.stringify(sortedMatchedData) !== JSON.stringify(sortedDraftData)) {
-            typeof draft.data === 'undefined' && (draft.data = matchedData);
-            draft.listVisible !== !!matchedData.length &&
-                (draft.listVisible = !!matchedData.length);
-        }
+        typeof draft.data === 'undefined' && (draft.data = matchedData);
+        draft.listVisible !== !!matchedData.length && (draft.listVisible = !!matchedData.length);
 
         draft.value = typeof text === 'undefined' ? '' : text;
     });
@@ -164,10 +169,9 @@ const processListClosed = ({setState}: ProcessEventOptions, visible?: boolean) =
     });
 
 const processContainerLayout = (
-    {setState, listVisible, type}: ProcessContainerLayoutOptions,
+    {setState, type}: ProcessContainerLayoutOptions,
     containerCurrent?: View | null,
 ) =>
-    listVisible &&
     type === 'modal' &&
     containerCurrent?.measure((x, y, width, height, pageX, pageY) =>
         setState(draft => {
@@ -385,7 +389,7 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
         }, [valueSource, defaultValue, onChangeText]);
 
         useEffect(() => {
-            processContainerLayout({setState, listVisible, type}, containerRef.current);
+            processContainerLayout({setState, type}, containerRef.current);
         }, [setState, listVisible, type]);
 
         useEffect(() => {
