@@ -1,3 +1,4 @@
+import Add from '@material-design-icons/svg/round/add.svg';
 import AddHome from '@material-design-icons/svg/round/add_home.svg';
 import ArrowBack from '@material-design-icons/svg/round/arrow_back.svg';
 import ArrowForward from '@material-design-icons/svg/round/arrow_forward.svg';
@@ -31,14 +32,15 @@ import Settings from '@material-design-icons/svg/round/settings.svg';
 import SpaceDashboard from '@material-design-icons/svg/round/space_dashboard.svg';
 import Star from '@material-design-icons/svg/round/star.svg';
 import StarBorder from '@material-design-icons/svg/round/star_border.svg';
+import Window from '@material-design-icons/svg/round/window.svg';
 
 export const round = {
     svg: {
-        otherHouses: OtherHouses,
-        bookmarkAdd: BookmarkAdd,
+        add: Add,
         addHome: AddHome,
         arrowBack: ArrowBack,
         arrowForward: ArrowForward,
+        bookmarkAdd: BookmarkAdd,
         bookmarkBorder: BookmarkBorder,
         checkBox: CheckBox,
         checkBoxOutlineBlank: CheckBoxOutlineBlank,
@@ -58,6 +60,7 @@ export const round = {
         menuOpen: MenuOpen,
         newLabel: NewLabel,
         openInBrowser: OpenInBrowser,
+        otherHouses: OtherHouses,
         radioButtonChecked: RadioButtonChecked,
         radioButtonUnchecked: RadioButtonUnchecked,
         refresh: Refresh,
@@ -67,5 +70,6 @@ export const round = {
         spaceDashboard: SpaceDashboard,
         star: Star,
         starBorder: StarBorder,
+        window: Window,
     },
 };

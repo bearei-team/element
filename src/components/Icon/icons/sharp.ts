@@ -1,3 +1,4 @@
+import Add from '@material-design-icons/svg/sharp/add.svg';
 import AddHome from '@material-design-icons/svg/sharp/add_home.svg';
 import ArrowBack from '@material-design-icons/svg/sharp/arrow_back.svg';
 import ArrowForward from '@material-design-icons/svg/sharp/arrow_forward.svg';
@@ -31,14 +32,15 @@ import Settings from '@material-design-icons/svg/sharp/settings.svg';
 import SpaceDashboard from '@material-design-icons/svg/sharp/space_dashboard.svg';
 import Star from '@material-design-icons/svg/sharp/star.svg';
 import StarBorder from '@material-design-icons/svg/sharp/star_border.svg';
+import Window from '@material-design-icons/svg/sharp/window.svg';
 
 export const sharp = {
     svg: {
-        otherHouses: OtherHouses,
-        bookmarkAdd: BookmarkAdd,
+        add: Add,
         addHome: AddHome,
         arrowBack: ArrowBack,
         arrowForward: ArrowForward,
+        bookmarkAdd: BookmarkAdd,
         bookmarkBorder: BookmarkBorder,
         checkBox: CheckBox,
         checkBoxOutlineBlank: CheckBoxOutlineBlank,
@@ -58,6 +60,7 @@ export const sharp = {
         menuOpen: MenuOpen,
         newLabel: NewLabel,
         openInBrowser: OpenInBrowser,
+        otherHouses: OtherHouses,
         radioButtonChecked: RadioButtonChecked,
         radioButtonUnchecked: RadioButtonUnchecked,
         refresh: Refresh,
@@ -67,5 +70,6 @@ export const sharp = {
         spaceDashboard: SpaceDashboard,
         star: Star,
         starBorder: StarBorder,
+        window: Window,
     },
 };
