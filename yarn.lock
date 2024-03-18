@@ -1870,15 +1870,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@bearei/element@npm:^0.0.104, @bearei/element@workspace:.":
+"@bearei/element@workspace:.":
   version: 0.0.0-use.local
   resolution: "@bearei/element@workspace:."
   dependencies:
     "@babel/core": "npm:^7.20.0"
     "@babel/preset-env": "npm:^7.20.0"
     "@babel/runtime": "npm:^7.20.0"
-    "@bearei/element": "npm:^0.0.104"
-    "@bearei/theme": "npm:^1.4.1"
+    "@bearei/theme": "npm:^1.4.3"
     "@material-design-icons/svg": "npm:latest"
     "@react-native-async-storage/async-storage": "npm:^1.19.3"
     "@react-native-community/datetimepicker": "npm:^7.6.0"
@@ -1930,10 +1929,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@bearei/theme@npm:^1.4.1":
-  version: 1.4.1
-  resolution: "@bearei/theme@npm:1.4.1"
-  checksum: 4894ad7cf573e9d1f492e78601842d40029f9088d5061ec3121929b9f6ca7aa3f84c0dbd79b188552d7a79716a38396e7469bc8fcfc37d3094456d4602a8fa55
+"@bearei/theme@npm:^1.4.3":
+  version: 1.4.3
+  resolution: "@bearei/theme@npm:1.4.3"
+  checksum: 70a4019e6d6f398104c2bc55f01c8652508e271b0b51fa1d1bb263ef3ff58aac6e815fbb82d631397dee58d827a25c534eb49c0ed1ecd518b4102c5a0bd4a2e7
   languageName: node
   linkType: hard
 

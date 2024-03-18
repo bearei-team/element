@@ -31,7 +31,6 @@ export const Container = styled(View)<ContainerProps>`
         return type === 'modal' && innerPosition[position];
     }}
 
-
     ${({visible = false, theme, type}) =>
         !visible &&
         type === 'standard' &&
@@ -42,11 +41,9 @@ export const Container = styled(View)<ContainerProps>`
 `;
 
 export const Inner = styled(Shape)`
-    flex: 1;
-
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surfaceContainerLow};
-        max-width: ${theme.adaptSize(theme.spacing.small * 40)}px;
+        width: ${theme.adaptSize(theme.spacing.small * 40)}px;
         min-height: ${theme.adaptSize(theme.spacing.small * 80)}px;
         padding-bottom: ${theme.adaptSize(theme.spacing.large)}px;
     `}

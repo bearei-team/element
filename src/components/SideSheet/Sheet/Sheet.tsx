@@ -41,7 +41,7 @@ const render = ({
         <AnimatedContainer
             style={{
                 backgroundColor,
-                ...(type === 'standard' && {width, transform: [{translateX: innerTranslateX}]}),
+                ...(type === 'standard' && {width}),
             }}
             testID={`sideSheet--${id}`}
             type={type}
