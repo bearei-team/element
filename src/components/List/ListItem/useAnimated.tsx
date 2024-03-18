@@ -6,7 +6,7 @@ import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTimin
 import {EventName, State} from '../../Common/interface';
 import {RenderProps} from './ListItemBase';
 
-interface UseAnimatedOptions extends Pick<RenderProps, 'close' | 'gap'> {
+interface UseAnimatedOptions extends Pick<RenderProps, 'trailingControl' | 'gap'> {
     eventName: EventName;
     layoutHeight?: number;
     state: State;
@@ -30,33 +30,31 @@ const processCloseAnimated = (
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {
-        close,
+        trailingControl,
         eventName = 'none',
         state,
         trailingEventName,
         trailingOpacityAnimated,
     }: ProcessAnimatedTimingOptions,
 ) => {
-    const closeIconValue = state !== 'enabled' ? 1 : 0;
-    const closeIconToValue = [eventName, trailingEventName].includes('hoverIn')
-        ? 1
-        : closeIconValue;
+    const toValue = state !== 'enabled' ? 1 : 0;
 
-    animatedTiming(trailingOpacityAnimated, {
-        toValue: close ? closeIconToValue : 1,
-    }).start();
+    trailingControl &&
+        animatedTiming(trailingOpacityAnimated, {
+            toValue: [eventName, trailingEventName].includes('hoverIn') ? 1 : toValue,
+        }).start();
 };
 
 export const useAnimated = ({
-    close,
     eventName,
     layoutHeight = 0,
     gap = 0,
     state,
     trailingEventName,
+    trailingControl,
 }: UseAnimatedOptions) => {
     const [heightAnimated] = useAnimatedValue(1);
-    const [trailingOpacityAnimated] = useAnimatedValue(close ? 0 : 1);
+    const [trailingOpacityAnimated] = useAnimatedValue(trailingControl ? 0 : 1);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
     const trailingOpacity = trailingOpacityAnimated.interpolate({
@@ -76,17 +74,26 @@ export const useAnimated = ({
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
-            close,
             eventName,
             state,
+            trailingControl,
             trailingEventName,
             trailingOpacityAnimated,
         });
 
         return () => {
             trailingOpacityAnimated.stopAnimation();
+            heightAnimated.stopAnimation();
         };
-    }, [animatedTiming, close, eventName, state, trailingEventName, trailingOpacityAnimated]);
+    }, [
+        animatedTiming,
+        eventName,
+        heightAnimated,
+        state,
+        trailingControl,
+        trailingEventName,
+        trailingOpacityAnimated,
+    ]);
 
     return [{height, onCloseAnimated, trailingOpacity}];
 };

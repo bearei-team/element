@@ -1,4 +1,4 @@
-import {forwardRef, useCallback, useEffect, useId, useMemo} from 'react';
+import React, {cloneElement, forwardRef, useCallback, useEffect, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -8,7 +8,7 @@ import {
     View,
     ViewStyle,
 } from 'react-native';
-import {useTheme} from 'styled-components/native';
+import {DefaultTheme, useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../../hooks/useOnEvent';
 import {
@@ -18,7 +18,7 @@ import {
     Size,
     State,
 } from '../../Common/interface';
-import {Icon} from '../../Icon/Icon';
+import {Icon, IconName, IconType} from '../../Icon/Icon';
 import {IconButton} from '../../IconButton/IconButton';
 import {TouchableRippleProps} from '../../TouchableRipple/TouchableRipple';
 import {useAnimated} from './useAnimated';
@@ -26,16 +26,20 @@ import {useAnimated} from './useAnimated';
 export interface ListItemProps extends TouchableRippleProps {
     activeKey?: string;
     close?: boolean;
+    closeIcon?: boolean;
+    closeIconName?: IconName;
+    closeIconType?: IconType;
     dataKey?: string;
     gap?: number;
     headline?: string;
     leading?: React.JSX.Element;
     onActive?: (value?: string) => void;
     onClose?: (value?: string) => void;
-    supportingText?: string;
+    size?: Size;
+    supporting?: string | React.JSX.Element;
     supportingTextNumberOfLines?: number;
     trailing?: React.JSX.Element;
-    size?: Size;
+    trailingControl?: boolean;
 }
 
 export interface RenderProps extends ListItemProps {
@@ -76,15 +80,21 @@ type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'dataKey' | 'onAct
     ProcessEventOptions;
 
 type ProcessTrailingEventOptions = {callback?: () => void} & ProcessEventOptions;
-type ProcessTrailingPressOutOptions = Pick<RenderProps, 'close'> & ProcessEventOptions;
-
-type ProcessCloseOptions = Pick<RenderProps, 'close' | 'dataKey' | 'onClose'> & {
+type ProcessCloseOptions = Pick<RenderProps, 'dataKey' | 'onClose'> & {
     onCloseAnimated: (finished?: (() => void) | undefined) => void;
 };
 
 type ProcessStateChangeOptions = OnStateChangeOptions &
     ProcessPressOutOptions &
     Pick<InitialState, 'trailingEventName'>;
+
+interface RenderTrailingOptions
+    extends Pick<
+        RenderProps,
+        'closeIcon' | 'onEvent' | 'trailing' | 'size' | 'closeIconName' | 'closeIconType'
+    > {
+    theme: DefaultTheme;
+}
 
 const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
     const nativeEventLayout = event.nativeEvent.layout;
@@ -156,21 +166,14 @@ const processTrailingEvent = (
 ) => {
     setState(draft => {
         draft.trailingEventName = eventName;
+        draft.eventName = eventName === 'hoverIn' ? 'none' : 'hoverIn';
     });
 
     callback?.();
 };
 
-const processTrailingPressOut = ({close, setState}: ProcessTrailingPressOutOptions) =>
-    close &&
-    setState(draft => {
-        draft.closed = true;
-    });
-
-const processClose = (
-    {close, dataKey, onCloseAnimated, onClose}: ProcessCloseOptions,
-    closed?: boolean,
-) => close && closed && onCloseAnimated?.(() => onClose?.(dataKey));
+const processClose = ({dataKey, onCloseAnimated, onClose}: ProcessCloseOptions, value?: boolean) =>
+    typeof value === 'boolean' && value && onCloseAnimated?.(() => onClose?.(dataKey));
 
 const processTrailingHoverIn = ({setState}: ProcessEventOptions) =>
     processTrailingEvent('hoverIn', {setState});
@@ -178,24 +181,64 @@ const processTrailingHoverIn = ({setState}: ProcessEventOptions) =>
 const processTrailingHoverOut = ({setState}: ProcessEventOptions) =>
     processTrailingEvent('hoverOut', {setState});
 
+const renderTrailing = ({
+    closeIcon,
+    onEvent,
+    size,
+    theme,
+    trailing,
+    closeIconName,
+    closeIconType,
+}: RenderTrailingOptions) => {
+    const {onHoverIn, onHoverOut, onPressOut} = onEvent;
+    const trailingElement = trailing ? cloneElement(trailing, {onHoverIn, onHoverOut}) : trailing;
+
+    return closeIcon ? (
+        <IconButton
+            icon={<Icon name={closeIconName} type={closeIconType} />}
+            onPressOut={onPressOut}
+            onHoverIn={onHoverIn}
+            onHoverOut={onHoverOut}
+            type="standard"
+            renderStyle={
+                size === 'small'
+                    ? {
+                          width: theme.adaptSize(theme.spacing.large),
+                          height: theme.adaptSize(theme.spacing.large),
+                      }
+                    : {
+                          width: theme.adaptSize(theme.spacing.small * 5),
+                          height: theme.adaptSize(theme.spacing.small * 5),
+                      }
+            }
+        />
+    ) : (
+        trailingElement
+    );
+};
+
 export const ListItemBase = forwardRef<View, ListItemBaseProps>(
     (
         {
             activeKey,
-            close,
+            closeIcon,
+            closeIconName = 'close',
+            closeIconType = 'filled',
             dataKey,
+            gap,
             onActive,
             onClose: onCloseSource,
             render,
-            supportingText,
-            trailing,
             size = 'medium',
-            gap,
+            supporting,
+            trailing,
+            trailingControl,
+            close,
             ...renderProps
         },
         ref,
     ) => {
-        const [{touchableLocation, eventName, layout, state, trailingEventName, closed}, setState] =
+        const [{touchableLocation, eventName, layout, state, trailingEventName}, setState] =
             useImmer<InitialState>({
                 eventName: 'none',
                 layout: {} as LayoutRectangle,
@@ -203,7 +246,6 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
                 status: 'idle',
                 touchableLocation: {} as InitialState['touchableLocation'],
                 trailingEventName: 'none',
-                closed: false,
             });
 
         const id = useId();
@@ -212,12 +254,12 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
         const underlayColor = theme.palette.surface.onSurface;
         const active = activeKey === dataKey;
         const [{height, onCloseAnimated, trailingOpacity}] = useAnimated({
-            close,
             eventName,
+            gap,
             layoutHeight: layout?.height,
             state,
             trailingEventName,
-            gap,
+            trailingControl,
         });
 
         const onStateChange = useCallback(
@@ -226,70 +268,55 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
                     ...options,
                     activeKey,
                     dataKey,
-                    setState,
                     onActive,
+                    setState,
                     trailingEventName,
                 }),
             [activeKey, dataKey, onActive, setState, trailingEventName],
         );
 
-        const [onEvent] = useOnEvent({...renderProps, onStateChange, disabled: closed});
+        const [onEvent] = useOnEvent({...renderProps, onStateChange});
         const onTrailingHoverIn = useCallback(() => processTrailingHoverIn({setState}), [setState]);
         const onTrailingHoverOut = useCallback(
             () => processTrailingHoverOut({setState}),
             [setState],
         );
 
-        const onTrailingPressOut = useCallback(
-            () => processTrailingPressOut({close, setState}),
-            [close, setState],
-        );
-
         const onClose = useCallback(
-            (val?: boolean) =>
-                processClose({close, dataKey, onCloseAnimated, onClose: onCloseSource}, val),
-            [close, dataKey, onCloseAnimated, onCloseSource],
+            (value?: boolean) =>
+                processClose({dataKey, onCloseAnimated, onClose: onCloseSource}, value),
+            [dataKey, onCloseAnimated, onCloseSource],
         );
 
         const trailingElement = useMemo(
             () =>
-                close ? (
-                    <IconButton
-                        icon={<Icon name={active ? 'remove' : 'close'} type="filled" />}
-                        onHoverIn={onTrailingHoverIn}
-                        onHoverOut={onTrailingHoverOut}
-                        onPressOut={onTrailingPressOut}
-                        type="standard"
-                        renderStyle={
-                            size === 'small'
-                                ? {
-                                      width: theme.adaptSize(theme.spacing.large),
-                                      height: theme.adaptSize(theme.spacing.large),
-                                  }
-                                : {
-                                      width: theme.adaptSize(theme.spacing.small * 5),
-                                      height: theme.adaptSize(theme.spacing.small * 5),
-                                  }
-                        }
-                    />
-                ) : (
-                    trailing
-                ),
+                renderTrailing({
+                    closeIcon,
+                    onEvent: {
+                        onHoverIn: onTrailingHoverIn,
+                        onHoverOut: onTrailingHoverOut,
+                        onPressOut: onClose,
+                    } as unknown as OnEvent,
+                    closeIconName,
+                    closeIconType,
+                    theme,
+                    trailing,
+                }),
             [
-                active,
-                close,
+                closeIcon,
+                closeIconName,
+                closeIconType,
+                onClose,
                 onTrailingHoverIn,
                 onTrailingHoverOut,
-                onTrailingPressOut,
-                size,
                 theme,
                 trailing,
             ],
         );
 
         useEffect(() => {
-            onClose(closed);
-        }, [closed, onClose]);
+            onClose(close);
+        }, [close, onClose]);
 
         return render({
             ...renderProps,
@@ -307,7 +334,7 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
                 width: layout.width,
             },
             size,
-            supportingText,
+            supporting,
             touchableLocation,
             trailing: trailingElement,
             underlayColor,

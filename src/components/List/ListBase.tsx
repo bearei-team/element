@@ -7,7 +7,7 @@ import {ListItem, ListItemProps} from './ListItem/ListItem';
 export interface ListDataSource
     extends Pick<
         ListItemProps,
-        'headline' | 'leading' | 'supportingText' | 'supportingTextNumberOfLines' | 'trailing'
+        'headline' | 'leading' | 'supporting' | 'supportingTextNumberOfLines' | 'trailing'
     > {
     key?: string;
 }
@@ -18,7 +18,7 @@ type BaseProps = Partial<
         Pick<
             ListItemProps,
             | 'activeKey'
-            | 'close'
+            | 'closeIcon'
             | 'onActive'
             | 'onClose'
             | 'supportingTextNumberOfLines'
@@ -41,7 +41,7 @@ type RenderItemOptions = ListRenderItemInfo<ListDataSource> &
     Pick<
         RenderProps,
         | 'activeKey'
-        | 'close'
+        | 'closeIcon'
         | 'defaultActiveKey'
         | 'gap'
         | 'onActive'
@@ -101,7 +101,7 @@ const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSour
 
 const renderItem = ({
     activeKey,
-    close,
+    closeIcon,
     gap,
     item,
     onActive,
@@ -116,7 +116,7 @@ const renderItem = ({
             supportingTextNumberOfLines,
         })}
         activeKey={activeKey}
-        close={close}
+        closeIcon={closeIcon}
         dataKey={item.key}
         gap={gap}
         key={item.key}
@@ -131,7 +131,7 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
     (
         {
             activeKey: activeKeySource,
-            close,
+            closeIcon,
             data: dataSources,
             defaultActiveKey,
             gap,
@@ -167,7 +167,7 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
                 renderItem({
                     ...options,
                     activeKey,
-                    close,
+                    closeIcon,
                     gap,
                     onActive,
                     onClose,
@@ -175,7 +175,16 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
                     size,
                     supportingTextNumberOfLines,
                 }),
-            [activeKey, close, gap, onActive, onClose, shape, size, supportingTextNumberOfLines],
+            [
+                activeKey,
+                closeIcon,
+                gap,
+                onActive,
+                onClose,
+                shape,
+                size,
+                supportingTextNumberOfLines,
+            ],
         );
 
         useEffect(() => {

@@ -7,8 +7,8 @@ import {filled} from './icons/filled';
 import {icon} from './icons/icon';
 import {useAnimated} from './useAnimated';
 
-type IconName = keyof (typeof filled)['svg'];
-type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
+export type IconName = keyof (typeof filled)['svg'];
+export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone';
 type BaseProps = Partial<Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps>;
 export interface IconProps extends BaseProps {
     eventName?: EventName;

@@ -29,7 +29,7 @@ const render = ({
     onEvent,
     renderStyle,
     shape,
-    supportingText,
+    supporting,
     supportingTextNumberOfLines,
     trailing,
     underlayColor,
@@ -66,7 +66,7 @@ const render = ({
 
                         <Content
                             size={size}
-                            supportingTextShow={!!supportingText}
+                            supportingTextShow={!!supporting}
                             testID={`listItem__content--${id}`}>
                             {size === 'small' ? (
                                 <SupportingText
@@ -88,16 +88,18 @@ const render = ({
                                 </Headline>
                             )}
 
-                            {supportingText && size !== 'small' && (
+                            {supporting && size !== 'small' && typeof supporting === 'string' && (
                                 <SupportingText
                                     ellipsizeMode="tail"
                                     numberOfLines={supportingTextNumberOfLines}
                                     size="medium"
                                     testID={`listItem__supportingText--${id}`}
                                     type="body">
-                                    {supportingText}
+                                    {supporting}
                                 </SupportingText>
                             )}
+
+                            {supporting && typeof supporting !== 'string' && supporting}
                         </Content>
 
                         {trailing && (

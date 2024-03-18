@@ -119,7 +119,6 @@ export const Content = styled.View<ContentProps>`
 `;
 
 export const Trailing = styled.View`
-    align-items: center;
     align-self: stretch;
     display: flex;
     flex-direction: row;
@@ -161,5 +160,6 @@ export const Headline = styled(Typography)`
 export const SupportingText = styled(Typography)`
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurfaceVariant};
+        height: auto;
     `}
 `;

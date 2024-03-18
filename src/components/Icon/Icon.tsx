@@ -1,7 +1,7 @@
 import React, {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Container} from './Icon.styles';
-import {IconBase, IconProps, RenderProps} from './IconBase';
+import {IconBase, IconName, IconProps, IconType, RenderProps} from './IconBase';
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const render = ({id, renderStyle, children, style, ...containerProps}: RenderProps) => {
@@ -27,4 +27,4 @@ const ForwardRefIcon = forwardRef<View, IconProps>((props, ref) => (
 ));
 
 export const Icon: FC<IconProps> = memo(ForwardRefIcon);
-export type {IconProps};
+export type {IconName, IconProps, IconType};
