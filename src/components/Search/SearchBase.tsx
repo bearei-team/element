@@ -139,10 +139,11 @@ const processChangeText = (
     text?: string,
 ) => {
     const matchedData = text
-        ? data.filter(({headline, supportingText}) => {
+        ? data.filter(({headline, supporting}) => {
               const matchText = text.toLowerCase();
               const headlineMatch = !!headline?.toLowerCase().includes(matchText);
-              const supportingTextMatch = !!supportingText?.toLowerCase().includes(matchText);
+              const supportingTextMatch =
+                  typeof supporting === 'string' && !!supporting?.toLowerCase().includes(matchText);
 
               return headlineMatch || supportingTextMatch;
           })

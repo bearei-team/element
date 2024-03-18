@@ -10,7 +10,7 @@ export default {
 
 export const Headline: StoryObj<ListProps> = {
     args: {
-        close: true,
+        closeIcon: true,
         defaultActiveKey: 'TitleB',
         activeKey: 'TitleA',
         data: [
@@ -21,17 +21,17 @@ export const Headline: StoryObj<ListProps> = {
             {
                 key: 'TitleB',
                 headline: 'TitleB',
-                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                supporting: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
             },
             {
                 key: 'TitleC',
                 headline: 'TitleC',
-                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                supporting: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
             },
             {
                 key: 'TitleD',
                 headline: 'TitleD',
-                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                supporting: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
             },
         ],
     },
@@ -39,7 +39,7 @@ export const Headline: StoryObj<ListProps> = {
 
 export const Size: StoryObj<ListProps> = {
     args: {
-        close: true,
+        closeIcon: true,
         defaultActiveKey: 'TitleB',
         activeKey: 'TitleA',
         size: 'small',
@@ -54,19 +54,19 @@ export const Size: StoryObj<ListProps> = {
             {
                 key: 'TitleB',
                 headline: 'TitleB',
-                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                supporting: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
                 leading: <Icon name="addHome" renderStyle={{width: 18, height: 18}} />,
             },
             {
                 key: 'TitleC',
                 headline: 'TitleC',
-                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                supporting: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
                 leading: <Icon name="addHome" renderStyle={{width: 18, height: 18}} />,
             },
             {
                 key: 'TitleD',
                 headline: 'TitleD',
-                supportingText: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                supporting: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
                 leading: <Icon name="addHome" renderStyle={{width: 18, height: 18}} />,
             },
         ],

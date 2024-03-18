@@ -7,7 +7,7 @@ import {ListItem, ListItemProps} from './ListItem/ListItem';
 export interface ListDataSource
     extends Pick<
         ListItemProps,
-        'headline' | 'leading' | 'supporting' | 'supportingTextNumberOfLines' | 'trailing'
+        'headline' | 'leading' | 'supporting' | 'supportingTextNumberOfLines' | 'trailing' | 'close'
     > {
     key?: string;
 }
@@ -19,12 +19,14 @@ type BaseProps = Partial<
             ListItemProps,
             | 'activeKey'
             | 'closeIcon'
+            | 'closeIconName'
+            | 'closeIconType'
+            | 'gap'
             | 'onActive'
             | 'onClose'
-            | 'supportingTextNumberOfLines'
-            | 'gap'
-            | 'size'
             | 'shape'
+            | 'size'
+            | 'supportingTextNumberOfLines'
         >
 >;
 export interface ListProps extends BaseProps {
@@ -42,6 +44,8 @@ type RenderItemOptions = ListRenderItemInfo<ListDataSource> &
         RenderProps,
         | 'activeKey'
         | 'closeIcon'
+        | 'closeIconName'
+        | 'closeIconType'
         | 'defaultActiveKey'
         | 'gap'
         | 'onActive'
@@ -99,31 +103,14 @@ const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSour
         draft.status = 'succeeded';
     });
 
-const renderItem = ({
-    activeKey,
-    closeIcon,
-    gap,
-    item,
-    onActive,
-    onClose,
-    shape,
-    size,
-    supportingTextNumberOfLines,
-}: RenderItemOptions) => (
+const renderItem = ({item, supportingTextNumberOfLines, ...props}: RenderItemOptions) => (
     <ListItem
         {...item}
         {...(typeof item.supportingTextNumberOfLines !== 'number' && {
             supportingTextNumberOfLines,
         })}
-        activeKey={activeKey}
-        closeIcon={closeIcon}
+        {...props}
         dataKey={item.key}
-        gap={gap}
-        key={item.key}
-        onActive={onActive}
-        onClose={onClose}
-        shape={shape}
-        size={size}
     />
 );
 
@@ -132,6 +119,8 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
         {
             activeKey: activeKeySource,
             closeIcon,
+            closeIconName,
+            closeIconType,
             data: dataSources,
             defaultActiveKey,
             gap,
@@ -168,6 +157,8 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
                     ...options,
                     activeKey,
                     closeIcon,
+                    closeIconName,
+                    closeIconType,
                     gap,
                     onActive,
                     onClose,
@@ -178,6 +169,8 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
             [
                 activeKey,
                 closeIcon,
+                closeIconName,
+                closeIconType,
                 gap,
                 onActive,
                 onClose,
