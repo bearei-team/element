@@ -105,13 +105,11 @@ export const SideSheetBase = forwardRef<View, SideSheetBaseProps>(
 
         useEffect(() => {
             processEmit(sheet, {id, visible, type});
-        }, [id, sheet, visible, type]);
 
-        useEffect(() => {
             return () => {
                 processUnmount(id, {type});
             };
-        }, [id, type]);
+        }, [id, sheet, visible, type]);
 
         return type === 'standard' ? sheet : <></>;
     },

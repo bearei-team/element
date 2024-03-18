@@ -25,7 +25,7 @@ interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
 const processCloseAnimated = (
     animatedTiming: AnimatedTiming,
     {heightAnimated, finished}: ProcessCloseAnimatedOptions,
-) => requestAnimationFrame(() => animatedTiming(heightAnimated, {toValue: 0}).start(finished));
+) => animatedTiming(heightAnimated, {toValue: 0}).start(finished);
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
@@ -42,11 +42,9 @@ const processAnimatedTiming = (
         ? 1
         : closeIconValue;
 
-    requestAnimationFrame(() =>
-        animatedTiming(trailingOpacityAnimated, {
-            toValue: close ? closeIconToValue : 1,
-        }).start(),
-    );
+    animatedTiming(trailingOpacityAnimated, {
+        toValue: close ? closeIconToValue : 1,
+    }).start();
 };
 
 export const useAnimated = ({
@@ -84,6 +82,10 @@ export const useAnimated = ({
             trailingEventName,
             trailingOpacityAnimated,
         });
+
+        return () => {
+            trailingOpacityAnimated.stopAnimation();
+        };
     }, [animatedTiming, close, eventName, state, trailingEventName, trailingOpacityAnimated]);
 
     return [{height, onCloseAnimated, trailingOpacity}];

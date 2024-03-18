@@ -154,16 +154,10 @@ export const FABBase = forwardRef<View, FABBaseProps>(
         const [iconElement] = useIcon({eventName, type, icon, disabled, size});
 
         useEffect(() => {
+            processInit({elevated, setState, disabled});
+            processDisabled({setState}, disabled);
             processDisabledElevation({elevated, setState}, disabled);
         }, [disabled, elevated, setState]);
-
-        useEffect(() => {
-            processDisabled({setState}, disabled);
-        }, [disabled, setState]);
-
-        useEffect(() => {
-            processInit({elevated, setState, disabled});
-        }, [disabled, setState, elevated]);
 
         if (status === 'idle') {
             return <></>;

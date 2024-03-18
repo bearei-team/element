@@ -67,9 +67,7 @@ const processEnabled = ({
     supportingTextAnimated,
 }: ProcessEnabledOptions) => {
     if (error) {
-        return requestAnimationFrame(() =>
-            animatedTiming(labelAnimated, {toValue: filledToValue}).start(),
-        );
+        return animatedTiming(labelAnimated, {toValue: filledToValue}).start();
     }
 
     const compositeAnimations = [
@@ -80,7 +78,7 @@ const processEnabled = ({
         animatedTiming(supportingTextAnimated, {toValue: 1}),
     ];
 
-    requestAnimationFrame(() => Animated.parallel(compositeAnimations).start());
+    Animated.parallel(compositeAnimations).start();
 };
 
 const processDisabled = ({
@@ -93,15 +91,13 @@ const processDisabled = ({
 }: ProcessDisabledOptions) => {
     const toValue = 0;
 
-    requestAnimationFrame(() =>
-        Animated.parallel([
-            animatedTiming(activeIndicatorAnimated, {toValue}),
-            animatedTiming(backgroundColorAnimated, {toValue}),
-            animatedTiming(colorAnimated, {toValue}),
-            animatedTiming(inputAnimated, {toValue}),
-            animatedTiming(supportingTextAnimated, {toValue}),
-        ]).start(),
-    );
+    Animated.parallel([
+        animatedTiming(activeIndicatorAnimated, {toValue}),
+        animatedTiming(backgroundColorAnimated, {toValue}),
+        animatedTiming(colorAnimated, {toValue}),
+        animatedTiming(inputAnimated, {toValue}),
+        animatedTiming(supportingTextAnimated, {toValue}),
+    ]).start();
 };
 
 const processError = ({
@@ -111,14 +107,12 @@ const processError = ({
     inputAnimated,
     supportingTextAnimated,
 }: ProcessErrorOptions) =>
-    requestAnimationFrame(() =>
-        Animated.parallel([
-            animatedTiming(activeIndicatorAnimated, {toValue: 1}),
-            animatedTiming(colorAnimated, {toValue: 3}),
-            animatedTiming(inputAnimated, {toValue: 1}),
-            animatedTiming(supportingTextAnimated, {toValue: 2}),
-        ]).start(),
-    );
+    Animated.parallel([
+        animatedTiming(activeIndicatorAnimated, {toValue: 1}),
+        animatedTiming(colorAnimated, {toValue: 3}),
+        animatedTiming(inputAnimated, {toValue: 1}),
+        animatedTiming(supportingTextAnimated, {toValue: 2}),
+    ]).start();
 
 const processFocused = ({
     activeIndicatorAnimated,
@@ -128,7 +122,7 @@ const processFocused = ({
     labelAnimated,
 }: ProcessFocusedOptions) => {
     if (error) {
-        return requestAnimationFrame(() => animatedTiming(labelAnimated, {toValue: 0}).start());
+        return animatedTiming(labelAnimated, {toValue: 0}).start();
     }
 
     const compositeAnimations = [
@@ -137,7 +131,7 @@ const processFocused = ({
         animatedTiming(labelAnimated, {toValue: 0}),
     ];
 
-    requestAnimationFrame(() => Animated.parallel(compositeAnimations).start());
+    Animated.parallel(compositeAnimations).start();
 };
 
 const processStateAnimated = (state: State, {stateAnimated}: ProcessStateAnimatedOptions) =>
@@ -387,15 +381,29 @@ export const useAnimated = ({
 
     useEffect(() => {
         processStateAnimated(state, {stateAnimated});
-    }, [state, stateAnimated]);
-
-    useEffect(() => {
         processNonerrorAnimated(state, {stateAnimated, disabled, error});
-    }, [disabled, error, state, stateAnimated]);
-
-    useEffect(() => {
         processDisabledAnimated(state, {disabled, stateAnimated});
-    }, [disabled, state, stateAnimated]);
+
+        return () => {
+            activeIndicatorAnimated.stopAnimation();
+            backgroundColorAnimated.stopAnimation();
+            colorAnimated.stopAnimation();
+            inputAnimated.stopAnimation();
+            labelAnimated.stopAnimation();
+            supportingTextAnimated.stopAnimation();
+        };
+    }, [
+        activeIndicatorAnimated,
+        backgroundColorAnimated,
+        colorAnimated,
+        disabled,
+        error,
+        inputAnimated,
+        labelAnimated,
+        state,
+        stateAnimated,
+        supportingTextAnimated,
+    ]);
 
     return [
         {

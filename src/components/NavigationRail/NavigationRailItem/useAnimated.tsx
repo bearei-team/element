@@ -19,11 +19,9 @@ const processAnimatedTiming = (
 ) => {
     type === 'segment' &&
         typeof active === 'boolean' &&
-        requestAnimationFrame(() => {
-            animatedTiming(labelAnimated, {
-                toValue: active ? 1 : 0,
-            }).start();
-        });
+        animatedTiming(labelAnimated, {
+            toValue: active ? 1 : 0,
+        }).start();
 };
 
 export const useAnimated = ({active, type}: UseAnimatedOptions) => {
@@ -45,6 +43,10 @@ export const useAnimated = ({active, type}: UseAnimatedOptions) => {
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {active, type, labelAnimated});
+
+        return () => {
+            labelAnimated.stopAnimation();
+        };
     }, [active, animatedTiming, type, labelAnimated]);
 
     return [{height, color}];

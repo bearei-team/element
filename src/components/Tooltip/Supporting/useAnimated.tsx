@@ -17,10 +17,8 @@ const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {opacityAnimated, visible, onClosed}: ProcessAnimatedTimingOptions,
 ) =>
-    requestAnimationFrame(() =>
-        animatedTiming(opacityAnimated, {toValue: visible ? 1 : 0}).start(
-            () => !visible && onClosed?.(visible),
-        ),
+    animatedTiming(opacityAnimated, {toValue: visible ? 1 : 0}).start(
+        () => !visible && onClosed?.(visible),
     );
 
 export const useAnimated = ({visible, onClosed}: UseAnimatedOptions) => {
@@ -31,6 +29,10 @@ export const useAnimated = ({visible, onClosed}: UseAnimatedOptions) => {
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {opacityAnimated, visible, onClosed});
+
+        return () => {
+            opacityAnimated.stopAnimation();
+        };
     }, [animatedTiming, onClosed, opacityAnimated, visible]);
 
     return [{opacity}];

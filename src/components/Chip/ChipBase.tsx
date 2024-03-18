@@ -218,12 +218,10 @@ export const ChipBase = forwardRef<View, ChipBaseProps>(
         const [border] = useBorder({borderColor});
 
         useEffect(() => {
+            processInit({elevated, setState});
+            processDisabled({setState}, disabled);
             processDisabledElevation({elevated, setState}, disabled);
         }, [disabled, elevated, setState]);
-
-        useEffect(() => {
-            processDisabled({setState}, disabled);
-        }, [disabled, setState]);
 
         useEffect(() => {
             processActive({
@@ -231,10 +229,6 @@ export const ChipBase = forwardRef<View, ChipBaseProps>(
                 setState,
             });
         }, [activeSource, defaultActive, setState]);
-
-        useEffect(() => {
-            processInit({elevated, setState});
-        }, [activeSource, defaultActive, elevated, setState]);
 
         if (status === 'idle') {
             return <></>;

@@ -176,6 +176,8 @@ export const CheckboxBase = forwardRef<View, CheckboxBaseProps>(
         const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
 
         useEffect(() => {
+            processInit({indeterminate, setState});
+            processIndeterminate({setState}, indeterminate);
             processActive({
                 active: activeSource ?? defaultActive,
                 indeterminate,
@@ -183,14 +185,6 @@ export const CheckboxBase = forwardRef<View, CheckboxBaseProps>(
                 onActive,
             });
         }, [activeSource, defaultActive, indeterminate, onActive, setState]);
-
-        useEffect(() => {
-            processIndeterminate({setState}, indeterminate);
-        }, [indeterminate, setState]);
-
-        useEffect(() => {
-            processInit({indeterminate, setState});
-        }, [activeSource, defaultActive, indeterminate, setState]);
 
         if (status === 'idle') {
             return <></>;

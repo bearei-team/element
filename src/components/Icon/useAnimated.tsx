@@ -16,11 +16,9 @@ const processAnimatedTiming = (
 ) => {
     const toValue = ['pressIn', 'longPress'].includes(eventName) ? 0 : 1;
 
-    requestAnimationFrame(() =>
-        animatedTiming(scaleAnimated, {
-            toValue: eventName === 'hoverIn' ? 2 : toValue,
-        }).start(),
-    );
+    animatedTiming(scaleAnimated, {
+        toValue: eventName === 'hoverIn' ? 2 : toValue,
+    }).start();
 };
 
 export const useAnimated = ({eventName}: UseAnimatedOptions) => {
@@ -34,6 +32,10 @@ export const useAnimated = ({eventName}: UseAnimatedOptions) => {
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {eventName, scaleAnimated});
+
+        return () => {
+            scaleAnimated.stopAnimation();
+        };
     }, [animatedTiming, eventName, scaleAnimated]);
 
     return [{scale}];

@@ -154,15 +154,9 @@ export const ButtonBase = forwardRef<View, ButtonBaseProps>(
         const [border] = useBorder({type, borderColor});
 
         useEffect(() => {
-            processDisabledElevation({setState, type}, disabled);
-        }, [disabled, setState, type]);
-
-        useEffect(() => {
-            processDisabled({setState}, disabled);
-        }, [disabled, setState]);
-
-        useEffect(() => {
             processInit({type, setState, disabled});
+            processDisabled({setState}, disabled);
+            processDisabledElevation({setState, type}, disabled);
         }, [disabled, setState, type]);
 
         if (status === 'idle') {

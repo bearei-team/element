@@ -17,10 +17,8 @@ const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {listHeightAnimated, listVisible, onListClosed}: ProcessAnimatedTimingOptions,
 ) =>
-    requestAnimationFrame(() =>
-        animatedTiming(listHeightAnimated, {toValue: listVisible ? 1 : 0}).start(
-            () => !listVisible && onListClosed(listVisible),
-        ),
+    animatedTiming(listHeightAnimated, {toValue: listVisible ? 1 : 0}).start(
+        () => !listVisible && onListClosed(listVisible),
     );
 
 export const useAnimated = ({listVisible, onListClosed}: UseAnimatedOptions) => {
@@ -41,6 +39,10 @@ export const useAnimated = ({listVisible, onListClosed}: UseAnimatedOptions) => 
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {listHeightAnimated, listVisible, onListClosed});
+
+        return () => {
+            listHeightAnimated.stopAnimation();
+        };
     }, [animatedTiming, listHeightAnimated, listVisible, onListClosed]);
 
     return [{listHeight}];

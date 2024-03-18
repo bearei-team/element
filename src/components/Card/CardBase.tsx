@@ -209,15 +209,9 @@ export const CardBase = forwardRef<View, CardBaseProps>(
         );
 
         useEffect(() => {
-            processDisabledElevation({setState, type}, disabled);
-        }, [disabled, setState, type]);
-
-        useEffect(() => {
-            processDisabled({setState}, disabled);
-        }, [disabled, setState]);
-
-        useEffect(() => {
             processInit({setState, type, disabled});
+            processDisabled({setState}, disabled);
+            processDisabledElevation({setState, type}, disabled);
         }, [disabled, setState, type]);
 
         if (status === 'idle') {

@@ -15,7 +15,7 @@ const processAnimatedTiming = (
     {colorAnimated, disabled}: ProcessAnimatedTimingOptions,
 ) =>
     typeof disabled === 'boolean' &&
-    requestAnimationFrame(() => animatedTiming(colorAnimated, {toValue: disabled ? 0 : 1}).start());
+    animatedTiming(colorAnimated, {toValue: disabled ? 0 : 1}).start();
 
 export const useAnimated = ({disabled, type = 'primary'}: UseAnimatedOptions) => {
     const [colorAnimated] = useAnimatedValue(disabled ? 0 : 1);
@@ -94,6 +94,10 @@ export const useAnimated = ({disabled, type = 'primary'}: UseAnimatedOptions) =>
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {colorAnimated, disabled});
+
+        return () => {
+            colorAnimated.stopAnimation();
+        };
     }, [animatedTiming, colorAnimated, disabled]);
 
     return [{backgroundColor, color}];

@@ -28,13 +28,11 @@ const enterScreen = (
         toValue: 1,
     } as AnimatedTimingOptions;
 
-    requestAnimationFrame(() => {
-        Animated.parallel([
-            animatedTiming(backgroundAnimated, animatedTimingOptions),
-            animatedTiming(translateXAnimated, animatedTimingOptions),
-            animatedTiming(widthAnimated, animatedTimingOptions),
-        ]).start();
-    });
+    Animated.parallel([
+        animatedTiming(backgroundAnimated, animatedTimingOptions),
+        animatedTiming(translateXAnimated, animatedTimingOptions),
+        animatedTiming(widthAnimated, animatedTimingOptions),
+    ]).start();
 };
 
 const exitScreen = (
@@ -46,14 +44,11 @@ const exitScreen = (
         easing: 'emphasizedAccelerate',
         toValue: 0,
     } as AnimatedTimingOptions;
-
-    requestAnimationFrame(() => {
-        Animated.parallel([
-            animatedTiming(backgroundAnimated, animatedTimingOptions),
-            animatedTiming(translateXAnimated, animatedTimingOptions),
-            animatedTiming(widthAnimated, animatedTimingOptions),
-        ]).start(() => onClosed?.());
-    });
+    Animated.parallel([
+        animatedTiming(backgroundAnimated, animatedTimingOptions),
+        animatedTiming(translateXAnimated, animatedTimingOptions),
+        animatedTiming(widthAnimated, animatedTimingOptions),
+    ]).start(() => onClosed?.());
 };
 
 const processAnimatedTiming = (
@@ -116,6 +111,12 @@ export const useAnimated = ({visible, position, type, onClosed}: UseAnimatedOpti
             onClosed,
             widthAnimated,
         });
+
+        return () => {
+            backgroundAnimated.stopAnimation();
+            translateXAnimated.stopAnimation();
+            widthAnimated.stopAnimation();
+        };
     }, [animatedTiming, backgroundAnimated, onClosed, translateXAnimated, visible, widthAnimated]);
 
     return [{backgroundColor, innerTranslateX, width}];

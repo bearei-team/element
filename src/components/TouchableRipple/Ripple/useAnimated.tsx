@@ -29,23 +29,22 @@ const createEntryAnimated =
         animatedTiming: AnimatedTiming,
         {active, scaleAnimated, minDuration, opacityAnimated}: CreateEntryAnimatedOptions,
     ) =>
-    (finished?: () => void) =>
-        requestAnimationFrame(() => {
-            const animatedTimingOptions = {
-                duration: Math.min(minDuration, 400),
-                easing: 'emphasizedDecelerate',
-                toValue: 1,
-            } as AnimatedTimingOptions;
+    (finished?: () => void) => {
+        const animatedTimingOptions = {
+            duration: Math.min(minDuration, 400),
+            easing: 'emphasizedDecelerate',
+            toValue: 1,
+        } as AnimatedTimingOptions;
 
-            if (typeof active === 'boolean') {
-                return Animated.parallel([
-                    animatedTiming(scaleAnimated, animatedTimingOptions),
-                    animatedTiming(opacityAnimated, animatedTimingOptions),
-                ]).start(finished);
-            }
+        if (typeof active === 'boolean') {
+            return Animated.parallel([
+                animatedTiming(scaleAnimated, animatedTimingOptions),
+                animatedTiming(opacityAnimated, animatedTimingOptions),
+            ]).start(finished);
+        }
 
-            animatedTiming(scaleAnimated, animatedTimingOptions).start(finished);
-        });
+        animatedTiming(scaleAnimated, animatedTimingOptions).start(finished);
+    };
 
 const createExitAnimated =
     (
@@ -59,16 +58,14 @@ const createExitAnimated =
             toValue: 0,
         } as AnimatedTimingOptions;
 
-        requestAnimationFrame(() => {
-            if (typeof active === 'boolean') {
-                return Animated.parallel([
-                    animatedTiming(scaleAnimated, animatedTimingOptions),
-                    animatedTiming(opacityAnimated, animatedTimingOptions),
-                ]).start(finished);
-            }
+        if (typeof active === 'boolean') {
+            return Animated.parallel([
+                animatedTiming(scaleAnimated, animatedTimingOptions),
+                animatedTiming(opacityAnimated, animatedTimingOptions),
+            ]).start(finished);
+        }
 
-            animatedTiming(opacityAnimated, animatedTimingOptions).start(finished);
-        });
+        animatedTiming(opacityAnimated, animatedTimingOptions).start(finished);
     };
 
 const processAnimatedTiming = (
@@ -131,6 +128,11 @@ export const useAnimated = ({
             scaleAnimated,
             sequence,
         });
+
+        return () => {
+            opacityAnimated.stopAnimation();
+            scaleAnimated.stopAnimation();
+        };
     }, [
         active,
         animatedTiming,

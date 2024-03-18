@@ -170,12 +170,9 @@ export const SupportingBase = forwardRef<View, SupportingBaseProps>(
         );
 
         useEffect(() => {
-            onVisible(visible);
-        }, [onVisible, visible]);
-
-        useEffect(() => {
             processContainerLayout({setState, visible}, containerCurrent);
-        }, [containerCurrent, setState, visible]);
+            onVisible(visible);
+        }, [containerCurrent, onVisible, setState, visible]);
 
         useEffect(() => {
             processEmit(supporting, {id, status});

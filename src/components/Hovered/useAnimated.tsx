@@ -16,11 +16,9 @@ const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {opacityAnimated, eventName = 'none', event}: ProcessAnimatedTimingOptions,
 ) =>
-    requestAnimationFrame(() =>
-        animatedTiming(opacityAnimated, {
-            toValue: event[eventName] ?? 0,
-        }).start(),
-    );
+    animatedTiming(opacityAnimated, {
+        toValue: event[eventName] ?? 0,
+    }).start();
 
 export const useAnimated = ({eventName, opacities = [0, 0.08, 0.12]}: UseAnimatedOptions) => {
     const [opacityAnimated] = useAnimatedValue(0);
@@ -50,6 +48,10 @@ export const useAnimated = ({eventName, opacities = [0, 0.08, 0.12]}: UseAnimate
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {event, eventName, opacityAnimated});
+
+        return () => {
+            opacityAnimated.stopAnimation();
+        };
     }, [animatedTiming, event, eventName, opacityAnimated]);
 
     return [{opacity}];

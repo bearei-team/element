@@ -24,6 +24,8 @@ export const createAnimatedTiming =
             ...animatedConfig
         }: AnimatedTimingOptions,
     ) => {
+        animation.stopAnimation();
+
         const {bezier, duration: transitionDuration} = theme.createTransition({
             duration,
             easing,

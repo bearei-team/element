@@ -38,21 +38,19 @@ const processAnimatedTiming = (
 ) => {
     const toValue = disabled ? 0 : 1;
 
-    requestAnimationFrame(() => {
-        if (!elevated) {
-            return Animated.parallel([
-                processOutlinedAnimated(animatedTiming, {
-                    borderAnimated,
-                    borderInputRange,
-                    disabled,
-                    eventName,
-                }),
-                animatedTiming(colorAnimated, {toValue}),
-            ]).start();
-        }
+    if (!elevated) {
+        return Animated.parallel([
+            processOutlinedAnimated(animatedTiming, {
+                borderAnimated,
+                borderInputRange,
+                disabled,
+                eventName,
+            }),
+            animatedTiming(colorAnimated, {toValue}),
+        ]).start();
+    }
 
-        animatedTiming(colorAnimated, {toValue}).start();
-    });
+    animatedTiming(colorAnimated, {toValue}).start();
 };
 
 export const useAnimated = ({
@@ -190,6 +188,11 @@ export const useAnimated = ({
             elevated,
             eventName,
         });
+
+        return () => {
+            borderAnimated.stopAnimation();
+            colorAnimated.stopAnimation();
+        };
     }, [
         animatedTiming,
         borderAnimated,

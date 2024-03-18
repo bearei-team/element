@@ -13,7 +13,7 @@ interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {opacityAnimated, level = 0}: ProcessAnimatedTimingOptions,
-) => requestAnimationFrame(() => animatedTiming(opacityAnimated, {toValue: level}).start());
+) => animatedTiming(opacityAnimated, {toValue: level}).start();
 
 export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
     const [opacityAnimated] = useAnimatedValue(level);
@@ -45,6 +45,10 @@ export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {level, opacityAnimated});
+
+        return () => {
+            opacityAnimated.stopAnimation();
+        };
     }, [animatedTiming, level, opacityAnimated]);
 
     return [{shadow0Opacity, shadow1Opacity}];
