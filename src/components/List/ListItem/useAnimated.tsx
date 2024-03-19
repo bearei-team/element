@@ -1,4 +1,4 @@
-import {useCallback, useEffect} from 'react';
+import {useCallback, useEffect, useMemo} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
@@ -6,7 +6,7 @@ import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTimin
 import {EventName, State} from '../../Common/interface';
 import {RenderProps} from './ListItemBase';
 
-interface UseAnimatedOptions extends Pick<RenderProps, 'trailingControl' | 'gap'> {
+interface UseAnimatedOptions extends Pick<RenderProps, 'trailingButton' | 'gap' | 'closeIcon'> {
     eventName: EventName;
     layoutHeight?: number;
     state: State;
@@ -14,8 +14,8 @@ interface UseAnimatedOptions extends Pick<RenderProps, 'trailingControl' | 'gap'
 }
 
 interface ProcessCloseAnimatedOptions {
-    heightAnimated: Animated.Value;
     finished?: () => void;
+    heightAnimated: Animated.Value;
 }
 
 interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
@@ -30,31 +30,33 @@ const processCloseAnimated = (
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {
-        trailingControl,
         eventName = 'none',
         state,
+        trailingButton,
         trailingEventName,
         trailingOpacityAnimated,
+        closeIcon,
     }: ProcessAnimatedTimingOptions,
 ) => {
     const toValue = state !== 'enabled' ? 1 : 0;
 
-    trailingControl &&
+    [trailingButton, closeIcon].includes(true) &&
         animatedTiming(trailingOpacityAnimated, {
             toValue: [eventName, trailingEventName].includes('hoverIn') ? 1 : toValue,
         }).start();
 };
 
 export const useAnimated = ({
+    closeIcon,
     eventName,
-    layoutHeight = 0,
     gap = 0,
+    layoutHeight = 0,
     state,
+    trailingButton,
     trailingEventName,
-    trailingControl,
 }: UseAnimatedOptions) => {
     const [heightAnimated] = useAnimatedValue(1);
-    const [trailingOpacityAnimated] = useAnimatedValue(trailingControl ? 0 : 1);
+    const [trailingOpacityAnimated] = useAnimatedValue(trailingButton ? 0 : 1);
     const theme = useTheme();
     const animatedTiming = createAnimatedTiming(theme);
     const trailingOpacity = trailingOpacityAnimated.interpolate({
@@ -62,10 +64,14 @@ export const useAnimated = ({
         outputRange: [0, 1],
     });
 
-    const height = heightAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, layoutHeight + gap],
-    });
+    const height = useMemo(
+        () =>
+            heightAnimated.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, layoutHeight + gap],
+            }),
+        [gap, heightAnimated, layoutHeight],
+    );
 
     const onCloseAnimated = useCallback(
         (finished?: () => void) => processCloseAnimated(animatedTiming, {heightAnimated, finished}),
@@ -74,23 +80,25 @@ export const useAnimated = ({
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
+            closeIcon,
             eventName,
             state,
-            trailingControl,
+            trailingButton,
             trailingEventName,
             trailingOpacityAnimated,
         });
 
         return () => {
-            trailingOpacityAnimated.stopAnimation();
             heightAnimated.stopAnimation();
+            trailingOpacityAnimated.stopAnimation();
         };
     }, [
         animatedTiming,
+        closeIcon,
         eventName,
         heightAnimated,
         state,
-        trailingControl,
+        trailingButton,
         trailingEventName,
         trailingOpacityAnimated,
     ]);

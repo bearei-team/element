@@ -1,4 +1,4 @@
-import {RefAttributes, forwardRef, useId, useMemo} from 'react';
+import {RefAttributes, forwardRef, useCallback, useEffect, useId, useMemo} from 'react';
 import {
     Animated,
     GestureResponderEvent,
@@ -7,8 +7,10 @@ import {
     ViewProps,
     ViewStyle,
 } from 'react-native';
+import {Updater, useImmer} from 'use-immer';
 import {Button} from '../../Button/Button';
 import {ShapeProps} from '../../Common/Common.styles';
+import {ComponentStatus} from '../../Common/interface';
 import {Icon} from '../../Icon/Icon';
 import {IconButton} from '../../IconButton/IconButton';
 import {useAnimated} from './useAnimated';
@@ -17,14 +19,12 @@ export interface SheetProps
     extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & ModalProps> {
     back?: boolean;
     backIcon?: React.JSX.Element;
-    closed?: boolean;
     closeIcon?: React.JSX.Element;
     content?: React.JSX.Element;
     disabledClose?: boolean;
     footer?: boolean;
     headlineText?: string;
     onClose?: () => void;
-    onClosed?: () => void;
     onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
     onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
     position?: 'horizontalStart' | 'horizontalEnd';
@@ -47,6 +47,23 @@ export interface RenderProps extends SheetProps {
         innerTranslateX: Animated.AnimatedInterpolation<string | number>;
     };
 }
+
+interface InitialState {
+    status: ComponentStatus;
+}
+
+interface ProcessEventOptions {
+    setState: Updater<InitialState>;
+}
+
+const processVisible = ({setState}: ProcessEventOptions, value?: boolean) =>
+    typeof value === 'boolean' &&
+    setState(draft => {
+        const nextStatus = value ? 'succeeded' : 'idle';
+
+        draft.status !== nextStatus && (draft.status = nextStatus);
+    });
+
 interface SheetBaseProps extends SheetProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
@@ -56,6 +73,7 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
         {
             backIcon,
             closeIcon,
+            disabledClose,
             headlineText = 'Title',
             onClose,
             onPrimaryButtonPress,
@@ -66,19 +84,24 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             render,
             secondaryButton,
             secondaryButtonLabelText = 'Cancel',
-            visible,
-            onClosed,
             type,
-            disabledClose,
+            visible,
             ...renderProps
         },
         ref,
     ) => {
+        const [{status}, setState] = useImmer<InitialState>({status: 'idle'});
+        console.info(status);
+        const onVisible = useCallback(
+            (value?: boolean) => processVisible({setState}, value),
+            [setState],
+        );
+
         const [renderStyle] = useAnimated({
-            onClosed,
             position,
             visible,
             type,
+            onVisible,
         });
 
         const id = useId();
@@ -131,6 +154,14 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             [onSecondaryButtonPress, secondaryButton, secondaryButtonLabelText],
         );
 
+        useEffect(() => {
+            visible && onVisible(visible);
+        }, [onVisible, visible]);
+
+        if (status === 'idle') {
+            return <></>;
+        }
+
         return render({
             ...renderProps,
             backIcon: backIconElement,
@@ -143,7 +174,6 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             renderStyle,
             secondaryButton: secondaryButtonElement,
             type,
-            visible,
         });
     },
 );

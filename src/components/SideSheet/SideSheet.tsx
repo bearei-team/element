@@ -4,22 +4,15 @@ import {Sheet} from './Sheet/Sheet';
 import {Container} from './SideSheet.styles';
 import {RenderProps, SideSheetBase, SideSheetProps} from './SideSheetBase';
 
-const render = ({id, closed, visible, type, ...sheetProps}: RenderProps) => {
-    const sheet = typeof visible === 'boolean' && (
-        <Sheet {...sheetProps} visible={visible} closed={closed} type={type} />
-    );
+const render = ({id, visible, type, ...sheetProps}: RenderProps) => {
+    const sheet = <Sheet {...sheetProps} visible={visible} type={type} />;
 
     return (
         <>
             {type === 'standard' ? (
-                <>{sheet}</>
+                sheet
             ) : (
-                <Container
-                    key={`sideSheet__modal--${id}`}
-                    testID={`sideSheet__modal--${id}`}
-                    visible={!closed}>
-                    {sheet}
-                </Container>
+                <Container testID={`sideSheet__modal--${id}`}>{sheet}</Container>
             )}
         </>
     );

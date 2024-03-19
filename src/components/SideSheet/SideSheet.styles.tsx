@@ -1,9 +1,6 @@
 import styled, {css} from 'styled-components/native';
-import {RenderProps} from './SideSheetBase';
 
-type ContainerProps = Pick<RenderProps, 'visible'>;
-
-export const Container = styled.View<ContainerProps>`
+export const Container = styled.View`
     height: 100%;
     overflow: hidden;
     position: absolute;
@@ -14,12 +11,5 @@ export const Container = styled.View<ContainerProps>`
         css`
             left: ${theme.adaptSize(theme.spacing.none)}px;
             top: ${theme.adaptSize(theme.spacing.none)}px;
-        `}
-
-    ${({visible = false, theme}) =>
-        !visible &&
-        css`
-            height: ${theme.adaptSize(theme.spacing.none)}px;
-            pointer-events: none;
         `}
 `;

@@ -39,7 +39,14 @@ export interface ListItemProps extends TouchableRippleProps {
     supporting?: string | React.JSX.Element;
     supportingTextNumberOfLines?: number;
     trailing?: React.JSX.Element;
-    trailingControl?: boolean;
+
+    /**
+     * The "trailingButton" is used to indicate whether the custom trailing is a button element.
+     * If set to true, it will add default button visibility interaction to the custom trailing,
+     *  making it behave consistently with the default trailing button. This property only takes
+     * effect when custom trailing exists.
+     */
+    trailingButton?: boolean;
 }
 
 export interface RenderProps extends ListItemProps {
@@ -84,10 +91,7 @@ type ProcessCloseOptions = Pick<RenderProps, 'dataKey' | 'onClose'> & {
     onCloseAnimated: (finished?: (() => void) | undefined) => void;
 };
 
-type ProcessStateChangeOptions = OnStateChangeOptions &
-    ProcessPressOutOptions &
-    Pick<InitialState, 'trailingEventName'>;
-
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
 interface RenderTrailingOptions
     extends Pick<
         RenderProps,
@@ -127,20 +131,8 @@ const processPressOut = (
 
 const processStateChange = (
     state: State,
-    {
-        event,
-        eventName,
-        activeKey,
-        dataKey,
-        onActive,
-        setState,
-        trailingEventName,
-    }: ProcessStateChangeOptions,
+    {event, eventName, activeKey, dataKey, onActive, setState}: ProcessStateChangeOptions,
 ) => {
-    if (trailingEventName === 'hoverIn') {
-        return;
-    }
-
     const nextEvent = {
         layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () =>
@@ -232,7 +224,7 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             size = 'medium',
             supporting,
             trailing,
-            trailingControl,
+            trailingButton,
             close,
             ...renderProps
         },
@@ -254,12 +246,13 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
         const underlayColor = theme.palette.surface.onSurface;
         const active = activeKey === dataKey;
         const [{height, onCloseAnimated, trailingOpacity}] = useAnimated({
+            closeIcon,
             eventName,
             gap,
             layoutHeight: layout?.height,
             state,
+            trailingButton,
             trailingEventName,
-            trailingControl,
         });
 
         const onStateChange = useCallback(
@@ -270,9 +263,8 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
                     dataKey,
                     onActive,
                     setState,
-                    trailingEventName,
                 }),
-            [activeKey, dataKey, onActive, setState, trailingEventName],
+            [activeKey, dataKey, onActive, setState],
         );
 
         const [onEvent] = useOnEvent({...renderProps, onStateChange});

@@ -9,8 +9,11 @@ import {
 } from '../../../utils/animatedTiming.utils';
 import {RenderProps} from './SheetBase';
 
-type UseAnimatedOptions = Pick<RenderProps, 'visible' | 'position' | 'onClosed' | 'type'>;
-interface ScreenAnimatedOptions extends Pick<UseAnimatedOptions, 'onClosed'> {
+interface UseAnimatedOptions extends Pick<RenderProps, 'visible' | 'position' | 'type'> {
+    onVisible?: (value?: boolean) => void;
+}
+
+interface ScreenAnimatedOptions extends Pick<UseAnimatedOptions, 'onVisible'> {
     backgroundAnimated: Animated.Value;
     translateXAnimated: Animated.Value;
     widthAnimated: Animated.Value;
@@ -37,7 +40,7 @@ const enterScreen = (
 
 const exitScreen = (
     animatedTiming: AnimatedTiming,
-    {backgroundAnimated, translateXAnimated, onClosed, widthAnimated}: ScreenAnimatedOptions,
+    {backgroundAnimated, translateXAnimated, onVisible, widthAnimated}: ScreenAnimatedOptions,
 ) => {
     const animatedTimingOptions = {
         duration: 'short3',
@@ -48,14 +51,14 @@ const exitScreen = (
         animatedTiming(backgroundAnimated, animatedTimingOptions),
         animatedTiming(translateXAnimated, animatedTimingOptions),
         animatedTiming(widthAnimated, animatedTimingOptions),
-    ]).start(() => onClosed?.());
+    ]).start(() => onVisible?.(false));
 };
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {
         backgroundAnimated,
-        onClosed,
+        onVisible,
         translateXAnimated,
         visible,
         widthAnimated,
@@ -65,10 +68,10 @@ const processAnimatedTiming = (
 
     visible
         ? enterScreen(animatedTiming, screenAnimatedOptions)
-        : exitScreen(animatedTiming, {...screenAnimatedOptions, onClosed});
+        : exitScreen(animatedTiming, {...screenAnimatedOptions, onVisible});
 };
 
-export const useAnimated = ({visible, position, type, onClosed}: UseAnimatedOptions) => {
+export const useAnimated = ({visible, position, type, onVisible}: UseAnimatedOptions) => {
     const animatedValue = visible ? 1 : 0;
     const [backgroundAnimated] = useAnimatedValue(animatedValue);
     const [translateXAnimated] = useAnimatedValue(animatedValue);
@@ -108,7 +111,7 @@ export const useAnimated = ({visible, position, type, onClosed}: UseAnimatedOpti
             backgroundAnimated,
             translateXAnimated,
             visible,
-            onClosed,
+            onVisible,
             widthAnimated,
         });
 
@@ -117,7 +120,7 @@ export const useAnimated = ({visible, position, type, onClosed}: UseAnimatedOpti
             translateXAnimated.stopAnimation();
             widthAnimated.stopAnimation();
         };
-    }, [animatedTiming, backgroundAnimated, onClosed, translateXAnimated, visible, widthAnimated]);
+    }, [animatedTiming, backgroundAnimated, onVisible, translateXAnimated, visible, widthAnimated]);
 
     return [{backgroundColor, innerTranslateX, width}];
 };

@@ -3,7 +3,7 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../../Common/Common.styles';
 import {RenderProps} from './SheetBase';
 
-type ContainerProps = Pick<RenderProps, 'position' | 'type' | 'visible'>;
+type ContainerProps = Pick<RenderProps, 'position' | 'type'>;
 type HeaderProps = Pick<RenderProps, 'back'>;
 
 export const Container = styled(View)<ContainerProps>`
@@ -30,17 +30,12 @@ export const Container = styled(View)<ContainerProps>`
 
         return type === 'modal' && innerPosition[position];
     }}
-
-    ${({visible = false, theme, type}) =>
-        !visible &&
-        type === 'standard' &&
-        css`
-            height: ${theme.adaptSize(theme.spacing.none)}px;
-            pointer-events: none;
-        `}
 `;
 
 export const Inner = styled(Shape)`
+    display: flex;
+    flex-direction: column;
+
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surfaceContainerLow};
         width: ${theme.adaptSize(theme.spacing.small * 40)}px;
@@ -51,6 +46,7 @@ export const Inner = styled(Shape)`
 
 export const Header = styled.View<HeaderProps>`
     align-items: center;
+    align-self: stretch;
     display: flex;
     flex-direction: row;
 
@@ -93,6 +89,7 @@ export const Icon = styled.View`
 export const BackAffordance = styled(Icon)``;
 export const CloseAffordance = styled(Icon)``;
 export const Content = styled.View`
+    align-self: stretch;
     flex: 1;
 `;
 
@@ -101,6 +98,7 @@ export const PrimaryButton = styled(Button)``;
 export const SecondaryButton = styled(Button)``;
 export const Footer = styled.View`
     align-items: center;
+    align-self: stretch;
     display: flex;
     flex-direction: row;
 

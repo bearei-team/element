@@ -56,8 +56,8 @@ const render = ({
                     <Inner
                         {...innerProps}
                         size={size}
-                        onLayout={onLayout}
-                        testID={`listItem__inner--${id}`}>
+                        testID={`listItem__inner--${id}`}
+                        onLayout={onLayout}>
                         {leading && (
                             <Leading size={size} testID={`listItem__leading--${id}`}>
                                 {leading}
@@ -66,7 +66,7 @@ const render = ({
 
                         <Content
                             size={size}
-                            supportingTextShow={!!supporting}
+                            supportingTextShow={!!(typeof supporting === 'string' && supporting)}
                             testID={`listItem__content--${id}`}>
                             {size === 'small' ? (
                                 <SupportingText

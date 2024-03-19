@@ -96,7 +96,6 @@ export const Content = styled.View<ContentProps>`
     flex-direction: column;
     flex: 1;
     justify-content: center;
-    pointer-events: none;
     align-self: stretch;
 
     ${({theme, size = 'medium', supportingTextShow}) => {
