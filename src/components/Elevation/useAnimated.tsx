@@ -1,8 +1,8 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
+import {AnimatedTiming, useAnimatedTiming} from '../../hooks/useAnimatedTiming';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
-import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.utils';
 import {ElevationProps} from './Elevation';
 
 type UseAnimatedOptions = Pick<ElevationProps, 'level' | 'defaultLevel'>;
@@ -18,7 +18,7 @@ const processAnimatedTiming = (
 export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
     const [opacityAnimated] = useAnimatedValue(level);
     const theme = useTheme();
-    const animatedTiming = createAnimatedTiming(theme);
+    const [animatedTiming] = useAnimatedTiming(theme);
     const shadow0Opacity = opacityAnimated.interpolate({
         inputRange: [0, 1, 2, 3, 4, 5],
         outputRange: [

@@ -1,19 +1,19 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {
     AnimatedTiming,
     AnimatedTimingOptions,
-    createAnimatedTiming,
-} from '../../../utils/animatedTiming.utils';
+    useAnimatedTiming,
+} from '../../../hooks/useAnimatedTiming';
+import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {RenderProps} from './SheetBase';
 
 interface UseAnimatedOptions extends Pick<RenderProps, 'visible' | 'position' | 'type'> {
     onVisible?: (value?: boolean) => void;
 }
 
-interface ScreenAnimatedOptions extends Pick<UseAnimatedOptions, 'onVisible'> {
+interface ScreenAnimatedOptions {
     backgroundAnimated: Animated.Value;
     translateXAnimated: Animated.Value;
     widthAnimated: Animated.Value;
@@ -40,7 +40,7 @@ const enterScreen = (
 
 const exitScreen = (
     animatedTiming: AnimatedTiming,
-    {backgroundAnimated, translateXAnimated, onVisible, widthAnimated}: ScreenAnimatedOptions,
+    {backgroundAnimated, translateXAnimated, widthAnimated}: ScreenAnimatedOptions,
 ) => {
     const animatedTimingOptions = {
         duration: 'short3',
@@ -51,33 +51,31 @@ const exitScreen = (
         animatedTiming(backgroundAnimated, animatedTimingOptions),
         animatedTiming(translateXAnimated, animatedTimingOptions),
         animatedTiming(widthAnimated, animatedTimingOptions),
-    ]).start(() => onVisible?.(false));
+    ]).start();
 };
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {
-        backgroundAnimated,
-        onVisible,
-        translateXAnimated,
-        visible,
-        widthAnimated,
-    }: ProcessAnimatedTimingOptions,
+    {backgroundAnimated, translateXAnimated, visible, widthAnimated}: ProcessAnimatedTimingOptions,
 ) => {
+    if (typeof visible !== 'boolean') {
+        return;
+    }
+
     const screenAnimatedOptions = {backgroundAnimated, translateXAnimated, widthAnimated};
 
     visible
         ? enterScreen(animatedTiming, screenAnimatedOptions)
-        : exitScreen(animatedTiming, {...screenAnimatedOptions, onVisible});
+        : exitScreen(animatedTiming, screenAnimatedOptions);
 };
 
-export const useAnimated = ({visible, position, type, onVisible}: UseAnimatedOptions) => {
+export const useAnimated = ({visible, position, type}: UseAnimatedOptions) => {
     const animatedValue = visible ? 1 : 0;
     const [backgroundAnimated] = useAnimatedValue(animatedValue);
     const [translateXAnimated] = useAnimatedValue(animatedValue);
     const [widthAnimated] = useAnimatedValue(animatedValue);
     const theme = useTheme();
-    const animatedTiming = createAnimatedTiming(theme);
+    const [animatedTiming] = useAnimatedTiming(theme);
     const backgroundColor = backgroundAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
@@ -111,7 +109,6 @@ export const useAnimated = ({visible, position, type, onVisible}: UseAnimatedOpt
             backgroundAnimated,
             translateXAnimated,
             visible,
-            onVisible,
             widthAnimated,
         });
 
@@ -120,7 +117,7 @@ export const useAnimated = ({visible, position, type, onVisible}: UseAnimatedOpt
             translateXAnimated.stopAnimation();
             widthAnimated.stopAnimation();
         };
-    }, [animatedTiming, backgroundAnimated, onVisible, translateXAnimated, visible, widthAnimated]);
+    }, [animatedTiming, backgroundAnimated, visible, translateXAnimated, widthAnimated]);
 
     return [{backgroundColor, innerTranslateX, width}];
 };

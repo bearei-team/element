@@ -2,7 +2,7 @@ import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
-import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.utils';
+import {AnimatedTiming} from '../../utils/animatedTiming.utils';
 import {RenderProps} from './FABBase';
 
 type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type'>;
@@ -20,7 +20,7 @@ const processAnimatedTiming = (
 export const useAnimated = ({disabled, type = 'primary'}: UseAnimatedOptions) => {
     const [colorAnimated] = useAnimatedValue(disabled ? 0 : 1);
     const theme = useTheme();
-    const animatedTiming = createAnimatedTiming(theme);
+    const [animatedTiming] = useAnimatedTiming(theme);
     const disabledBackgroundColor = theme.color.convertHexToRGBA(
         theme.palette.surface.onSurface,
         0.12,

@@ -1,8 +1,8 @@
 import {useEffect, useMemo} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
+import {AnimatedTiming, useAnimatedTiming} from '../../hooks/useAnimatedTiming';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
-import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.utils';
 
 interface UseAnimatedOptions {
     listVisible?: boolean;
@@ -24,7 +24,7 @@ const processAnimatedTiming = (
 export const useAnimated = ({listVisible, onListClosed}: UseAnimatedOptions) => {
     const [listHeightAnimated] = useAnimatedValue(listVisible ? 1 : 0);
     const theme = useTheme();
-    const animatedTiming = createAnimatedTiming(theme);
+    const [animatedTiming] = useAnimatedTiming(theme);
     const listHeight = useMemo(
         () =>
             listHeightAnimated.interpolate({

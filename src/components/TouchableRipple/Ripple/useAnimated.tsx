@@ -1,12 +1,12 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
-import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {
     AnimatedTiming,
     AnimatedTimingOptions,
-    createAnimatedTiming,
-} from '../../../utils/animatedTiming.utils';
+    useAnimatedTiming,
+} from '../../../hooks/useAnimatedTiming';
+import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {RenderProps} from './RippleBase';
 
 interface UseAnimatedOptions extends Pick<RenderProps, 'onEntryAnimatedFinished' | 'active'> {
@@ -108,7 +108,7 @@ export const useAnimated = ({
     const [opacityAnimated] = useAnimatedValue(1);
     const [scaleAnimated] = useAnimatedValue(active ? 1 : 0);
     const theme = useTheme();
-    const animatedTiming = createAnimatedTiming(theme);
+    const [animatedTiming] = useAnimatedTiming(theme);
     const opacity = opacityAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 1],

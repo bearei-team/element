@@ -1,8 +1,8 @@
 import {useEffect, useMemo} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
+import {AnimatedTiming, useAnimatedTiming} from '../../hooks/useAnimatedTiming';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
-import {AnimatedTiming, createAnimatedTiming} from '../../utils/animatedTiming.utils';
 import {RenderProps} from './ChipBase';
 
 type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName' | 'elevated'>;
@@ -64,7 +64,7 @@ export const useAnimated = ({
     const [colorAnimated] = useAnimatedValue(animatedValue);
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
-    const animatedTiming = createAnimatedTiming(theme);
+    const [animatedTiming] = useAnimatedTiming(theme);
     const disabledBackgroundColor = theme.color.convertHexToRGBA(
         theme.palette.surface.onSurface,
         0.12,

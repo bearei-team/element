@@ -2,7 +2,7 @@ import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
-import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTiming.utils';
+import {AnimatedTiming} from '../../../utils/animatedTiming.utils';
 import {RenderProps} from './NavigationRailItemBase';
 
 interface UseAnimatedOptions extends Pick<RenderProps, 'active' | 'type'> {
@@ -27,7 +27,7 @@ const processAnimatedTiming = (
 export const useAnimated = ({active, type}: UseAnimatedOptions) => {
     const [labelAnimated] = useAnimatedValue(type === 'block' || active ? 1 : 0);
     const theme = useTheme();
-    const animatedTiming = createAnimatedTiming(theme);
+    const [animatedTiming] = useAnimatedTiming(theme);
     const height = labelAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [0, theme.typography.label.medium.lineHeight],

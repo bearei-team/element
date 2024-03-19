@@ -1,8 +1,8 @@
 import {useCallback, useEffect, useMemo} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
+import {AnimatedTiming, useAnimatedTiming} from '../../../hooks/useAnimatedTiming';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
-import {AnimatedTiming, createAnimatedTiming} from '../../../utils/animatedTiming.utils';
 import {EventName, State} from '../../Common/interface';
 import {RenderProps} from './ListItemBase';
 
@@ -58,7 +58,7 @@ export const useAnimated = ({
     const [heightAnimated] = useAnimatedValue(1);
     const [trailingOpacityAnimated] = useAnimatedValue(trailingButton ? 0 : 1);
     const theme = useTheme();
-    const animatedTiming = createAnimatedTiming(theme);
+    const [animatedTiming] = useAnimatedTiming(theme);
     const trailingOpacity = trailingOpacityAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 1],
