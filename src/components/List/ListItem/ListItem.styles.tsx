@@ -13,13 +13,32 @@ type LeadingProps = Pick<RenderProps, 'size'>;
 
 export const Container = styled(View)<ContainerProps>`
     overflow: hidden;
+    display: flex;
+    flex-direction: row;
 
     ${({gap = 0}) => css`
         padding-bottom: ${gap}px;
     `};
+
+    ${({theme}) => css`
+        gap: ${theme.adaptSize(theme.spacing.small)}px;
+    `};
 `;
 
+export const AddonBefore = styled(Shape)`
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    overflow: hidden;
+`;
+
+export const AddonAfter = styled(AddonBefore)``;
+
 export const Background = styled(Shape)`
+    flex: 1;
+
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surface};
     `};
@@ -42,8 +61,7 @@ export const Inner = styled.View<InnerProps>`
 
                 min-height: ${theme.adaptSize(theme.spacing.extraLarge)}px;
                 align-items: center;
-
-                height: ${theme.adaptSize(theme.spacing.small * 4)}px;
+                height: ${theme.adaptSize(theme.spacing.small * 5)}px;
             `,
             medium: css`
                 gap: ${theme.adaptSize(theme.spacing.medium)}px;
@@ -57,7 +75,7 @@ export const Inner = styled.View<InnerProps>`
                 padding: ${theme.adaptSize(theme.spacing.small)}px
                     ${theme.adaptSize(theme.spacing.medium)}px;
 
-                min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+                min-height: ${theme.adaptSize(theme.spacing.small * 9)}px;
             `,
         };
 
@@ -74,16 +92,16 @@ export const Leading = styled.View<LeadingProps>`
     ${({theme, size = 'medium'}) => {
         const contentSize = {
             small: css`
-                height: ${theme.adaptSize(theme.spacing.large - 4)}px;
-                width: ${theme.adaptSize(theme.spacing.large - 4)}px;
+                height: ${theme.adaptSize(theme.spacing.large)}px;
+                width: ${theme.adaptSize(theme.spacing.large)}px;
             `,
             medium: css`
-                height: ${theme.adaptSize(theme.spacing.small * 5)}px;
-                width: ${theme.adaptSize(theme.spacing.small * 5)}px;
+                min-height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+                min-width: ${theme.adaptSize(theme.spacing.small * 5)}px;
             `,
             large: css`
-                height: ${theme.adaptSize(theme.spacing.small * 5)}px;
-                width: ${theme.adaptSize(theme.spacing.small * 5)}px;
+                min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+                min-width: ${theme.adaptSize(theme.spacing.small * 7)}px;
             `,
         };
 
@@ -117,19 +135,7 @@ export const Content = styled.View<ContentProps>`
     }}
 `;
 
-export const Trailing = styled.View`
-    align-self: stretch;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-
-    ${({theme}) => css`
-        min-height: ${theme.adaptSize(theme.spacing.large)}px;
-        min-width: ${theme.adaptSize(theme.spacing.large)}px;
-    `}
-`;
-
-export const TrailingInner = styled(Leading)`
+export const Trailing = styled(Leading)`
     ${({theme, size = 'medium'}) => {
         const contentSize = {
             small: css`
@@ -137,12 +143,12 @@ export const TrailingInner = styled(Leading)`
                 width: ${theme.adaptSize(theme.spacing.large)}px;
             `,
             medium: css`
-                height: ${theme.adaptSize(theme.spacing.small * 5)}px;
-                width: ${theme.adaptSize(theme.spacing.small * 5)}px;
+                min-height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+                min-width: ${theme.adaptSize(theme.spacing.small * 5)}px;
             `,
             large: css`
-                height: ${theme.adaptSize(theme.spacing.small * 5)}px;
-                width: ${theme.adaptSize(theme.spacing.small * 5)}px;
+                min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+                min-width: ${theme.adaptSize(theme.spacing.small * 7)}px;
             `,
         };
 

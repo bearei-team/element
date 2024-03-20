@@ -49,25 +49,65 @@ export const Size: StoryObj<ListProps> = {
             {
                 key: 'TitleA',
                 headline: '怪物总选举 - 第10名~第1名',
-                leading: <View style={{backgroundColor: 'red', width: 18, height: 18}}></View>,
+                leading: <View style={{backgroundColor: 'red', width: 24, height: 24}}></View>,
             },
             {
                 key: 'TitleB',
                 headline: 'TitleB',
                 supporting: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
-                leading: <Icon name="addHome" renderStyle={{width: 18, height: 18}} />,
+                leading: <Icon name="addHome" renderStyle={{width: 24, height: 24}} />,
             },
             {
                 key: 'TitleC',
                 headline: 'TitleC',
                 supporting: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
-                leading: <Icon name="addHome" renderStyle={{width: 18, height: 18}} />,
+                leading: <Icon name="addHome" renderStyle={{width: 24, height: 24}} />,
             },
             {
                 key: 'TitleD',
                 headline: 'TitleD',
                 supporting: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
-                leading: <Icon name="addHome" renderStyle={{width: 18, height: 18}} />,
+                leading: <Icon name="addHome" renderStyle={{width: 24, height: 24}} />,
+            },
+        ],
+    },
+};
+
+export const Addon: StoryObj<ListProps> = {
+    args: {
+        closeIcon: true,
+        defaultActiveKey: 'TitleB',
+        activeKey: 'TitleA',
+        size: 'small',
+        gap: 8,
+        shape: 'extraSmall',
+        data: [
+            {
+                key: 'TitleA',
+                headline: '怪物总选举 - 第10名~第1名',
+                leading: <View style={{backgroundColor: 'red', width: 24, height: 24}} />,
+                addonAfter: <View style={{backgroundColor: 'red', width: 24, height: 24}} />,
+            },
+            {
+                key: 'TitleB',
+                headline: 'TitleB',
+                supporting: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                leading: <Icon name="addHome" renderStyle={{width: 24, height: 24}} />,
+                addonAfter: <View style={{backgroundColor: 'red', width: 24, height: 24}} />,
+            },
+            {
+                key: 'TitleC',
+                headline: 'TitleC',
+                supporting: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                leading: <Icon name="addHome" renderStyle={{width: 24, height: 24}} />,
+                addonAfter: <View style={{backgroundColor: 'red', width: 24, height: 24}} />,
+            },
+            {
+                key: 'TitleD',
+                headline: 'TitleD',
+                supporting: 'Supporting line text lorem ipsum dolor sit amet, consectetur.',
+                leading: <Icon name="addHome" renderStyle={{width: 24, height: 24}} />,
+                addonAfter: <View style={{backgroundColor: 'red', width: 24, height: 24}} />,
             },
         ],
     },

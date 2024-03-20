@@ -23,6 +23,7 @@ export interface SheetProps
     footer?: boolean;
     headlineText?: string;
     onClose?: () => void;
+    onClosed?: () => void;
     onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
     onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
     sheetPosition?: 'horizontalStart' | 'horizontalEnd';
@@ -58,14 +59,15 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             disabledClose,
             headlineText = 'Title',
             onClose,
+            onClosed,
             onPrimaryButtonPress,
             onSecondaryButtonPress,
-            sheetPosition = 'horizontalEnd',
             primaryButton,
             primaryButtonLabelText = 'Save',
             render,
             secondaryButton,
             secondaryButtonLabelText = 'Cancel',
+            sheetPosition = 'horizontalEnd',
             type,
             visible,
             ...renderProps
@@ -73,9 +75,10 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
         ref,
     ) => {
         const [renderStyle] = useAnimated({
+            onClosed,
             sheetPosition,
-            visible,
             type,
+            visible,
         });
 
         const id = useId();
@@ -108,6 +111,7 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             () =>
                 primaryButton ?? (
                     <Button
+                        block={true}
                         labelText={primaryButtonLabelText}
                         onPress={onPrimaryButtonPress}
                         type="filled"
@@ -120,6 +124,7 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             () =>
                 secondaryButton ?? (
                     <Button
+                        block={true}
                         labelText={secondaryButtonLabelText}
                         onPress={onSecondaryButtonPress}
                         type="outlined"

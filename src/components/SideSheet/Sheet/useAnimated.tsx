@@ -9,11 +9,8 @@ import {
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {RenderProps} from './SheetBase';
 
-interface UseAnimatedOptions extends Pick<RenderProps, 'visible' | 'sheetPosition' | 'type'> {
-    onVisible?: (value?: boolean) => void;
-}
-
-interface ScreenAnimatedOptions {
+type UseAnimatedOptions = Pick<RenderProps, 'visible' | 'sheetPosition' | 'type' | 'onClosed'>;
+interface ScreenAnimatedOptions extends Pick<UseAnimatedOptions, 'onClosed'> {
     backgroundAnimated: Animated.Value;
     translateXAnimated: Animated.Value;
     widthAnimated: Animated.Value;
@@ -40,7 +37,7 @@ const enterScreen = (
 
 const exitScreen = (
     animatedTiming: AnimatedTiming,
-    {backgroundAnimated, translateXAnimated, widthAnimated}: ScreenAnimatedOptions,
+    {backgroundAnimated, translateXAnimated, widthAnimated, onClosed}: ScreenAnimatedOptions,
 ) => {
     const animatedTimingOptions = {
         duration: 'short3',
@@ -51,12 +48,18 @@ const exitScreen = (
         animatedTiming(backgroundAnimated, animatedTimingOptions),
         animatedTiming(translateXAnimated, animatedTimingOptions),
         animatedTiming(widthAnimated, animatedTimingOptions),
-    ]).start();
+    ]).start(() => onClosed?.());
 };
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {backgroundAnimated, translateXAnimated, visible, widthAnimated}: ProcessAnimatedTimingOptions,
+    {
+        backgroundAnimated,
+        translateXAnimated,
+        visible,
+        widthAnimated,
+        onClosed,
+    }: ProcessAnimatedTimingOptions,
 ) => {
     if (typeof visible !== 'boolean') {
         return;
@@ -66,10 +69,10 @@ const processAnimatedTiming = (
 
     visible
         ? enterScreen(animatedTiming, screenAnimatedOptions)
-        : exitScreen(animatedTiming, screenAnimatedOptions);
+        : exitScreen(animatedTiming, {...screenAnimatedOptions, onClosed});
 };
 
-export const useAnimated = ({visible, sheetPosition, type}: UseAnimatedOptions) => {
+export const useAnimated = ({visible, sheetPosition, type, onClosed}: UseAnimatedOptions) => {
     const animatedValue = visible ? 1 : 0;
     const [backgroundAnimated] = useAnimatedValue(animatedValue);
     const [translateXAnimated] = useAnimatedValue(animatedValue);
@@ -110,6 +113,7 @@ export const useAnimated = ({visible, sheetPosition, type}: UseAnimatedOptions) 
             translateXAnimated,
             visible,
             widthAnimated,
+            onClosed,
         });
 
         return () => {
@@ -117,7 +121,7 @@ export const useAnimated = ({visible, sheetPosition, type}: UseAnimatedOptions) 
             translateXAnimated.stopAnimation();
             widthAnimated.stopAnimation();
         };
-    }, [animatedTiming, backgroundAnimated, visible, translateXAnimated, widthAnimated]);
+    }, [animatedTiming, backgroundAnimated, onClosed, translateXAnimated, visible, widthAnimated]);
 
     return [{backgroundColor, innerTranslateX, width}];
 };

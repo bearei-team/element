@@ -3,6 +3,8 @@ import {Animated, View} from 'react-native';
 import {Hovered} from '../../Hovered/Hovered';
 import {TouchableRipple} from '../../TouchableRipple/TouchableRipple';
 import {
+    AddonAfter,
+    AddonBefore,
     Background,
     Container,
     Content,
@@ -11,16 +13,18 @@ import {
     Leading,
     SupportingText,
     Trailing,
-    TrailingInner,
 } from './ListItem.styles';
 import {ListItemBase, ListItemProps, RenderProps} from './ListItemBase';
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
-const AnimatedTrailingInner = Animated.createAnimatedComponent(TrailingInner);
+const AnimatedTrailing = Animated.createAnimatedComponent(Trailing);
+const AnimatedAddonBefore = Animated.createAnimatedComponent(AddonBefore);
+const AnimatedAddonAfter = Animated.createAnimatedComponent(AddonAfter);
 const render = ({
     active,
     activeColor,
-    touchableLocation,
+    addonAfter,
+    addonBefore,
     eventName,
     gap,
     headline,
@@ -29,15 +33,17 @@ const render = ({
     onEvent,
     renderStyle,
     shape,
+    size,
     supporting,
     supportingTextNumberOfLines,
+    touchableLocation,
     trailing,
     underlayColor,
-    size,
     ...innerProps
 }: RenderProps) => {
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
-    const {containerHeight, height, trailingOpacity, width} = renderStyle;
+    const {containerHeight, height, trailingOpacity, width, addonAfterWidth, addonBeforeWidth} =
+        renderStyle;
 
     return (
         <AnimatedContainer
@@ -46,6 +52,15 @@ const render = ({
             gap={gap}
             style={{height: containerHeight}}
             testID={`listItem--${id}`}>
+            {addonBefore && (
+                <AnimatedAddonBefore
+                    shape={shape}
+                    testID={`listItem__addonBefore--${id}`}
+                    style={{width: addonBeforeWidth}}>
+                    {addonBefore}
+                </AnimatedAddonBefore>
+            )}
+
             <Background shape={shape} testID={`listItem__background--${id}`}>
                 <TouchableRipple
                     {...onTouchableRippleEvent}
@@ -103,14 +118,12 @@ const render = ({
                         </Content>
 
                         {trailing && (
-                            <Trailing testID={`listItem__trailing--${id}`}>
-                                <AnimatedTrailingInner
-                                    size={size}
-                                    style={{opacity: trailingOpacity}}
-                                    testID={`listItem__trailingInner--${id}`}>
-                                    {trailing}
-                                </AnimatedTrailingInner>
-                            </Trailing>
+                            <AnimatedTrailing
+                                size={size}
+                                style={{opacity: trailingOpacity}}
+                                testID={`listItem__trailingInner--${id}`}>
+                                {trailing}
+                            </AnimatedTrailing>
                         )}
 
                         <Hovered
@@ -122,6 +135,15 @@ const render = ({
                     </Inner>
                 </TouchableRipple>
             </Background>
+
+            {addonAfter && (
+                <AnimatedAddonAfter
+                    shape={shape}
+                    testID={`listItem__addonAfter--${id}`}
+                    style={{width: addonAfterWidth}}>
+                    {addonAfter}
+                </AnimatedAddonAfter>
+            )}
         </AnimatedContainer>
     );
 };

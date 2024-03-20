@@ -47,6 +47,8 @@ export interface ListItemProps extends TouchableRippleProps {
      * effect when custom trailing exists.
      */
     trailingButton?: boolean;
+    addonAfter?: React.JSX.Element;
+    addonBefore?: React.JSX.Element;
 }
 
 export interface RenderProps extends ListItemProps {
@@ -55,9 +57,11 @@ export interface RenderProps extends ListItemProps {
     eventName: EventName;
     onEvent: OnEvent;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
+        addonAfterWidth: AnimatedInterpolation;
+        addonBeforeWidth: AnimatedInterpolation;
+        containerHeight: AnimatedInterpolation;
         height: number;
         trailingOpacity: AnimatedInterpolation;
-        containerHeight: AnimatedInterpolation;
         width: number;
     };
     touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
@@ -77,6 +81,8 @@ interface InitialState {
     status: ComponentStatus;
     touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     trailingEventName: EventName;
+    addonBeforeLayout: LayoutRectangle;
+    addonAfterLayout: LayoutRectangle;
 }
 
 interface ProcessEventOptions {
@@ -109,6 +115,30 @@ const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions
             draft.layout.height !== nativeEventLayout.height;
 
         update && (draft.layout = nativeEventLayout);
+    });
+};
+
+const processAddonBeforeLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
+
+    setState(draft => {
+        const update =
+            draft.addonBeforeLayout.width !== nativeEventLayout.width ||
+            draft.addonBeforeLayout.height !== nativeEventLayout.height;
+
+        update && (draft.addonBeforeLayout = nativeEventLayout);
+    });
+};
+
+const processAddonAfterLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
+
+    setState(draft => {
+        const update =
+            draft.addonAfterLayout.width !== nativeEventLayout.width ||
+            draft.addonAfterLayout.height !== nativeEventLayout.height;
+
+        update && (draft.addonAfterLayout = nativeEventLayout);
     });
 };
 
@@ -164,8 +194,8 @@ const processTrailingEvent = (
     callback?.();
 };
 
-const processClose = ({dataKey, onCloseAnimated, onClose}: ProcessCloseOptions, value?: boolean) =>
-    typeof value === 'boolean' && value && onCloseAnimated?.(() => onClose?.(dataKey));
+const processClose = ({dataKey, onCloseAnimated, onClose}: ProcessCloseOptions) =>
+    onCloseAnimated?.(() => onClose?.(dataKey));
 
 const processTrailingHoverIn = ({setState}: ProcessEventOptions) =>
     processTrailingEvent('hoverIn', {setState});
@@ -226,34 +256,52 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             trailing,
             trailingButton,
             close,
+            addonBefore,
+            addonAfter,
             ...renderProps
         },
         ref,
     ) => {
-        const [{touchableLocation, eventName, layout, state, trailingEventName}, setState] =
-            useImmer<InitialState>({
-                eventName: 'none',
-                layout: {} as LayoutRectangle,
-                state: 'enabled',
-                status: 'idle',
-                touchableLocation: {} as InitialState['touchableLocation'],
-                trailingEventName: 'none',
-            });
+        const [
+            {
+                touchableLocation,
+                addonAfterLayout,
+                addonBeforeLayout,
+                eventName,
+                layout,
+                state,
+                trailingEventName,
+            },
+            setState,
+        ] = useImmer<InitialState>({
+            addonAfterLayout: {} as LayoutRectangle,
+            addonBeforeLayout: {} as LayoutRectangle,
+            eventName: 'none',
+            layout: {} as LayoutRectangle,
+            state: 'enabled',
+            status: 'idle',
+            touchableLocation: {} as InitialState['touchableLocation'],
+            trailingEventName: 'none',
+        });
 
         const id = useId();
         const theme = useTheme();
         const activeColor = theme.palette.secondary.secondaryContainer;
         const underlayColor = theme.palette.surface.onSurface;
         const active = activeKey === dataKey;
-        const [{height, onCloseAnimated, trailingOpacity}] = useAnimated({
-            closeIcon,
-            eventName,
-            gap,
-            layoutHeight: layout?.height,
-            state,
-            trailingButton,
-            trailingEventName,
-        });
+        const [{height, onCloseAnimated, trailingOpacity, addonAfterWidth, addonBeforeWidth}] =
+            useAnimated({
+                active,
+                closeIcon,
+                eventName,
+                gap,
+                layoutHeight: layout.height,
+                state,
+                trailingButton,
+                trailingEventName,
+                addonBeforeLayoutWidth: addonBeforeLayout.width,
+                addonAfterLayoutWidth: addonAfterLayout.width,
+            });
 
         const onStateChange = useCallback(
             (nextState: State, options = {} as OnStateChangeOptions) =>
@@ -274,9 +322,18 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             [setState],
         );
 
+        const onAddonBeforeLayout = useCallback(
+            (event: LayoutChangeEvent) => processAddonBeforeLayout(event, {setState}),
+            [setState],
+        );
+
+        const onAddonAfterLayout = useCallback(
+            (event: LayoutChangeEvent) => processAddonAfterLayout(event, {setState}),
+            [setState],
+        );
+
         const onClose = useCallback(
-            (value?: boolean) =>
-                processClose({dataKey, onCloseAnimated, onClose: onCloseSource}, value),
+            () => processClose({dataKey, onCloseAnimated, onClose: onCloseSource}),
             [dataKey, onCloseAnimated, onCloseSource],
         );
 
@@ -293,6 +350,7 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
                     closeIconType,
                     theme,
                     trailing,
+                    size,
                 }),
             [
                 closeIcon,
@@ -301,29 +359,34 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
                 onClose,
                 onTrailingHoverIn,
                 onTrailingHoverOut,
+                size,
                 theme,
                 trailing,
             ],
         );
 
         useEffect(() => {
-            onClose(close);
+            typeof close === 'boolean' && close && onClose();
         }, [close, onClose]);
 
         return render({
             ...renderProps,
             active,
             activeColor,
+            addonAfter: addonAfter && cloneElement(addonAfter, {onLayout: onAddonAfterLayout}),
+            addonBefore: addonBefore && cloneElement(addonBefore, {onLayout: onAddonBeforeLayout}),
             eventName,
+            gap,
             id,
             onEvent,
             ref,
-            gap,
             renderStyle: {
                 containerHeight: height,
                 height: layout.height,
                 trailingOpacity,
                 width: layout.width,
+                addonAfterWidth,
+                addonBeforeWidth,
             },
             size,
             supporting,

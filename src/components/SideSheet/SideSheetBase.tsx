@@ -6,7 +6,6 @@ import {SheetProps} from './Sheet/Sheet';
 
 export interface SideSheetProps extends SheetProps {
     defaultVisible?: boolean;
-    onOpen?: () => void;
 }
 
 export interface RenderProps extends SideSheetProps {
@@ -27,18 +26,15 @@ interface ProcessEventOptions {
 }
 
 type ProcessEmitOptions = Pick<RenderProps, 'visible' | 'id' | 'type'>;
-type ProcessCloseOptions = Pick<RenderProps, 'onClose'> & ProcessEventOptions;
-type ProcessVisibleOptions = ProcessEventOptions & Pick<RenderProps, 'onOpen'>;
+type ProcessClosedOptions = Pick<RenderProps, 'onClose'>;
 
-const processClose = ({setState, onClose}: ProcessCloseOptions) => {
+const processClose = ({setState}: ProcessEventOptions) =>
     setState(draft => {
         draft.visible !== false && (draft.visible = false);
     });
 
-    onClose?.();
-};
-
-const processVisible = ({setState, onOpen}: ProcessVisibleOptions, visible?: boolean) => {
+const processClosed = ({onClose}: ProcessClosedOptions) => onClose?.();
+const processVisible = ({setState}: ProcessEventOptions, visible?: boolean) => {
     if (typeof visible !== 'boolean') {
         return;
     }
@@ -46,8 +42,6 @@ const processVisible = ({setState, onOpen}: ProcessVisibleOptions, visible?: boo
     setState(draft => {
         draft.visible !== visible && (draft.visible = visible);
     });
-
-    visible && onOpen?.();
 };
 
 const processEmit = (sheet: React.JSX.Element, {visible, id, type}: ProcessEmitOptions) =>
@@ -63,7 +57,6 @@ export const SideSheetBase = forwardRef<View, SideSheetBaseProps>(
         {
             defaultVisible,
             onClose: onCloseSource,
-            onOpen,
             render,
             type = 'modal',
             visible: visibleSource,
@@ -77,18 +70,19 @@ export const SideSheetBase = forwardRef<View, SideSheetBaseProps>(
 
         const id = useId();
         const onVisible = useCallback(
-            (value?: boolean) => processVisible({setState, onOpen}, value),
-            [onOpen, setState],
+            (value?: boolean) => processVisible({setState}, value),
+            [setState],
         );
 
-        const onClose = useCallback(
-            () => processClose({setState, onClose: onCloseSource}),
-            [onCloseSource, setState],
+        const onClose = useCallback(() => processClose({setState}), [setState]);
+        const onClosed = useCallback(
+            () => processClosed({onClose: onCloseSource}),
+            [onCloseSource],
         );
 
         const sheet = useMemo(
-            () => render({...renderProps, visible, onClose, type, ref}),
-            [onClose, ref, render, renderProps, type, visible],
+            () => render({...renderProps, visible, onClose, type, ref, onClosed}),
+            [onClose, onClosed, ref, render, renderProps, type, visible],
         );
 
         useEffect(() => {
