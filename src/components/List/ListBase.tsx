@@ -69,16 +69,8 @@ type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
 type ProcessCloseOptions = ProcessEventOptions & Pick<RenderProps, 'onClose'>;
 
 const processActive = ({onActive, setState}: ProcessActiveOptions, value?: string) => {
-    if (typeof value !== 'string') {
-        return;
-    }
-
     setState(draft => {
-        if (draft.activeKey === value) {
-            return;
-        }
-
-        draft.activeKey = value;
+        draft.activeKey !== value && (draft.activeKey = value);
     });
 
     onActive?.(value);

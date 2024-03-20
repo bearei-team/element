@@ -3,8 +3,9 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../../Common/Common.styles';
 import {RenderProps} from './SheetBase';
 
-type ContainerProps = Pick<RenderProps, 'position' | 'type'>;
+type ContainerProps = Pick<RenderProps, 'sheetPosition' | 'type'>;
 type HeaderProps = Pick<RenderProps, 'back'>;
+type InnerProps = ContainerProps;
 
 export const Container = styled(View)<ContainerProps>`
     display: flex;
@@ -12,13 +13,7 @@ export const Container = styled(View)<ContainerProps>`
     overflow: hidden;
     flex: 1;
 
-    ${({type, theme}) =>
-        type === 'standard' &&
-        css`
-            width: ${theme.adaptSize(theme.spacing.small * 40)}px;
-        `}
-
-    ${({position = 'horizontalEnd', type}) => {
+    ${({sheetPosition = 'horizontalEnd', type}) => {
         const innerPosition = {
             horizontalStart: css`
                 justify-content: flex-start;
@@ -28,11 +23,11 @@ export const Container = styled(View)<ContainerProps>`
             `,
         };
 
-        return type === 'modal' && innerPosition[position];
+        return type === 'modal' && innerPosition[sheetPosition];
     }}
 `;
 
-export const Inner = styled(Shape)`
+export const Inner = styled(Shape)<InnerProps>`
     display: flex;
     flex-direction: column;
 
@@ -42,6 +37,19 @@ export const Inner = styled(Shape)`
         min-height: ${theme.adaptSize(theme.spacing.small * 80)}px;
         padding-bottom: ${theme.adaptSize(theme.spacing.large)}px;
     `}
+
+    ${({sheetPosition = 'horizontalEnd', type, theme}) => {
+        const innerPosition = {
+            horizontalStart: css`
+                margin-right: ${theme.adaptSize(theme.spacing.medium)}px;
+            `,
+            horizontalEnd: css`
+                margin-left: ${theme.adaptSize(theme.spacing.medium)}px;
+            `,
+        };
+
+        return type === 'standard' && innerPosition[sheetPosition];
+    }}
 `;
 
 export const Header = styled.View<HeaderProps>`

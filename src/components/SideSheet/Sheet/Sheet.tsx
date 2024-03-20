@@ -25,7 +25,7 @@ const render = ({
     footer,
     headlineText,
     id,
-    position,
+    sheetPosition,
     primaryButton,
     renderStyle,
     secondaryButton,
@@ -34,7 +34,7 @@ const render = ({
     ...innerProps
 }: RenderProps) => {
     const {backgroundColor, innerTranslateX, width} = renderStyle;
-    const shape = position === 'horizontalStart' ? 'largeEnd' : 'largeStart';
+    const shape = sheetPosition === 'horizontalStart' ? 'largeEnd' : 'largeStart';
 
     return (
         <AnimatedContainer
@@ -43,10 +43,13 @@ const render = ({
                 ...(type === 'standard' && {width}),
             }}
             testID={`sideSheet--${id}`}
+            sheetPosition={sheetPosition}
             type={type}>
             <AnimatedInner
                 {...innerProps}
                 shape={shape}
+                sheetPosition={sheetPosition}
+                type={type}
                 style={{
                     ...(typeof style === 'object' && style),
                     ...(type === 'modal' && {transform: [{translateX: innerTranslateX}]}),

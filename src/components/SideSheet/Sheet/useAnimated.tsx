@@ -9,7 +9,7 @@ import {
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {RenderProps} from './SheetBase';
 
-interface UseAnimatedOptions extends Pick<RenderProps, 'visible' | 'position' | 'type'> {
+interface UseAnimatedOptions extends Pick<RenderProps, 'visible' | 'sheetPosition' | 'type'> {
     onVisible?: (value?: boolean) => void;
 }
 
@@ -69,7 +69,7 @@ const processAnimatedTiming = (
         : exitScreen(animatedTiming, screenAnimatedOptions);
 };
 
-export const useAnimated = ({visible, position, type}: UseAnimatedOptions) => {
+export const useAnimated = ({visible, sheetPosition, type}: UseAnimatedOptions) => {
     const animatedValue = visible ? 1 : 0;
     const [backgroundAnimated] = useAnimatedValue(animatedValue);
     const [translateXAnimated] = useAnimatedValue(animatedValue);
@@ -89,7 +89,7 @@ export const useAnimated = ({visible, position, type}: UseAnimatedOptions) => {
     const innerTranslateX = translateXAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
-            position === 'horizontalEnd'
+            sheetPosition === 'horizontalEnd'
                 ? theme.adaptSize(theme.spacing.small * 40)
                 : -theme.adaptSize(theme.spacing.small * 40),
             theme.adaptSize(theme.spacing.none),
@@ -100,7 +100,7 @@ export const useAnimated = ({visible, position, type}: UseAnimatedOptions) => {
         inputRange: [0, 1],
         outputRange: [
             theme.adaptSize(theme.spacing.small * 0),
-            theme.adaptSize(theme.spacing.small * 40),
+            theme.adaptSize(theme.spacing.small * 40 + theme.spacing.medium),
         ],
     });
 

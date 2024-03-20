@@ -22,7 +22,6 @@ import {useAnimated} from './useAnimated';
 export type NavigationRailType = 'segment' | 'block';
 export interface NavigationRailItemProps
     extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & PressableProps> {
-    activeIcon?: React.JSX.Element;
     activeKey?: string;
     dataKey?: string;
     icon?: React.JSX.Element;
@@ -122,7 +121,6 @@ const processStateChange = ({
 export const NavigationRailItemBase = forwardRef<View, NavigationRailItemBaseProps>(
     (
         {
-            activeIcon = <Icon type="filled" name="circle" />,
             activeKey,
             dataKey,
             icon = <Icon type="outlined" name="circle" />,
@@ -160,21 +158,20 @@ export const NavigationRailItemBase = forwardRef<View, NavigationRailItemBasePro
         );
 
         const [onEvent] = useOnEvent({...renderProps, disabled: false, onStateChange});
-        const activeIconElement = useMemo(
-            () => cloneElement<IconProps>(activeIcon, {renderStyle: {...iconLayout}, eventName}),
-            [activeIcon, eventName, iconLayout],
-        );
-
         const iconElement = useMemo(
-            () => cloneElement<IconProps>(icon, {renderStyle: {...iconLayout}, eventName}),
-            [eventName, icon, iconLayout],
+            () =>
+                cloneElement<IconProps>(icon, {
+                    renderStyle: {...iconLayout},
+                    eventName,
+                    type: active ? 'filled' : 'outlined',
+                }),
+            [active, eventName, icon, iconLayout],
         );
 
         return render({
             ...renderProps,
             active,
             activeColor,
-            activeIcon: activeIconElement,
             eventName,
             icon: iconElement,
             id,

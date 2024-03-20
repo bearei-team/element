@@ -14,7 +14,6 @@ const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     active,
     activeColor,
-    activeIcon,
     eventName,
     icon,
     id,
@@ -45,10 +44,7 @@ const render = ({
                 touchableLocation={touchableLocation}
                 underlayColor={activeColor}>
                 <Header testID={`NavigationBarItem__header--${id}`} type={type}>
-                    <Icon testID={`NavigationBarItem__icon--${id}`}>
-                        {active ? activeIcon : icon}
-                    </Icon>
-
+                    <Icon testID={`NavigationBarItem__icon--${id}`}>{icon}</Icon>
                     <Hovered
                         eventName={eventName}
                         renderStyle={{width, height}}

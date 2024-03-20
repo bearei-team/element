@@ -1,8 +1,8 @@
 import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
+import {AnimatedTiming, useAnimatedTiming} from '../../hooks/useAnimatedTiming';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
-import {AnimatedTiming} from '../../utils/animatedTiming.utils';
 import {RenderProps} from './FABBase';
 
 type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type'>;

@@ -85,16 +85,8 @@ const renderItems = (
     ));
 
 const processActive = ({onActive, setState}: ProcessActiveOptions, value?: string) => {
-    if (typeof value !== 'string') {
-        return;
-    }
-
     setState(draft => {
-        if (draft.activeKey === value) {
-            return;
-        }
-
-        draft.activeKey = value;
+        draft.activeKey !== value && (draft.activeKey = value);
     });
 
     onActive?.(value);

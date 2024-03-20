@@ -22,7 +22,6 @@ import {useAnimated} from './useAnimated';
 export type NavigationBarType = 'segment' | 'block';
 export interface NavigationBarItemProps
     extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & PressableProps> {
-    activeIcon?: React.JSX.Element;
     activeKey?: string;
     type?: NavigationBarType;
     dataKey?: string;
@@ -122,10 +121,9 @@ const processStateChange = ({
 export const NavigationBarItemBase = forwardRef<View, NavigationBarItemBaseProps>(
     (
         {
-            activeIcon = <Icon type="filled" name="circle" />,
             activeKey,
             dataKey,
-            icon = <Icon type="outlined" name="circle" />,
+            icon = <Icon name="circle" />,
             onActive,
             render,
             type = 'segment',
@@ -160,11 +158,6 @@ export const NavigationBarItemBase = forwardRef<View, NavigationBarItemBaseProps
         );
 
         const [onEvent] = useOnEvent({...renderProps, disabled: false, onStateChange});
-        const activeIconElement = useMemo(
-            () => cloneElement<IconProps>(activeIcon, {renderStyle: {...iconLayout}, eventName}),
-            [activeIcon, eventName, iconLayout],
-        );
-
         const iconElement = useMemo(
             () => cloneElement<IconProps>(icon, {renderStyle: {...iconLayout}, eventName}),
             [eventName, icon, iconLayout],
@@ -174,7 +167,6 @@ export const NavigationBarItemBase = forwardRef<View, NavigationBarItemBaseProps
             ...renderProps,
             active,
             activeColor,
-            activeIcon: activeIconElement,
             eventName,
             icon: iconElement,
             id,

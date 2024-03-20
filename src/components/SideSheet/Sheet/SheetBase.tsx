@@ -25,7 +25,7 @@ export interface SheetProps
     onClose?: () => void;
     onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
     onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
-    position?: 'horizontalStart' | 'horizontalEnd';
+    sheetPosition?: 'horizontalStart' | 'horizontalEnd';
     primaryButton?: React.JSX.Element;
     primaryButtonLabelText?: string;
     secondaryButton?: React.JSX.Element;
@@ -60,7 +60,7 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             onClose,
             onPrimaryButtonPress,
             onSecondaryButtonPress,
-            position = 'horizontalEnd',
+            sheetPosition = 'horizontalEnd',
             primaryButton,
             primaryButtonLabelText = 'Save',
             render,
@@ -73,7 +73,7 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
         ref,
     ) => {
         const [renderStyle] = useAnimated({
-            position,
+            sheetPosition,
             visible,
             type,
         });
@@ -134,7 +134,7 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             closeIcon: closeIconElement,
             headlineText,
             id,
-            position,
+            sheetPosition,
             primaryButton: primaryButtonElement,
             ref,
             renderStyle,
