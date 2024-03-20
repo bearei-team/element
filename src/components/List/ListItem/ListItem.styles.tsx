@@ -1,9 +1,8 @@
-import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../../Common/Common.styles';
 import {RenderProps} from './ListItemBase';
 
-type ContainerProps = Pick<RenderProps, 'gap'>;
+type ContainerProps = Pick<RenderProps, 'itemGap'>;
 type ContentProps = {
     supportingTextShow?: boolean;
 } & Pick<RenderProps, 'size'>;
@@ -11,33 +10,24 @@ type ContentProps = {
 type InnerProps = Pick<RenderProps, 'size'>;
 type LeadingProps = Pick<RenderProps, 'size'>;
 
-export const Container = styled(View)<ContainerProps>`
+export const Container = styled(Shape)<ContainerProps>`
     overflow: hidden;
     display: flex;
     flex-direction: row;
 
-    ${({gap = 0}) => css`
-        padding-bottom: ${gap}px;
-    `};
-
-    ${({theme}) => css`
-        gap: ${theme.adaptSize(theme.spacing.small)}px;
+    ${({itemGap = 0}) => css`
+        padding-bottom: ${itemGap}px;
     `};
 `;
 
-export const AddonBefore = styled(Shape)`
-    align-items: center;
-    align-self: stretch;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+export const AddonBefore = styled.View`
     overflow: hidden;
 `;
 
 export const AddonAfter = styled(AddonBefore)``;
-
-export const Background = styled(Shape)`
+export const Main = styled(Shape)`
     flex: 1;
+    overflow: hidden;
 
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surface};

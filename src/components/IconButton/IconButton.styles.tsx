@@ -6,6 +6,7 @@ import {RenderProps} from './IconButtonBase';
 type ContainerProps = Pick<RenderProps, 'renderStyle'>;
 
 export const Container = styled(View)<ContainerProps>`
+    cursor: default;
     overflow: hidden;
 
     ${({renderStyle = {}, theme}) => {

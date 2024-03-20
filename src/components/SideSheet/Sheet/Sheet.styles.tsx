@@ -101,12 +101,7 @@ export const Content = styled.View`
     flex: 1;
 `;
 
-export const Button = styled.View`
-    ${({theme}) => css`
-        min-width: ${theme.adaptSize(theme.spacing.small * 10)}px;
-    `}
-`;
-
+export const Button = styled.View``;
 export const PrimaryButton = styled(Button)``;
 export const SecondaryButton = styled(Button)``;
 export const Footer = styled.View`

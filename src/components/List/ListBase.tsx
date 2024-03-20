@@ -28,7 +28,7 @@ type BaseProps = Partial<
             | 'closeIcon'
             | 'closeIconName'
             | 'closeIconType'
-            | 'gap'
+            | 'itemGap'
             | 'onActive'
             | 'onClose'
             | 'shape'
@@ -54,7 +54,7 @@ type RenderItemOptions = ListRenderItemInfo<ListDataSource> &
         | 'closeIconName'
         | 'closeIconType'
         | 'defaultActiveKey'
-        | 'gap'
+        | 'itemGap'
         | 'onActive'
         | 'onClose'
         | 'supportingTextNumberOfLines'
@@ -122,7 +122,7 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
             closeIconType,
             data: dataSources,
             defaultActiveKey,
-            gap,
+            itemGap,
             onActive: onActiveSource,
             onClose: onCloseSource,
             render,
@@ -158,7 +158,7 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
                     closeIcon,
                     closeIconName,
                     closeIconType,
-                    gap,
+                    itemGap,
                     onActive,
                     onClose,
                     shape,
@@ -170,7 +170,7 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
                 closeIcon,
                 closeIconName,
                 closeIconType,
-                gap,
+                itemGap,
                 onActive,
                 onClose,
                 shape,

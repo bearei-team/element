@@ -30,7 +30,7 @@ export interface ListItemProps extends TouchableRippleProps {
     closeIconName?: IconName;
     closeIconType?: IconType;
     dataKey?: string;
-    gap?: number;
+    itemGap?: number;
     headline?: string;
     leading?: React.JSX.Element;
     onActive?: (value?: string) => void;
@@ -247,7 +247,7 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             closeIconName = 'close',
             closeIconType = 'filled',
             dataKey,
-            gap,
+            itemGap,
             onActive,
             onClose: onCloseSource,
             render,
@@ -294,7 +294,7 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
                 active,
                 closeIcon,
                 eventName,
-                gap,
+                itemGap,
                 layoutHeight: layout.height,
                 state,
                 trailingButton,
@@ -376,7 +376,7 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             addonAfter: addonAfter && cloneElement(addonAfter, {onLayout: onAddonAfterLayout}),
             addonBefore: addonBefore && cloneElement(addonBefore, {onLayout: onAddonBeforeLayout}),
             eventName,
-            gap,
+            itemGap,
             id,
             onEvent,
             ref,

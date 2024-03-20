@@ -43,7 +43,7 @@ export const Size: StoryObj<ListProps> = {
         defaultActiveKey: 'TitleB',
         activeKey: 'TitleA',
         size: 'small',
-        gap: 8,
+        itemGap: 8,
         shape: 'extraSmall',
         data: [
             {
@@ -79,7 +79,7 @@ export const Addon: StoryObj<ListProps> = {
         defaultActiveKey: 'TitleB',
         activeKey: 'TitleA',
         size: 'small',
-        gap: 8,
+        itemGap: 8,
         shape: 'extraSmall',
         data: [
             {

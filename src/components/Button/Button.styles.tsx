@@ -13,6 +13,8 @@ interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
 }
 
 export const Container = styled(View)<ContainerProps>`
+    cursor: default;
+
     ${({block, renderStyle}) => {
         const {width = 0} = renderStyle;
 

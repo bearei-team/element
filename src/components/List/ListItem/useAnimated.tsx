@@ -6,7 +6,7 @@ import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {EventName, State} from '../../Common/interface';
 import {RenderProps} from './ListItemBase';
 
-interface UseAnimatedOptions extends Pick<RenderProps, 'trailingButton' | 'gap' | 'closeIcon'> {
+interface UseAnimatedOptions extends Pick<RenderProps, 'trailingButton' | 'itemGap' | 'closeIcon'> {
     active?: boolean;
     addonAfterLayoutWidth?: number;
     addonBeforeLayoutWidth?: number;
@@ -73,7 +73,7 @@ export const useAnimated = ({
     addonBeforeLayoutWidth = 0,
     closeIcon,
     eventName,
-    gap = 0,
+    itemGap = 0,
     layoutHeight = 0,
     state,
     trailingButton,
@@ -93,7 +93,7 @@ export const useAnimated = ({
 
     const height = heightAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, layoutHeight + gap],
+        outputRange: [0, layoutHeight + itemGap],
     });
 
     const addonBeforeWidth = addonBeforeAnimated.interpolate({

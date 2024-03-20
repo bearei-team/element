@@ -1,12 +1,6 @@
 import {RefAttributes, forwardRef, useId, useMemo} from 'react';
-import {
-    Animated,
-    GestureResponderEvent,
-    ModalProps,
-    View,
-    ViewProps,
-    ViewStyle,
-} from 'react-native';
+import {Animated, ModalProps, View, ViewProps, ViewStyle} from 'react-native';
+import {OnEvent} from '../../../hooks/useOnEvent';
 import {Button} from '../../Button/Button';
 import {ShapeProps} from '../../Common/Common.styles';
 import {Icon} from '../../Icon/Icon';
@@ -24,13 +18,13 @@ export interface SheetProps
     headlineText?: string;
     onClose?: () => void;
     onClosed?: () => void;
-    onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
-    onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
-    sheetPosition?: 'horizontalStart' | 'horizontalEnd';
+    onPrimaryButtonEvent?: OnEvent;
     primaryButton?: React.JSX.Element;
     primaryButtonLabelText?: string;
     secondaryButton?: React.JSX.Element;
+    onSecondaryButtonEvent?: OnEvent;
     secondaryButtonLabelText?: string;
+    sheetPosition?: 'horizontalStart' | 'horizontalEnd';
     visible?: boolean;
 
     /**
@@ -60,8 +54,8 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             headlineText = 'Title',
             onClose,
             onClosed,
-            onPrimaryButtonPress,
-            onSecondaryButtonPress,
+            onPrimaryButtonEvent,
+            onSecondaryButtonEvent,
             primaryButton,
             primaryButtonLabelText = 'Save',
             render,
@@ -111,26 +105,24 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             () =>
                 primaryButton ?? (
                     <Button
-                        block={true}
+                        {...onPrimaryButtonEvent}
                         labelText={primaryButtonLabelText}
-                        onPress={onPrimaryButtonPress}
                         type="filled"
                     />
                 ),
-            [onPrimaryButtonPress, primaryButton, primaryButtonLabelText],
+            [onPrimaryButtonEvent, primaryButton, primaryButtonLabelText],
         );
 
         const secondaryButtonElement = useMemo(
             () =>
                 secondaryButton ?? (
                     <Button
-                        block={true}
+                        {...onSecondaryButtonEvent}
                         labelText={secondaryButtonLabelText}
-                        onPress={onSecondaryButtonPress}
                         type="outlined"
                     />
                 ),
-            [onSecondaryButtonPress, secondaryButton, secondaryButtonLabelText],
+            [onSecondaryButtonEvent, secondaryButton, secondaryButtonLabelText],
         );
 
         return render({
