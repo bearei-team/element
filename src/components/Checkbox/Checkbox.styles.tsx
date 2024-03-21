@@ -1,6 +1,5 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {Shape} from '../Common/Common.styles';
 
 interface ContainerProps {
     renderStyle?: {width?: number};
@@ -14,9 +13,15 @@ export const Container = styled(View)<ContainerProps>`
             width: ${width}px;
         `;
     }}
+
+    ${({theme}) =>
+        theme.OS === 'web' &&
+        css`
+            display: inline-block;
+        `}
 `;
 
-export const Content = styled(Shape)`
+export const Content = styled.View`
     align-items: center;
     display: flex;
     flex-direction: row;

@@ -1,34 +1,31 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {Shape, Typography} from '../Common/Common.styles';
+import {Typography} from '../Common/Common.styles';
 import {RenderProps} from './ButtonBase';
 
-interface ContainerProps extends Pick<RenderProps, 'block'> {
-    renderStyle: {width?: number};
-}
-
+type ContainerProps = Pick<RenderProps, 'block'>;
 interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
     iconShow: boolean;
-    renderStyle: {width?: number};
 }
 
 export const Container = styled(View)<ContainerProps>`
     cursor: default;
+    position: relative;
 
-    ${({block, renderStyle}) => {
-        const {width = 0} = renderStyle;
+    ${({block}) =>
+        block &&
+        css`
+            width: 100%;
+        `}
 
-        return block
-            ? css`
-                  width: 100%;
-              `
-            : css`
-                  width: ${width}px;
-              `;
-    }}
+    ${({theme}) =>
+        theme.OS === 'web' &&
+        css`
+            display: inline-block;
+        `}
 `;
 
-export const Content = styled(Shape)<ContentProps>`
+export const Content = styled.View<ContentProps>`
     align-items: center;
     display: flex;
     flex-direction: row;
@@ -107,16 +104,11 @@ export const Content = styled(Shape)<ContentProps>`
         return iconShow && contentType[type];
     }}
 
-    ${({block, renderStyle}) => {
-        const {width = 0} = renderStyle;
-
-        return (
-            block &&
-            css`
-                width: ${width}px;
-            `
-        );
-    }}
+    ${({block}) =>
+        block &&
+        css`
+            width: 100%;
+        `}
 `;
 
 export const LabelText = styled(Typography)`

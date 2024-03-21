@@ -39,7 +39,6 @@ const render = ({
         activeIndicatorBackgroundColor,
         activeIndicatorHeight,
         backgroundColor,
-        height,
         labelTexLineHeight,
         labelTextColor,
         labelTextHeight,
@@ -47,7 +46,6 @@ const render = ({
         labelTextSize,
         labelTextTop,
         supportingTextColor,
-        width,
     } = renderStyle;
     const shape = 'extraSmallTop';
     const leadingShow = !!leading;
@@ -108,7 +106,6 @@ const render = ({
                         </AnimatedLabelText>
 
                         <AnimatedActiveIndicator
-                            renderStyle={{width}}
                             testID={`textfield__activeIndicator--${id}`}
                             style={{
                                 backgroundColor: activeIndicatorBackgroundColor,
@@ -119,8 +116,6 @@ const render = ({
                         <Hovered
                             eventName={eventName}
                             opacities={[0, 0.08]}
-                            renderStyle={{width, height}}
-                            shape={shape}
                             underlayColor={underlayColor}
                         />
                     </AnimatedHeaderInner>

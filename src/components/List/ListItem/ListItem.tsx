@@ -47,9 +47,7 @@ const render = ({
     ...innerProps
 }: RenderProps) => {
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
-    const {containerHeight, height, trailingOpacity, width, addonAfterWidth, addonBeforeWidth} =
-        renderStyle;
-
+    const {containerHeight, trailingOpacity, addonAfterWidth, addonBeforeWidth} = renderStyle;
     const addon = addonBefore || addonAfter;
 
     return (
@@ -139,11 +137,7 @@ const render = ({
                                 </AnimatedTrailing>
                             )}
 
-                            <Hovered
-                                eventName={eventName}
-                                renderStyle={{width, height}}
-                                underlayColor={underlayColor}
-                            />
+                            <Hovered eventName={eventName} underlayColor={underlayColor} />
                         </MainInner>
                     </TouchableRipple>
                 </Main>

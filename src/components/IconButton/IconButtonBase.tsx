@@ -1,12 +1,5 @@
 import {forwardRef, useCallback, useEffect, useId} from 'react';
-import {
-    Animated,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    TextStyle,
-    View,
-    ViewStyle,
-} from 'react-native';
+import {Animated, TextStyle, View, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {EventName, State} from '../Common/interface';
@@ -44,7 +37,6 @@ interface IconButtonBaseProps extends IconButtonProps {
 
 interface InitialState {
     eventName: EventName;
-    layout: LayoutRectangle;
     tooltipVisible?: boolean;
 }
 
@@ -54,21 +46,7 @@ interface ProcessEventOptions {
 
 type ProcessStateChangeOptions = OnStateChangeOptions & ProcessEventOptions;
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
-    const nativeEventLayout = event.nativeEvent.layout;
-
-    setState(draft => {
-        const update =
-            draft.layout.width !== nativeEventLayout.width ||
-            draft.layout.height !== nativeEventLayout.height;
-
-        update && (draft.layout = nativeEventLayout);
-    });
-};
-
-const processStateChange = ({event, eventName, setState}: ProcessStateChangeOptions) => {
-    eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
-
+const processStateChange = ({eventName, setState}: ProcessStateChangeOptions) => {
     setState(draft => {
         draft.eventName = eventName;
     });
@@ -95,11 +73,7 @@ export const IconButtonBase = forwardRef<View, IconButtonBaseProps>(
         },
         ref,
     ) => {
-        const [{eventName, layout}, setState] = useImmer<InitialState>({
-            eventName: 'none',
-            layout: {} as LayoutRectangle,
-        });
-
+        const [{eventName}, setState] = useImmer<InitialState>({eventName: 'none'});
         const tooltipVisible = tooltipVisibleSource ?? defaultTooltipVisible;
         const id = useId();
         const [underlayColor] = useUnderlayColor({type});
@@ -111,7 +85,7 @@ export const IconButtonBase = forwardRef<View, IconButtonBaseProps>(
 
         const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
         const [{backgroundColor, borderColor}] = useAnimated({disabled, type});
-        const [iconElement] = useIcon({eventName, type, icon, disabled, fill, layout});
+        const [iconElement] = useIcon({eventName, type, icon, disabled, fill});
         const [border] = useBorder({borderColor});
 
         useEffect(() => {
@@ -130,8 +104,6 @@ export const IconButtonBase = forwardRef<View, IconButtonBaseProps>(
                 ...renderStyle,
                 ...border,
                 backgroundColor,
-                layoutHeight: layout.height,
-                layoutWidth: layout.width,
             },
             tooltipVisible,
             type,

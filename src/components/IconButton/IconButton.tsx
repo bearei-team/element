@@ -24,14 +24,11 @@ const render = ({
     tooltipVisible,
     ...contentProps
 }: RenderProps) => {
-    const {backgroundColor, height, width, layoutHeight, layoutWidth, ...border} = renderStyle;
+    const {backgroundColor, height, width, ...border} = renderStyle;
     const shape = 'full';
 
     return (
-        <Container
-            accessibilityRole="button"
-            testID={`iconButton--${id}`}
-            renderStyle={{width: layoutWidth, height: layoutHeight}}>
+        <Container accessibilityRole="button" testID={`iconButton--${id}`}>
             <Tooltip
                 disabled={disabled}
                 eventName={eventName}
@@ -52,16 +49,11 @@ const render = ({
                     }}>
                     <Content
                         {...contentProps}
-                        shape={shape}
                         renderStyle={{width, height}}
                         testID={`iconButton__content--${id}`}>
                         {icon}
-                        <Hovered
-                            eventName={eventName}
-                            renderStyle={{width: layoutWidth, height: layoutHeight}}
-                            shape={shape}
-                            underlayColor={underlayColor}
-                        />
+
+                        <Hovered eventName={eventName} underlayColor={underlayColor} />
                     </Content>
                 </TouchableRipple>
             </Tooltip>

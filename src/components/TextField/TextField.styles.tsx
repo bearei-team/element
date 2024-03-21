@@ -178,17 +178,10 @@ export const SupportingText = styled(Typography)`
 
 export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
     position: absolute;
+    width: 100%;
 
     ${({theme}) => css`
         bottom: ${theme.adaptSize(theme.spacing.none)}px;
         left: ${theme.adaptSize(theme.spacing.none)}px;
     `}
-
-    ${({renderStyle = {}}) => {
-        const {width = 0} = renderStyle;
-
-        return css`
-            width: ${width}px;
-        `;
-    }}
 `;

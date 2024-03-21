@@ -1,16 +1,7 @@
-import {RefAttributes, forwardRef, useCallback, useId} from 'react';
-import {
-    Animated,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    View,
-    ViewProps,
-    ViewStyle,
-} from 'react-native';
-import {Updater, useImmer} from 'use-immer';
-import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
+import {RefAttributes, forwardRef, useId} from 'react';
+import {Animated, View, ViewProps, ViewStyle} from 'react-native';
 import {ShapeProps} from '../Common/Common.styles';
-import {AnimatedInterpolation, State} from '../Common/interface';
+import {AnimatedInterpolation} from '../Common/interface';
 import {useAnimated} from './useAnimated';
 
 export type ElevationLevel = 0 | 1 | 2 | 3 | 4 | 5 | undefined;
@@ -19,15 +10,15 @@ export interface ElevationProps
     block?: boolean;
     defaultLevel?: ElevationLevel;
     level?: ElevationLevel;
+    renderStyle?: {height?: number; width?: number};
 }
 
-export interface RenderProps extends ElevationProps {
-    onEvent: OnEvent;
+export interface RenderProps extends Omit<ElevationProps, 'renderStyle'> {
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
-        height: number;
+        height?: number;
         opacity0?: AnimatedInterpolation;
         opacity1?: AnimatedInterpolation;
-        width: number;
+        width?: number;
     };
 }
 
@@ -35,65 +26,18 @@ interface ElevationBaseProps extends ElevationProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-interface InitialState {
-    layout: LayoutRectangle;
-    level?: ElevationLevel;
-}
-
-interface ProcessEventOptions {
-    setState: Updater<InitialState>;
-}
-
-type ProcessStateChangeOptions = OnStateChangeOptions &
-    ProcessEventOptions &
-    Pick<RenderProps, 'block'>;
-
-type ProcessLayoutOptions = ProcessEventOptions & Pick<RenderProps, 'block'>;
-
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessLayoutOptions) => {
-    const nativeEventLayout = event.nativeEvent.layout;
-
-    setState(draft => {
-        const update =
-            draft.layout.width !== nativeEventLayout.width ||
-            draft.layout.height !== nativeEventLayout.height;
-
-        update && (draft.layout = nativeEventLayout);
-    });
-};
-
-const processStateChange = ({event, eventName, setState}: ProcessStateChangeOptions) =>
-    eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
-
 export const ElevationBase = forwardRef<View, ElevationBaseProps>(
-    ({defaultLevel, level: levelSource, render, ...renderProps}, ref) => {
-        const [{layout}, setState] = useImmer<InitialState>({
-            layout: {} as LayoutRectangle,
-        });
-
+    ({defaultLevel, level: levelSource, render, renderStyle, ...renderProps}, ref) => {
         const id = useId();
         const level = levelSource ?? defaultLevel;
         const [{shadow0Opacity, shadow1Opacity}] = useAnimated({level});
-        const onStateChange = useCallback(
-            (_state: State, options = {} as OnStateChangeOptions) =>
-                processStateChange({...options, setState}),
-            [setState],
-        );
-
-        const [onEvent] = useOnEvent({...renderProps, onStateChange});
 
         return render({
             ...renderProps,
             id,
             level,
-            onEvent,
             ref,
-            renderStyle: {
-                height: layout.height,
-                opacity0: shadow0Opacity,
-                opacity1: shadow1Opacity,
-                width: layout.width,
-            },
+            renderStyle: {...renderStyle, opacity0: shadow0Opacity, opacity1: shadow1Opacity},
         });
     },
 );

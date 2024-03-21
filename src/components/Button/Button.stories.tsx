@@ -10,7 +10,7 @@ export default {
 
 export const Filled: StoryObj<ButtonProps> = {
     args: {
-        labelText: 'Label',
+        labelText: 'LabelLabelLabelLabelLabelLabelLabelLabelLabel',
     },
 };
 

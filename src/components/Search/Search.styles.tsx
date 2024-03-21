@@ -19,7 +19,6 @@ type SearchListProps = {
 } & Pick<RenderProps, 'type'>;
 
 export const Container = styled(Shape)`
-    align-self: stretch;
     overflow: hidden;
 `;
 

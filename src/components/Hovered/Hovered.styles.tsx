@@ -7,8 +7,10 @@ interface ContainerProps extends Pick<RenderProps, 'underlayColor'> {
 }
 
 export const Container = styled(Shape)<ContainerProps>`
+    height: 100%;
     pointer-events: none;
     position: absolute;
+    width: 100%;
     z-index: -1;
 
     ${({theme}) =>
@@ -17,13 +19,18 @@ export const Container = styled(Shape)<ContainerProps>`
             top: ${theme.adaptSize(theme.spacing.none)}px;
         `}
 
-    ${({underlayColor, renderStyle = {}}) => {
+    ${({underlayColor}) =>
+        underlayColor &&
+        css`
+            background-color: ${underlayColor};
+        `}
+
+    ${({renderStyle = {}}) => {
         const {height = 0, width = 0} = renderStyle;
 
         return (
-            underlayColor &&
+            width !== 0 &&
             css`
-                background-color: ${underlayColor};
                 height: ${height}px;
                 width: ${width}px;
             `

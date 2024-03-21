@@ -3,29 +3,27 @@ import styled, {css} from 'styled-components/native';
 import {Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './CardBase';
 
-interface ContainerProps extends Pick<RenderProps, 'block'> {
-    renderStyle: {
-        width?: number;
-    };
-}
-
-type InnerProps = ContainerProps;
+type ContainerProps = Pick<RenderProps, 'block'>;
+type InnerProps = Pick<ContainerProps, 'block'>;
 
 export const Container = styled(View)<ContainerProps>`
-    ${({block, renderStyle}) => {
-        const {width = 0} = renderStyle;
+    cursor: default;
+    position: relative;
 
-        return block
-            ? css`
-                  width: 100%;
-              `
-            : css`
-                  width: ${width}px;
-              `;
-    }}
+    ${({block}) =>
+        block &&
+        css`
+            width: 100%;
+        `}
+
+    ${({theme}) =>
+        theme.OS === 'web' &&
+        css`
+            display: inline-block;
+        `}
 `;
 
-export const Inner = styled(Shape)<InnerProps>`
+export const Inner = styled.View<InnerProps>`
     position: relative;
     z-index: 1;
 
@@ -34,16 +32,11 @@ export const Inner = styled(Shape)<InnerProps>`
             min-width: ${theme.adaptSize(theme.spacing.small * 45)}px;
         `}
 
-    ${({block, renderStyle}) => {
-        const {width = 0} = renderStyle;
-
-        return (
-            block &&
-            css`
-                width: ${width}px;
-            `
-        );
-    }}
+    ${({block}) =>
+        block &&
+        css`
+            width: 100%;
+        `}
 `;
 
 export const Media = styled(Shape)`

@@ -23,58 +23,60 @@ const render = ({
     trailingIcon,
     type,
     underlayColor,
+    block,
     ...contentProps
 }: RenderProps) => {
-    const {backgroundColor, color, height, width, ...border} = renderStyle;
+    const {onLayout, ...onTouchableRippleEvent} = onEvent;
+    const {backgroundColor, color, width, ...border} = renderStyle;
     const shape = 'extraSmall';
 
     return (
-        <Container accessibilityLabel={labelText} testID={`chip--${id}`}>
-            <Elevation level={elevation} shape={shape}>
-                <TouchableRipple
-                    {...onEvent}
-                    active={active}
-                    disabled={disabled}
-                    shape={shape}
-                    underlayColor={activeColor}
-                    touchableLocation={touchableLocation}
-                    style={{
-                        ...(typeof style === 'object' && style),
-                        ...border,
-                        backgroundColor,
-                    }}>
-                    <Content
-                        {...contentProps}
-                        iconShow={!!icon}
-                        trailingIconShow={!!trailingIcon}
-                        shape={shape}
-                        testID={`chip__content--${id}`}
-                        type={type}>
-                        {icon && <Icon testID={`chip__icon--${id}`}>{icon}</Icon>}
+        <Container
+            accessibilityLabel={labelText}
+            testID={`chip--${id}`}
+            block={block}
+            renderStyle={{width}}>
+            <TouchableRipple
+                {...onTouchableRippleEvent}
+                active={active}
+                disabled={disabled}
+                shape={shape}
+                underlayColor={activeColor}
+                touchableLocation={touchableLocation}
+                style={{
+                    ...(typeof style === 'object' && style),
+                    ...border,
+                    backgroundColor,
+                }}>
+                <Content
+                    {...contentProps}
+                    {...(!block && {onLayout})}
+                    block={block}
+                    iconShow={!!icon}
+                    trailingIconShow={!!trailingIcon}
+                    testID={`chip__content--${id}`}
+                    type={type}>
+                    {icon && <Icon testID={`chip__icon--${id}`}>{icon}</Icon>}
 
-                        <AnimatedLabelText
-                            ellipsizeMode="tail"
-                            numberOfLines={1}
-                            size="large"
-                            style={{color}}
-                            testID={`chip__labelText--${id}`}
-                            type="label">
-                            {labelText}
-                        </AnimatedLabelText>
+                    <AnimatedLabelText
+                        ellipsizeMode="tail"
+                        numberOfLines={1}
+                        size="large"
+                        style={{color}}
+                        testID={`chip__labelText--${id}`}
+                        type="label">
+                        {labelText}
+                    </AnimatedLabelText>
 
-                        {trailingIcon && (
-                            <Icon testID={`chip__trailingIcon--${id}`}>{trailingIcon}</Icon>
-                        )}
+                    {trailingIcon && (
+                        <Icon testID={`chip__trailingIcon--${id}`}>{trailingIcon}</Icon>
+                    )}
 
-                        <Hovered
-                            eventName={eventName}
-                            renderStyle={{width, height}}
-                            shape={shape}
-                            underlayColor={underlayColor}
-                        />
-                    </Content>
-                </TouchableRipple>
-            </Elevation>
+                    <Hovered eventName={eventName} underlayColor={underlayColor} />
+                </Content>
+            </TouchableRipple>
+
+            <Elevation level={elevation} shape={shape} />
         </Container>
     );
 };

@@ -14,35 +14,28 @@ const render = ({
     id,
     onEvent,
     onVisible,
-    renderStyle,
+
     supportingPosition,
     supportingText,
     visible,
     ...containerProps
-}: RenderProps) => {
-    const {width, height} = renderStyle;
-    const {onLayout, ...onInnerEvent} = onEvent;
+}: RenderProps) => (
+    <Container {...containerProps} testID={`tooltip--${id}`}>
+        <Inner {...onEvent} testID={`tooltip__inner--${id}`}>
+            <Content testID={`tooltip__content--${id}`}>{children}</Content>
+        </Inner>
 
-    return (
-        <Container {...containerProps} testID={`tooltip--${id}`} renderStyle={{width, height}}>
-            <Inner {...onInnerEvent} testID={`tooltip__inner--${id}`}>
-                <Content onLayout={onLayout} testID={`tooltip__content--${id}`}>
-                    {children}
-                </Content>
-            </Inner>
-
-            {typeof visible === 'boolean' && typeof supportingText === 'string' && (
-                <Supporting
-                    containerCurrent={containerCurrent}
-                    onVisible={onVisible!}
-                    supportingPosition={supportingPosition}
-                    supportingText={supportingText}
-                    visible={visible}
-                />
-            )}
-        </Container>
-    );
-};
+        {typeof visible === 'boolean' && typeof supportingText === 'string' && (
+            <Supporting
+                containerCurrent={containerCurrent}
+                onVisible={onVisible!}
+                supportingPosition={supportingPosition}
+                supportingText={supportingText}
+                visible={visible}
+            />
+        )}
+    </Container>
+);
 
 const ForwardRefTooltip = forwardRef<View, TooltipProps>((props, ref) => (
     <TooltipBase {...props} ref={ref} render={render} />

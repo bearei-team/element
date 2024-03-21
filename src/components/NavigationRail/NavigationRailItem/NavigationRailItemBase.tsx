@@ -2,8 +2,6 @@ import {RefAttributes, cloneElement, forwardRef, useCallback, useId, useMemo} fr
 import {
     Animated,
     GestureResponderEvent,
-    LayoutChangeEvent,
-    LayoutRectangle,
     NativeTouchEvent,
     PressableProps,
     TextStyle,
@@ -37,9 +35,7 @@ export interface RenderProps extends NavigationRailItemProps {
     onEvent: OnEvent;
     touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        height: number;
         labelHeight: AnimatedInterpolation;
-        width: number;
     };
     underlayColor: string;
 }
@@ -50,7 +46,6 @@ interface NavigationRailItemBaseProps extends NavigationRailItemProps {
 
 export interface InitialState {
     eventName: EventName;
-    layout: LayoutRectangle;
     touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
 }
 
@@ -62,18 +57,6 @@ type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'dataKey' | 'onAct
     ProcessEventOptions;
 
 type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
-
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
-    const nativeEventLayout = event.nativeEvent.layout;
-
-    setState(draft => {
-        const update =
-            draft.layout.width !== nativeEventLayout.width ||
-            draft.layout.height !== nativeEventLayout.height;
-
-        update && (draft.layout = nativeEventLayout);
-    });
-};
 
 const processPressOut = (
     event: GestureResponderEvent,
@@ -101,7 +84,6 @@ const processStateChange = ({
     onActive,
 }: ProcessStateChangeOptions) => {
     const nextEvent = {
-        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () =>
             processPressOut(event as GestureResponderEvent, {
                 activeKey,
@@ -131,9 +113,8 @@ export const NavigationRailItemBase = forwardRef<View, NavigationRailItemBasePro
         },
         ref,
     ) => {
-        const [{eventName, layout, touchableLocation}, setState] = useImmer<InitialState>({
+        const [{eventName, touchableLocation}, setState] = useImmer<InitialState>({
             eventName: 'none',
-            layout: {} as LayoutRectangle,
             touchableLocation: {} as InitialState['touchableLocation'],
         });
 
@@ -177,12 +158,7 @@ export const NavigationRailItemBase = forwardRef<View, NavigationRailItemBasePro
             id,
             onEvent,
             ref,
-            renderStyle: {
-                color,
-                height: layout.height,
-                labelHeight: height,
-                width: layout.width,
-            },
+            renderStyle: {color, labelHeight: height},
             touchableLocation,
             type,
             underlayColor,

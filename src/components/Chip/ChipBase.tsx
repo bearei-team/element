@@ -2,7 +2,6 @@ import {forwardRef, useCallback, useEffect, useId} from 'react';
 import {
     Animated,
     GestureResponderEvent,
-    LayoutChangeEvent,
     LayoutRectangle,
     NativeTouchEvent,
     TextStyle,
@@ -30,6 +29,7 @@ export interface ChipProps extends TouchableRippleProps {
     labelText?: string;
     trailingIcon?: React.JSX.Element;
     type?: ChipType;
+    block?: boolean;
 }
 
 export interface RenderProps extends ChipProps {
@@ -53,8 +53,8 @@ interface InitialState {
     touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     elevation?: ElevationLevel;
     eventName: EventName;
-    layout: LayoutRectangle;
     status: ComponentStatus;
+    layout: LayoutRectangle;
 }
 
 interface ProcessEventOptions {
@@ -67,8 +67,7 @@ type ProcessElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptio
 type ProcessInitOptions = Pick<RenderProps, 'elevated' | 'active' | 'disabled'> &
     ProcessEventOptions;
 
-type ProcessLayoutOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptions;
-type ProcessStateChangeOptions = OnStateChangeOptions & ProcessLayoutOptions;
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessElevationOptions;
 type ProcessPressOutOptions = ProcessEventOptions;
 
 const processCorrectionCoefficient = ({elevated}: Pick<RenderProps, 'elevated'>) =>
@@ -98,18 +97,6 @@ const processElevation = (state: State, {elevated, setState}: ProcessElevationOp
     });
 };
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessLayoutOptions) => {
-    const nativeEventLayout = event.nativeEvent.layout;
-
-    setState(draft => {
-        const update =
-            draft.layout.width !== nativeEventLayout.width ||
-            draft.layout.height !== nativeEventLayout.height;
-
-        update && (draft.layout = nativeEventLayout);
-    });
-};
-
 const processPressOut = (event: GestureResponderEvent, {setState}: ProcessPressOutOptions) => {
     const {locationX = 0, locationY = 0} = event.nativeEvent;
 
@@ -127,7 +114,6 @@ const processStateChange = (
     {event, eventName, elevated, setState}: ProcessStateChangeOptions,
 ) => {
     const nextEvent = {
-        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () => processPressOut(event as GestureResponderEvent, {setState}),
     } as Record<EventName, () => void>;
 
@@ -192,14 +178,14 @@ export const ChipBase = forwardRef<View, ChipBaseProps>(
         },
         ref,
     ) => {
-        const [{active, touchableLocation, elevation, eventName, layout, status}, setState] =
+        const [{active, touchableLocation, elevation, eventName, status, layout}, setState] =
             useImmer<InitialState>({
                 active: undefined,
                 touchableLocation: undefined,
                 elevation: undefined,
                 eventName: 'none',
-                layout: {} as LayoutRectangle,
                 status: 'idle',
+                layout: {} as LayoutRectangle,
             });
 
         const theme = useTheme();

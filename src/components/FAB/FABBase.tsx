@@ -1,12 +1,5 @@
 import {forwardRef, useCallback, useEffect, useId} from 'react';
-import {
-    Animated,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    TextStyle,
-    View,
-    ViewStyle,
-} from 'react-native';
+import {Animated, TextStyle, View, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ComponentStatus, EventName, Size, State} from '../Common/interface';
@@ -30,10 +23,7 @@ export interface RenderProps extends FABProps {
     elevation?: ElevationLevel;
     eventName?: EventName;
     onEvent: OnEvent;
-    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        height: number;
-        width: number;
-    };
+    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle>;
 }
 
 interface FABBaseProps extends FABProps {
@@ -43,7 +33,6 @@ interface FABBaseProps extends FABProps {
 interface InitialState {
     elevation?: ElevationLevel;
     eventName: EventName;
-    layout: LayoutRectangle;
     status: ComponentStatus;
 }
 
@@ -81,25 +70,11 @@ const processElevation = (state: State, {setState, elevated}: ProcessElevationOp
     });
 };
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
-    const nativeEventLayout = event.nativeEvent.layout;
-
-    setState(draft => {
-        const update =
-            draft.layout.width !== nativeEventLayout.width ||
-            draft.layout.height !== nativeEventLayout.height;
-
-        update && (draft.layout = nativeEventLayout);
-    });
-};
-
 const processStateChange = (
     state: State,
-    {event, eventName, elevated, setState}: ProcessStateChangeOptions,
+    {eventName, elevated, setState}: ProcessStateChangeOptions,
 ) => {
-    eventName === 'layout'
-        ? processLayout(event as LayoutChangeEvent, {setState})
-        : processElevation(state, {setState, elevated});
+    processElevation(state, {setState, elevated});
 
     setState(draft => {
         draft.eventName = eventName;
@@ -134,10 +109,10 @@ const processInit = ({elevated, setState, disabled}: ProcessInitOptions) =>
 
 export const FABBase = forwardRef<View, FABBaseProps>(
     ({disabled, elevated = true, icon, render, size, type = 'primary', ...renderProps}, ref) => {
-        const [{elevation, layout, eventName, status}, setState] = useImmer<InitialState>({
+        const [{elevation, eventName, status}, setState] = useImmer<InitialState>({
             elevation: undefined,
             eventName: 'none',
-            layout: {} as LayoutRectangle,
+
             status: 'idle',
         });
 
@@ -174,8 +149,6 @@ export const FABBase = forwardRef<View, FABBaseProps>(
             renderStyle: {
                 backgroundColor,
                 color,
-                height: layout?.height,
-                width: layout?.width,
             },
             size,
             type,

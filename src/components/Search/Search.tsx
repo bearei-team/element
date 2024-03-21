@@ -12,7 +12,6 @@ const render = ({
     iconRenderStyle,
     id,
     input,
-    layout,
     leading,
     listVisible,
     onEvent,
@@ -24,7 +23,6 @@ const render = ({
     ...containerProps
 }: RenderProps) => {
     const shape = listVisible ? 'extraLargeTop' : 'extraLarge';
-    const {height, width} = layout;
     const {onLayout, ...onInnerEvent} = onEvent;
 
     return (
@@ -52,7 +50,6 @@ const render = ({
                 <Hovered
                     eventName={eventName}
                     opacities={[0, 0.08]}
-                    renderStyle={{width, height}}
                     shape={listVisible ? 'extraLargeTop' : shape}
                     underlayColor={underlayColor}
                 />

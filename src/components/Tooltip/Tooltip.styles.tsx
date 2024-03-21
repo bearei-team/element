@@ -11,14 +11,11 @@ export const Container = styled(Shape)<ContainerProps>`
     overflow: hidden;
     flex-direction: row;
 
-    ${({renderStyle = {}}) => {
-        const {width = 0, height = 0} = renderStyle;
-
-        return css`
-            height: ${height}px;
-            width: ${width}px;
-        `;
-    }}
+    ${({theme}) =>
+        theme.OS === 'web' &&
+        css`
+            display: inline-block;
+        `}
 `;
 
 export const Inner = styled(Pressable)`

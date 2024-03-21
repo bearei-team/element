@@ -3,23 +3,20 @@ import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './IconButtonBase';
 
-type ContainerProps = Pick<RenderProps, 'renderStyle'>;
+type ContentProps = Pick<RenderProps, 'renderStyle'>;
 
-export const Container = styled(View)<ContainerProps>`
+export const Container = styled(View)`
     cursor: default;
     overflow: hidden;
 
-    ${({renderStyle = {}, theme}) => {
-        const {height, width} = renderStyle;
-
-        return css`
-            height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
-            width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
-        `;
-    }};
+    ${({theme}) =>
+        theme.OS === 'web' &&
+        css`
+            display: inline-block;
+        `}
 `;
 
-export const Content = styled(Shape)<ContainerProps>`
+export const Content = styled(Shape)<ContentProps>`
     align-items: center;
     display: flex;
     flex-direction: row;

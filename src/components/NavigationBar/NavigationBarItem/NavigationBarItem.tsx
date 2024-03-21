@@ -25,8 +25,7 @@ const render = ({
     underlayColor,
     ...containerProps
 }: RenderProps) => {
-    const {onLayout, ...onTouchableRippleEvent} = onEvent;
-    const {width, height, color, labelHeight} = renderStyle;
+    const {color, labelHeight} = renderStyle;
     const shape = type === 'block' ? 'full' : 'large';
 
     return (
@@ -37,20 +36,14 @@ const render = ({
             active={active}
             testID={`NavigationBarItem--${id}`}>
             <TouchableRipple
-                {...onTouchableRippleEvent}
+                {...onEvent}
                 active={active}
-                onLayout={onLayout}
                 shape={shape}
                 touchableLocation={touchableLocation}
                 underlayColor={activeColor}>
                 <Header testID={`NavigationBarItem__header--${id}`} type={type}>
                     <Icon testID={`NavigationBarItem__icon--${id}`}>{icon}</Icon>
-                    <Hovered
-                        eventName={eventName}
-                        renderStyle={{width, height}}
-                        shape={shape}
-                        underlayColor={underlayColor}
-                    />
+                    <Hovered eventName={eventName} underlayColor={underlayColor} />
                 </Header>
             </TouchableRipple>
 

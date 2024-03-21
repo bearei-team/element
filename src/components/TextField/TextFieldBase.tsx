@@ -11,8 +11,6 @@ import {
 } from 'react';
 import {
     Animated,
-    LayoutChangeEvent,
-    LayoutRectangle,
     NativeSyntheticEvent,
     PressableProps,
     TextInput,
@@ -54,7 +52,6 @@ export interface RenderProps extends TextFieldProps {
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         activeIndicatorBackgroundColor: AnimatedInterpolation;
         activeIndicatorHeight: AnimatedInterpolation;
-        height: number;
         labelTexLineHeight: AnimatedInterpolation;
         labelTextColor: AnimatedInterpolation;
         labelTextHeight: AnimatedInterpolation;
@@ -62,7 +59,6 @@ export interface RenderProps extends TextFieldProps {
         labelTextSize: AnimatedInterpolation;
         labelTextTop: AnimatedInterpolation;
         supportingTextColor: AnimatedInterpolation;
-        width: number;
     };
 }
 
@@ -77,7 +73,6 @@ type RenderTextInputProps = TextFieldProps & {
 interface InitialState {
     contentSize?: TextInputContentSizeChangeEventData['contentSize'];
     eventName: EventName;
-    layout: LayoutRectangle;
     state: State;
     value?: string;
 }
@@ -94,24 +89,11 @@ type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOpti
     OnStateChangeOptions;
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
-    const nativeEventLayout = event.nativeEvent.layout;
-
-    setState(draft => {
-        const update =
-            draft.layout.width !== nativeEventLayout.width ||
-            draft.layout.height !== nativeEventLayout.height;
-
-        update && (draft.layout = nativeEventLayout);
-    });
-};
-
 const processStateChange = (
     state: State,
-    {event, eventName, setState, ref}: ProcessStateChangeOptions,
+    {eventName, setState, ref}: ProcessStateChangeOptions,
 ) => {
     const nextEvent = {
-        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () => processFocus(ref),
     } as Record<EventName, () => void>;
 
@@ -196,10 +178,9 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
         },
         ref,
     ) => {
-        const [{layout, eventName, state, contentSize, value}, setState] = useImmer<InitialState>({
+        const [{eventName, state, contentSize, value}, setState] = useImmer<InitialState>({
             contentSize: undefined,
             eventName: 'none',
-            layout: {} as LayoutRectangle,
             state: 'enabled',
             value: '',
         });
@@ -314,7 +295,6 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
                 activeIndicatorBackgroundColor,
                 activeIndicatorHeight,
                 backgroundColor,
-                height: layout.height,
                 labelTexLineHeight,
                 labelTextColor,
                 labelTextHeight,
@@ -322,7 +302,6 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
                 labelTextSize,
                 labelTextTop,
                 supportingTextColor,
-                width: layout.width,
             },
             state,
             supportingText,

@@ -15,7 +15,7 @@ const render = ({
     underlayColor,
     ...contentProps
 }: RenderProps) => {
-    const {height, width} = renderStyle;
+    const {width} = renderStyle;
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
     const shape = 'full';
 
@@ -26,18 +26,9 @@ const render = ({
                 disabled={disabled}
                 shape={shape}
                 underlayColor={underlayColor}>
-                <Content
-                    {...contentProps}
-                    onLayout={onLayout}
-                    shape={shape}
-                    testID={`checkbox__content--${id}`}>
+                <Content {...contentProps} onLayout={onLayout} testID={`checkbox__content--${id}`}>
                     <Icon testID={`checkbox__icon--${id}`}>{icon}</Icon>
-                    <Hovered
-                        eventName={eventName}
-                        renderStyle={{width, height}}
-                        shape={shape}
-                        underlayColor={underlayColor}
-                    />
+                    <Hovered eventName={eventName} underlayColor={underlayColor} />
                 </Content>
             </TouchableRipple>
         </Container>

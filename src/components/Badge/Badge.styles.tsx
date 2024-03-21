@@ -52,6 +52,12 @@ export const Container = styled(Shape)<ContainerProps>`
             top: ${typeof top === 'number' ? `${theme.adaptSize(top)}px` : 'auto'};
         `;
     }}
+
+    ${({theme}) =>
+        theme.OS === 'web' &&
+        css`
+            display: inline-block;
+        `}
 `;
 
 export const LabelText = styled(Typography)`

@@ -21,8 +21,7 @@ const render = ({
     underlayColor,
     ...contentProps
 }: RenderProps) => {
-    const {backgroundColor, color, height, width} = renderStyle;
-    const {onLayout, ...onTouchableRippleEvent} = onEvent;
+    const {backgroundColor, color} = renderStyle;
     const shape = 'medium';
 
     return (
@@ -30,43 +29,36 @@ const render = ({
             accessibilityLabel={labelText ?? accessibilityLabel}
             accessibilityRole="button"
             testID={`fab--${id}`}>
-            <Elevation level={elevation} shape={shape}>
-                <TouchableRipple
-                    {...onTouchableRippleEvent}
-                    shape={shape}
-                    underlayColor={underlayColor}
-                    style={{
-                        ...(typeof style === 'object' && style),
-                        backgroundColor,
-                    }}>
-                    <Content
-                        {...contentProps}
-                        labelTextShow={!!labelText}
-                        onLayout={onLayout}
-                        shape={shape}
-                        testID={`fab__content--${id}`}
-                        type={type}>
-                        {icon && <Icon testID={`fab__icon--${id}`}>{icon}</Icon>}
+            <TouchableRipple
+                {...onEvent}
+                shape={shape}
+                underlayColor={underlayColor}
+                style={{
+                    ...(typeof style === 'object' && style),
+                    backgroundColor,
+                }}>
+                <Content
+                    {...contentProps}
+                    labelTextShow={!!labelText}
+                    testID={`fab__content--${id}`}
+                    type={type}>
+                    {icon && <Icon testID={`fab__icon--${id}`}>{icon}</Icon>}
 
-                        {labelText && (
-                            <AnimatedLabelText
-                                size="large"
-                                style={{color}}
-                                testID={`fab__labelText--${id}`}
-                                type="label">
-                                {labelText}
-                            </AnimatedLabelText>
-                        )}
+                    {labelText && (
+                        <AnimatedLabelText
+                            size="large"
+                            style={{color}}
+                            testID={`fab__labelText--${id}`}
+                            type="label">
+                            {labelText}
+                        </AnimatedLabelText>
+                    )}
 
-                        <Hovered
-                            eventName={eventName}
-                            renderStyle={{width, height}}
-                            shape={shape}
-                            underlayColor={underlayColor}
-                        />
-                    </Content>
-                </TouchableRipple>
-            </Elevation>
+                    <Hovered eventName={eventName} underlayColor={underlayColor} />
+                </Content>
+            </TouchableRipple>
+
+            <Elevation level={elevation} shape={shape} />
         </Container>
     );
 };

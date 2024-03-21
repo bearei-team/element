@@ -1,12 +1,5 @@
 import {forwardRef, useCallback, useEffect, useId} from 'react';
-import {
-    Animated,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    TextStyle,
-    View,
-    ViewStyle,
-} from 'react-native';
+import {Animated, TextStyle, View, ViewStyle} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ComponentStatus, EventName, State} from '../Common/interface';
@@ -29,10 +22,7 @@ export interface RenderProps extends ButtonProps {
     elevation: ElevationLevel;
     eventName: EventName;
     onEvent: OnEvent;
-    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        height: number;
-        width: number;
-    };
+    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle>;
 }
 
 interface ButtonBaseProps extends ButtonProps {
@@ -42,7 +32,6 @@ interface ButtonBaseProps extends ButtonProps {
 interface InitialState {
     elevation?: ElevationLevel;
     eventName: EventName;
-    layout: LayoutRectangle;
     status: ComponentStatus;
 }
 
@@ -83,25 +72,11 @@ const processElevation = (state: State, {type = 'filled', setState}: ProcessElev
     });
 };
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
-    const nativeEventLayout = event.nativeEvent.layout;
-
-    setState(draft => {
-        const update =
-            draft.layout.width !== nativeEventLayout.width ||
-            draft.layout.height !== nativeEventLayout.height;
-
-        update && (draft.layout = nativeEventLayout);
-    });
-};
-
 const processStateChange = (
     state: State,
-    {event, eventName, type, setState}: ProcessStateChangeOptions,
+    {eventName, type, setState}: ProcessStateChangeOptions,
 ) => {
-    eventName === 'layout'
-        ? processLayout(event as LayoutChangeEvent, {setState})
-        : processElevation(state, {type, setState});
+    processElevation(state, {type, setState});
 
     setState(draft => {
         draft.eventName = eventName;
@@ -133,10 +108,9 @@ const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
 
 export const ButtonBase = forwardRef<View, ButtonBaseProps>(
     ({disabled, icon, labelText = 'Label', render, type = 'filled', ...renderProps}, ref) => {
-        const [{elevation, eventName, layout, status}, setState] = useImmer<InitialState>({
+        const [{elevation, eventName, status}, setState] = useImmer<InitialState>({
             elevation: undefined,
             eventName: 'none',
-            layout: {} as LayoutRectangle,
             status: 'idle',
         });
 
@@ -177,8 +151,6 @@ export const ButtonBase = forwardRef<View, ButtonBaseProps>(
                 ...border,
                 backgroundColor,
                 color,
-                height: layout.height,
-                width: layout.width,
             },
             type,
             underlayColor,

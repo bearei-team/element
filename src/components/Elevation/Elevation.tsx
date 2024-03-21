@@ -1,38 +1,14 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
-import {Container, Content, Shadow} from './Elevation.styles';
+import {Container, Shadow} from './Elevation.styles';
 import {ElevationBase, ElevationLevel, ElevationProps, RenderProps} from './ElevationBase';
 
 const AnimatedShadow = Animated.createAnimatedComponent(Shadow);
-const render = ({
-    children,
-    id,
-    level,
-    onEvent,
-    renderStyle,
-    shape,
-    block,
-    ...containerProps
-}: RenderProps) => {
-    const {onLayout} = onEvent;
+const render = ({id, level, renderStyle, shape, ...containerProps}: RenderProps) => {
     const {height, opacity0, opacity1, width} = renderStyle;
 
     return (
-        <Container
-            {...containerProps}
-            {...(block && {onLayout})}
-            block={block}
-            renderStyle={{width, height}}
-            testID={`elevation--${id}`}>
-            <Content
-                {...(!block && {onLayout})}
-                block={block}
-                renderStyle={{width, height}}
-                shape={shape}
-                testID={`elevation__content--${id}`}>
-                {children}
-            </Content>
-
+        <Container {...containerProps} renderStyle={{width, height}} testID={`elevation--${id}`}>
             <AnimatedShadow
                 level={level}
                 renderStyle={{width, height}}

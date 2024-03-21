@@ -6,41 +6,28 @@ import {RenderProps} from './ElevationBase';
 
 type ContainerProps = {
     renderStyle?: {width?: number; height?: number};
-} & Pick<RenderProps, 'block'>;
+};
 
 interface ShadowProps extends Pick<RenderProps & ContainerProps, 'level' | 'renderStyle'> {
     shadowIndex: 0 | 1;
 }
 
-type ContentProps = ContainerProps;
-
 export const Container = styled(View)<ContainerProps>`
-    position: relative;
-
-    ${({block, renderStyle = {}}) => {
-        const {width = 0, height = 0} = renderStyle;
-
-        return !block
-            ? css`
-                  height: ${height}px;
-                  width: ${width}px;
-              `
-            : css`
-                  align-self: stretch;
-                  flex: 1;
-              `;
-    }}
-`;
-
-export const Content = styled(Shape)<ContentProps>`
+    height: 100%;
     position: absolute;
-    z-index: 2;
+    width: 100%;
+    z-index: -1;
 
-    ${({block, renderStyle = {}}) => {
+    ${({theme}) => css`
+        top: ${theme.adaptSize(theme.spacing.none)}px;
+        left: ${theme.adaptSize(theme.spacing.none)}px;
+    `};
+
+    ${({renderStyle = {}}) => {
         const {width = 0, height = 0} = renderStyle;
 
         return (
-            block &&
+            width !== 0 &&
             css`
                 height: ${height}px;
                 width: ${width}px;
@@ -50,7 +37,9 @@ export const Content = styled(Shape)<ContentProps>`
 `;
 
 export const Shadow = styled(Shape)<ShadowProps>`
+    height: 100%;
     position: absolute;
+    width: 100%;
 
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surface};
@@ -77,9 +66,12 @@ export const Shadow = styled(Shape)<ShadowProps>`
     ${({renderStyle = {}}) => {
         const {width = 0, height = 0} = renderStyle;
 
-        return css`
-            height: ${height}px;
-            width: ${width}px;
-        `;
+        return (
+            width !== 0 &&
+            css`
+                height: ${height}px;
+                width: ${width}px;
+            `
+        );
     }}
 `;

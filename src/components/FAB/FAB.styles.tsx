@@ -1,6 +1,6 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {Shape, Typography} from '../Common/Common.styles';
+import {Typography} from '../Common/Common.styles';
 import {RenderProps} from './FABBase';
 
 interface ContentProps extends Pick<RenderProps, 'size' | 'type'> {
@@ -9,8 +9,18 @@ interface ContentProps extends Pick<RenderProps, 'size' | 'type'> {
 
 type IconProps = Pick<RenderProps, 'size'>;
 
-export const Container = styled(View)``;
-export const Content = styled(Shape)<ContentProps>`
+export const Container = styled(View)`
+    cursor: default;
+    position: relative;
+
+    ${({theme}) =>
+        theme.OS === 'web' &&
+        css`
+            display: inline-block;
+        `}
+`;
+
+export const Content = styled.View<ContentProps>`
     align-items: center;
     display: flex;
     flex-direction: row;

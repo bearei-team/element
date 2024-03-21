@@ -28,7 +28,6 @@ const render = ({
     footer,
     id,
     onEvent,
-
     primaryButton,
     renderStyle,
     secondaryButton,
@@ -38,91 +37,74 @@ const render = ({
     titleText,
     underlayColor,
 }: RenderProps) => {
-    const {backgroundColor, height, subColor, titleColor, width, ...border} = renderStyle;
-
+    const {backgroundColor, subColor, titleColor, ...border} = renderStyle;
     const shape = 'medium';
-
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
 
     return (
-        <Container
-            {...(block && {onLayout})}
-            block={block}
-            onLayout={onLayout}
-            renderStyle={{width}}
-            testID={`card--${id}`}>
-            <Elevation level={elevation} shape={shape}>
-                <TouchableRipple
-                    {...onTouchableRippleEvent}
-                    disabled={disabled}
-                    shape={shape}
-                    underlayColor={underlayColor}
-                    style={{
-                        ...(typeof style === 'object' && style),
-                        ...border,
-                        backgroundColor,
-                    }}>
-                    <Inner
-                        {...(!block && {onLayout})}
-                        shape={shape}
-                        testID={`card__inner--${id}`}
-                        block={block}
-                        renderStyle={{width}}>
-                        <Content testID={`card__content--${id}`}>
-                            <ContentHeader testID={`card__contentHeader--${id}`}>
-                                {titleText && (
-                                    <AnimatedTitleText
-                                        style={{color: titleColor}}
-                                        type="body"
-                                        size="large"
-                                        testID={`card__titleText--${id}`}>
-                                        {titleText}
-                                    </AnimatedTitleText>
-                                )}
+        <Container block={block} testID={`card--${id}`}>
+            <TouchableRipple
+                {...onTouchableRippleEvent}
+                disabled={disabled}
+                shape={shape}
+                underlayColor={underlayColor}
+                style={{
+                    ...(typeof style === 'object' && style),
+                    ...border,
+                    backgroundColor,
+                }}>
+                <Inner {...(!block && {onLayout})} testID={`card__inner--${id}`} block={block}>
+                    <Content testID={`card__content--${id}`}>
+                        <ContentHeader testID={`card__contentHeader--${id}`}>
+                            {titleText && (
+                                <AnimatedTitleText
+                                    style={{color: titleColor}}
+                                    type="body"
+                                    size="large"
+                                    testID={`card__titleText--${id}`}>
+                                    {titleText}
+                                </AnimatedTitleText>
+                            )}
 
-                                {subheadText && (
-                                    <AnimatedSubheadText
-                                        style={{color: subColor}}
-                                        type="body"
-                                        size="medium"
-                                        testID={`card__subheadText--${id}`}>
-                                        {subheadText}
-                                    </AnimatedSubheadText>
-                                )}
-                            </ContentHeader>
-
-                            {supportingText && (
-                                <AnimatedSupportingText
+                            {subheadText && (
+                                <AnimatedSubheadText
                                     style={{color: subColor}}
                                     type="body"
                                     size="medium"
-                                    testID={`card__supportingText--${id}`}>
-                                    {supportingText}
-                                </AnimatedSupportingText>
+                                    testID={`card__subheadText--${id}`}>
+                                    {subheadText}
+                                </AnimatedSubheadText>
                             )}
+                        </ContentHeader>
 
-                            {footer && (
-                                <ContentFooter testID={`card__contentFooter--${id}`}>
-                                    <SecondaryButton testID={`card__secondaryButton--${id}`}>
-                                        {secondaryButton}
-                                    </SecondaryButton>
+                        {supportingText && (
+                            <AnimatedSupportingText
+                                style={{color: subColor}}
+                                type="body"
+                                size="medium"
+                                testID={`card__supportingText--${id}`}>
+                                {supportingText}
+                            </AnimatedSupportingText>
+                        )}
 
-                                    <PrimaryButton testID={`card__primaryButton--${id}`}>
-                                        {primaryButton}
-                                    </PrimaryButton>
-                                </ContentFooter>
-                            )}
-                        </Content>
+                        {footer && (
+                            <ContentFooter testID={`card__contentFooter--${id}`}>
+                                <SecondaryButton testID={`card__secondaryButton--${id}`}>
+                                    {secondaryButton}
+                                </SecondaryButton>
 
-                        <Hovered
-                            eventName={eventName}
-                            renderStyle={{width, height}}
-                            shape={shape}
-                            underlayColor={underlayColor}
-                        />
-                    </Inner>
-                </TouchableRipple>
-            </Elevation>
+                                <PrimaryButton testID={`card__primaryButton--${id}`}>
+                                    {primaryButton}
+                                </PrimaryButton>
+                            </ContentFooter>
+                        )}
+                    </Content>
+
+                    <Hovered eventName={eventName} underlayColor={underlayColor} />
+                </Inner>
+            </TouchableRipple>
+
+            <Elevation level={elevation} shape={shape} />
         </Container>
     );
 };
