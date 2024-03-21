@@ -27,7 +27,7 @@ const processOutlinedAnimated = (
 
     const toValue = responseEvent ? borderInputRange[2] : value;
 
-    return animatedTiming(borderAnimated, {toValue});
+    return animatedTiming(borderAnimated, {toValue, useNativeDriver: true});
 };
 
 const processAnimatedTiming = (
@@ -52,11 +52,11 @@ const processAnimatedTiming = (
                 eventName,
                 type,
             }),
-            animatedTiming(colorAnimated, {toValue}),
+            animatedTiming(colorAnimated, {toValue, useNativeDriver: true}),
         ]).start();
     }
 
-    animatedTiming(colorAnimated, {toValue}).start();
+    animatedTiming(colorAnimated, {toValue, useNativeDriver: true}).start();
 };
 
 export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedOptions) => {

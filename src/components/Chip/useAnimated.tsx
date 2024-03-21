@@ -22,7 +22,7 @@ const processOutlinedAnimated = (
     const value = disabled ? 0 : borderInputRange[borderInputRange.length - 2];
     const toValue = eventName === 'focus' ? borderInputRange[2] : value;
 
-    return animatedTiming(borderAnimated, {toValue});
+    return animatedTiming(borderAnimated, {toValue, useNativeDriver: true});
 };
 
 const processAnimatedTiming = (
@@ -46,11 +46,11 @@ const processAnimatedTiming = (
                 disabled,
                 eventName,
             }),
-            animatedTiming(colorAnimated, {toValue}),
+            animatedTiming(colorAnimated, {toValue, useNativeDriver: true}),
         ]).start();
     }
 
-    animatedTiming(colorAnimated, {toValue}).start();
+    animatedTiming(colorAnimated, {toValue, useNativeDriver: true}).start();
 };
 
 export const useAnimated = ({

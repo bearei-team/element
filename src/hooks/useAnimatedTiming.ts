@@ -1,6 +1,6 @@
 import {CreateTransitionOptions, Theme} from '@bearei/theme';
 import {useCallback} from 'react';
-import {Animated, Easing} from 'react-native';
+import {Animated, Easing, Platform} from 'react-native';
 
 export interface AnimatedTimingOptions
     extends Partial<
@@ -37,7 +37,7 @@ export const useAnimatedTiming = (theme: Theme) => {
                 duration: transitionDuration,
                 easing: Easing.bezier(bezier.x0, bezier.y0, bezier.x1, bezier.y1),
                 toValue,
-                useNativeDriver,
+                useNativeDriver: Platform.OS === 'web' ? false : useNativeDriver,
             });
         },
         [theme],

@@ -34,6 +34,7 @@ const createEntryAnimated =
             duration: Math.min(minDuration, 400),
             easing: 'emphasizedDecelerate',
             toValue: 1,
+            useNativeDriver: true,
         } as AnimatedTimingOptions;
 
         if (typeof active === 'boolean') {
@@ -58,6 +59,7 @@ const createExitAnimated =
             duration: 'short3',
             easing: 'emphasizedAccelerate',
             toValue: 0,
+            useNativeDriver: true,
         } as AnimatedTimingOptions;
 
         if (typeof active === 'boolean') {

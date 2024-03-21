@@ -13,7 +13,7 @@ interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {opacityAnimated, level = 0}: ProcessAnimatedTimingOptions,
-) => animatedTiming(opacityAnimated, {toValue: level}).start();
+) => animatedTiming(opacityAnimated, {toValue: level, useNativeDriver: true}).start();
 
 export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
     const [opacityAnimated] = useAnimatedValue(level);

@@ -18,6 +18,7 @@ const processAnimatedTiming = (
 
     animatedTiming(scaleAnimated, {
         toValue: eventName === 'hoverIn' ? 2 : toValue,
+        useNativeDriver: true,
     }).start();
 };
 
