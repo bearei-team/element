@@ -143,7 +143,7 @@ export const SupportingBase = forwardRef<View, SupportingBaseProps>(
             [onVisibleSource, setState],
         );
 
-        const [onEvent] = useOnEvent({...renderProps, onStateChange});
+        const [onEvent] = useOnEvent({...renderProps, onStateChange, disabled: !visible});
         const supporting = useMemo(
             () =>
                 render({

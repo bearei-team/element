@@ -46,6 +46,7 @@ interface ProcessEventOptions {
 
 type ProcessValueChangeOptions = Pick<FormStore<Store>, 'setFieldValue'> & {
     name?: string;
+    storeValue?: unknown;
 };
 
 interface ProcessValidateOptions {
@@ -59,8 +60,11 @@ type ProcessInitOptions = ProcessEventOptions &
         validate: (value?: unknown) => Promise<FieldError | undefined>;
     };
 
-const processValueChange = ({name, setFieldValue}: ProcessValueChangeOptions, value?: unknown) => {
-    name && setFieldValue({[name]: value});
+const processValueChange = (
+    {name, setFieldValue, storeValue}: ProcessValueChangeOptions,
+    value?: unknown,
+) => {
+    name && storeValue !== value && setFieldValue({[name]: value});
 };
 
 const processValidate = async (
@@ -121,8 +125,10 @@ export const FormItemBase = forwardRef<View, FormItemBaseProps>(
         const errors = getFieldError(name)?.errors;
         const value = getFieldValue(name) ?? getInitialValue(name);
         const onValueChange = useCallback(
-            (nextValue?: unknown) => processValueChange({name, setFieldValue}, nextValue),
-            [name, setFieldValue],
+            (nextValue?: unknown) => {
+                processValueChange({name, setFieldValue, storeValue: value}, nextValue);
+            },
+            [name, setFieldValue, value],
         );
 
         const fieldValidate = useCallback(

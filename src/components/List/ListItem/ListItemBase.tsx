@@ -95,6 +95,7 @@ interface ProcessEventOptions {
 type ProcessPressOutOptions = Pick<RenderProps, 'activeKey' | 'dataKey' | 'onActive'> &
     ProcessEventOptions;
 
+type ProcessClosedOptions = Pick<RenderProps, 'onClosed'>;
 type ProcessTrailingEventOptions = {callback?: () => void} & ProcessEventOptions;
 type ProcessStateChangeOptions = OnStateChangeOptions & ProcessPressOutOptions;
 interface RenderTrailingOptions
@@ -194,6 +195,7 @@ const processTrailingEvent = (
     callback?.();
 };
 
+const processClosed = ({onClosed}: ProcessClosedOptions, dataKey?: string) => onClosed?.(dataKey);
 const processTrailingHoverIn = ({setState}: ProcessEventOptions) =>
     processTrailingEvent('hoverIn', {setState});
 
@@ -246,7 +248,7 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             dataKey,
             itemGap,
             onActive,
-            onClosed,
+            onClosed: onClosedSource,
             render,
             size = 'medium',
             supporting,
@@ -285,6 +287,11 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
         const activeColor = theme.palette.secondary.secondaryContainer;
         const underlayColor = theme.palette.surface.onSurface;
         const active = activeKey === dataKey;
+        const onClosed = useCallback(
+            () => processClosed({onClosed: onClosedSource}, dataKey),
+            [dataKey, onClosedSource],
+        );
+
         const [{height, trailingOpacity, addonAfterWidth, addonBeforeWidth}] = useAnimated({
             active,
             addonAfterLayoutWidth: addonAfterLayout.width,
