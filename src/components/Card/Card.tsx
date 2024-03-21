@@ -39,12 +39,11 @@ const render = ({
 }: RenderProps) => {
     const {backgroundColor, subColor, titleColor, ...border} = renderStyle;
     const shape = 'medium';
-    const {onLayout, ...onTouchableRippleEvent} = onEvent;
 
     return (
         <Container block={block} testID={`card--${id}`}>
             <TouchableRipple
-                {...onTouchableRippleEvent}
+                {...onEvent}
                 block={block}
                 disabled={disabled}
                 shape={shape}
@@ -54,7 +53,7 @@ const render = ({
                     ...border,
                     backgroundColor,
                 }}>
-                <Inner {...(!block && {onLayout})} testID={`card__inner--${id}`} block={block}>
+                <Inner testID={`card__inner--${id}`} block={block}>
                     <Content testID={`card__content--${id}`}>
                         <ContentHeader testID={`card__contentHeader--${id}`}>
                             {titleText && (

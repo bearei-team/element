@@ -1,5 +1,5 @@
 import {useEffect} from 'react';
-import {Animated} from 'react-native';
+import {Animated, InteractionManager} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {AnimatedTiming, useAnimatedTiming} from '../../../hooks/useAnimatedTiming';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
@@ -45,11 +45,13 @@ const processAddonAnimated = (
 ) => {
     const toValue = active ? 1 : 0;
 
-    typeof active === 'boolean' &&
-        Animated.parallel([
-            animatedTiming(addonBeforeAnimated, {toValue}),
-            animatedTiming(addonAfterAnimated, {toValue}),
-        ]).start();
+    InteractionManager.runAfterInteractions(() => {
+        typeof active === 'boolean' &&
+            Animated.parallel([
+                animatedTiming(addonBeforeAnimated, {toValue}),
+                animatedTiming(addonAfterAnimated, {toValue}),
+            ]).start();
+    });
 };
 
 const processTrailingAnimatedTiming = (

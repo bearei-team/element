@@ -3,10 +3,7 @@ import styled, {css} from 'styled-components/native';
 import {Typography} from '../Common/Common.styles';
 import {RenderProps} from './ChipBase';
 
-interface ContainerProps extends Pick<RenderProps, 'block'> {
-    renderStyle: {width?: number};
-}
-
+type ContainerProps = Pick<RenderProps, 'block'>;
 interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
     iconShow: boolean;
     trailingIconShow: boolean;
@@ -91,13 +88,6 @@ export const Content = styled.View<ContentProps>`
         trailingIconShow &&
         css`
             padding-right: ${theme.adaptSize(theme.spacing.small)}px;
-        `}
-
-
-    ${({block}) =>
-        block &&
-        css`
-            width: 100%;
         `}
 `;
 

@@ -26,18 +26,13 @@ const render = ({
     block,
     ...contentProps
 }: RenderProps) => {
-    const {onLayout, ...onTouchableRippleEvent} = onEvent;
-    const {backgroundColor, color, width, ...border} = renderStyle;
+    const {backgroundColor, color, ...border} = renderStyle;
     const shape = 'extraSmall';
 
     return (
-        <Container
-            accessibilityLabel={labelText}
-            testID={`chip--${id}`}
-            block={block}
-            renderStyle={{width}}>
+        <Container accessibilityLabel={labelText} testID={`chip--${id}`} block={block}>
             <TouchableRipple
-                {...onTouchableRippleEvent}
+                {...onEvent}
                 active={active}
                 disabled={disabled}
                 shape={shape}
@@ -51,8 +46,6 @@ const render = ({
                 }}>
                 <Content
                     {...contentProps}
-                    {...(!block && {onLayout})}
-                    block={block}
                     iconShow={!!icon}
                     trailingIconShow={!!trailingIcon}
                     testID={`chip__content--${id}`}

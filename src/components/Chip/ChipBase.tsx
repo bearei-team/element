@@ -2,7 +2,6 @@ import {forwardRef, useCallback, useEffect, useId} from 'react';
 import {
     Animated,
     GestureResponderEvent,
-    LayoutRectangle,
     NativeTouchEvent,
     TextStyle,
     View,
@@ -38,10 +37,7 @@ export interface RenderProps extends ChipProps {
     elevation: ElevationLevel;
     eventName: EventName;
     onEvent: OnEvent;
-    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        height: number;
-        width: number;
-    };
+    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle>;
 }
 
 interface ChipBaseProps extends ChipProps {
@@ -54,7 +50,6 @@ interface InitialState {
     elevation?: ElevationLevel;
     eventName: EventName;
     status: ComponentStatus;
-    layout: LayoutRectangle;
 }
 
 interface ProcessEventOptions {
@@ -178,14 +173,13 @@ export const ChipBase = forwardRef<View, ChipBaseProps>(
         },
         ref,
     ) => {
-        const [{active, touchableLocation, elevation, eventName, status, layout}, setState] =
+        const [{active, touchableLocation, elevation, eventName, status}, setState] =
             useImmer<InitialState>({
                 active: undefined,
                 touchableLocation: undefined,
                 elevation: undefined,
                 eventName: 'none',
                 status: 'idle',
-                layout: {} as LayoutRectangle,
             });
 
         const theme = useTheme();
@@ -236,8 +230,6 @@ export const ChipBase = forwardRef<View, ChipBaseProps>(
                 ...border,
                 backgroundColor,
                 color,
-                height: layout.height,
-                width: layout.width,
             },
             touchableLocation,
             type,

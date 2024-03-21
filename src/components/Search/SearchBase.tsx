@@ -11,7 +11,6 @@ import {
 } from 'react';
 import {
     Animated,
-    LayoutChangeEvent,
     LayoutRectangle,
     PressableProps,
     TextInput,
@@ -101,24 +100,11 @@ type RenderSearchListOptions = SearchProps & {
 };
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
-    const nativeEventLayout = event.nativeEvent.layout;
-
-    setState(draft => {
-        const update =
-            draft.layout.width !== nativeEventLayout.width ||
-            draft.layout.height !== nativeEventLayout.height;
-
-        update && (draft.layout = nativeEventLayout);
-    });
-};
-
 const processStateChange = (
     state: State,
-    {event, eventName, ref, setState}: ProcessStateChangeOptions,
+    {eventName, ref, setState}: ProcessStateChangeOptions,
 ) => {
     const nextEvent = {
-        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () => processFocus(ref),
     } as Record<EventName, () => void>;
 
