@@ -4,13 +4,16 @@ import {Hovered} from '../../Hovered/Hovered';
 import {TouchableRipple} from '../../TouchableRipple/TouchableRipple';
 import {
     AddonAfter,
+    AddonAfterInner,
     AddonBefore,
+    AddonBeforeInner,
     Container,
     Content,
     Headline,
     Inner,
     Leading,
     Main,
+    MainInner,
     SupportingText,
     Trailing,
 } from './ListItem.styles';
@@ -39,6 +42,8 @@ const render = ({
     touchableLocation,
     trailing,
     underlayColor,
+    onAddonAfterLayout,
+    onAddonBeforeLayout,
     ...innerProps
 }: RenderProps) => {
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
@@ -49,100 +54,112 @@ const render = ({
 
     return (
         <AnimatedContainer
-            {...(addon && {shape})}
             accessibilityLabel={headline}
             accessibilityRole="list"
-            itemGap={itemGap}
             style={{height: containerHeight}}
             testID={`listItem--${id}`}>
-            {addonBefore && (
-                <AnimatedAddonBefore
-                    testID={`listItem__addonBefore--${id}`}
-                    style={{width: addonBeforeWidth}}>
-                    {addonBefore}
-                </AnimatedAddonBefore>
-            )}
+            <Inner {...(addon && {shape})} itemGap={itemGap} testID={`listItem__inner--${id}`}>
+                {addonBefore && (
+                    <AnimatedAddonBefore
+                        testID={`listItem__addonBefore--${id}`}
+                        style={{width: addonBeforeWidth}}>
+                        <AddonBeforeInner
+                            testID={`listItem__addonBeforeInner--${id}`}
+                            onLayout={onAddonBeforeLayout}>
+                            {addonBefore}
+                        </AddonBeforeInner>
+                    </AnimatedAddonBefore>
+                )}
 
-            <Main {...(!addon && {shape})} testID={`listItem_main--${id}`}>
-                <TouchableRipple
-                    {...onTouchableRippleEvent}
-                    active={active}
-                    touchableLocation={touchableLocation}
-                    underlayColor={activeColor}>
-                    <Inner
-                        {...innerProps}
-                        size={size}
-                        testID={`listItem__inner--${id}`}
-                        onLayout={onLayout}>
-                        {leading && (
-                            <Leading size={size} testID={`listItem__leading--${id}`}>
-                                {leading}
-                            </Leading>
-                        )}
-
-                        <Content
+                <Main {...(!addon && {shape})} testID={`listItem_main--${id}`}>
+                    <TouchableRipple
+                        {...onTouchableRippleEvent}
+                        active={active}
+                        touchableLocation={touchableLocation}
+                        underlayColor={activeColor}>
+                        <MainInner
+                            {...innerProps}
                             size={size}
-                            supportingTextShow={!!(typeof supporting === 'string' && supporting)}
-                            testID={`listItem__content--${id}`}>
-                            {size === 'small' ? (
-                                <SupportingText
-                                    ellipsizeMode="tail"
-                                    numberOfLines={1}
-                                    size="medium"
-                                    testID={`listItem__supportingText--${id}`}
-                                    type="body">
-                                    {headline}
-                                </SupportingText>
-                            ) : (
-                                <Headline
-                                    ellipsizeMode="tail"
-                                    numberOfLines={1}
-                                    size="large"
-                                    testID={`listItem__headline--${id}`}
-                                    type="body">
-                                    {headline}
-                                </Headline>
+                            testID={`listItem__inner--${id}`}
+                            onLayout={onLayout}>
+                            {leading && (
+                                <Leading size={size} testID={`listItem__leading--${id}`}>
+                                    {leading}
+                                </Leading>
                             )}
 
-                            {supporting && size !== 'small' && typeof supporting === 'string' && (
-                                <SupportingText
-                                    ellipsizeMode="tail"
-                                    numberOfLines={supportingTextNumberOfLines}
-                                    size="medium"
-                                    testID={`listItem__supportingText--${id}`}
-                                    type="body">
-                                    {supporting}
-                                </SupportingText>
-                            )}
-
-                            {supporting && typeof supporting !== 'string' && supporting}
-                        </Content>
-
-                        {trailing && (
-                            <AnimatedTrailing
+                            <Content
                                 size={size}
-                                style={{opacity: trailingOpacity}}
-                                testID={`listItem__trailingInner--${id}`}>
-                                {trailing}
-                            </AnimatedTrailing>
-                        )}
+                                supportingTextShow={
+                                    !!(typeof supporting === 'string' && supporting)
+                                }
+                                testID={`listItem__content--${id}`}>
+                                {size === 'small' ? (
+                                    <SupportingText
+                                        ellipsizeMode="tail"
+                                        numberOfLines={1}
+                                        size="medium"
+                                        testID={`listItem__supportingText--${id}`}
+                                        type="body">
+                                        {headline}
+                                    </SupportingText>
+                                ) : (
+                                    <Headline
+                                        ellipsizeMode="tail"
+                                        numberOfLines={1}
+                                        size="large"
+                                        testID={`listItem__headline--${id}`}
+                                        type="body">
+                                        {headline}
+                                    </Headline>
+                                )}
 
-                        <Hovered
-                            eventName={eventName}
-                            renderStyle={{width, height}}
-                            underlayColor={underlayColor}
-                        />
-                    </Inner>
-                </TouchableRipple>
-            </Main>
+                                {supporting &&
+                                    size !== 'small' &&
+                                    typeof supporting === 'string' && (
+                                        <SupportingText
+                                            ellipsizeMode="tail"
+                                            numberOfLines={supportingTextNumberOfLines}
+                                            size="medium"
+                                            testID={`listItem__supportingText--${id}`}
+                                            type="body">
+                                            {supporting}
+                                        </SupportingText>
+                                    )}
 
-            {addonAfter && (
-                <AnimatedAddonAfter
-                    testID={`listItem__addonAfter--${id}`}
-                    style={{width: addonAfterWidth}}>
-                    {addonAfter}
-                </AnimatedAddonAfter>
-            )}
+                                {supporting && typeof supporting !== 'string' && supporting}
+                            </Content>
+
+                            {trailing && (
+                                <AnimatedTrailing
+                                    size={size}
+                                    style={{opacity: trailingOpacity}}
+                                    testID={`listItem__trailingInner--${id}`}>
+                                    {trailing}
+                                </AnimatedTrailing>
+                            )}
+
+                            <Hovered
+                                eventName={eventName}
+                                renderStyle={{width, height}}
+                                underlayColor={underlayColor}
+                            />
+                        </MainInner>
+                    </TouchableRipple>
+                </Main>
+
+                {addonAfter && (
+                    <AnimatedAddonAfter
+                        testID={`listItem__addonAfter--${id}`}
+                        style={{width: addonAfterWidth}}>
+                        <AddonAfterInner
+                            testID={`listItem__addonAfterInner--${id}`}
+                            onLayout={onAddonAfterLayout}>
+                            {addonAfter}
+                        </AddonAfterInner>
+                    </AnimatedAddonAfter>
+                )}
+            </Inner>
         </AnimatedContainer>
     );
 };

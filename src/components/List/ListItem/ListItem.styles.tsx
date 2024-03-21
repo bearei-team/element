@@ -10,21 +10,38 @@ type ContentProps = {
 type InnerProps = Pick<RenderProps, 'size'>;
 type LeadingProps = Pick<RenderProps, 'size'>;
 
-export const Container = styled(Shape)<ContainerProps>`
+export const Container = styled.View`
     overflow: hidden;
+    position: relative;
+`;
+
+export const Inner = styled(Shape)<ContainerProps>`
     display: flex;
     flex-direction: row;
+    overflow: hidden;
 
     ${({itemGap = 0}) => css`
-        padding-bottom: ${itemGap}px;
+        margin-bottom: ${itemGap}px;
     `};
 `;
 
 export const AddonBefore = styled.View`
     overflow: hidden;
+    position: relative;
 `;
 
 export const AddonAfter = styled(AddonBefore)``;
+export const AddonBeforeInner = styled.View`
+    height: 100%;
+    position: absolute;
+
+    ${({theme}) => css`
+        left: ${theme.adaptSize(theme.spacing.none)}px;
+        top: ${theme.adaptSize(theme.spacing.none)}px;
+    `};
+`;
+
+export const AddonAfterInner = styled(AddonBeforeInner)``;
 export const Main = styled(Shape)`
     flex: 1;
     overflow: hidden;
@@ -34,7 +51,7 @@ export const Main = styled(Shape)`
     `};
 `;
 
-export const Inner = styled.View<InnerProps>`
+export const MainInner = styled.View<InnerProps>`
     align-items: flex-start;
     display: flex;
     flex-direction: row;

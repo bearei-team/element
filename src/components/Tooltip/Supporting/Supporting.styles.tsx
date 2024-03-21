@@ -14,6 +14,7 @@ interface ContainerProps
 }
 
 type InnerProps = Pick<RenderProps, 'type' | 'supportingPosition'>;
+
 export const Container = styled(Shape)<ContainerProps>`
     overflow: hidden;
     position: absolute;
@@ -65,10 +66,10 @@ export const Container = styled(Shape)<ContainerProps>`
         return supportingPosition[position];
     }}
 
-    ${({visible = false, theme}) =>
+    ${({visible = false}) =>
         !visible &&
         css`
-            height: ${theme.adaptSize(theme.spacing.none)}px;
+            z-index: -16384;
             pointer-events: none;
         `}
 `;

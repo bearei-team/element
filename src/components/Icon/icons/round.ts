@@ -4,6 +4,7 @@ import ArrowBack from '@material-design-icons/svg/round/arrow_back.svg';
 import ArrowForward from '@material-design-icons/svg/round/arrow_forward.svg';
 import BookmarkAdd from '@material-design-icons/svg/round/bookmark_add.svg';
 import BookmarkBorder from '@material-design-icons/svg/round/bookmark_border.svg';
+import Check from '@material-design-icons/svg/round/check.svg';
 import CheckBox from '@material-design-icons/svg/round/check_box.svg';
 import CheckBoxOutlineBlank from '@material-design-icons/svg/round/check_box_outline_blank.svg';
 import Circle from '@material-design-icons/svg/round/circle.svg';
@@ -42,6 +43,7 @@ export const round = {
         arrowForward: ArrowForward,
         bookmarkAdd: BookmarkAdd,
         bookmarkBorder: BookmarkBorder,
+        check: Check,
         checkBox: CheckBox,
         checkBoxOutlineBlank: CheckBoxOutlineBlank,
         circle: Circle,

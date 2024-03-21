@@ -19,10 +19,10 @@ export interface SheetProps
     onClose?: () => void;
     onClosed?: () => void;
     onPrimaryButtonEvent?: OnEvent;
+    onSecondaryButtonEvent?: OnEvent;
     primaryButton?: React.JSX.Element;
     primaryButtonLabelText?: string;
     secondaryButton?: React.JSX.Element;
-    onSecondaryButtonEvent?: OnEvent;
     secondaryButtonLabelText?: string;
     sheetPosition?: 'horizontalStart' | 'horizontalEnd';
     visible?: boolean;

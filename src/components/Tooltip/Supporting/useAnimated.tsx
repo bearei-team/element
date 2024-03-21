@@ -18,7 +18,7 @@ const processAnimatedTiming = (
     {opacityAnimated, visible, onClosed}: ProcessAnimatedTimingOptions,
 ) =>
     animatedTiming(opacityAnimated, {toValue: visible ? 1 : 0}).start(
-        () => !visible && onClosed?.(visible),
+        ({finished}) => finished && !visible && onClosed?.(visible),
     );
 
 export const useAnimated = ({visible, onClosed}: UseAnimatedOptions) => {

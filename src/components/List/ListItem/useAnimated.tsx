@@ -1,4 +1,4 @@
-import {useCallback, useEffect} from 'react';
+import {useEffect} from 'react';
 import {Animated} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {AnimatedTiming, useAnimatedTiming} from '../../../hooks/useAnimatedTiming';
@@ -6,7 +6,8 @@ import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {EventName, State} from '../../Common/interface';
 import {RenderProps} from './ListItemBase';
 
-interface UseAnimatedOptions extends Pick<RenderProps, 'trailingButton' | 'itemGap' | 'closeIcon'> {
+interface UseAnimatedOptions
+    extends Pick<RenderProps, 'trailingButton' | 'itemGap' | 'closeIcon' | 'visible' | 'onClosed'> {
     active?: boolean;
     addonAfterLayoutWidth?: number;
     addonBeforeLayoutWidth?: number;
@@ -16,8 +17,7 @@ interface UseAnimatedOptions extends Pick<RenderProps, 'trailingButton' | 'itemG
     trailingEventName: EventName;
 }
 
-interface ProcessCloseAnimatedOptions {
-    finished?: () => void;
+interface ProcessVisibleAnimatedOptions extends Pick<UseAnimatedOptions, 'visible' | 'onClosed'> {
     heightAnimated: Animated.Value;
 }
 
@@ -26,14 +26,18 @@ interface ProcessAddonAnimatedOptions extends Pick<UseAnimatedOptions, 'active'>
     addonBeforeAnimated: Animated.Value;
 }
 
-interface ProcessContentAnimatedTimingOptions extends UseAnimatedOptions {
+interface ProcessTrailingAnimatedTimingOptions extends UseAnimatedOptions {
     trailingOpacityAnimated: Animated.Value;
 }
 
-const processCloseAnimated = (
+const processVisibleAnimated = (
     animatedTiming: AnimatedTiming,
-    {heightAnimated, finished}: ProcessCloseAnimatedOptions,
-) => animatedTiming(heightAnimated, {toValue: 0}).start(finished);
+    {heightAnimated, onClosed, visible}: ProcessVisibleAnimatedOptions,
+) =>
+    typeof visible === 'boolean' &&
+    animatedTiming(heightAnimated, {toValue: visible ? 1 : 0}).start(
+        ({finished}) => finished && !visible && onClosed?.(),
+    );
 
 const processAddonAnimated = (
     animatedTiming: AnimatedTiming,
@@ -48,16 +52,16 @@ const processAddonAnimated = (
         ]).start();
 };
 
-const processContentAnimatedTiming = (
+const processTrailingAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {
+        closeIcon,
         eventName = 'none',
         state,
         trailingButton,
         trailingEventName,
         trailingOpacityAnimated,
-        closeIcon,
-    }: ProcessContentAnimatedTimingOptions,
+    }: ProcessTrailingAnimatedTimingOptions,
 ) => {
     const toValue = state !== 'enabled' ? 1 : 0;
 
@@ -75,11 +79,13 @@ export const useAnimated = ({
     eventName,
     itemGap = 0,
     layoutHeight = 0,
+    onClosed,
     state,
     trailingButton,
     trailingEventName,
+    visible,
 }: UseAnimatedOptions) => {
-    const [heightAnimated] = useAnimatedValue(1);
+    const [heightAnimated] = useAnimatedValue(typeof visible === 'boolean' ? (visible ? 1 : 0) : 1);
     const [trailingOpacityAnimated] = useAnimatedValue(trailingButton ? 0 : 1);
     const addonDefaultValue = active ? 1 : 0;
     const [addonBeforeAnimated] = useAnimatedValue(addonDefaultValue);
@@ -106,13 +112,8 @@ export const useAnimated = ({
         outputRange: [0, addonAfterLayoutWidth],
     });
 
-    const onCloseAnimated = useCallback(
-        (finished?: () => void) => processCloseAnimated(animatedTiming, {heightAnimated, finished}),
-        [animatedTiming, heightAnimated],
-    );
-
     useEffect(() => {
-        processContentAnimatedTiming(animatedTiming, {
+        processTrailingAnimatedTiming(animatedTiming, {
             closeIcon,
             eventName,
             state,
@@ -122,14 +123,12 @@ export const useAnimated = ({
         });
 
         return () => {
-            heightAnimated.stopAnimation();
             trailingOpacityAnimated.stopAnimation();
         };
     }, [
         animatedTiming,
         closeIcon,
         eventName,
-        heightAnimated,
         state,
         trailingButton,
         trailingEventName,
@@ -149,5 +148,13 @@ export const useAnimated = ({
         };
     }, [active, addonAfterAnimated, addonBeforeAnimated, animatedTiming]);
 
-    return [{height, onCloseAnimated, trailingOpacity, addonBeforeWidth, addonAfterWidth}];
+    useEffect(() => {
+        processVisibleAnimated(animatedTiming, {visible, heightAnimated, onClosed});
+
+        return () => {
+            heightAnimated.stopAnimation();
+        };
+    }, [animatedTiming, heightAnimated, onClosed, visible]);
+
+    return [{height, trailingOpacity, addonBeforeWidth, addonAfterWidth}];
 };

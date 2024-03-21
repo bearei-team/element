@@ -48,7 +48,7 @@ const exitScreen = (
         animatedTiming(backgroundAnimated, animatedTimingOptions),
         animatedTiming(translateXAnimated, animatedTimingOptions),
         animatedTiming(widthAnimated, animatedTimingOptions),
-    ]).start(() => onClosed?.());
+    ]).start(({finished}) => finished && onClosed?.());
 };
 
 const processAnimatedTiming = (

@@ -9,12 +9,12 @@ export interface ListDataSource
         ListItemProps,
         | 'addonAfter'
         | 'addonBefore'
-        | 'close'
         | 'headline'
         | 'leading'
         | 'supporting'
         | 'supportingTextNumberOfLines'
         | 'trailing'
+        | 'visible'
     > {
     key?: string;
 }
@@ -30,7 +30,8 @@ type BaseProps = Partial<
             | 'closeIconType'
             | 'itemGap'
             | 'onActive'
-            | 'onClose'
+            | 'onClosed'
+            | 'onVisible'
             | 'shape'
             | 'size'
             | 'supportingTextNumberOfLines'
@@ -56,10 +57,11 @@ type RenderItemOptions = ListRenderItemInfo<ListDataSource> &
         | 'defaultActiveKey'
         | 'itemGap'
         | 'onActive'
-        | 'onClose'
-        | 'supportingTextNumberOfLines'
-        | 'size'
+        | 'onClosed'
+        | 'onVisible'
         | 'shape'
+        | 'size'
+        | 'supportingTextNumberOfLines'
     >;
 
 interface InitialState {
@@ -73,7 +75,6 @@ interface ProcessEventOptions {
 }
 
 type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
-type ProcessCloseOptions = ProcessEventOptions & Pick<RenderProps, 'onClose'>;
 
 const processActive = ({onActive, setState}: ProcessActiveOptions, value?: string) => {
     setState(draft => {
@@ -83,16 +84,16 @@ const processActive = ({onActive, setState}: ProcessActiveOptions, value?: strin
     onActive?.(value);
 };
 
-const processClose = ({onClose, setState}: ProcessCloseOptions, value?: string) => {
+const processVisible = ({setState}: ProcessEventOptions, value?: string) => {
     if (typeof value !== 'string') {
         return;
     }
 
     setState(draft => {
-        draft.data = draft.data.filter(datum => datum.key !== value);
+        draft.data = draft.data.map(datum =>
+            datum.key === value ? {...datum, visible: false} : datum,
+        );
     });
-
-    onClose?.(value);
 };
 
 const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSource[]) =>
@@ -124,7 +125,7 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
             defaultActiveKey,
             itemGap,
             onActive: onActiveSource,
-            onClose: onCloseSource,
+            onClosed,
             render,
             shape,
             size,
@@ -145,9 +146,9 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
             [onActiveSource, setState],
         );
 
-        const onClose = useCallback(
-            (value?: string) => processClose({onClose: onCloseSource, setState}, value),
-            [onCloseSource, setState],
+        const onVisible = useCallback(
+            (value?: string) => processVisible({setState}, value),
+            [setState],
         );
 
         const processRenderItem = useCallback(
@@ -160,7 +161,8 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
                     closeIconType,
                     itemGap,
                     onActive,
-                    onClose,
+                    onClosed,
+                    onVisible,
                     shape,
                     size,
                     supportingTextNumberOfLines,
@@ -172,7 +174,8 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
                 closeIconType,
                 itemGap,
                 onActive,
-                onClose,
+                onClosed,
+                onVisible,
                 shape,
                 size,
                 supportingTextNumberOfLines,

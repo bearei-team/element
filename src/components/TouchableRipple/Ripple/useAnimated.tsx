@@ -29,7 +29,7 @@ const createEntryAnimated =
         animatedTiming: AnimatedTiming,
         {active, scaleAnimated, minDuration, opacityAnimated}: CreateEntryAnimatedOptions,
     ) =>
-    (finished?: () => void) => {
+    (callback?: () => void) => {
         const animatedTimingOptions = {
             duration: Math.min(minDuration, 400),
             easing: 'emphasizedDecelerate',
@@ -40,10 +40,12 @@ const createEntryAnimated =
             return Animated.parallel([
                 animatedTiming(scaleAnimated, animatedTimingOptions),
                 animatedTiming(opacityAnimated, animatedTimingOptions),
-            ]).start(finished);
+            ]).start(({finished}) => finished && callback?.());
         }
 
-        animatedTiming(scaleAnimated, animatedTimingOptions).start(finished);
+        animatedTiming(scaleAnimated, animatedTimingOptions).start(
+            ({finished}) => finished && callback?.(),
+        );
     };
 
 const createExitAnimated =
@@ -51,7 +53,7 @@ const createExitAnimated =
         animatedTiming: AnimatedTiming,
         {active, opacityAnimated, scaleAnimated}: CreateExitAnimatedOptions,
     ) =>
-    (finished?: () => void) => {
+    (callback?: () => void) => {
         const animatedTimingOptions = {
             duration: 'short3',
             easing: 'emphasizedAccelerate',
@@ -62,10 +64,12 @@ const createExitAnimated =
             return Animated.parallel([
                 animatedTiming(scaleAnimated, animatedTimingOptions),
                 animatedTiming(opacityAnimated, animatedTimingOptions),
-            ]).start(finished);
+            ]).start(({finished}) => finished && callback?.());
         }
 
-        animatedTiming(opacityAnimated, animatedTimingOptions).start(finished);
+        animatedTiming(opacityAnimated, animatedTimingOptions).start(
+            ({finished}) => finished && callback?.(),
+        );
     };
 
 const processAnimatedTiming = (
