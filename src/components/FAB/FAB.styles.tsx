@@ -17,6 +17,7 @@ export const Container = styled(View)`
         theme.OS === 'web' &&
         css`
             display: inline-block;
+            line-height: ${theme.adaptSize(theme.spacing.none)}px;
         `}
 `;
 

@@ -1,12 +1,5 @@
 import {forwardRef, useCallback, useEffect, useId} from 'react';
-import {
-    Animated,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    TextStyle,
-    View,
-    ViewStyle,
-} from 'react-native';
+import {View} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
@@ -29,10 +22,6 @@ export interface RenderProps extends CheckboxProps {
     eventName: EventName;
     icon: React.JSX.Element;
     onEvent: OnEvent;
-    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        height: number;
-        width: number;
-    };
 }
 
 interface CheckboxBaseProps extends CheckboxProps {
@@ -42,7 +31,6 @@ interface CheckboxBaseProps extends CheckboxProps {
 interface InitialState {
     active?: boolean;
     eventName: EventName;
-    layout: LayoutRectangle;
     status: ComponentStatus;
     type?: CheckboxType;
 }
@@ -56,18 +44,6 @@ type ProcessActiveOptions = Pick<RenderProps, 'active' | 'indeterminate' | 'onAc
 
 type ProcessStateChangeOptions = OnStateChangeOptions & ProcessActiveOptions;
 type ProcessInitOptions = Pick<RenderProps, 'indeterminate'> & ProcessEventOptions;
-
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
-    const nativeEventLayout = event.nativeEvent.layout;
-
-    setState(draft => {
-        const update =
-            draft.layout.width !== nativeEventLayout.width ||
-            draft.layout.height !== nativeEventLayout.height;
-
-        update && (draft.layout = nativeEventLayout);
-    });
-};
 
 const processActive = ({setState, active, indeterminate, onActive}: ProcessActiveOptions) => {
     if (typeof active !== 'boolean') {
@@ -90,14 +66,12 @@ const processActive = ({setState, active, indeterminate, onActive}: ProcessActiv
 
 const processStateChange = ({
     active,
-    event,
     eventName,
     indeterminate,
     onActive,
     setState,
 }: ProcessStateChangeOptions) => {
     const nextEvent = {
-        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () => processActive({setState, onActive, active: !active, indeterminate}),
     } as Record<EventName, () => void>;
 
@@ -150,10 +124,9 @@ export const CheckboxBase = forwardRef<View, CheckboxBaseProps>(
         },
         ref,
     ) => {
-        const [{active, eventName, layout, status, type}, setState] = useImmer<InitialState>({
+        const [{active, eventName, status, type}, setState] = useImmer<InitialState>({
             active: undefined,
             eventName: 'none',
-            layout: {} as LayoutRectangle,
             status: 'idle',
             type: 'unselected',
         });
@@ -198,7 +171,6 @@ export const CheckboxBase = forwardRef<View, CheckboxBaseProps>(
             id,
             onEvent,
             ref,
-            renderStyle: {height: layout.height, width: layout.width},
             underlayColor,
         });
     },

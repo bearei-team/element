@@ -19,7 +19,7 @@ export const Container = styled(View)<ContainerProps>`
     ${({theme}) =>
         theme.OS === 'web' &&
         css`
-            display: inline-block;
+            display: block;
         `}
 `;
 

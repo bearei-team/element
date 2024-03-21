@@ -112,7 +112,6 @@ export const FABBase = forwardRef<View, FABBaseProps>(
         const [{elevation, eventName, status}, setState] = useImmer<InitialState>({
             elevation: undefined,
             eventName: 'none',
-
             status: 'idle',
         });
 

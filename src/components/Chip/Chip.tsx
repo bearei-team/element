@@ -43,6 +43,7 @@ const render = ({
                 shape={shape}
                 underlayColor={activeColor}
                 touchableLocation={touchableLocation}
+                block={block}
                 style={{
                     ...(typeof style === 'object' && style),
                     ...border,

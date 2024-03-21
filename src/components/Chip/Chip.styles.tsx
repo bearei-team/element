@@ -16,22 +16,17 @@ export const Container = styled(View)<ContainerProps>`
     cursor: default;
     position: relative;
 
-    ${({block, renderStyle}) => {
-        const {width = 0} = renderStyle;
-
-        return block
-            ? css`
-                  width: 100%;
-              `
-            : css`
-                  width: ${width}px;
-              `;
-    }}
+    ${({block}) =>
+        block &&
+        css`
+            width: 100%;
+        `}
 
     ${({theme}) =>
         theme.OS === 'web' &&
         css`
             display: inline-block;
+            line-height: ${theme.adaptSize(theme.spacing.none)}px;
         `}
 `;
 

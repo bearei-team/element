@@ -22,6 +22,7 @@ type ControlProps = {renderStyle?: {height?: number}} & ContentProps;
 type TextInputProps = {multilineText?: boolean};
 
 export const Container = styled.View``;
+
 export const Inner = styled.View`
     display: flex;
     flex-direction: column;

@@ -7,10 +7,6 @@ interface ContainerProps {
 }
 
 export const Container = styled(Shape)<ContainerProps>`
-    display: flex;
-    overflow: hidden;
-    flex-direction: row;
-
     ${({theme}) =>
         theme.OS === 'web' &&
         css`
@@ -18,12 +14,4 @@ export const Container = styled(Shape)<ContainerProps>`
         `}
 `;
 
-export const Inner = styled(Pressable)`
-    align-self: stretch;
-    flex: 1;
-    position: relative;
-`;
-
-export const Content = styled.View`
-    position: absolute;
-`;
+export const Content = styled(Pressable)``;

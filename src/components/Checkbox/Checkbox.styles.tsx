@@ -1,23 +1,12 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 
-interface ContainerProps {
-    renderStyle?: {width?: number};
-}
-
-export const Container = styled(View)<ContainerProps>`
-    ${({renderStyle = {}}) => {
-        const {width = 0} = renderStyle;
-
-        return css`
-            width: ${width}px;
-        `;
-    }}
-
+export const Container = styled(View)`
     ${({theme}) =>
         theme.OS === 'web' &&
         css`
             display: inline-block;
+            line-height: ${theme.adaptSize(theme.spacing.none)}px;
         `}
 `;
 

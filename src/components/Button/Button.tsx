@@ -34,6 +34,7 @@ const render = ({
             testID={`button--${id}`}>
             <TouchableRipple
                 {...onEvent}
+                block={block}
                 style={{
                     ...(typeof style === 'object' && style),
                     ...border,

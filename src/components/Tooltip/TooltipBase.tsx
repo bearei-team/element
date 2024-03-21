@@ -8,16 +8,7 @@ import {
     useMemo,
     useRef,
 } from 'react';
-import {
-    Animated,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    PressableProps,
-    TextStyle,
-    View,
-    ViewProps,
-    ViewStyle,
-} from 'react-native';
+import {PressableProps, View, ViewProps} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {emitter} from '../../context/ModalProvider';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
@@ -47,10 +38,6 @@ export interface TooltipProps extends Omit<BaseProps, 'children' | 'disabled' | 
 export interface RenderProps extends TooltipProps {
     containerCurrent: View | null;
     onEvent: OnEvent;
-    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        height?: number;
-        width?: number;
-    };
 }
 
 interface TooltipBaseProps extends TooltipProps {
@@ -58,7 +45,6 @@ interface TooltipBaseProps extends TooltipProps {
 }
 
 interface InitialState {
-    layout: LayoutRectangle;
     visible?: boolean;
 }
 
@@ -75,18 +61,6 @@ type ProcessEventNameChangeOptions = Pick<
 >;
 
 type ProcessVisibleOptions = ProcessEventOptions & Pick<RenderProps, 'onVisible'>;
-
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
-    const nativeEventLayout = event.nativeEvent.layout;
-
-    setState(draft => {
-        const update =
-            draft.layout.width !== nativeEventLayout.width ||
-            draft.layout.height !== nativeEventLayout.height;
-
-        update && (draft.layout = nativeEventLayout);
-    });
-};
 
 const processVisible = ({setState, onVisible}: ProcessVisibleOptions, visible?: boolean) => {
     if (typeof visible !== 'boolean') {
@@ -113,15 +87,11 @@ const processEventNameChange = (
     debounceProcessVisible({setState}, eventName === 'hoverIn');
 
 const processStateChange = ({
-    event,
     eventName,
     setState,
     debounceProcessVisible,
-}: ProcessStateChangeOptions) => {
-    eventName === 'layout' && processLayout(event as LayoutChangeEvent, {setState});
-
+}: ProcessStateChangeOptions) =>
     processEventNameChange({setState, debounceProcessVisible}, eventName);
-};
 
 const processUnmount = (id: string) =>
     emitter.emit('modal', {id: `tooltip__supporting--${id}`, element: undefined});
@@ -139,8 +109,7 @@ export const TooltipBase = forwardRef<View, TooltipBaseProps>(
         },
         ref,
     ) => {
-        const [{layout, visible}, setState] = useImmer<InitialState>({
-            layout: {} as LayoutRectangle,
+        const [{visible}, setState] = useImmer<InitialState>({
             visible: undefined,
         });
 
@@ -196,7 +165,6 @@ export const TooltipBase = forwardRef<View, TooltipBaseProps>(
             onEvent,
             onVisible,
             ref: containerRef,
-            renderStyle: {width: layout.width, height: layout.height},
             visible,
         });
     },

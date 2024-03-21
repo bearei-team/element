@@ -21,6 +21,7 @@ type TouchableProps = PressableProps &
 
 export interface TouchableRippleProps
     extends Omit<TouchableProps, 'children' | 'disabled' | 'hitSlop'> {
+    block?: boolean;
     children?: React.JSX.Element;
     defaultActive?: boolean;
     disabled?: boolean;

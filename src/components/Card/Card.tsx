@@ -45,6 +45,7 @@ const render = ({
         <Container block={block} testID={`card--${id}`}>
             <TouchableRipple
                 {...onTouchableRippleEvent}
+                block={block}
                 disabled={disabled}
                 shape={shape}
                 underlayColor={underlayColor}

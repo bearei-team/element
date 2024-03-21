@@ -12,6 +12,10 @@ export const Container = styled(View)<ContainerProps>`
     cursor: default;
     position: relative;
 
+    ${({theme}) => css`
+        height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+    `}
+
     ${({block}) =>
         block &&
         css`
@@ -22,6 +26,7 @@ export const Container = styled(View)<ContainerProps>`
         theme.OS === 'web' &&
         css`
             display: inline-block;
+            line-height: ${theme.adaptSize(theme.spacing.none)}px;
         `}
 `;
 
@@ -42,7 +47,6 @@ export const Content = styled.View<ContentProps>`
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.small)}px;
-        height: ${theme.adaptSize(theme.spacing.small * 5)}px;
     `}
 
     ${({theme, type = 'filled'}) => {
@@ -103,12 +107,6 @@ export const Content = styled.View<ContentProps>`
 
         return iconShow && contentType[type];
     }}
-
-    ${({block}) =>
-        block &&
-        css`
-            width: 100%;
-        `}
 `;
 
 export const LabelText = styled(Typography)`
