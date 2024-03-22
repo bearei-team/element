@@ -12,21 +12,49 @@ export const Container = styled(View)<ContainerProps>`
     cursor: default;
     position: relative;
 
-    ${({theme}) => css`
-        height: ${theme.adaptSize(theme.spacing.small * 5)}px;
-    `}
+    ${({theme}) => {
+        const os = {
+            android: css`
+                align-items: center;
+                align-self: stretch;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+            `,
+            ios: css`
+                align-items: center;
+                align-self: stretch;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+            `,
+            macos: css`
+                align-items: center;
+                align-self: stretch;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+            `,
+            web: css`
+                align-items: center;
+                align-self: stretch;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+            `,
+            windows: css`
+                display: inline-block;
+                line-height: ${theme.adaptSize(theme.spacing.none)}px;
+            `,
+        };
+
+        return os[theme.OS];
+    }}
 
     ${({block}) =>
         block &&
         css`
             width: 100%;
-        `}
-
-    ${({theme}) =>
-        theme.OS === 'web' &&
-        css`
-            display: inline-block;
-            line-height: ${theme.adaptSize(theme.spacing.none)}px;
         `}
 `;
 
@@ -38,6 +66,10 @@ export const Content = styled.View<ContentProps>`
     pointer-events: none;
     position: relative;
     z-index: 1;
+
+    ${({theme}) => css`
+        height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+    `}
 
     ${({theme, iconShow}) =>
         iconShow &&

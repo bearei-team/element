@@ -9,6 +9,7 @@ import {RenderProps} from './TextFieldBase';
 interface UseAnimatedOptions extends Pick<RenderProps, 'type' | 'error' | 'disabled'> {
     eventName: EventName;
     filled: boolean;
+    labelLayoutWidth?: number;
     state: State;
 }
 
@@ -155,6 +156,7 @@ export const useAnimated = ({
     disabled,
     error,
     filled,
+    labelLayoutWidth = 0,
     state,
     type = 'filled',
 }: UseAnimatedOptions) => {
@@ -243,46 +245,27 @@ export const useAnimated = ({
     });
 
     const backgroundColor = backgroundColorAnimated.interpolate(backgroundColorConfig[type]);
-    const labelTextTop = labelAnimated.interpolate({
+    const scale =
+        theme.adaptFontSize(theme.typography.body.small.size) /
+        theme.adaptFontSize(theme.typography.body.large.size);
+
+    const labelTranslateX = labelAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [theme.adaptSize(theme.spacing.small), theme.adaptSize(theme.spacing.medium)],
+        outputRange: [-(labelLayoutWidth * (1 - scale)) / 2, 0],
     });
 
-    const labelTextSize = labelAnimated.interpolate({
+    const labelScale = labelAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [
-            theme.adaptFontSize(theme.typography.body.small.size),
-            theme.adaptFontSize(theme.typography.body.large.size),
+            theme.adaptFontSize(theme.typography.body.small.size) /
+                theme.adaptFontSize(theme.typography.body.large.size),
+            1,
         ],
     });
 
-    const labelTextHeight = labelAnimated.interpolate({
+    const activeIndicatorScaleY = activeIndicatorAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [
-            theme.adaptSize(theme.typography.body.small.lineHeight),
-            theme.adaptSize(theme.typography.body.large.lineHeight),
-        ],
-    });
-
-    const labelTexLineHeight = labelAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [
-            theme.adaptSize(theme.typography.body.small.lineHeight),
-            theme.adaptSize(theme.typography.body.large.lineHeight),
-        ],
-    });
-
-    const labelTextLetterSpacing = labelAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [
-            theme.adaptSize(theme.typography.body.small.letterSpacing),
-            theme.adaptSize(theme.typography.body.large.letterSpacing),
-        ],
-    });
-
-    const activeIndicatorHeight = activeIndicatorAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [1, 2],
+        outputRange: [0.5, 1],
     });
 
     const supportingTextColor = supportingTextAnimated.interpolate({
@@ -408,15 +391,12 @@ export const useAnimated = ({
     return [
         {
             activeIndicatorBackgroundColor,
-            activeIndicatorHeight,
+            activeIndicatorScaleY,
             backgroundColor,
             inputColor,
-            labelTexLineHeight,
             labelTextColor,
-            labelTextHeight,
-            labelTextLetterSpacing,
-            labelTextSize,
-            labelTextTop,
+            labelScale,
+            labelTranslateX,
             supportingTextColor,
         },
     ];

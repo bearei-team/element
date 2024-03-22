@@ -11,6 +11,8 @@ import {
 } from 'react';
 import {
     Animated,
+    LayoutChangeEvent,
+    LayoutRectangle,
     NativeSyntheticEvent,
     PressableProps,
     TextInput,
@@ -49,15 +51,13 @@ export interface RenderProps extends TextFieldProps {
     onEvent: Omit<OnEvent, 'onBlur' | 'onFocus'>;
     state: State;
     underlayColor: string;
+    onLabelLayout: (event: LayoutChangeEvent) => void;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         activeIndicatorBackgroundColor: AnimatedInterpolation;
-        activeIndicatorHeight: AnimatedInterpolation;
-        labelTexLineHeight: AnimatedInterpolation;
+        activeIndicatorScaleY: AnimatedInterpolation;
+        labelScale: AnimatedInterpolation;
         labelTextColor: AnimatedInterpolation;
-        labelTextHeight: AnimatedInterpolation;
-        labelTextLetterSpacing: AnimatedInterpolation;
-        labelTextSize: AnimatedInterpolation;
-        labelTextTop: AnimatedInterpolation;
+        labelTranslateX: AnimatedInterpolation;
         supportingTextColor: AnimatedInterpolation;
     };
 }
@@ -75,6 +75,7 @@ interface InitialState {
     eventName: EventName;
     state: State;
     value?: string;
+    labelLayout: LayoutRectangle;
 }
 
 interface ProcessEventOptions {
@@ -89,6 +90,18 @@ type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOpti
     OnStateChangeOptions;
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
+const processLabelLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
+    const nativeEventLayout = event.nativeEvent.layout;
+
+    setState(draft => {
+        const update =
+            draft.labelLayout.width !== nativeEventLayout.width ||
+            draft.labelLayout.height !== nativeEventLayout.height;
+
+        update && (draft.labelLayout = nativeEventLayout);
+    });
+};
+
 const processStateChange = (
     state: State,
     {eventName, setState, ref}: ProcessStateChangeOptions,
@@ -178,12 +191,14 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
         },
         ref,
     ) => {
-        const [{eventName, state, contentSize, value}, setState] = useImmer<InitialState>({
-            contentSize: undefined,
-            eventName: 'none',
-            state: 'enabled',
-            value: '',
-        });
+        const [{labelLayout, eventName, state, contentSize, value}, setState] =
+            useImmer<InitialState>({
+                contentSize: undefined,
+                eventName: 'none',
+                state: 'enabled',
+                value: '',
+                labelLayout: {} as LayoutRectangle,
+            });
 
         const id = useId();
         const textFieldRef = useRef<TextInput>(null);
@@ -215,19 +230,21 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
             [setState],
         );
 
+        const onLabelLayout = useCallback(
+            (event: LayoutChangeEvent) => processLabelLayout(event, {setState}),
+            [setState],
+        );
+
         const [{onBlur, onFocus, ...onEvent}] = useOnEvent({...textInputProps, onStateChange});
         const [
             {
                 activeIndicatorBackgroundColor,
-                activeIndicatorHeight,
+                activeIndicatorScaleY,
                 backgroundColor,
                 inputColor,
-                labelTexLineHeight,
+                labelScale,
                 labelTextColor,
-                labelTextHeight,
-                labelTextLetterSpacing,
-                labelTextSize,
-                labelTextTop,
+                labelTranslateX,
                 supportingTextColor,
             },
         ] = useAnimated({
@@ -235,6 +252,7 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
             error,
             eventName,
             filled: [valueSource, defaultValue, placeholder, value].some(item => item),
+            labelLayoutWidth: labelLayout.width,
             state,
             type,
         });
@@ -293,20 +311,18 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
             onEvent: {...onEvent},
             renderStyle: {
                 activeIndicatorBackgroundColor,
-                activeIndicatorHeight,
+                activeIndicatorScaleY,
                 backgroundColor,
-                labelTexLineHeight,
+                labelScale,
                 labelTextColor,
-                labelTextHeight,
-                labelTextLetterSpacing,
-                labelTextSize,
-                labelTextTop,
+                labelTranslateX,
                 supportingTextColor,
             },
             state,
             supportingText,
             trailing,
             underlayColor,
+            onLabelLayout,
         });
     },
 );

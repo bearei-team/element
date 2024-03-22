@@ -15,7 +15,7 @@ const processAnimatedTiming = (
     {colorAnimated, disabled}: ProcessAnimatedTimingOptions,
 ) =>
     typeof disabled === 'boolean' &&
-    animatedTiming(colorAnimated, {toValue: disabled ? 0 : 1, useNativeDriver: true}).start();
+    animatedTiming(colorAnimated, {toValue: disabled ? 0 : 1}).start();
 
 export const useAnimated = ({disabled, type = 'primary'}: UseAnimatedOptions) => {
     const [colorAnimated] = useAnimatedValue(disabled ? 0 : 1);

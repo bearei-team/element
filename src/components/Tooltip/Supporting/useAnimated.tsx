@@ -17,7 +17,7 @@ const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {opacityAnimated, visible, onClosed}: ProcessAnimatedTimingOptions,
 ) =>
-    animatedTiming(opacityAnimated, {toValue: visible ? 1 : 0, useNativeDriver: true}).start(
+    animatedTiming(opacityAnimated, {toValue: visible ? 1 : 0}).start(
         ({finished}) => finished && !visible && onClosed?.(visible),
     );
 

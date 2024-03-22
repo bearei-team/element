@@ -18,7 +18,6 @@ const processAnimatedTiming = (
 ) =>
     animatedTiming(opacityAnimated, {
         toValue: event[eventName] ?? 0,
-        useNativeDriver: true,
     }).start();
 
 export const useAnimated = ({eventName, opacities = [0, 0.08, 0.12]}: UseAnimatedOptions) => {

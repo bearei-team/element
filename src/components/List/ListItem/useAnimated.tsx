@@ -27,7 +27,7 @@ interface ProcessAddonAnimatedOptions extends Pick<UseAnimatedOptions, 'active'>
 }
 
 interface ProcessTrailingAnimatedTimingOptions extends UseAnimatedOptions {
-    trailingOpacityAnimated: Animated.Value;
+    trailingAnimated: Animated.Value;
 }
 
 const processVisibleAnimated = (
@@ -62,13 +62,13 @@ const processTrailingAnimatedTiming = (
         state,
         trailingButton,
         trailingEventName,
-        trailingOpacityAnimated,
+        trailingAnimated,
     }: ProcessTrailingAnimatedTimingOptions,
 ) => {
     const toValue = state !== 'enabled' ? 1 : 0;
 
     [trailingButton, closeIcon].includes(true) &&
-        animatedTiming(trailingOpacityAnimated, {
+        animatedTiming(trailingAnimated, {
             toValue: [eventName, trailingEventName].includes('hoverIn') ? 1 : toValue,
         }).start();
 };
@@ -88,13 +88,13 @@ export const useAnimated = ({
     visible,
 }: UseAnimatedOptions) => {
     const [heightAnimated] = useAnimatedValue(typeof visible === 'boolean' ? (visible ? 1 : 0) : 1);
-    const [trailingOpacityAnimated] = useAnimatedValue(trailingButton ? 0 : 1);
+    const [trailingAnimated] = useAnimatedValue(trailingButton ? 0 : 1);
     const addonDefaultValue = active ? 1 : 0;
     const [addonBeforeAnimated] = useAnimatedValue(addonDefaultValue);
     const [addonAfterAnimated] = useAnimatedValue(addonDefaultValue);
     const theme = useTheme();
     const [animatedTiming] = useAnimatedTiming(theme);
-    const trailingOpacity = trailingOpacityAnimated.interpolate({
+    const trailingOpacity = trailingAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 1],
     });
@@ -121,11 +121,11 @@ export const useAnimated = ({
             state,
             trailingButton,
             trailingEventName,
-            trailingOpacityAnimated,
+            trailingAnimated,
         });
 
         return () => {
-            trailingOpacityAnimated.stopAnimation();
+            trailingAnimated.stopAnimation();
         };
     }, [
         animatedTiming,
@@ -134,7 +134,7 @@ export const useAnimated = ({
         state,
         trailingButton,
         trailingEventName,
-        trailingOpacityAnimated,
+        trailingAnimated,
     ]);
 
     useEffect(() => {

@@ -7,6 +7,6 @@ declare module 'styled-components/native' {
         adaptFontSize: (size: number) => number;
         adaptSize: (size: number) => number;
         colorScheme: ColorSchemeName;
-        OS: RNPlatform.OS;
+        OS: 'ios' | 'android' | 'windows' | 'macos' | 'web';
     }
 }

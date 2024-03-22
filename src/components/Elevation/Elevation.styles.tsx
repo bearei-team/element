@@ -13,14 +13,14 @@ interface ShadowProps extends Pick<RenderProps & ContainerProps, 'level' | 'rend
 }
 
 export const Container = styled(View)<ContainerProps>`
-    height: 100%;
     position: absolute;
-    width: 100%;
     z-index: -1;
 
     ${({theme}) => css`
-        top: ${theme.adaptSize(theme.spacing.none)}px;
+        bottom: ${theme.adaptSize(theme.spacing.none)}px;
         left: ${theme.adaptSize(theme.spacing.none)}px;
+        right: ${theme.adaptSize(theme.spacing.none)}px;
+        top: ${theme.adaptSize(theme.spacing.none)}px;
     `};
 
     ${({renderStyle = {}}) => {
@@ -37,14 +37,14 @@ export const Container = styled(View)<ContainerProps>`
 `;
 
 export const Shadow = styled(Shape)<ShadowProps>`
-    height: 100%;
     position: absolute;
-    width: 100%;
 
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surface};
-        top: ${theme.adaptSize(theme.spacing.none)}px;
+        bottom: ${theme.adaptSize(theme.spacing.none)}px;
         left: ${theme.adaptSize(theme.spacing.none)}px;
+        right: ${theme.adaptSize(theme.spacing.none)}px;
+        top: ${theme.adaptSize(theme.spacing.none)}px;
     `};
 
     ${({theme, level = 0, shadowIndex = 0}) => {

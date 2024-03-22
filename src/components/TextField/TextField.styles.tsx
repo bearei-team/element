@@ -8,7 +8,7 @@ type HeaderInnerProps = Pick<RenderProps, 'type' | 'multiline'> & {
     trailingShow: boolean;
 };
 
-type LabelTextProps = {
+type LabelProps = {
     scale?: boolean;
     leadingShow: boolean;
 } & TypographyProps;
@@ -22,7 +22,6 @@ type ControlProps = {renderStyle?: {height?: number}} & ContentProps;
 type TextInputProps = {multilineText?: boolean};
 
 export const Container = styled.View``;
-
 export const Inner = styled.View`
     display: flex;
     flex-direction: column;
@@ -70,7 +69,7 @@ export const HeaderInner = styled(Shape)<HeaderInnerProps>`
         `}
 `;
 
-export const LabelText = styled(Typography)<LabelTextProps>`
+export const Label = styled.View<LabelProps>`
     pointer-events: none;
     position: absolute;
 
@@ -85,6 +84,8 @@ export const LabelText = styled(Typography)<LabelTextProps>`
         `}
 `;
 
+export const LabelInner = styled.View``;
+export const LabelText = styled(Typography)``;
 export const Trailing = styled.View`
     display: flex;
     flex-direction: row;
@@ -179,10 +180,11 @@ export const SupportingText = styled(Typography)`
 
 export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
     position: absolute;
-    width: 100%;
 
     ${({theme}) => css`
         bottom: ${theme.adaptSize(theme.spacing.none)}px;
         left: ${theme.adaptSize(theme.spacing.none)}px;
+        right: ${theme.adaptSize(theme.spacing.none)}px;
+        height: ${theme.adaptSize(theme.spacing.extraSmall / 2)}px;
     `}
 `;

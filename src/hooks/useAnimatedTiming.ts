@@ -21,7 +21,7 @@ export const useAnimatedTiming = (theme: Theme) => {
                 duration = 'short3',
                 easing = 'standard',
                 toValue,
-                useNativeDriver = false,
+                useNativeDriver = true,
                 ...animatedConfig
             }: AnimatedTimingOptions,
         ) => {

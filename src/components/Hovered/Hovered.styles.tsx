@@ -7,15 +7,17 @@ interface ContainerProps extends Pick<RenderProps, 'underlayColor'> {
 }
 
 export const Container = styled(Shape)<ContainerProps>`
-    height: 100%;
     pointer-events: none;
     position: absolute;
-    width: 100%;
     z-index: -1;
+    width: 100%;
+    height: 100%;
 
     ${({theme}) =>
         css`
+            bottom: ${theme.adaptSize(theme.spacing.none)}px;
             left: ${theme.adaptSize(theme.spacing.none)}px;
+            right: ${theme.adaptSize(theme.spacing.none)}px;
             top: ${theme.adaptSize(theme.spacing.none)}px;
         `}
 

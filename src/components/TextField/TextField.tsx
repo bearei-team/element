@@ -9,6 +9,8 @@ import {
     Header,
     HeaderInner,
     Inner,
+    Label,
+    LabelInner,
     LabelText,
     Leading,
     SupportingText,
@@ -17,6 +19,7 @@ import {
 import {RenderProps, TextFieldBase, TextFieldProps} from './TextFieldBase';
 
 const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner);
+const AnimatedLabelInner = Animated.createAnimatedComponent(LabelInner);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
@@ -34,18 +37,16 @@ const render = ({
     supportingText,
     trailing,
     underlayColor,
+    onLabelLayout,
 }: RenderProps) => {
     const {
         activeIndicatorBackgroundColor,
-        activeIndicatorHeight,
+        activeIndicatorScaleY,
         backgroundColor,
-        labelTexLineHeight,
         labelTextColor,
-        labelTextHeight,
-        labelTextLetterSpacing,
-        labelTextSize,
-        labelTextTop,
         supportingTextColor,
+        labelScale,
+        labelTranslateX,
     } = renderStyle;
     const shape = 'extraSmallTop';
     const leadingShow = !!leading;
@@ -89,27 +90,30 @@ const render = ({
                             <Trailing testID={`textfield__trailing--${id}`}>{trailing}</Trailing>
                         )}
 
-                        <AnimatedLabelText
-                            testID={`textField__labelText--${id}`}
-                            type="body"
-                            size="large"
+                        <Label
                             leadingShow={leadingShow}
-                            style={{
-                                color: labelTextColor,
-                                fontSize: labelTextSize,
-                                height: labelTextHeight,
-                                letterSpacing: labelTextLetterSpacing,
-                                lineHeight: labelTexLineHeight,
-                                top: labelTextTop,
-                            }}>
-                            {labelText}
-                        </AnimatedLabelText>
+                            testID={`textField__label--${id}`}
+                            onLayout={onLabelLayout}>
+                            <AnimatedLabelInner
+                                testID={`textField__labelInner--${id}`}
+                                style={{
+                                    transform: [{scale: labelScale}, {translateX: labelTranslateX}],
+                                }}>
+                                <AnimatedLabelText
+                                    testID={`textField__labelText--${id}`}
+                                    type="body"
+                                    size="large"
+                                    style={{color: labelTextColor}}>
+                                    {labelText}
+                                </AnimatedLabelText>
+                            </AnimatedLabelInner>
+                        </Label>
 
                         <AnimatedActiveIndicator
                             testID={`textfield__activeIndicator--${id}`}
                             style={{
                                 backgroundColor: activeIndicatorBackgroundColor,
-                                height: activeIndicatorHeight,
+                                transform: [{scaleY: activeIndicatorScaleY}],
                             }}
                         />
 

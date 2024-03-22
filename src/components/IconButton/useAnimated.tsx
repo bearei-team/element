@@ -19,12 +19,12 @@ const processAnimatedTiming = (
 
     if (type === 'outlined') {
         return Animated.parallel([
-            animatedTiming(borderAnimated, {toValue, useNativeDriver: true}),
-            animatedTiming(colorAnimated, {toValue, useNativeDriver: true}),
+            animatedTiming(borderAnimated, {toValue}),
+            animatedTiming(colorAnimated, {toValue}),
         ]).start();
     }
 
-    animatedTiming(colorAnimated, {toValue, useNativeDriver: true}).start();
+    animatedTiming(colorAnimated, {toValue}).start();
 };
 
 export const useAnimated = ({disabled, type = 'filled'}: UseAnimatedOptions) => {
