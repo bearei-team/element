@@ -9,13 +9,8 @@ type HeaderInnerProps = Pick<RenderProps, 'type' | 'multiline'> & {
 };
 
 type LabelProps = {
-    scale?: boolean;
     leadingShow: boolean;
 } & TypographyProps;
-
-interface ActiveIndicatorProps {
-    renderStyle?: {width?: number};
-}
 
 type ContentProps = Pick<RenderProps, 'multiline'>;
 type ControlProps = {renderStyle?: {height?: number}} & ContentProps;
@@ -75,6 +70,7 @@ export const Label = styled.View<LabelProps>`
 
     ${({theme}) => css`
         left: ${theme.adaptSize(theme.spacing.medium)}px;
+        top: ${theme.adaptSize(theme.spacing.medium)}px;
     `}
 
     ${({theme, leadingShow}) =>
@@ -178,7 +174,7 @@ export const SupportingText = styled(Typography)`
     `}
 `;
 
-export const ActiveIndicator = styled.View<ActiveIndicatorProps>`
+export const ActiveIndicator = styled.View`
     position: absolute;
 
     ${({theme}) => css`

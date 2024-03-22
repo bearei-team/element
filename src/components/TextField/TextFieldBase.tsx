@@ -55,9 +55,11 @@ export interface RenderProps extends TextFieldProps {
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
         activeIndicatorBackgroundColor: AnimatedInterpolation;
         activeIndicatorScaleY: AnimatedInterpolation;
+        labelInnerTranslateX: AnimatedInterpolation;
+        labelInnerTranslateY: AnimatedInterpolation;
         labelScale: AnimatedInterpolation;
         labelTextColor: AnimatedInterpolation;
-        labelTranslateX: AnimatedInterpolation;
+        labelTranslateY: AnimatedInterpolation;
         supportingTextColor: AnimatedInterpolation;
     };
 }
@@ -242,17 +244,19 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
                 activeIndicatorScaleY,
                 backgroundColor,
                 inputColor,
+                labelInnerTranslateX,
+                labelInnerTranslateY,
                 labelScale,
                 labelTextColor,
-                labelTranslateX,
                 supportingTextColor,
+                labelTranslateY,
             },
         ] = useAnimated({
             disabled,
             error,
             eventName,
             filled: [valueSource, defaultValue, placeholder, value].some(item => item),
-            labelLayoutWidth: labelLayout.width,
+            labelLayout,
             state,
             type,
         });
@@ -313,10 +317,12 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
                 activeIndicatorBackgroundColor,
                 activeIndicatorScaleY,
                 backgroundColor,
+                labelInnerTranslateX,
+                labelInnerTranslateY,
                 labelScale,
                 labelTextColor,
-                labelTranslateX,
                 supportingTextColor,
+                labelTranslateY,
             },
             state,
             supportingText,

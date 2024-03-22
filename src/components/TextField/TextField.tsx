@@ -21,6 +21,8 @@ import {RenderProps, TextFieldBase, TextFieldProps} from './TextFieldBase';
 const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner);
 const AnimatedLabelInner = Animated.createAnimatedComponent(LabelInner);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
+const AnimatedLabelLabel = Animated.createAnimatedComponent(Label);
+
 const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
 const render = ({
@@ -43,10 +45,12 @@ const render = ({
         activeIndicatorBackgroundColor,
         activeIndicatorScaleY,
         backgroundColor,
+        labelInnerTranslateX,
+        labelInnerTranslateY,
+        labelScale,
         labelTextColor,
         supportingTextColor,
-        labelScale,
-        labelTranslateX,
+        labelTranslateY,
     } = renderStyle;
     const shape = 'extraSmallTop';
     const leadingShow = !!leading;
@@ -90,14 +94,21 @@ const render = ({
                             <Trailing testID={`textfield__trailing--${id}`}>{trailing}</Trailing>
                         )}
 
-                        <Label
+                        <AnimatedLabelLabel
                             leadingShow={leadingShow}
                             testID={`textField__label--${id}`}
-                            onLayout={onLabelLayout}>
+                            onLayout={onLabelLayout}
+                            style={{
+                                transform: [{translateY: labelTranslateY}],
+                            }}>
                             <AnimatedLabelInner
                                 testID={`textField__labelInner--${id}`}
                                 style={{
-                                    transform: [{scale: labelScale}, {translateX: labelTranslateX}],
+                                    transform: [
+                                        {scale: labelScale},
+                                        {translateX: labelInnerTranslateX},
+                                        {translateY: labelInnerTranslateY},
+                                    ],
                                 }}>
                                 <AnimatedLabelText
                                     testID={`textField__labelText--${id}`}
@@ -107,7 +118,7 @@ const render = ({
                                     {labelText}
                                 </AnimatedLabelText>
                             </AnimatedLabelInner>
-                        </Label>
+                        </AnimatedLabelLabel>
 
                         <AnimatedActiveIndicator
                             testID={`textfield__activeIndicator--${id}`}

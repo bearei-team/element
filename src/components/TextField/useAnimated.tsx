@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useMemo} from 'react';
-import {Animated} from 'react-native';
+import {Animated, LayoutRectangle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {AnimatedTiming, useAnimatedTiming} from '../../hooks/useAnimatedTiming';
 import {useAnimatedValue} from '../../hooks/useAnimatedValue';
@@ -9,7 +9,7 @@ import {RenderProps} from './TextFieldBase';
 interface UseAnimatedOptions extends Pick<RenderProps, 'type' | 'error' | 'disabled'> {
     eventName: EventName;
     filled: boolean;
-    labelLayoutWidth?: number;
+    labelLayout: LayoutRectangle;
     state: State;
 }
 
@@ -156,11 +156,12 @@ export const useAnimated = ({
     disabled,
     error,
     filled,
-    labelLayoutWidth = 0,
+    labelLayout,
     state,
     type = 'filled',
 }: UseAnimatedOptions) => {
     const theme = useTheme();
+    const {width: labelLayoutWidth = 0, height: labelLayoutHeight = 0} = labelLayout;
     const disabledAnimatedValue = disabled ? 0 : 1;
     const defaultAnimatedValue = {
         activeIndicatorAnimated: error ? 1 : 0,
@@ -249,18 +250,24 @@ export const useAnimated = ({
         theme.adaptFontSize(theme.typography.body.small.size) /
         theme.adaptFontSize(theme.typography.body.large.size);
 
-    const labelTranslateX = labelAnimated.interpolate({
+    const labelTranslateY = labelAnimated.interpolate({
+        inputRange: [0, 1],
+        outputRange: [-theme.adaptSize(theme.spacing.small), 0],
+    });
+
+    const labelInnerTranslateX = labelAnimated.interpolate({
         inputRange: [0, 1],
         outputRange: [-(labelLayoutWidth * (1 - scale)) / 2, 0],
     });
 
+    const labelInnerTranslateY = labelAnimated.interpolate({
+        inputRange: [0, 1],
+        outputRange: [-(labelLayoutHeight * (1 - scale)) / 2, 0],
+    });
+
     const labelScale = labelAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [
-            theme.adaptFontSize(theme.typography.body.small.size) /
-                theme.adaptFontSize(theme.typography.body.large.size),
-            1,
-        ],
+        outputRange: [scale, 1],
     });
 
     const activeIndicatorScaleY = activeIndicatorAnimated.interpolate({
@@ -394,10 +401,12 @@ export const useAnimated = ({
             activeIndicatorScaleY,
             backgroundColor,
             inputColor,
-            labelTextColor,
+            labelInnerTranslateX,
+            labelInnerTranslateY,
             labelScale,
-            labelTranslateX,
+            labelTextColor,
             supportingTextColor,
+            labelTranslateY,
         },
     ];
 };
