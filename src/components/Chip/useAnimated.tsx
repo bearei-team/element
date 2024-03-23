@@ -1,56 +1,56 @@
 import {useEffect, useMemo} from 'react';
-import {Animated} from 'react-native';
+import {
+    AnimatableValue,
+    SharedValue,
+    cancelAnimation,
+    interpolateColor,
+    useAnimatedStyle,
+    useSharedValue,
+} from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
 import {AnimatedTiming, useAnimatedTiming} from '../../hooks/useAnimatedTiming';
-import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {RenderProps} from './ChipBase';
 
 type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName' | 'elevated'>;
 interface ProcessOutlinedAnimatedOptions extends UseAnimatedOptions {
-    borderAnimated: Animated.Value;
+    border: SharedValue<AnimatableValue>;
     borderInputRange: number[];
 }
 
 interface ProcessAnimatedTimingOptions extends ProcessOutlinedAnimatedOptions {
-    colorAnimated: Animated.Value;
+    color: SharedValue<AnimatableValue>;
 }
 
 const processOutlinedAnimated = (
     animatedTiming: AnimatedTiming,
-    {borderAnimated, borderInputRange, disabled, eventName}: ProcessOutlinedAnimatedOptions,
+    {border, borderInputRange, disabled, eventName}: ProcessOutlinedAnimatedOptions,
 ) => {
     const value = disabled ? 0 : borderInputRange[borderInputRange.length - 2];
     const toValue = eventName === 'focus' ? borderInputRange[2] : value;
 
-    return animatedTiming(borderAnimated, {toValue});
+    return animatedTiming(border, {toValue});
 };
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {
-        borderAnimated,
-        borderInputRange,
-        colorAnimated,
-        disabled,
-        elevated,
-        eventName,
-    }: ProcessAnimatedTimingOptions,
+    {border, borderInputRange, color, disabled, elevated, eventName}: ProcessAnimatedTimingOptions,
 ) => {
     const toValue = disabled ? 0 : 1;
 
     if (!elevated) {
-        return Animated.parallel([
-            processOutlinedAnimated(animatedTiming, {
-                borderAnimated,
-                borderInputRange,
-                disabled,
-                eventName,
-            }),
-            animatedTiming(colorAnimated, {toValue}),
-        ]).start();
+        processOutlinedAnimated(animatedTiming, {
+            border,
+            borderInputRange,
+            disabled,
+            eventName,
+        });
+
+        animatedTiming(color, {toValue});
+
+        return;
     }
 
-    animatedTiming(colorAnimated, {toValue}).start();
+    animatedTiming(color, {toValue});
 };
 
 export const useAnimated = ({
@@ -60,8 +60,8 @@ export const useAnimated = ({
     elevated,
 }: UseAnimatedOptions) => {
     const animatedValue = disabled ? 0 : 1;
-    const [borderAnimated] = useAnimatedValue(animatedValue);
-    const [colorAnimated] = useAnimatedValue(animatedValue);
+    const border = useSharedValue(animatedValue);
+    const color = useSharedValue(animatedValue);
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
     const [animatedTiming] = useAnimatedTiming(theme);
@@ -112,17 +112,17 @@ export const useAnimated = ({
                     : theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
             ],
         },
-        text: {
-            inputRange: [0, 1],
-            outputRange: [
-                elevated
-                    ? disabledBackgroundColor
-                    : theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
-                elevated
-                    ? theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 1)
-                    : theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
-            ],
-        },
+        // text: {
+        //     inputRange: [0, 1],
+        //     outputRange: [
+        //         elevated
+        //             ? disabledBackgroundColor
+        //             : theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
+        //         elevated
+        //             ? theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 1)
+        //             : theme.color.convertHexToRGBA(theme.palette.surface.surfaceContainerLow, 0),
+        //     ],
+        // },
     };
 
     const colorType = {
@@ -158,56 +158,60 @@ export const useAnimated = ({
                 theme.color.convertHexToRGBA(theme.palette.secondary.onSecondaryContainer, 1),
             ],
         },
-        text: {
-            inputRange: [0, 1, 2],
-            outputRange: [
-                disabledColor,
-                theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
-                theme.color.convertHexToRGBA(theme.palette.secondary.onSecondaryContainer, 1),
-            ],
-        },
+        // text: {
+        //     inputRange: [0, 1, 2],
+        //     outputRange: [
+        //         disabledColor,
+        //         theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
+        //         theme.color.convertHexToRGBA(theme.palette.secondary.onSecondaryContainer, 1),
+        //     ],
+        // },
     };
 
-    const backgroundColor = colorAnimated.interpolate(backgroundColorType[type]);
-    const color = colorAnimated.interpolate(colorType[type]);
-    const borderColor = borderAnimated.interpolate({
-        inputRange: borderInputRange,
-        outputRange: [
-            disabledBackgroundColor,
-            theme.color.convertHexToRGBA(theme.palette.outline.outline, 1),
-            theme.color.convertHexToRGBA(theme.palette.surface.surface, 1),
-        ],
-    });
+    const contentAnimatedStyle = useAnimatedStyle(() => ({
+        backgroundColor: interpolateColor(
+            color.value,
+            backgroundColorType[type].inputRange,
+            backgroundColorType[type].outputRange,
+        ),
+
+        ...(!elevated && {
+            borderColor: interpolateColor(border.value, borderInputRange, [
+                disabledBackgroundColor,
+                theme.color.convertHexToRGBA(theme.palette.outline.outline, 1),
+                theme.color.convertHexToRGBA(theme.palette.surface.surface, 1),
+            ]),
+        }),
+    }));
+
+    const labelTextAnimatedStyle = useAnimatedStyle(() => ({
+        color: interpolateColor(
+            color.value,
+            colorType[type].inputRange,
+            colorType[type].outputRange,
+        ),
+    }));
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
-            borderAnimated,
+            border,
             borderInputRange,
-            colorAnimated,
+            color,
             disabled,
             elevated,
             eventName,
         });
 
         return () => {
-            borderAnimated.stopAnimation();
-            colorAnimated.stopAnimation();
+            cancelAnimation(border);
+            cancelAnimation(color);
         };
-    }, [
-        animatedTiming,
-        borderAnimated,
-        borderInputRange,
-        colorAnimated,
-        disabled,
-        elevated,
-        eventName,
-    ]);
+    }, [animatedTiming, border, borderInputRange, color, disabled, elevated, eventName]);
 
     return [
         {
-            ...(!elevated && type !== 'text' && {borderColor}),
-            backgroundColor,
-            color,
+            contentAnimatedStyle,
+            labelTextAnimatedStyle,
         },
     ];
 };

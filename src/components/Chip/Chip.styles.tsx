@@ -1,6 +1,5 @@
-import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {Typography} from '../Common/Common.styles';
+import {PlatformView, Typography} from '../Common/Common.styles';
 import {RenderProps} from './ChipBase';
 
 type ContainerProps = Pick<RenderProps, 'block'>;
@@ -9,36 +8,8 @@ interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
     trailingIconShow: boolean;
 }
 
-export const Container = styled(View)<ContainerProps>`
-    align-items: center;
-    cursor: default;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+export const Container = styled(PlatformView)<ContainerProps>`
     position: relative;
-
-    ${({theme}) => {
-        const os = {
-            android: css`
-                align-self: stretch;
-            `,
-            ios: css`
-                align-self: stretch;
-            `,
-            macos: css`
-                align-self: stretch;
-            `,
-            web: css`
-                display: inline-block;
-                line-height: ${theme.adaptSize(theme.spacing.none)}px;
-            `,
-            windows: css`
-                align-self: stretch;
-            `,
-        };
-
-        return os[theme.OS];
-    }}
 
     ${({block}) =>
         block &&
@@ -84,11 +55,6 @@ export const Content = styled.View<ContentProps>`
                     ${theme.adaptSize(theme.spacing.medium)}px;
             `,
             suggestion: css`
-                min-width: ${theme.adaptSize(theme.spacing.small * 8 + 3)}px;
-                padding: ${theme.adaptSize(theme.spacing.extraSmall + 2)}px
-                    ${theme.adaptSize(theme.spacing.medium)}px;
-            `,
-            text: css`
                 min-width: ${theme.adaptSize(theme.spacing.small * 8 + 3)}px;
                 padding: ${theme.adaptSize(theme.spacing.extraSmall + 2)}px
                     ${theme.adaptSize(theme.spacing.medium)}px;

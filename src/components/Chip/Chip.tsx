@@ -1,11 +1,13 @@
 import {FC, forwardRef, memo} from 'react';
-import {Animated, View} from 'react-native';
+import {View} from 'react-native';
+import Animated from 'react-native-reanimated';
 import {Elevation} from '../Elevation/Elevation';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
-import {Hovered} from '../Underlay/Hovered';
+import {Underlay} from '../Underlay/Underlay';
 import {Container, Content, Icon, LabelText} from './Chip.styles';
 import {ChipBase, ChipProps, RenderProps} from './ChipBase';
 
+const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const render = ({
     active,
@@ -26,24 +28,20 @@ const render = ({
     block,
     ...contentProps
 }: RenderProps) => {
-    const {backgroundColor, color, ...border} = renderStyle;
+    const {contentAnimatedStyle, labelTextAnimatedStyle, ...border} = renderStyle;
     const shape = 'extraSmall';
 
     return (
         <Container accessibilityLabel={labelText} testID={`chip--${id}`} block={block}>
-            <TouchableRipple
+            <AnimatedTouchableRipple
                 {...onEvent}
                 active={active}
+                block={block}
                 disabled={disabled}
                 shape={shape}
-                underlayColor={activeColor}
+                style={[style, contentAnimatedStyle, border]}
                 touchableLocation={touchableLocation}
-                block={block}
-                style={{
-                    ...(typeof style === 'object' && style),
-                    ...border,
-                    backgroundColor,
-                }}>
+                underlayColor={activeColor}>
                 <Content
                     {...contentProps}
                     iconShow={!!icon}
@@ -56,7 +54,7 @@ const render = ({
                         ellipsizeMode="tail"
                         numberOfLines={1}
                         size="large"
-                        style={{color}}
+                        style={[labelTextAnimatedStyle]}
                         testID={`chip__labelText--${id}`}
                         type="label">
                         {labelText}
@@ -66,9 +64,9 @@ const render = ({
                         <Icon testID={`chip__trailingIcon--${id}`}>{trailingIcon}</Icon>
                     )}
 
-                    <Hovered eventName={eventName} underlayColor={underlayColor} />
+                    <Underlay eventName={eventName} underlayColor={underlayColor} />
                 </Content>
-            </TouchableRipple>
+            </AnimatedTouchableRipple>
 
             <Elevation level={elevation} shape={shape} />
         </Container>

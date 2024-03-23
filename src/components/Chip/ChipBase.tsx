@@ -1,12 +1,6 @@
 import {forwardRef, useCallback, useEffect, useId} from 'react';
-import {
-    Animated,
-    GestureResponderEvent,
-    NativeTouchEvent,
-    TextStyle,
-    View,
-    ViewStyle,
-} from 'react-native';
+import {GestureResponderEvent, NativeTouchEvent, TextStyle, View, ViewStyle} from 'react-native';
+import {AnimatedStyle} from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
@@ -18,9 +12,10 @@ import {useBorder} from './useBorder';
 import {useIcon} from './useIcon';
 import {useUnderlayColor} from './useUnderlayColor';
 
-type ChipType = 'input' | 'assist' | 'filter' | 'suggestion' | 'text';
+type ChipType = 'input' | 'assist' | 'filter' | 'suggestion';
 export interface ChipProps extends TouchableRippleProps {
     active?: boolean;
+    block?: boolean;
     defaultActive?: boolean;
     elevated?: boolean;
     fill?: string;
@@ -28,16 +23,18 @@ export interface ChipProps extends TouchableRippleProps {
     labelText?: string;
     trailingIcon?: React.JSX.Element;
     type?: ChipType;
-    block?: boolean;
 }
 
 export interface RenderProps extends ChipProps {
     activeColor: string;
-    touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     elevation: ElevationLevel;
     eventName: EventName;
     onEvent: OnEvent;
-    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle>;
+    renderStyle: {
+        contentAnimatedStyle: AnimatedStyle<ViewStyle>;
+        labelTextAnimatedStyle: AnimatedStyle<TextStyle>;
+    };
+    touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
 }
 
 interface ChipBaseProps extends ChipProps {
@@ -46,10 +43,10 @@ interface ChipBaseProps extends ChipProps {
 
 interface InitialState {
     active?: boolean;
-    touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     elevation?: ElevationLevel;
     eventName: EventName;
     status: ComponentStatus;
+    touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
 }
 
 interface ProcessEventOptions {
@@ -62,8 +59,8 @@ type ProcessElevationOptions = Pick<RenderProps, 'elevated'> & ProcessEventOptio
 type ProcessInitOptions = Pick<RenderProps, 'elevated' | 'active' | 'disabled'> &
     ProcessEventOptions;
 
-type ProcessStateChangeOptions = OnStateChangeOptions & ProcessElevationOptions;
 type ProcessPressOutOptions = ProcessEventOptions;
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessElevationOptions;
 
 const processCorrectionCoefficient = ({elevated}: Pick<RenderProps, 'elevated'>) =>
     elevated ? 1 : 0;
@@ -108,13 +105,16 @@ const processStateChange = (
     state: State,
     {event, eventName, elevated, setState}: ProcessStateChangeOptions,
 ) => {
+    if (eventName === 'layout') {
+        return;
+    }
+
     const nextEvent = {
         pressOut: () => processPressOut(event as GestureResponderEvent, {setState}),
     } as Record<EventName, () => void>;
 
     nextEvent[eventName]?.();
-    eventName !== 'layout' && processElevation(state, {elevated, setState});
-
+    processElevation(state, {elevated, setState});
     setState(draft => {
         draft.eventName = eventName;
     });
@@ -176,10 +176,10 @@ export const ChipBase = forwardRef<View, ChipBaseProps>(
         const [{active, touchableLocation, elevation, eventName, status}, setState] =
             useImmer<InitialState>({
                 active: undefined,
-                touchableLocation: undefined,
                 elevation: undefined,
                 eventName: 'none',
                 status: 'idle',
+                touchableLocation: undefined,
             });
 
         const theme = useTheme();
@@ -193,9 +193,14 @@ export const ChipBase = forwardRef<View, ChipBaseProps>(
         );
 
         const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
-        const [{backgroundColor, borderColor, color}] = useAnimated({disabled, eventName, type});
+        const [{contentAnimatedStyle, labelTextAnimatedStyle}] = useAnimated({
+            disabled,
+            eventName,
+            type,
+        });
+
         const [iconElement] = useIcon({eventName, type, icon, disabled, fill});
-        const [border] = useBorder({borderColor});
+        const [border] = useBorder({elevated});
 
         useEffect(() => {
             processInit({elevated, setState});
@@ -228,8 +233,8 @@ export const ChipBase = forwardRef<View, ChipBaseProps>(
             ref,
             renderStyle: {
                 ...border,
-                backgroundColor,
-                color,
+                contentAnimatedStyle,
+                labelTextAnimatedStyle,
             },
             touchableLocation,
             type,
