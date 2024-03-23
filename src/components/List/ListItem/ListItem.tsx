@@ -4,9 +4,6 @@ import {Hovered} from '../../Hovered/Hovered';
 import {TouchableRipple} from '../../TouchableRipple/TouchableRipple';
 import {
     AddonAfter,
-    AddonAfterInner,
-    AddonBefore,
-    AddonBeforeInner,
     Container,
     Content,
     Headline,
@@ -19,10 +16,9 @@ import {
 } from './ListItem.styles';
 import {ListItemBase, ListItemProps, RenderProps} from './ListItemBase';
 
-const AnimatedAddonAfter = Animated.createAnimatedComponent(AddonAfter);
-const AnimatedAddonBefore = Animated.createAnimatedComponent(AddonBefore);
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const AnimatedTrailing = Animated.createAnimatedComponent(Trailing);
+const AnimatedMain = Animated.createAnimatedComponent(Main);
 const render = ({
     active,
     activeColor,
@@ -43,11 +39,10 @@ const render = ({
     trailing,
     underlayColor,
     onAddonAfterLayout,
-    onAddonBeforeLayout,
     ...innerProps
 }: RenderProps) => {
     const {onLayout, ...onTouchableRippleEvent} = onEvent;
-    const {containerHeight, trailingOpacity, addonAfterWidth, addonBeforeWidth} = renderStyle;
+    const {containerHeight, trailingOpacity, scaleX} = renderStyle;
     const addon = addonBefore || addonAfter;
 
     return (
@@ -57,20 +52,9 @@ const render = ({
             style={{height: containerHeight}}
             testID={`listItem--${id}`}>
             <Inner {...(addon && {shape})} itemGap={itemGap} testID={`listItem__inner--${id}`}>
-                {addonBefore && (
-                    <AnimatedAddonBefore
-                        testID={`listItem__addonBefore--${id}`}
-                        style={{width: addonBeforeWidth}}>
-                        <AddonBeforeInner
-                            testID={`listItem__addonBeforeInner--${id}`}
-                            onLayout={onAddonBeforeLayout}>
-                            {addonBefore}
-                        </AddonBeforeInner>
-                    </AnimatedAddonBefore>
-                )}
-
-                <Main {...(!addon && {shape})} testID={`listItem_main--${id}`}>
+                <AnimatedMain testID={`listItem_main--${id}`} style={{transform: [{scaleX}]}}>
                     <TouchableRipple
+                        {...(!addon && {shape})}
                         {...onTouchableRippleEvent}
                         active={active}
                         touchableLocation={touchableLocation}
@@ -140,18 +124,14 @@ const render = ({
                             <Hovered eventName={eventName} underlayColor={underlayColor} />
                         </MainInner>
                     </TouchableRipple>
-                </Main>
+                </AnimatedMain>
 
                 {addonAfter && (
-                    <AnimatedAddonAfter
-                        testID={`listItem__addonAfter--${id}`}
-                        style={{width: addonAfterWidth}}>
-                        <AddonAfterInner
-                            testID={`listItem__addonAfterInner--${id}`}
-                            onLayout={onAddonAfterLayout}>
-                            {addonAfter}
-                        </AddonAfterInner>
-                    </AnimatedAddonAfter>
+                    <AddonAfter
+                        testID={`listItem__addonAfterInner--${id}`}
+                        onLayout={onAddonAfterLayout}>
+                        {addonAfter}
+                    </AddonAfter>
                 )}
             </Inner>
         </AnimatedContainer>

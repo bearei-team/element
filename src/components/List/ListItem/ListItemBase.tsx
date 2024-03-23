@@ -60,12 +60,11 @@ export interface RenderProps extends ListItemProps {
     onAddonBeforeLayout: (event: LayoutChangeEvent) => void;
     onEvent: OnEvent;
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
-        addonAfterWidth: AnimatedInterpolation;
-        addonBeforeWidth: AnimatedInterpolation;
         containerHeight: AnimatedInterpolation;
         height: number;
         trailingOpacity: AnimatedInterpolation;
         width: number;
+        scaleX: AnimatedInterpolation;
     };
     touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>;
     underlayColor: string;
@@ -292,14 +291,16 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             [dataKey, onClosedSource],
         );
 
-        const [{height, trailingOpacity, addonAfterWidth, addonBeforeWidth}] = useAnimated({
+        const [{height, trailingOpacity, scaleX}] = useAnimated({
             active,
             addonAfterLayoutWidth: addonAfterLayout.width,
             addonBeforeLayoutWidth: addonBeforeLayout.width,
             closeIcon,
             eventName,
             itemGap,
-            layoutHeight: layout.height,
+            // layoutHeight: layout.height,
+
+            layout,
             onClosed,
             state,
             trailingButton,
@@ -377,10 +378,9 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             onEvent,
             ref,
             renderStyle: {
-                addonAfterWidth,
-                addonBeforeWidth,
                 containerHeight: height,
                 height: layout.height,
+                scaleX,
                 trailingOpacity,
                 width: layout.width,
             },

@@ -28,11 +28,13 @@ const render = ({
     const shape = 'full';
 
     return (
-        <Container accessibilityRole="button" testID={`iconButton--${id}`}>
+        <Container
+            accessibilityRole="button"
+            testID={`iconButton--${id}`}
+            renderStyle={{width, height}}>
             <Tooltip
                 disabled={disabled}
                 eventName={eventName}
-                shape={shape}
                 supportingPosition={supportingPosition}
                 supportingText={supportingText}
                 type="plain"

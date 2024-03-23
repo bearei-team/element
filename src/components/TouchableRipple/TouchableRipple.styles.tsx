@@ -8,18 +8,11 @@ type ContainerProps = Pick<RenderProps, 'block'>;
 export const Container = styled(Shape)<ContainerProps>`
     overflow: hidden;
 
-    ${({theme}) =>
-        theme.OS === 'web' &&
-        css`
-            display: block;
-        `}
-
     ${({block}) =>
         block &&
         css`
             align-self: stretch;
             flex: 1;
-            width: 100%;
         `}
 `;
 

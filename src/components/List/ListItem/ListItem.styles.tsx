@@ -10,44 +10,24 @@ type ContentProps = {
 type InnerProps = Pick<RenderProps, 'size'>;
 type LeadingProps = Pick<RenderProps, 'size'>;
 
-export const Container = styled.View`
-    overflow: hidden;
-    position: relative;
-`;
-
+export const Container = styled.View``;
 export const Inner = styled(Shape)<ContainerProps>`
-    display: flex;
-    flex-direction: row;
-    overflow: hidden;
+    position: relative;
 
     ${({itemGap = 0}) => css`
         margin-bottom: ${itemGap}px;
     `};
 `;
 
-export const AddonBefore = styled.View`
-    overflow: hidden;
-    position: relative;
-`;
-
-export const AddonAfter = styled(AddonBefore)``;
-export const AddonBeforeInner = styled.View`
-    height: 100%;
+export const Main = styled.View`
     position: absolute;
-
-    ${({theme}) => css`
-        left: ${theme.adaptSize(theme.spacing.none)}px;
-        top: ${theme.adaptSize(theme.spacing.none)}px;
-    `};
-`;
-
-export const AddonAfterInner = styled(AddonBeforeInner)``;
-export const Main = styled(Shape)`
-    flex: 1;
-    overflow: hidden;
+    z-index: 2;
 
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surface};
+        left: ${theme.adaptSize(theme.spacing.none)}px;
+        right: ${theme.adaptSize(theme.spacing.none)}px;
+        top: ${theme.adaptSize(theme.spacing.none)}px;
     `};
 `;
 
@@ -174,4 +154,15 @@ export const SupportingText = styled(Typography)`
         color: ${theme.palette.surface.onSurfaceVariant};
         height: auto;
     `}
+`;
+
+export const AddonAfter = styled.View`
+    position: absolute;
+    z-index: 1;
+
+    ${({theme}) => css`
+        right: ${theme.adaptSize(theme.spacing.none)}px;
+        top: ${theme.adaptSize(theme.spacing.none)}px;
+        bottom: ${theme.adaptSize(theme.spacing.none)}px;
+    `};
 `;

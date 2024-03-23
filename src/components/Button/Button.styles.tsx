@@ -9,42 +9,30 @@ interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
 }
 
 export const Container = styled(View)<ContainerProps>`
+    align-items: center;
     cursor: default;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     position: relative;
 
     ${({theme}) => {
         const os = {
             android: css`
-                align-items: center;
                 align-self: stretch;
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
             `,
             ios: css`
-                align-items: center;
                 align-self: stretch;
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
             `,
             macos: css`
-                align-items: center;
                 align-self: stretch;
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
             `,
             web: css`
-                align-items: center;
-                align-self: stretch;
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
-            `,
-            windows: css`
                 display: inline-block;
                 line-height: ${theme.adaptSize(theme.spacing.none)}px;
+            `,
+            windows: css`
+                align-self: stretch;
             `,
         };
 

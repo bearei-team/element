@@ -2,12 +2,16 @@ import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
 
 export const Container = styled(View)`
-    ${({theme}) =>
-        theme.OS === 'web' &&
-        css`
-            display: inline-block;
-            line-height: ${theme.adaptSize(theme.spacing.none)}px;
-        `}
+    align-items: center;
+    cursor: default;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    ${({theme}) => css`
+        height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+        width: ${theme.adaptSize(theme.spacing.small * 5)}px;
+    `}
 `;
 
 export const Content = styled.View`

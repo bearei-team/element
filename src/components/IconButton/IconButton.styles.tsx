@@ -1,23 +1,28 @@
 import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {Shape} from '../Common/Common.styles';
 import {RenderProps} from './IconButtonBase';
 
 type ContentProps = Pick<RenderProps, 'renderStyle'>;
 
-export const Container = styled(View)`
+export const Container = styled(View)<ContentProps>`
+    align-items: center;
     cursor: default;
-    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    position: relative;
 
-    ${({theme}) =>
-        theme.OS === 'web' &&
-        css`
-            display: inline-block;
-            line-height: ${theme.adaptSize(theme.spacing.none)}px;
-        `}
+    ${({renderStyle = {}, theme}) => {
+        const {height, width} = renderStyle;
+
+        return css`
+            height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
+            width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
+        `;
+    }};
 `;
 
-export const Content = styled(Shape)<ContentProps>`
+export const Content = styled.View<ContentProps>`
     align-items: center;
     display: flex;
     flex-direction: row;

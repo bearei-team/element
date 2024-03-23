@@ -1,5 +1,5 @@
 import {useEffect} from 'react';
-import {Animated, InteractionManager} from 'react-native';
+import {Animated, LayoutRectangle} from 'react-native';
 import {useTheme} from 'styled-components/native';
 import {AnimatedTiming, useAnimatedTiming} from '../../../hooks/useAnimatedTiming';
 import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
@@ -12,7 +12,7 @@ interface UseAnimatedOptions
     addonAfterLayoutWidth?: number;
     addonBeforeLayoutWidth?: number;
     eventName: EventName;
-    layoutHeight?: number;
+    layout?: LayoutRectangle;
     state: State;
     trailingEventName: EventName;
 }
@@ -45,13 +45,11 @@ const processAddonAnimated = (
 ) => {
     const toValue = active ? 1 : 0;
 
-    InteractionManager.runAfterInteractions(() => {
-        typeof active === 'boolean' &&
-            Animated.parallel([
-                animatedTiming(addonBeforeAnimated, {toValue}),
-                animatedTiming(addonAfterAnimated, {toValue}),
-            ]).start();
-    });
+    typeof active === 'boolean' &&
+        Animated.parallel([
+            animatedTiming(addonBeforeAnimated, {toValue}),
+            animatedTiming(addonAfterAnimated, {toValue}),
+        ]).start();
 };
 
 const processTrailingAnimatedTiming = (
@@ -75,18 +73,18 @@ const processTrailingAnimatedTiming = (
 
 export const useAnimated = ({
     active,
-    addonAfterLayoutWidth = 0,
-    addonBeforeLayoutWidth = 0,
     closeIcon,
     eventName,
     itemGap = 0,
-    layoutHeight = 0,
+    layout = {} as LayoutRectangle,
     onClosed,
     state,
     trailingButton,
     trailingEventName,
     visible,
+    addonAfterLayoutWidth = 0,
 }: UseAnimatedOptions) => {
+    const {width: layoutWidth = 0, height: layoutHeight = 0} = layout;
     const [heightAnimated] = useAnimatedValue(typeof visible === 'boolean' ? (visible ? 1 : 0) : 1);
     const [trailingAnimated] = useAnimatedValue(trailingButton ? 0 : 1);
     const addonDefaultValue = active ? 1 : 0;
@@ -104,14 +102,9 @@ export const useAnimated = ({
         outputRange: [0, layoutHeight + itemGap],
     });
 
-    const addonBeforeWidth = addonBeforeAnimated.interpolate({
+    const scaleX = addonAfterAnimated.interpolate({
         inputRange: [0, 1],
-        outputRange: [0, addonBeforeLayoutWidth],
-    });
-
-    const addonAfterWidth = addonAfterAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, addonAfterLayoutWidth],
+        outputRange: [1 - addonAfterLayoutWidth / layoutWidth, 1],
     });
 
     useEffect(() => {
@@ -158,5 +151,5 @@ export const useAnimated = ({
         };
     }, [animatedTiming, heightAnimated, onClosed, visible]);
 
-    return [{height, trailingOpacity, addonBeforeWidth, addonAfterWidth}];
+    return [{height, trailingOpacity, scaleX}];
 };

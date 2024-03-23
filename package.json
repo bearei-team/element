@@ -38,6 +38,7 @@
         "publish": "yarn clean && yarn build && yarn npm publish --access public"
     },
     "dependencies": {
+        "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
         "@bearei/theme": "^1.4.3",
         "@material-design-icons/svg": "latest",
         "async-validator": "^4.2.5",
@@ -45,6 +46,7 @@
         "mitt": "^3.0.1",
         "react": "^18.2.0",
         "react-native": "^0.72.5",
+        "react-native-reanimated": "^3.8.1",
         "react-native-svg": "^14.0.0",
         "styled-components": "6.0.7",
         "use-immer": "^0.9.0"

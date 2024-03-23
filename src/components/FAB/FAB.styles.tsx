@@ -10,15 +10,35 @@ interface ContentProps extends Pick<RenderProps, 'size' | 'type'> {
 type IconProps = Pick<RenderProps, 'size'>;
 
 export const Container = styled(View)`
+    align-items: center;
     cursor: default;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     position: relative;
 
-    ${({theme}) =>
-        theme.OS === 'web' &&
-        css`
-            display: inline-block;
-            line-height: ${theme.adaptSize(theme.spacing.none)}px;
-        `}
+    ${({theme}) => {
+        const os = {
+            android: css`
+                align-self: stretch;
+            `,
+            ios: css`
+                align-self: stretch;
+            `,
+            macos: css`
+                align-self: stretch;
+            `,
+            web: css`
+                display: inline-block;
+                line-height: ${theme.adaptSize(theme.spacing.none)}px;
+            `,
+            windows: css`
+                align-self: stretch;
+            `,
+        };
+
+        return os[theme.OS];
+    }}
 `;
 
 export const Content = styled.View<ContentProps>`

@@ -18,13 +18,12 @@ import {
 } from './TextField.styles';
 import {RenderProps, TextFieldBase, TextFieldProps} from './TextFieldBase';
 
+const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
 const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner);
 const AnimatedLabelInner = Animated.createAnimatedComponent(LabelInner);
-const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const AnimatedLabelLabel = Animated.createAnimatedComponent(Label);
-
+const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
 const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
-const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
 const render = ({
     contentSize,
     error,
