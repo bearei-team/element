@@ -3,11 +3,11 @@ import {View, ViewProps} from 'react-native';
 import {Layout, Size} from '../Common/interface';
 
 export interface DividerProps extends Partial<ViewProps & RefAttributes<View>> {
+    block?: boolean;
     layout?: Layout;
     renderStyle?: {width?: number; height?: number};
     size?: Size;
     subheader?: string;
-    block?: boolean;
 }
 
 export type RenderProps = DividerProps;

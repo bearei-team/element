@@ -1,5 +1,6 @@
 import {forwardRef, useCallback, useEffect, useId} from 'react';
-import {Animated, TextStyle, View, ViewStyle} from 'react-native';
+import {TextStyle, View, ViewStyle} from 'react-native';
+import {AnimatedStyle} from 'react-native-reanimated';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ComponentStatus, EventName, Size, State} from '../Common/interface';
@@ -23,7 +24,10 @@ export interface RenderProps extends FABProps {
     elevation?: ElevationLevel;
     eventName?: EventName;
     onEvent: OnEvent;
-    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle>;
+    renderStyle: {
+        contentAnimatedStyle: AnimatedStyle<ViewStyle>;
+        labelTextAnimatedStyle: AnimatedStyle<TextStyle>;
+    };
 }
 
 interface FABBaseProps extends FABProps {
@@ -74,8 +78,11 @@ const processStateChange = (
     state: State,
     {eventName, elevated, setState}: ProcessStateChangeOptions,
 ) => {
-    processElevation(state, {setState, elevated});
+    if (eventName === 'layout') {
+        return;
+    }
 
+    processElevation(state, {setState, elevated});
     setState(draft => {
         draft.eventName = eventName;
     });
@@ -124,7 +131,7 @@ export const FABBase = forwardRef<View, FABBaseProps>(
         );
 
         const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
-        const [{backgroundColor, color}] = useAnimated({disabled, type});
+        const [{contentAnimatedStyle, labelTextAnimatedStyle}] = useAnimated({disabled, type});
         const [iconElement] = useIcon({eventName, type, icon, disabled, size});
 
         useEffect(() => {
@@ -146,8 +153,8 @@ export const FABBase = forwardRef<View, FABBaseProps>(
             onEvent,
             ref,
             renderStyle: {
-                backgroundColor,
-                color,
+                contentAnimatedStyle,
+                labelTextAnimatedStyle,
             },
             size,
             type,

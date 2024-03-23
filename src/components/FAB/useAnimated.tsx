@@ -1,24 +1,28 @@
 import {useEffect} from 'react';
-import {Animated} from 'react-native';
+import {
+    AnimatableValue,
+    SharedValue,
+    cancelAnimation,
+    interpolateColor,
+    useAnimatedStyle,
+    useSharedValue,
+} from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
 import {AnimatedTiming, useAnimatedTiming} from '../../hooks/useAnimatedTiming';
-import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {RenderProps} from './FABBase';
 
 type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type'>;
 interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
-    colorAnimated: Animated.Value;
+    color: SharedValue<AnimatableValue>;
 }
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {colorAnimated, disabled}: ProcessAnimatedTimingOptions,
-) =>
-    typeof disabled === 'boolean' &&
-    animatedTiming(colorAnimated, {toValue: disabled ? 0 : 1}).start();
+    {color, disabled}: ProcessAnimatedTimingOptions,
+) => typeof disabled === 'boolean' && animatedTiming(color, {toValue: disabled ? 0 : 1});
 
 export const useAnimated = ({disabled, type = 'primary'}: UseAnimatedOptions) => {
-    const [colorAnimated] = useAnimatedValue(disabled ? 0 : 1);
+    const color = useSharedValue(disabled ? 0 : 1);
     const theme = useTheme();
     const [animatedTiming] = useAnimatedTiming(theme);
     const disabledBackgroundColor = theme.color.convertHexToRGBA(
@@ -27,7 +31,7 @@ export const useAnimated = ({disabled, type = 'primary'}: UseAnimatedOptions) =>
     );
 
     const disabledColor = theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38);
-    const backgroundColorConfig = {
+    const backgroundColorType = {
         surface: {
             inputRange: [0, 1],
             outputRange: [
@@ -58,7 +62,7 @@ export const useAnimated = ({disabled, type = 'primary'}: UseAnimatedOptions) =>
         },
     };
 
-    const colorConfig = {
+    const colorType = {
         surface: {
             inputRange: [0, 1],
             outputRange: [
@@ -89,16 +93,29 @@ export const useAnimated = ({disabled, type = 'primary'}: UseAnimatedOptions) =>
         },
     };
 
-    const backgroundColor = colorAnimated.interpolate(backgroundColorConfig[type]);
-    const color = colorAnimated.interpolate(colorConfig[type]);
+    const contentAnimatedStyle = useAnimatedStyle(() => ({
+        backgroundColor: interpolateColor(
+            color.value,
+            backgroundColorType[type].inputRange,
+            backgroundColorType[type].outputRange,
+        ),
+    }));
+
+    const labelTextAnimatedStyle = useAnimatedStyle(() => ({
+        color: interpolateColor(
+            color.value,
+            colorType[type].inputRange,
+            colorType[type].outputRange,
+        ),
+    }));
 
     useEffect(() => {
-        processAnimatedTiming(animatedTiming, {colorAnimated, disabled});
+        processAnimatedTiming(animatedTiming, {color, disabled});
 
         return () => {
-            colorAnimated.stopAnimation();
+            cancelAnimation(color);
         };
-    }, [animatedTiming, colorAnimated, disabled]);
+    }, [animatedTiming, color, disabled]);
 
-    return [{backgroundColor, color}];
+    return [{contentAnimatedStyle, labelTextAnimatedStyle}];
 };

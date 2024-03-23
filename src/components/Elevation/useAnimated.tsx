@@ -13,21 +13,21 @@ import {ElevationProps} from './Elevation';
 
 type UseAnimatedOptions = Pick<ElevationProps, 'level' | 'defaultLevel'>;
 interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
-    opacity: SharedValue<AnimatableValue>;
+    shadow: SharedValue<AnimatableValue>;
 }
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {opacity, level = 0}: ProcessAnimatedTimingOptions,
-) => animatedTiming(opacity, {toValue: level});
+    {shadow, level = 0}: ProcessAnimatedTimingOptions,
+) => animatedTiming(shadow, {toValue: level});
 
 export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
-    const opacity = useSharedValue(0);
+    const shadow = useSharedValue(0);
     const theme = useTheme();
     const [animatedTiming] = useAnimatedTiming(theme);
     const shadow0AnimatedStyle = useAnimatedStyle(() => ({
         opacity: interpolate(
-            opacity.value,
+            shadow.value,
             [0, 1, 2, 3, 4, 5],
             [
                 theme.elevation.level0.shadow0.opacity,
@@ -42,7 +42,7 @@ export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
 
     const shadow1AnimatedStyle = useAnimatedStyle(() => ({
         opacity: interpolate(
-            opacity.value,
+            shadow.value,
             [0, 1, 2, 3, 4, 5],
             [
                 theme.elevation.level0.shadow1.opacity,
@@ -56,12 +56,20 @@ export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
     }));
 
     useEffect(() => {
-        processAnimatedTiming(animatedTiming, {level, opacity});
+        processAnimatedTiming(animatedTiming, {level, shadow});
 
         return () => {
-            cancelAnimation(opacity);
+            cancelAnimation(shadow);
         };
-    }, [animatedTiming, level, opacity]);
+    }, [animatedTiming, level, shadow]);
+
+    console.info(
+        shadow0AnimatedStyle,
+        'shadow0AnimatedStyle',
+        level,
+        theme.palette.shadow.shadow,
+        theme.adaptSize(theme.elevation.level1.shadow0.opacity),
+    );
 
     return [{shadow1AnimatedStyle, shadow0AnimatedStyle}];
 };

@@ -1,12 +1,14 @@
 import {FC, forwardRef, memo} from 'react';
-import {Animated, View} from 'react-native';
+import {View} from 'react-native';
+import Animated from 'react-native-reanimated';
 import {Elevation} from '../Elevation/Elevation';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
-import {Hovered} from '../Underlay/Hovered';
+import {Underlay} from '../Underlay/Underlay';
 import {Container, Content, Icon, LabelText} from './FAB.styles';
 import {FABBase, FABProps, RenderProps} from './FABBase';
 
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
+const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
 const render = ({
     accessibilityLabel,
     elevation,
@@ -21,24 +23,20 @@ const render = ({
     underlayColor,
     ...contentProps
 }: RenderProps) => {
-    const {backgroundColor, color} = renderStyle;
+    const {contentAnimatedStyle, labelTextAnimatedStyle} = renderStyle;
     const shape = 'medium';
 
     return (
-        <Container
-            accessibilityLabel={labelText ?? accessibilityLabel}
-            accessibilityRole="button"
-            testID={`fab--${id}`}>
-            <TouchableRipple
+        <Container testID={`fab--${id}`}>
+            <AnimatedTouchableRipple
                 {...onEvent}
                 shape={shape}
                 underlayColor={underlayColor}
-                style={{
-                    ...(typeof style === 'object' && style),
-                    backgroundColor,
-                }}>
+                style={[style, contentAnimatedStyle]}>
                 <Content
                     {...contentProps}
+                    accessibilityLabel={labelText ?? accessibilityLabel}
+                    accessibilityRole="button"
                     labelTextShow={!!labelText}
                     testID={`fab__content--${id}`}
                     type={type}>
@@ -47,16 +45,16 @@ const render = ({
                     {labelText && (
                         <AnimatedLabelText
                             size="large"
-                            style={{color}}
+                            style={[labelTextAnimatedStyle]}
                             testID={`fab__labelText--${id}`}
                             type="label">
                             {labelText}
                         </AnimatedLabelText>
                     )}
 
-                    <Hovered eventName={eventName} underlayColor={underlayColor} />
+                    <Underlay eventName={eventName} underlayColor={underlayColor} />
                 </Content>
-            </TouchableRipple>
+            </AnimatedTouchableRipple>
 
             <Elevation level={elevation} shape={shape} />
         </Container>

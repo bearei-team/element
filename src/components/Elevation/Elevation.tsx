@@ -15,7 +15,7 @@ const render = ({id, level, renderStyle, shape, ...containerProps}: RenderProps)
                 renderStyle={{width, height}}
                 shadowIndex={0}
                 shape={shape}
-                style={shadow0AnimatedStyle}
+                style={[shadow0AnimatedStyle]}
                 testID={`elevation__shadow0--${id}`}
             />
 
@@ -24,7 +24,7 @@ const render = ({id, level, renderStyle, shape, ...containerProps}: RenderProps)
                 renderStyle={{width, height}}
                 shadowIndex={1}
                 shape={shape}
-                style={shadow1AnimatedStyle}
+                style={[shadow1AnimatedStyle]}
                 testID={`elevation__shadow1--${id}`}
             />
         </Container>
