@@ -3,6 +3,8 @@ import {
     AnimatableValue,
     SharedValue,
     cancelAnimation,
+    interpolate,
+    useAnimatedStyle,
     useSharedValue,
 } from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
@@ -11,6 +13,7 @@ import {RenderProps} from './RippleBase';
 
 interface UseAnimatedOptions extends Pick<RenderProps, 'onEntryAnimatedFinished' | 'active'> {
     sequence: string;
+    radius: number;
 }
 
 interface CreateEntryAnimatedOptions extends Pick<UseAnimatedOptions, 'active'> {
@@ -76,11 +79,24 @@ const processAnimatedTiming = (
     entryAnimated(() => onEntryAnimatedFinished?.(sequence, exitAnimated));
 };
 
-export const useAnimated = ({active, onEntryAnimatedFinished, sequence}: UseAnimatedOptions) => {
+export const useAnimated = ({
+    active,
+    onEntryAnimatedFinished,
+    sequence,
+    radius,
+}: UseAnimatedOptions) => {
     const opacity = useSharedValue(1);
     const scale = useSharedValue(active ? 1 : 0);
     const theme = useTheme();
     const [animatedTiming] = useAnimatedTiming(theme);
+    const animatedStyle = useAnimatedStyle(() => ({
+        opacity: interpolate(opacity.value, [0, 1], [0, 1]),
+        transform: [
+            {translateY: -radius},
+            {translateX: -radius},
+            {scale: interpolate(scale.value, [0, 1], [0, 1])},
+        ],
+    }));
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
@@ -97,5 +113,5 @@ export const useAnimated = ({active, onEntryAnimatedFinished, sequence}: UseAnim
         };
     }, [active, animatedTiming, onEntryAnimatedFinished, opacity, scale, sequence]);
 
-    return [{opacity, scale}];
+    return [animatedStyle];
 };

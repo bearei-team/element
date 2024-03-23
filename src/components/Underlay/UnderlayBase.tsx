@@ -7,31 +7,35 @@ import {useAnimated} from './useAnimated';
 
 type BaseProps = Partial<Pick<ShapeProps, 'shape'> & ViewProps & RefAttributes<View>>;
 
-export interface HoveredProps extends BaseProps {
+export interface UnderlayProps extends BaseProps {
     eventName?: EventName;
     opacities?: [number, number, number] | [number, number];
     renderStyle?: {width?: number; height?: number};
     underlayColor?: string;
 }
 
-export interface RenderProps extends HoveredProps {
-    renderStyle: AnimatedStyle<ViewStyle> & {height?: number; width?: number};
+export interface RenderProps extends UnderlayProps {
+    renderStyle: AnimatedStyle<ViewStyle> & {
+        height?: number;
+        width?: number;
+        animatedStyle: AnimatedStyle<ViewStyle>;
+    };
 }
 
-interface HoveredBaseProps extends HoveredProps {
+interface UnderlayBaseProps extends UnderlayProps {
     render: (props: RenderProps) => React.JSX.Element;
 }
 
-export const HoveredBase = forwardRef<View, HoveredBaseProps>(
+export const UnderlayBase = forwardRef<View, UnderlayBaseProps>(
     ({eventName, opacities, render, renderStyle, ...renderProps}, ref) => {
-        const [{opacity}] = useAnimated({eventName, opacities});
+        const [animatedStyle] = useAnimated({eventName, opacities});
         const id = useId();
 
         return render({
             ...renderProps,
             id,
             ref,
-            renderStyle: {...renderStyle, opacity},
+            renderStyle: {...renderStyle, animatedStyle},
         });
     },
 );

@@ -1,5 +1,6 @@
 import {FC, forwardRef, memo} from 'react';
-import {Animated, View} from 'react-native';
+import {View} from 'react-native';
+import Animated from 'react-native-reanimated';
 import {Container, Shadow} from './Elevation.styles';
 import {ElevationBase, ElevationLevel, ElevationProps, RenderProps} from './ElevationBase';
 

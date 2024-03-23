@@ -1,8 +1,8 @@
 import {FC, forwardRef, memo} from 'react';
 import {View} from 'react-native';
-import {Hovered} from '../Hovered/Hovered';
 import {Tooltip} from '../Tooltip/Tooltip';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
+import {Hovered} from '../Underlay/Hovered';
 import {Container, Content} from './IconButton.styles';
 import {IconButtonBase, IconButtonProps, IconButtonType, RenderProps} from './IconButtonBase';
 

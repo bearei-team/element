@@ -1,8 +1,8 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, View} from 'react-native';
 import {Elevation} from '../Elevation/Elevation';
-import {Hovered} from '../Hovered/Hovered';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
+import {Hovered} from '../Underlay/Hovered';
 import {
     Container,
     Content,

@@ -1,6 +1,6 @@
 import {FC, forwardRef, memo} from 'react';
 import {Animated, TextInput} from 'react-native';
-import {Hovered} from '../Hovered/Hovered';
+import {Hovered} from '../Underlay/Hovered';
 import {
     ActiveIndicator,
     Container,

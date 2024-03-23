@@ -1,6 +1,6 @@
 import styled, {css} from 'styled-components/native';
 import {Shape} from '../Common/Common.styles';
-import {RenderProps} from './HoveredBase';
+import {RenderProps} from './UnderlayBase';
 
 interface ContainerProps extends Pick<RenderProps, 'underlayColor'> {
     renderStyle?: {height?: number; width?: number};

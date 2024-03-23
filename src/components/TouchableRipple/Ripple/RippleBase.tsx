@@ -20,7 +20,11 @@ export interface RippleProps extends Partial<ViewProps & React.RefAttributes<Vie
 export interface RenderProps extends Omit<RippleProps, 'sequence'> {
     locationX: number;
     locationY: number;
-    renderStyle: AnimatedStyle<ViewStyle> & {height: number; width: number};
+    renderStyle: AnimatedStyle<ViewStyle> & {
+        height: number;
+        width: number;
+        animatedStyle: AnimatedStyle<ViewStyle>;
+    };
 }
 
 interface RippleBaseProps extends RippleProps {
@@ -90,7 +94,7 @@ export const RippleBase = forwardRef<View, RippleBaseProps>(
         const offsetY = Math.abs(centerY - locationY);
         const radius = Math.sqrt(Math.pow(centerX + offsetX, 2) + Math.pow(centerY + offsetY, 2));
         const diameter = radius * 2;
-        const [{opacity, scale}] = useAnimated({active, onEntryAnimatedFinished, sequence});
+        const [animatedStyle] = useAnimated({active, onEntryAnimatedFinished, sequence, radius});
 
         useEffect(() => {
             processContainerLayout({setState}, containerCurrent);
@@ -106,9 +110,8 @@ export const RippleBase = forwardRef<View, RippleBaseProps>(
             id,
             ref,
             renderStyle: {
+                animatedStyle,
                 height: diameter,
-                opacity,
-                transform: [{translateY: -radius}, {translateX: -radius}, {scale}],
                 width: diameter,
             },
             locationX,

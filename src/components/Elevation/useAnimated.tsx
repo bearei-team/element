@@ -1,27 +1,32 @@
 import {useEffect} from 'react';
-import {Animated} from 'react-native';
+import {
+    AnimatableValue,
+    SharedValue,
+    cancelAnimation,
+    interpolate,
+    useSharedValue,
+} from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
 import {AnimatedTiming, useAnimatedTiming} from '../../hooks/useAnimatedTiming';
-import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {ElevationProps} from './Elevation';
 
 type UseAnimatedOptions = Pick<ElevationProps, 'level' | 'defaultLevel'>;
 interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
-    opacityAnimated: Animated.Value;
+    opacity: SharedValue<AnimatableValue>;
 }
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {opacityAnimated, level = 0}: ProcessAnimatedTimingOptions,
-) => animatedTiming(opacityAnimated, {toValue: level}).start();
+    {opacity, level = 0}: ProcessAnimatedTimingOptions,
+) => animatedTiming(opacity, {toValue: level});
 
 export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
-    const [opacityAnimated] = useAnimatedValue(level);
+    const opacity = useSharedValue(0);
     const theme = useTheme();
     const [animatedTiming] = useAnimatedTiming(theme);
-    const shadow0Opacity = opacityAnimated.interpolate({
-        inputRange: [0, 1, 2, 3, 4, 5],
-        outputRange: [
+    const shadow0Opacity = interpolate(
+        opacity.value,
+        [
             theme.elevation.level0.shadow0.opacity,
             theme.elevation.level1.shadow0.opacity,
             theme.elevation.level2.shadow0.opacity,
@@ -29,11 +34,12 @@ export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
             theme.elevation.level4.shadow0.opacity,
             theme.elevation.level5.shadow0.opacity,
         ],
-    });
+        [0, 1, 2, 3, 4, 5],
+    );
 
-    const shadow1Opacity = opacityAnimated.interpolate({
-        inputRange: [0, 1, 2, 3, 4, 5],
-        outputRange: [
+    const shadow1Opacity = interpolate(
+        opacity.value,
+        [
             theme.elevation.level0.shadow1.opacity,
             theme.elevation.level1.shadow1.opacity,
             theme.elevation.level2.shadow1.opacity,
@@ -41,15 +47,16 @@ export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
             theme.elevation.level4.shadow1.opacity,
             theme.elevation.level5.shadow1.opacity,
         ],
-    });
+        [0, 1, 2, 3, 4, 5],
+    );
 
     useEffect(() => {
-        processAnimatedTiming(animatedTiming, {level, opacityAnimated});
+        processAnimatedTiming(animatedTiming, {level, opacity});
 
         return () => {
-            opacityAnimated.stopAnimation();
+            cancelAnimation(opacity);
         };
-    }, [animatedTiming, level, opacityAnimated]);
+    }, [animatedTiming, level, opacity]);
 
     return [{shadow0Opacity, shadow1Opacity}];
 };

@@ -1,7 +1,7 @@
 import {RefAttributes, forwardRef, useId} from 'react';
-import {Animated, View, ViewProps, ViewStyle} from 'react-native';
+import {View, ViewProps, ViewStyle} from 'react-native';
+import {AnimatedStyle} from 'react-native-reanimated';
 import {ShapeProps} from '../Common/Common.styles';
-import {AnimatedInterpolation} from '../Common/interface';
 import {useAnimated} from './useAnimated';
 
 export type ElevationLevel = 0 | 1 | 2 | 3 | 4 | 5 | undefined;
@@ -14,10 +14,10 @@ export interface ElevationProps
 }
 
 export interface RenderProps extends Omit<ElevationProps, 'renderStyle'> {
-    renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
+    renderStyle: AnimatedStyle<ViewStyle> & {
         height?: number;
-        opacity0?: AnimatedInterpolation;
-        opacity1?: AnimatedInterpolation;
+        opacity0?: number;
+        opacity1?: number;
         width?: number;
     };
 }

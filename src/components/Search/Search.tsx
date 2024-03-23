@@ -1,8 +1,8 @@
 import {FC, forwardRef, memo} from 'react';
 import {TextInput} from 'react-native';
 import {Divider} from '../Divider/Divider';
-import {Hovered} from '../Hovered/Hovered';
 import {Icon} from '../Icon/Icon';
+import {Hovered} from '../Underlay/Hovered';
 import {Container, Content, Inner, Leading, Trailing} from './Search.styles';
 import {RenderProps, SearchBase, SearchProps} from './SearchBase';
 

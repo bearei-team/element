@@ -3,12 +3,14 @@ import {
     AnimatableValue,
     SharedValue,
     cancelAnimation,
+    interpolate,
+    useAnimatedStyle,
     useSharedValue,
 } from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
 import {AnimatedTiming, useAnimatedTiming} from '../../hooks/useAnimatedTiming';
 import {EventName} from '../Common/interface';
-import {RenderProps} from './HoveredBase';
+import {RenderProps} from './UnderlayBase';
 
 type UseAnimatedOptions = Pick<RenderProps, 'eventName' | 'opacities'>;
 interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
@@ -45,6 +47,14 @@ export const useAnimated = ({eventName, opacities = [0, 0.08, 0.12]}: UseAnimate
         [activeValue],
     );
 
+    const animatedStyle = useAnimatedStyle(() => ({
+        opacity: interpolate(
+            opacity.value,
+            opacities.map((_value, index) => index),
+            opacities,
+        ),
+    }));
+
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {event, eventName, opacity});
 
@@ -53,5 +63,5 @@ export const useAnimated = ({eventName, opacities = [0, 0.08, 0.12]}: UseAnimate
         };
     }, [animatedTiming, event, eventName, opacity]);
 
-    return [{opacity}];
+    return [animatedStyle];
 };

@@ -1,7 +1,7 @@
 import {FC, forwardRef, memo} from 'react';
 import {View} from 'react-native';
-import {Hovered} from '../Hovered/Hovered';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
+import {Hovered} from '../Underlay/Hovered';
 import {Container, Content, Icon} from './Checkbox.styles';
 import {CheckboxBase, CheckboxProps, RenderProps} from './CheckboxBase';
 

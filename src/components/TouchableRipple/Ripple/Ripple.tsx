@@ -14,7 +14,7 @@ const render = ({
     style,
     ...containerProps
 }: RenderProps) => {
-    const {height, width, ...containerStyle} = renderStyle;
+    const {height, width, animatedStyle} = renderStyle;
 
     return (
         <AnimatedContainer
@@ -24,7 +24,7 @@ const render = ({
             locationY={locationY}
             renderStyle={{height, width}}
             shape="full"
-            style={{...(typeof style === 'object' && style), ...containerStyle}}
+            style={[style, animatedStyle]}
             testID={`ripple--${id}`}
         />
     );
