@@ -44,35 +44,36 @@ interface ProcessEventOptions {
     processState: (state: State, options?: ProcessStateOptions) => void;
 }
 
-type ProcessStateChangeOptions = Pick<UseProcessEventOptions, 'disabled' | 'onStateChange'>;
-type ProcessPressInEventOptions = ProcessEventOptions & Pick<UseProcessEventOptions, 'onPressIn'>;
-type ProcessPressEventOptions = ProcessEventOptions &
-    Pick<UseProcessEventOptions, 'onPress'> & {mobile: boolean};
-
-type processLongPressEventEventOptions = ProcessEventOptions &
-    Pick<UseProcessEventOptions, 'onLongPress'>;
-
-type processPressOutEventEventOptions = ProcessEventOptions &
-    Pick<UseProcessEventOptions, 'onPressOut'> & {mobile: boolean};
-
+type ProcessBlurEventOptions = ProcessEventOptions & Pick<UseProcessEventOptions, 'onBlur'>;
+type processFocusEventEventOptions = ProcessEventOptions & Pick<UseProcessEventOptions, 'onFocus'>;
 type processHoverIntEventEventOptions = ProcessEventOptions &
     Pick<UseProcessEventOptions, 'onHoverIn'>;
 
 type processHoverOutEventEventOptions = ProcessEventOptions &
     Pick<UseProcessEventOptions, 'onHoverOut'>;
 
-type processFocusEventEventOptions = ProcessEventOptions & Pick<UseProcessEventOptions, 'onFocus'>;
-type ProcessBlurEventOptions = ProcessEventOptions & Pick<UseProcessEventOptions, 'onBlur'>;
 type processLayoutEventEventOptions = ProcessEventOptions &
     Pick<UseProcessEventOptions, 'onLayout'>;
+
+type processLongPressEventEventOptions = ProcessEventOptions &
+    Pick<UseProcessEventOptions, 'onLongPress'>;
+
+type ProcessPressEventOptions = ProcessEventOptions &
+    Pick<UseProcessEventOptions, 'onPress'> & {mobileDevice: boolean};
+
+type ProcessPressInEventOptions = ProcessEventOptions & Pick<UseProcessEventOptions, 'onPressIn'>;
+type processPressOutEventEventOptions = ProcessEventOptions &
+    Pick<UseProcessEventOptions, 'onPressOut'> & {mobileDevice: boolean};
+
+type ProcessStateChangeOptions = Pick<UseProcessEventOptions, 'disabled' | 'onStateChange'>;
 
 const processStateChange = (
     state: State,
     {
         callback,
+        disabled,
         event,
         eventName,
-        disabled,
         onStateChange,
     }: ProcessStateOptions & ProcessStateChangeOptions,
 ) => {
@@ -96,9 +97,9 @@ const processPressInEvent = (
 
 const processPressEvent = (
     event: GestureResponderEvent,
-    {processState, onPress, mobile}: ProcessPressEventOptions,
+    {processState, onPress, mobileDevice}: ProcessPressEventOptions,
 ) =>
-    processState(mobile ? 'enabled' : 'hovered', {
+    processState(mobileDevice ? 'enabled' : 'hovered', {
         callback: () => onPress?.(event),
         event,
         eventName: 'press',
@@ -116,9 +117,9 @@ const processLongPressEvent = (
 
 const processPressOutEvent = (
     event: GestureResponderEvent,
-    {processState, onPressOut, mobile}: processPressOutEventEventOptions,
+    {processState, onPressOut, mobileDevice}: processPressOutEventEventOptions,
 ) =>
-    processState(mobile ? 'enabled' : 'hovered', {
+    processState(mobileDevice ? 'enabled' : 'hovered', {
         callback: () => onPressOut?.(event),
         event,
         eventName: 'pressOut',
@@ -190,7 +191,7 @@ export const useOnEvent = ({
     onStateChange,
 }: UseProcessEventOptions) => {
     const theme = useTheme();
-    const mobile = ['ios', 'android'].includes(theme.OS);
+    const mobileDevice = ['ios', 'android'].includes(theme.OS);
     const processState = useCallback(
         (state: State, options = {} as ProcessStateOptions) =>
             processStateChange(disabled ? 'disabled' : state, {
@@ -207,8 +208,9 @@ export const useOnEvent = ({
     );
 
     const processPress = useCallback(
-        (event: GestureResponderEvent) => processPressEvent(event, {processState, onPress, mobile}),
-        [mobile, onPress, processState],
+        (event: GestureResponderEvent) =>
+            processPressEvent(event, {processState, onPress, mobileDevice}),
+        [mobileDevice, onPress, processState],
     );
 
     const processLongPress = useCallback(
@@ -218,8 +220,8 @@ export const useOnEvent = ({
 
     const processPressOut = useCallback(
         (event: GestureResponderEvent) =>
-            processPressOutEvent(event, {processState, onPressOut, mobile}),
-        [mobile, onPressOut, processState],
+            processPressOutEvent(event, {processState, onPressOut, mobileDevice}),
+        [mobileDevice, onPressOut, processState],
     );
 
     const processHoverIn = useCallback(
@@ -251,7 +253,7 @@ export const useOnEvent = ({
 
     return [
         {
-            mobile,
+            mobileDevice,
             onBlur: processBlur,
             onFocus: processFocus,
             onHoverIn: processHoverIn,

@@ -14,8 +14,8 @@ export interface ThemeProps {
 export const ThemeProvider: FC<ThemeProps> = ({adaptOptions, children, theme: themeProvider}) => {
     const {adaptFontSize, adaptSize} = adapt(adaptOptions);
     const colorScheme = useColorScheme() ?? 'light';
-    const OS = Platform.OS;
     const memoizedChildren = useMemo(() => children, [children]);
+    const OS = Platform.OS;
 
     return (
         <StyledComponentThemeProvider

@@ -19,6 +19,10 @@ interface ProcessModalEventOptions {
     setState: Updater<InitialState>;
 }
 
+interface ItemProps {
+    element?: React.JSX.Element;
+}
+
 const processModal = (modal: Modal, {setState}: ProcessModalEventOptions) => {
     const {id, element} = modal;
 
@@ -37,7 +41,7 @@ const processModal = (modal: Modal, {setState}: ProcessModalEventOptions) => {
     });
 };
 
-const Item: FC<{element?: React.JSX.Element}> = ({element}) => <>{element}</>;
+const Item: FC<ItemProps> = ({element}) => <>{element}</>;
 
 export const emitter = mitt<EmitterEvent>();
 export const ModalProvider: FC<unknown> = () => {
