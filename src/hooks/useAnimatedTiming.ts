@@ -27,7 +27,7 @@ export const useAnimatedTiming = (theme: Theme) => {
     const animatedTiming = useCallback(
         (
             sharedValue: SharedValue<AnimatableValue>,
-            {duration = 'short3', easing = 'standard', toValue, ...config}: AnimatedTimingOptions,
+            {duration = 'medium1', easing = 'standard', toValue, ...config}: AnimatedTimingOptions,
             callback?: AnimationCallback,
         ) => {
             cancelAnimation(sharedValue);

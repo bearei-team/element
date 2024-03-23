@@ -17,7 +17,7 @@ export const Ripple: StoryObj<TouchableRippleProps> = {
 
 export const DefaultActiveRipple: StoryObj<TouchableRippleProps> = {
     args: {
-        defaultActive: false,
+        defaultActive: true,
         centered: true,
         underlayColor: '#ce1616',
         children: <View style={{height: 80, width: '100%'}} />,

@@ -3,20 +3,15 @@ import {Animated, View} from 'react-native';
 import {Container, Content, Inner} from './TouchableRipple.styles';
 import {RenderProps, TouchableRippleBase, TouchableRippleProps} from './TouchableRippleBase';
 
-const AnimatedContainer = Animated.createAnimatedComponent(Container);
-const render = ({id, children, shape, onEvent, ripples, block, ...containerProps}: RenderProps) => (
-    <AnimatedContainer
-        {...containerProps}
-        shape={shape}
-        testID={`touchableRipple--${id}`}
-        block={block}>
+const render = ({id, children, onEvent, ripples, ...containerProps}: RenderProps) => (
+    <Container {...containerProps} testID={`touchableRipple--${id}`}>
         <Content {...onEvent} testID={`touchableRipple__content--${id}`}>
             <Inner testID={`touchableRipple__inner--${id}`}>
                 {children}
                 {ripples}
             </Inner>
         </Content>
-    </AnimatedContainer>
+    </Container>
 );
 
 const ForwardRefTouchableRipple = forwardRef<View, TouchableRippleProps>((props, ref) => (

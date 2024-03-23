@@ -1,12 +1,14 @@
-import {RefAttributes, forwardRef, useCallback, useEffect, useId, useMemo} from 'react';
 import {
-    GestureResponderEvent,
-    LayoutChangeEvent,
-    LayoutRectangle,
-    PressableProps,
-    View,
-    ViewProps,
-} from 'react-native';
+    RefAttributes,
+    forwardRef,
+    useCallback,
+    useEffect,
+    useId,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+} from 'react';
+import {GestureResponderEvent, PressableProps, View, ViewProps} from 'react-native';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {ShapeProps} from '../Common/Common.styles';
@@ -43,7 +45,6 @@ interface Ripple extends Pick<RippleProps, 'touchableLocation'> {
 
 type RippleSequence = Record<string, Ripple>;
 interface InitialState {
-    layout: LayoutRectangle;
     rippleSequence: RippleSequence;
 }
 
@@ -51,14 +52,14 @@ interface ProcessEventOptions {
     setState: Updater<InitialState>;
 }
 
+type ProcessActiveOptions = Pick<RenderProps, 'active' | 'touchableLocation'> & ProcessEventOptions;
 type ProcessAddRippleOptions = ProcessEventOptions &
     Pick<RenderProps, 'active' | 'touchableLocation'>;
 
-type ProcessActiveOptions = Pick<RenderProps, 'active' | 'touchableLocation'> & ProcessEventOptions;
 type ProcessEntryAnimatedFinishedOptions = ProcessEventOptions & {exitAnimated: ExitAnimated};
 type ProcessPressOutOptions = Omit<ProcessAddRippleOptions, 'locationX' | 'locationY'>;
 type ProcessStateChangeOptions = ProcessPressOutOptions & OnStateChangeOptions;
-type RenderRipplesOptions = Omit<RippleProps, 'sequence'>;
+type RenderRipplesOptions = Omit<RippleProps, 'sequence'> & {containerRef?: React.RefObject<View>};
 
 const processAddRipple = ({active, touchableLocation, setState}: ProcessAddRippleOptions) => {
     setState(draft => {
@@ -80,18 +81,6 @@ const processAddRipple = ({active, touchableLocation, setState}: ProcessAddRippl
     });
 };
 
-const processLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
-    const nativeEventLayout = event.nativeEvent.layout;
-
-    setState(draft => {
-        const update =
-            draft.layout.width !== nativeEventLayout.width ||
-            draft.layout.height !== nativeEventLayout.height;
-
-        update && (draft.layout = nativeEventLayout);
-    });
-};
-
 const processPressOut = (
     event: GestureResponderEvent,
     {active, setState}: ProcessPressOutOptions,
@@ -104,7 +93,6 @@ const processPressOut = (
 
 const processStateChange = ({event, eventName, setState, active}: ProcessStateChangeOptions) => {
     const nextEvent = {
-        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () => processPressOut(event as GestureResponderEvent, {setState, active}),
     } as Record<EventName, () => void>;
 
@@ -114,7 +102,7 @@ const processStateChange = ({event, eventName, setState, active}: ProcessStateCh
 const processEntryAnimatedFinished = (
     sequence: string,
     {setState, exitAnimated}: ProcessEntryAnimatedFinishedOptions,
-) => {
+) =>
     exitAnimated(() => {
         setState(draft => {
             if (draft.rippleSequence[sequence]) {
@@ -122,35 +110,24 @@ const processEntryAnimatedFinished = (
             }
         });
     });
-};
 
-const processActive = ({active, setState, touchableLocation}: ProcessActiveOptions) => {
-    if (typeof active !== 'boolean') {
-        return;
-    }
-
-    processAddRipple({touchableLocation, active, setState});
-};
+const processActive = ({active, setState, touchableLocation}: ProcessActiveOptions) =>
+    typeof active === 'boolean' && processAddRipple({touchableLocation, active, setState});
 
 const renderRipples = (
     rippleSequence: RippleSequence,
-    {touchableLayout, centered, ...props}: RenderRipplesOptions,
-) => {
-    if (typeof touchableLayout?.width !== 'number' || touchableLayout?.width === 0) {
-        return <></>;
-    }
-
-    return Object.entries(rippleSequence).map(([sequence, {touchableLocation}]) => (
+    {centered, containerRef, ...props}: RenderRipplesOptions,
+) =>
+    Object.entries(rippleSequence).map(([sequence, {touchableLocation}]) => (
         <Ripple
             {...props}
             centered={typeof centered === 'boolean' ? centered : !touchableLocation?.locationX}
+            containerCurrent={containerRef?.current}
             key={sequence}
             sequence={sequence}
-            touchableLayout={touchableLayout}
             touchableLocation={touchableLocation}
         />
     ));
-};
 
 export const TouchableRippleBase = forwardRef<View, TouchableRippleBaseProps>(
     (
@@ -166,12 +143,12 @@ export const TouchableRippleBase = forwardRef<View, TouchableRippleBaseProps>(
         },
         ref,
     ) => {
-        const [{rippleSequence, layout}, setState] = useImmer<InitialState>({
-            layout: {} as LayoutRectangle,
+        const [{rippleSequence}, setState] = useImmer<InitialState>({
             rippleSequence: {} as RippleSequence,
         });
 
         const id = useId();
+        const containerRef = useRef<View>(null);
         const active = activeSource ?? defaultActive;
         const onStateChange = useCallback(
             (_state: State, options = {} as OnStateChangeOptions) =>
@@ -191,11 +168,17 @@ export const TouchableRippleBase = forwardRef<View, TouchableRippleBaseProps>(
                 renderRipples(rippleSequence, {
                     active,
                     centered,
+                    containerRef,
                     onEntryAnimatedFinished,
-                    touchableLayout: layout,
                     underlayColor,
                 }),
-            [active, centered, layout, onEntryAnimatedFinished, rippleSequence, underlayColor],
+            [active, centered, onEntryAnimatedFinished, rippleSequence, underlayColor],
+        );
+
+        useImperativeHandle(
+            ref,
+            () => (containerRef?.current ? containerRef?.current : {}) as View,
+            [],
         );
 
         useEffect(() => {
@@ -206,7 +189,7 @@ export const TouchableRippleBase = forwardRef<View, TouchableRippleBaseProps>(
             ...renderProps,
             id,
             onEvent,
-            ref,
+            ref: containerRef,
             ripples,
         });
     },

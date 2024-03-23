@@ -6,39 +6,27 @@ import {
     useSharedValue,
 } from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
-import {
-    AnimatedTiming,
-    AnimatedTimingOptions,
-    useAnimatedTiming,
-} from '../../../hooks/useAnimatedTiming';
+import {AnimatedTiming, useAnimatedTiming} from '../../../hooks/useAnimatedTiming';
 import {RenderProps} from './RippleBase';
 
 interface UseAnimatedOptions extends Pick<RenderProps, 'onEntryAnimatedFinished' | 'active'> {
-    minDuration: number;
     sequence: string;
 }
 
-interface CreateEntryAnimatedOptions extends Pick<UseAnimatedOptions, 'minDuration' | 'active'> {
+interface CreateEntryAnimatedOptions extends Pick<UseAnimatedOptions, 'active'> {
     opacity: SharedValue<AnimatableValue>;
     scale: SharedValue<AnimatableValue>;
 }
 
-type CreateExitAnimatedOptions = Omit<CreateEntryAnimatedOptions, 'minDuration'>;
+type CreateExitAnimatedOptions = CreateEntryAnimatedOptions;
 type ProcessAnimatedTimingOptions = CreateEntryAnimatedOptions &
     CreateExitAnimatedOptions &
     Pick<UseAnimatedOptions, 'onEntryAnimatedFinished' | 'sequence'>;
 
 const createEntryAnimated =
-    (
-        animatedTiming: AnimatedTiming,
-        {active, minDuration, scale, opacity}: CreateEntryAnimatedOptions,
-    ) =>
+    (animatedTiming: AnimatedTiming, {active, scale, opacity}: CreateEntryAnimatedOptions) =>
     (callback?: () => void) => {
-        const animatedTimingOptions = {
-            duration: Math.min(minDuration, 400),
-            easing: 'emphasizedDecelerate',
-            toValue: 1,
-        } as AnimatedTimingOptions;
+        const animatedTimingOptions = {toValue: 1};
 
         if (typeof active === 'boolean') {
             animatedTiming(scale, animatedTimingOptions);
@@ -53,11 +41,7 @@ const createEntryAnimated =
 const createExitAnimated =
     (animatedTiming: AnimatedTiming, {active, scale, opacity}: CreateExitAnimatedOptions) =>
     (callback?: () => void) => {
-        const animatedTimingOptions = {
-            duration: 'short3',
-            easing: 'emphasizedAccelerate',
-            toValue: 0,
-        } as AnimatedTimingOptions;
+        const animatedTimingOptions = {toValue: 0};
 
         if (typeof active === 'boolean') {
             animatedTiming(scale, animatedTimingOptions);
@@ -71,18 +55,10 @@ const createExitAnimated =
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {
-        active,
-        minDuration,
-        onEntryAnimatedFinished,
-        opacity,
-        scale,
-        sequence,
-    }: ProcessAnimatedTimingOptions,
+    {active, onEntryAnimatedFinished, opacity, scale, sequence}: ProcessAnimatedTimingOptions,
 ) => {
     const entryAnimated = createEntryAnimated(animatedTiming, {
         active,
-        minDuration,
         opacity,
         scale,
     });
@@ -100,12 +76,7 @@ const processAnimatedTiming = (
     entryAnimated(() => onEntryAnimatedFinished?.(sequence, exitAnimated));
 };
 
-export const useAnimated = ({
-    active,
-    minDuration,
-    onEntryAnimatedFinished,
-    sequence,
-}: UseAnimatedOptions) => {
+export const useAnimated = ({active, onEntryAnimatedFinished, sequence}: UseAnimatedOptions) => {
     const opacity = useSharedValue(1);
     const scale = useSharedValue(active ? 1 : 0);
     const theme = useTheme();
@@ -114,7 +85,6 @@ export const useAnimated = ({
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
             active,
-            minDuration,
             onEntryAnimatedFinished,
             opacity,
             scale,
@@ -125,7 +95,7 @@ export const useAnimated = ({
             cancelAnimation(opacity);
             cancelAnimation(scale);
         };
-    }, [active, animatedTiming, minDuration, onEntryAnimatedFinished, opacity, scale, sequence]);
+    }, [active, animatedTiming, onEntryAnimatedFinished, opacity, scale, sequence]);
 
     return [{opacity, scale}];
 };
