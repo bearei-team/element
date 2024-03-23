@@ -38,7 +38,6 @@
         "publish": "yarn clean && yarn build && yarn npm publish --access public"
     },
     "dependencies": {
-        "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
         "@bearei/theme": "^1.4.3",
         "@material-design-icons/svg": "latest",
         "async-validator": "^4.2.5",
@@ -52,6 +51,7 @@
         "use-immer": "^0.9.0"
     },
     "devDependencies": {
+        "@babel/plugin-proposal-export-namespace-from": "^7.18.9",
         "@babel/core": "^7.20.0",
         "@babel/preset-env": "^7.20.0",
         "@babel/runtime": "^7.20.0",
