@@ -1,12 +1,6 @@
 import {forwardRef, useId} from 'react';
-import {
-    Animated,
-    LayoutRectangle,
-    NativeTouchEvent,
-    View,
-    ViewProps,
-    ViewStyle,
-} from 'react-native';
+import {LayoutRectangle, NativeTouchEvent, View, ViewProps, ViewStyle} from 'react-native';
+import {AnimatedStyle} from 'react-native-reanimated';
 import {ExitAnimated} from '../TouchableRippleBase';
 import {useAnimated} from './useAnimated';
 
@@ -23,7 +17,7 @@ export interface RippleProps extends Partial<ViewProps & React.RefAttributes<Vie
 export interface RenderProps extends Omit<RippleProps, 'sequence'> {
     locationX: number;
     locationY: number;
-    renderStyle: Animated.WithAnimatedObject<ViewStyle & {height: number; width: number}>;
+    renderStyle: AnimatedStyle<ViewStyle> & {height: number; width: number};
 }
 
 interface RippleBaseProps extends RippleProps {

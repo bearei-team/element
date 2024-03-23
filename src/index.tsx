@@ -30,7 +30,6 @@ export * from './components/TouchableRipple/TouchableRipple';
 export * from './context/ModalProvider';
 export * from './context/ThemeProvider';
 export * from './hooks/useAnimatedTiming';
-export * from './hooks/useAnimatedValue';
 export * from './hooks/useLazyRef';
 export * from './hooks/useOnEvent';
 export * from './utils/adapt.utils';

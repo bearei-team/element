@@ -15,6 +15,14 @@ export interface AnimatedTimingOptions
     toValue: number;
 }
 
+export interface AnimatedTiming {
+    (
+        sharedValue: SharedValue<AnimatableValue>,
+        options: AnimatedTimingOptions,
+        callback?: AnimationCallback,
+    ): void;
+}
+
 export const useAnimatedTiming = (theme: Theme) => {
     const animatedTiming = useCallback(
         (
@@ -29,8 +37,8 @@ export const useAnimatedTiming = (theme: Theme) => {
                 easing,
             });
 
-            withTiming(
-                sharedValue.value,
+            sharedValue.value = withTiming(
+                toValue,
                 {
                     duration: transitionDuration,
                     easing: Easing.bezier(bezier.x0, bezier.y0, bezier.x1, bezier.y1),
@@ -38,8 +46,6 @@ export const useAnimatedTiming = (theme: Theme) => {
                 },
                 callback,
             );
-
-            sharedValue.value = toValue;
         },
         [theme],
     );

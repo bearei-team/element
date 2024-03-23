@@ -1,10 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React, {FC} from 'react';
 import {StorybookUIRoot} from '../.ondevice/Storybook';
 import {ThemeProvider} from './context/ThemeProvider';

@@ -1,12 +1,16 @@
 import {useEffect} from 'react';
-import {Animated} from 'react-native';
+import {
+    AnimatableValue,
+    SharedValue,
+    cancelAnimation,
+    useSharedValue,
+} from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
 import {
     AnimatedTiming,
     AnimatedTimingOptions,
     useAnimatedTiming,
 } from '../../../hooks/useAnimatedTiming';
-import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
 import {RenderProps} from './RippleBase';
 
 interface UseAnimatedOptions extends Pick<RenderProps, 'onEntryAnimatedFinished' | 'active'> {
@@ -15,8 +19,8 @@ interface UseAnimatedOptions extends Pick<RenderProps, 'onEntryAnimatedFinished'
 }
 
 interface CreateEntryAnimatedOptions extends Pick<UseAnimatedOptions, 'minDuration' | 'active'> {
-    opacityAnimated: Animated.Value;
-    scaleAnimated: Animated.Value;
+    opacity: SharedValue<AnimatableValue>;
+    scale: SharedValue<AnimatableValue>;
 }
 
 type CreateExitAnimatedOptions = Omit<CreateEntryAnimatedOptions, 'minDuration'>;
@@ -27,7 +31,7 @@ type ProcessAnimatedTimingOptions = CreateEntryAnimatedOptions &
 const createEntryAnimated =
     (
         animatedTiming: AnimatedTiming,
-        {active, scaleAnimated, minDuration, opacityAnimated}: CreateEntryAnimatedOptions,
+        {active, minDuration, scale, opacity}: CreateEntryAnimatedOptions,
     ) =>
     (callback?: () => void) => {
         const animatedTimingOptions = {
@@ -37,22 +41,17 @@ const createEntryAnimated =
         } as AnimatedTimingOptions;
 
         if (typeof active === 'boolean') {
-            return Animated.parallel([
-                animatedTiming(scaleAnimated, animatedTimingOptions),
-                animatedTiming(opacityAnimated, animatedTimingOptions),
-            ]).start(({finished}) => finished && callback?.());
+            animatedTiming(scale, animatedTimingOptions);
+            animatedTiming(opacity, animatedTimingOptions, finished => finished && callback?.());
+
+            return;
         }
 
-        animatedTiming(scaleAnimated, animatedTimingOptions).start(
-            ({finished}) => finished && callback?.(),
-        );
+        animatedTiming(scale, animatedTimingOptions, finished => finished && callback?.());
     };
 
 const createExitAnimated =
-    (
-        animatedTiming: AnimatedTiming,
-        {active, opacityAnimated, scaleAnimated}: CreateExitAnimatedOptions,
-    ) =>
+    (animatedTiming: AnimatedTiming, {active, scale, opacity}: CreateExitAnimatedOptions) =>
     (callback?: () => void) => {
         const animatedTimingOptions = {
             duration: 'short3',
@@ -61,15 +60,13 @@ const createExitAnimated =
         } as AnimatedTimingOptions;
 
         if (typeof active === 'boolean') {
-            return Animated.parallel([
-                animatedTiming(scaleAnimated, animatedTimingOptions),
-                animatedTiming(opacityAnimated, animatedTimingOptions),
-            ]).start(({finished}) => finished && callback?.());
+            animatedTiming(scale, animatedTimingOptions);
+            animatedTiming(opacity, animatedTimingOptions, finished => finished && callback?.());
+
+            return;
         }
 
-        animatedTiming(opacityAnimated, animatedTimingOptions).start(
-            ({finished}) => finished && callback?.(),
-        );
+        animatedTiming(opacity, animatedTimingOptions, finished => finished && callback?.());
     };
 
 const processAnimatedTiming = (
@@ -78,22 +75,22 @@ const processAnimatedTiming = (
         active,
         minDuration,
         onEntryAnimatedFinished,
-        opacityAnimated,
-        scaleAnimated,
+        opacity,
+        scale,
         sequence,
     }: ProcessAnimatedTimingOptions,
 ) => {
     const entryAnimated = createEntryAnimated(animatedTiming, {
         active,
         minDuration,
-        opacityAnimated,
-        scaleAnimated,
+        opacity,
+        scale,
     });
 
     const exitAnimated = createExitAnimated(animatedTiming, {
         active,
-        opacityAnimated,
-        scaleAnimated,
+        opacity,
+        scale,
     });
 
     if (typeof active === 'boolean') {
@@ -109,43 +106,26 @@ export const useAnimated = ({
     onEntryAnimatedFinished,
     sequence,
 }: UseAnimatedOptions) => {
-    const [opacityAnimated] = useAnimatedValue(1);
-    const [scaleAnimated] = useAnimatedValue(active ? 1 : 0);
+    const opacity = useSharedValue(1);
+    const scale = useSharedValue(active ? 1 : 0);
     const theme = useTheme();
     const [animatedTiming] = useAnimatedTiming(theme);
-    const opacity = opacityAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 1],
-    });
-
-    const scale = scaleAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 1],
-    });
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
             active,
             minDuration,
             onEntryAnimatedFinished,
-            opacityAnimated,
-            scaleAnimated,
+            opacity,
+            scale,
             sequence,
         });
 
         return () => {
-            opacityAnimated.stopAnimation();
-            scaleAnimated.stopAnimation();
+            cancelAnimation(opacity);
+            cancelAnimation(scale);
         };
-    }, [
-        active,
-        animatedTiming,
-        minDuration,
-        onEntryAnimatedFinished,
-        opacityAnimated,
-        scaleAnimated,
-        sequence,
-    ]);
+    }, [active, animatedTiming, minDuration, onEntryAnimatedFinished, opacity, scale, sequence]);
 
     return [{opacity, scale}];
 };

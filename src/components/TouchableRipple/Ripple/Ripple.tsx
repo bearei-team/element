@@ -1,8 +1,9 @@
 import {FC, forwardRef, memo} from 'react';
-import {Animated, View} from 'react-native';
+
+import {View} from 'react-native';
+import Animated from 'react-native-reanimated';
 import {Container} from './Ripple.styles';
 import {RenderProps, RippleBase, RippleProps} from './RippleBase';
-
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const render = ({
     active,

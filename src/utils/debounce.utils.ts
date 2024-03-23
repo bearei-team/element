@@ -1,6 +1,8 @@
-type DebouncedFunction<T extends (...args: any[]) => any> = (...args: Parameters<T>) => void;
+type DebouncedFunction<T extends (...args: unknown[]) => unknown> = (
+    ...args: Parameters<T>
+) => void;
 
-export const debounce = <T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: unknown[]) => unknown>(
     func: T,
     delay: number,
 ): DebouncedFunction<T> => {
