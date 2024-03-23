@@ -1,9 +1,10 @@
 import {forwardRef, useCallback, useEffect, useId, useMemo} from 'react';
-import {Animated, GestureResponderEvent, TextStyle, View, ViewStyle} from 'react-native';
+import {GestureResponderEvent, TextStyle, View, ViewStyle} from 'react-native';
+import {AnimatedStyle} from 'react-native-reanimated';
 import {Updater, useImmer} from 'use-immer';
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
 import {Button} from '../Button/Button';
-import {AnimatedInterpolation, ComponentStatus, EventName, State} from '../Common/interface';
+import {ComponentStatus, EventName, State} from '../Common/interface';
 import {ElevationLevel} from '../Elevation/Elevation';
 import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
 import {useAnimated} from './useAnimated';
@@ -31,9 +32,10 @@ export interface RenderProps extends CardProps {
     elevation: ElevationLevel;
     eventName: EventName;
     onEvent: OnEvent;
-    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        subColor: AnimatedInterpolation;
-        titleColor: AnimatedInterpolation;
+    renderStyle: AnimatedStyle<ViewStyle> & {
+        contentAnimatedStyle: AnimatedStyle<ViewStyle>;
+        subheadTextAnimatedStyle: AnimatedStyle<TextStyle>;
+        titleTextAnimatedStyle: AnimatedStyle<TextStyle>;
     };
 }
 
@@ -82,12 +84,21 @@ const processElevation = (state: State, {type = 'filled', setState}: ProcessElev
     });
 };
 
+/**
+ * FIXME:
+ *
+ * Handles the problem of cards accidentally coming into focus when using primary or secondary
+ * buttons.
+ */
 const processStateChange = (
     state: State,
     {eventName, type, setState}: ProcessStateChangeOptions,
 ) => {
-    processElevation(state, {type, setState});
+    if (eventName === 'layout') {
+        return;
+    }
 
+    processElevation(state, {type, setState});
     setState(draft => {
         draft.eventName = eventName;
     });
@@ -148,13 +159,14 @@ export const CardBase = forwardRef<View, CardBaseProps>(
         );
 
         const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
-        const [{backgroundColor, borderColor, titleColor, subColor}] = useAnimated({
-            disabled,
-            eventName,
-            type,
-        });
+        const [{contentAnimatedStyle, subheadTextAnimatedStyle, titleTextAnimatedStyle}] =
+            useAnimated({
+                disabled,
+                eventName,
+                type,
+            });
 
-        const [border] = useBorder({borderColor});
+        const [border] = useBorder({type});
         const primaryButtonElement = useMemo(
             () =>
                 primaryButton ?? (
@@ -206,10 +218,9 @@ export const CardBase = forwardRef<View, CardBaseProps>(
             underlayColor,
             renderStyle: {
                 ...border,
-                backgroundColor,
-                borderColor,
-                subColor,
-                titleColor,
+                contentAnimatedStyle,
+                subheadTextAnimatedStyle,
+                titleTextAnimatedStyle,
             },
         });
     },

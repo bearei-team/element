@@ -23,7 +23,7 @@ export interface RenderProps extends ButtonProps {
     elevation: ElevationLevel;
     eventName: EventName;
     onEvent: OnEvent;
-    renderStyle: AnimatedStyle<ViewStyle> & {
+    renderStyle: {
         contentAnimatedStyle: AnimatedStyle<ViewStyle>;
         labelTextAnimatedStyle: AnimatedStyle<TextStyle>;
     };
@@ -80,8 +80,11 @@ const processStateChange = (
     state: State,
     {eventName, type, setState}: ProcessStateChangeOptions,
 ) => {
-    processElevation(state, {type, setState});
+    if (eventName === 'layout') {
+        return;
+    }
 
+    processElevation(state, {type, setState});
     setState(draft => {
         draft.eventName = eventName;
     });

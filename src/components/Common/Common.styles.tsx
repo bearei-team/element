@@ -64,24 +64,22 @@ export const Typography = styled.Text<TypographyProps>`
 `;
 
 export const PlatformView = styled.View`
+    align-items: center;
+    cursor: default;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
     ${({theme}) => {
         const os = {
-            android: css`
-                align-self: stretch;
-            `,
-            ios: css`
-                align-self: stretch;
-            `,
-            macos: css`
-                align-self: stretch;
-            `,
+            android: css``,
+            ios: css``,
+            macos: css``,
             web: css`
                 display: inline-block;
                 line-height: ${theme.adaptSize(theme.spacing.none)}px;
             `,
-            windows: css`
-                align-self: stretch;
-            `,
+            windows: css``,
         };
 
         return os[theme.OS];

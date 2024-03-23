@@ -1,8 +1,9 @@
 import {FC, forwardRef, memo} from 'react';
-import {Animated, View} from 'react-native';
+import {View} from 'react-native';
+import Animated from 'react-native-reanimated';
 import {Elevation} from '../Elevation/Elevation';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
-import {Hovered} from '../Underlay/Hovered';
+import {Underlay} from '../Underlay/Underlay';
 import {
     Container,
     Content,
@@ -17,9 +18,10 @@ import {
 } from './Card.styles';
 import {CardBase, CardProps, RenderProps} from './CardBase';
 
-const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 const AnimatedSubheadText = Animated.createAnimatedComponent(SubheadText);
+const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
 const AnimatedTitleText = Animated.createAnimatedComponent(TitleText);
+const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
 const render = ({
     block,
     disabled,
@@ -37,28 +39,25 @@ const render = ({
     titleText,
     underlayColor,
 }: RenderProps) => {
-    const {backgroundColor, subColor, titleColor, ...border} = renderStyle;
+    const {contentAnimatedStyle, subheadTextAnimatedStyle, titleTextAnimatedStyle, ...border} =
+        renderStyle;
     const shape = 'medium';
 
     return (
         <Container block={block} testID={`card--${id}`}>
-            <TouchableRipple
+            <AnimatedTouchableRipple
                 {...onEvent}
                 block={block}
                 disabled={disabled}
                 shape={shape}
-                underlayColor={underlayColor}
-                style={{
-                    ...(typeof style === 'object' && style),
-                    ...border,
-                    backgroundColor,
-                }}>
+                style={[style, contentAnimatedStyle, border]}
+                underlayColor={underlayColor}>
                 <Inner testID={`card__inner--${id}`} block={block}>
                     <Content testID={`card__content--${id}`}>
                         <ContentHeader testID={`card__contentHeader--${id}`}>
                             {titleText && (
                                 <AnimatedTitleText
-                                    style={{color: titleColor}}
+                                    style={[titleTextAnimatedStyle]}
                                     type="body"
                                     size="large"
                                     testID={`card__titleText--${id}`}>
@@ -68,7 +67,7 @@ const render = ({
 
                             {subheadText && (
                                 <AnimatedSubheadText
-                                    style={{color: subColor}}
+                                    style={[subheadTextAnimatedStyle]}
                                     type="body"
                                     size="medium"
                                     testID={`card__subheadText--${id}`}>
@@ -79,7 +78,7 @@ const render = ({
 
                         {supportingText && (
                             <AnimatedSupportingText
-                                style={{color: subColor}}
+                                style={[subheadTextAnimatedStyle]}
                                 type="body"
                                 size="medium"
                                 testID={`card__supportingText--${id}`}>
@@ -100,9 +99,9 @@ const render = ({
                         )}
                     </Content>
 
-                    <Hovered eventName={eventName} underlayColor={underlayColor} />
+                    <Underlay eventName={eventName} underlayColor={underlayColor} />
                 </Inner>
-            </TouchableRipple>
+            </AnimatedTouchableRipple>
 
             <Elevation level={elevation} shape={shape} />
         </Container>

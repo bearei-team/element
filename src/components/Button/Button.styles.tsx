@@ -8,11 +8,6 @@ interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
 }
 
 export const Container = styled(PlatformView)<ContainerProps>`
-    align-items: center;
-    cursor: default;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
     position: relative;
 
     ${({block}) =>

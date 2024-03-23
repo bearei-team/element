@@ -5,12 +5,6 @@ import {IconProps} from './Icon';
 type ContainerProps = Pick<IconProps, 'renderStyle'>;
 
 export const Container = styled(PlatformView)<ContainerProps>`
-    align-items: center;
-    cursor: default;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-
     ${({renderStyle = {}, theme}) => {
         const {height, width} = renderStyle;
 
