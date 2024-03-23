@@ -71,6 +71,10 @@ const processStateChange = ({
     onActive,
     setState,
 }: ProcessStateChangeOptions) => {
+    if (eventName === 'layout') {
+        return;
+    }
+
     const nextEvent = {
         pressOut: () => processActive({setState, onActive, active: !active, indeterminate}),
     } as Record<EventName, () => void>;

@@ -52,7 +52,7 @@ const render = ({
                 shape={shape}
                 style={[style, contentAnimatedStyle, border]}
                 underlayColor={underlayColor}>
-                <Inner testID={`card__inner--${id}`} block={block}>
+                <Inner testID={`card__inner--${id}`}>
                     <Content testID={`card__content--${id}`}>
                         <ContentHeader testID={`card__contentHeader--${id}`}>
                             {titleText && (

@@ -1,13 +1,7 @@
-import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
+import {PlatformView} from '../Common/Common.styles';
 
-export const Container = styled(View)`
-    align-items: center;
-    cursor: default;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-
+export const Container = styled(PlatformView)`
     ${({theme}) => css`
         height: ${theme.adaptSize(theme.spacing.small * 5)}px;
         width: ${theme.adaptSize(theme.spacing.small * 5)}px;

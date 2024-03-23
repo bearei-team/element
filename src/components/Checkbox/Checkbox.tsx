@@ -1,7 +1,8 @@
 import {FC, forwardRef, memo} from 'react';
 import {View} from 'react-native';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
-import {Hovered} from '../Underlay/Hovered';
+
+import {Underlay} from '../Underlay/Underlay';
 import {Container, Content, Icon} from './Checkbox.styles';
 import {CheckboxBase, CheckboxProps, RenderProps} from './CheckboxBase';
 
@@ -23,7 +24,7 @@ const render = ({
             underlayColor={underlayColor}>
             <Content {...contentProps} testID={`checkbox__content--${id}`}>
                 <Icon testID={`checkbox__icon--${id}`}>{icon}</Icon>
-                <Hovered eventName={eventName} underlayColor={underlayColor} />
+                <Underlay eventName={eventName} underlayColor={underlayColor} />
             </Content>
         </TouchableRipple>
     </Container>

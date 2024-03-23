@@ -3,10 +3,14 @@ import {PlatformView, Shape, Typography} from '../Common/Common.styles';
 import {RenderProps} from './CardBase';
 
 type ContainerProps = Pick<RenderProps, 'block'>;
-type InnerProps = Pick<ContainerProps, 'block'>;
 
 export const Container = styled(PlatformView)<ContainerProps>`
     position: relative;
+
+    ${({theme}) =>
+        css`
+            width: ${theme.adaptSize(theme.spacing.small * 45)}px;
+        `}
 
     ${({block}) =>
         block &&
@@ -15,20 +19,9 @@ export const Container = styled(PlatformView)<ContainerProps>`
         `}
 `;
 
-export const Inner = styled.View<InnerProps>`
+export const Inner = styled.View`
     position: relative;
     z-index: 1;
-
-    ${({theme}) =>
-        css`
-            min-width: ${theme.adaptSize(theme.spacing.small * 45)}px;
-        `}
-
-    ${({block}) =>
-        block &&
-        css`
-            width: 100%;
-        `}
 `;
 
 export const Media = styled(Shape)`
