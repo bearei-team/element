@@ -1,11 +1,12 @@
-import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
+import {PlatformView} from '../Common/Common.styles';
 import {IconProps} from './Icon';
 
 type ContainerProps = Pick<IconProps, 'renderStyle'>;
 
-export const Container = styled(View)<ContainerProps>`
+export const Container = styled(PlatformView)<ContainerProps>`
     align-items: center;
+    cursor: default;
     display: flex;
     flex-direction: row;
     justify-content: center;

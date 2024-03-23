@@ -1,6 +1,5 @@
-import {View} from 'react-native';
 import styled, {css} from 'styled-components/native';
-import {Typography} from '../Common/Common.styles';
+import {PlatformView, Typography} from '../Common/Common.styles';
 import {RenderProps} from './ButtonBase';
 
 type ContainerProps = Pick<RenderProps, 'block'>;
@@ -8,36 +7,13 @@ interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
     iconShow: boolean;
 }
 
-export const Container = styled(View)<ContainerProps>`
+export const Container = styled(PlatformView)<ContainerProps>`
     align-items: center;
     cursor: default;
     display: flex;
     flex-direction: row;
     justify-content: center;
     position: relative;
-
-    ${({theme}) => {
-        const os = {
-            android: css`
-                align-self: stretch;
-            `,
-            ios: css`
-                align-self: stretch;
-            `,
-            macos: css`
-                align-self: stretch;
-            `,
-            web: css`
-                display: inline-block;
-                line-height: ${theme.adaptSize(theme.spacing.none)}px;
-            `,
-            windows: css`
-                align-self: stretch;
-            `,
-        };
-
-        return os[theme.OS];
-    }}
 
     ${({block}) =>
         block &&

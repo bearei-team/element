@@ -1,22 +1,20 @@
 import React, {FC, forwardRef, memo} from 'react';
-import {Animated, View} from 'react-native';
+import {View} from 'react-native';
+import Animated from 'react-native-reanimated';
 import {Container} from './Icon.styles';
 import {IconBase, IconName, IconProps, IconType, RenderProps} from './IconBase';
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container);
 const render = ({id, renderStyle, children, style, ...containerProps}: RenderProps) => {
-    const {height, width, ...containerStyle} = renderStyle;
+    const {height, width, animatedStyle} = renderStyle;
 
     return (
         <AnimatedContainer
             {...containerProps}
             accessibilityRole="image"
-            style={{
-                ...(typeof style === 'object' && style),
-                ...containerStyle,
-            }}
-            testID={`icon--${id}`}
-            renderStyle={{height, width}}>
+            renderStyle={{height, width}}
+            style={[style, animatedStyle]}
+            testID={`icon--${id}`}>
             {children}
         </AnimatedContainer>
     );

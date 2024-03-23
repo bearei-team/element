@@ -15,7 +15,7 @@ export interface UnderlayProps extends BaseProps {
 }
 
 export interface RenderProps extends UnderlayProps {
-    renderStyle: AnimatedStyle<ViewStyle> & {
+    renderStyle: {
         height?: number;
         width?: number;
         animatedStyle: AnimatedStyle<ViewStyle>;

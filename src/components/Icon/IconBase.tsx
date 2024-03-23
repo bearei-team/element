@@ -1,5 +1,6 @@
 import {RefAttributes, forwardRef, useId} from 'react';
-import {Animated, View, ViewProps, ViewStyle} from 'react-native';
+import {View, ViewProps, ViewStyle} from 'react-native';
+import {AnimatedStyle} from 'react-native-reanimated';
 import {SvgProps} from 'react-native-svg';
 import {useTheme} from 'styled-components/native';
 import {EventName} from '../Common/interface';
@@ -18,7 +19,8 @@ export interface IconProps extends BaseProps {
 }
 
 export interface RenderProps extends IconProps {
-    renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
+    renderStyle: {
+        animatedStyle: AnimatedStyle<ViewStyle>;
         height?: number;
         width?: number;
     };
@@ -36,13 +38,13 @@ export const IconBase = forwardRef<View, IconBaseProps>(
         const id = useId();
         const SvgIcon = icon?.[type]?.svg?.[name];
         const theme = useTheme();
-        const [{scale}] = useAnimated({eventName});
+        const [{animatedStyle}] = useAnimated({eventName});
 
         return render({
             ...renderProps,
             id,
             ref,
-            renderStyle: {...renderStyle, transform: [{scale}]},
+            renderStyle: {...renderStyle, animatedStyle},
             children: SvgIcon && (
                 <SvgIcon
                     fill={fill ?? theme.palette.surface.onSurfaceVariant}

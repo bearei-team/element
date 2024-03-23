@@ -28,6 +28,7 @@ export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
     const shadow0AnimatedStyle = useAnimatedStyle(() => ({
         opacity: interpolate(
             opacity.value,
+            [0, 1, 2, 3, 4, 5],
             [
                 theme.elevation.level0.shadow0.opacity,
                 theme.elevation.level1.shadow0.opacity,
@@ -36,13 +37,13 @@ export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
                 theme.elevation.level4.shadow0.opacity,
                 theme.elevation.level5.shadow0.opacity,
             ],
-            [0, 1, 2, 3, 4, 5],
         ),
     }));
 
     const shadow1AnimatedStyle = useAnimatedStyle(() => ({
         opacity: interpolate(
             opacity.value,
+            [0, 1, 2, 3, 4, 5],
             [
                 theme.elevation.level0.shadow1.opacity,
                 theme.elevation.level1.shadow1.opacity,
@@ -51,7 +52,6 @@ export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
                 theme.elevation.level4.shadow1.opacity,
                 theme.elevation.level5.shadow1.opacity,
             ],
-            [0, 1, 2, 3, 4, 5],
         ),
     }));
 

@@ -1,23 +1,29 @@
 import {useEffect, useMemo} from 'react';
-import {Animated} from 'react-native';
+import {
+    AnimatableValue,
+    SharedValue,
+    cancelAnimation,
+    interpolateColor,
+    useAnimatedStyle,
+    useSharedValue,
+} from 'react-native-reanimated';
 import {useTheme} from 'styled-components/native';
 import {AnimatedTiming, useAnimatedTiming} from '../../hooks/useAnimatedTiming';
-import {useAnimatedValue} from '../../hooks/useAnimatedValue';
 import {RenderProps} from './ButtonBase';
 
 type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName'>;
 interface ProcessOutlinedAnimatedOptions extends UseAnimatedOptions {
-    borderAnimated: Animated.Value;
+    border: SharedValue<AnimatableValue>;
     borderInputRange: number[];
 }
 
 interface ProcessAnimatedTimingOptions extends ProcessOutlinedAnimatedOptions {
-    colorAnimated: Animated.Value;
+    color: SharedValue<AnimatableValue>;
 }
 
 const processOutlinedAnimated = (
     animatedTiming: AnimatedTiming,
-    {borderAnimated, borderInputRange, disabled, eventName, type}: ProcessOutlinedAnimatedOptions,
+    {border, borderInputRange, disabled, eventName, type}: ProcessOutlinedAnimatedOptions,
 ) => {
     const value = disabled ? 0 : borderInputRange[borderInputRange.length - 2];
     const responseEvent =
@@ -27,15 +33,15 @@ const processOutlinedAnimated = (
 
     const toValue = responseEvent ? borderInputRange[2] : value;
 
-    return animatedTiming(borderAnimated, {toValue});
+    return animatedTiming(border, {toValue});
 };
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {
-        borderAnimated,
+        border,
         borderInputRange,
-        colorAnimated,
+        color,
         disabled,
         eventName,
         type = 'filled',
@@ -44,25 +50,26 @@ const processAnimatedTiming = (
     const toValue = disabled ? 0 : 1;
 
     if (['link', 'outlined'].includes(type)) {
-        return Animated.parallel([
-            processOutlinedAnimated(animatedTiming, {
-                borderAnimated,
-                borderInputRange,
-                disabled,
-                eventName,
-                type,
-            }),
-            animatedTiming(colorAnimated, {toValue}),
-        ]).start();
+        processOutlinedAnimated(animatedTiming, {
+            border,
+            borderInputRange,
+            disabled,
+            eventName,
+            type,
+        });
+
+        animatedTiming(color, {toValue});
+
+        return;
     }
 
-    animatedTiming(colorAnimated, {toValue}).start();
+    animatedTiming(color, {toValue});
 };
 
 export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedOptions) => {
     const animatedValue = disabled ? 0 : 1;
-    const [borderAnimated] = useAnimatedValue(animatedValue);
-    const [colorAnimated] = useAnimatedValue(animatedValue);
+    const border = useSharedValue(animatedValue);
+    const color = useSharedValue(animatedValue);
     const borderInputRange = useMemo(() => [0, 1, 2], []);
     const theme = useTheme();
     const [animatedTiming] = useAnimatedTiming(theme);
@@ -162,48 +169,49 @@ export const useAnimated = ({disabled, type = 'filled', eventName}: UseAnimatedO
         },
     };
 
-    const backgroundColor = colorAnimated.interpolate(backgroundColorType[type]);
-    const color = colorAnimated.interpolate(colorType[type]);
-    const borderColor = borderAnimated.interpolate({
-        inputRange: borderInputRange,
-        outputRange: [
-            disabledBackgroundColor,
-            type === 'link'
-                ? theme.color.convertHexToRGBA(theme.palette.outline.outline, 0)
-                : theme.color.convertHexToRGBA(theme.palette.outline.outline, 1),
-            theme.palette.primary.primary,
-        ],
-    });
+    const contentAnimatedStyle = useAnimatedStyle(() => ({
+        ...(!['text', 'link'].includes(type) && {
+            backgroundColor: interpolateColor(
+                color.value,
+                backgroundColorType[type].inputRange,
+                backgroundColorType[type].outputRange,
+            ),
+        }),
+
+        ...(['outlined', 'link'].includes(type) && {
+            borderColor: interpolateColor(border.value, borderInputRange, [
+                disabledBackgroundColor,
+                type === 'link'
+                    ? theme.color.convertHexToRGBA(theme.palette.outline.outline, 0)
+                    : theme.color.convertHexToRGBA(theme.palette.outline.outline, 1),
+                theme.palette.primary.primary,
+            ]),
+        }),
+    }));
+
+    const labelTextAnimatedStyle = useAnimatedStyle(() => ({
+        color: interpolateColor(
+            color.value,
+            colorType[type].inputRange,
+            colorType[type].outputRange,
+        ),
+    }));
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
-            borderAnimated,
+            border,
             borderInputRange,
-            colorAnimated,
+            color,
             disabled,
             eventName,
             type,
         });
 
         return () => {
-            borderAnimated.stopAnimation();
-            colorAnimated.stopAnimation();
+            cancelAnimation(border);
+            cancelAnimation(color);
         };
-    }, [
-        animatedTiming,
-        borderAnimated,
-        borderInputRange,
-        colorAnimated,
-        disabled,
-        eventName,
-        type,
-    ]);
+    }, [animatedTiming, border, borderInputRange, color, disabled, eventName, type]);
 
-    return [
-        {
-            ...(!['text', 'link'].includes(type) && {backgroundColor}),
-            ...(['outlined', 'link'].includes(type) && {borderColor}),
-            color,
-        },
-    ];
+    return [{contentAnimatedStyle, labelTextAnimatedStyle}];
 };

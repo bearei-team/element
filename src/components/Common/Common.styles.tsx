@@ -62,3 +62,28 @@ export const Typography = styled.Text<TypographyProps>`
             line-height: ${theme.adaptSize(theme.typography[type][size].lineHeight)}px;
         `}
 `;
+
+export const PlatformView = styled.View`
+    ${({theme}) => {
+        const os = {
+            android: css`
+                align-self: stretch;
+            `,
+            ios: css`
+                align-self: stretch;
+            `,
+            macos: css`
+                align-self: stretch;
+            `,
+            web: css`
+                display: inline-block;
+                line-height: ${theme.adaptSize(theme.spacing.none)}px;
+            `,
+            windows: css`
+                align-self: stretch;
+            `,
+        };
+
+        return os[theme.OS];
+    }}
+`;

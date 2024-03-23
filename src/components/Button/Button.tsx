@@ -1,12 +1,14 @@
 import {FC, forwardRef, memo} from 'react';
-import {Animated, View} from 'react-native';
+import {View} from 'react-native';
+import Animated from 'react-native-reanimated';
 import {Elevation} from '../Elevation/Elevation';
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
-import {Hovered} from '../Underlay/Hovered';
+import {Underlay} from '../Underlay/Underlay';
 import {Container, Content, Icon, LabelText} from './Button.styles';
 import {ButtonBase, ButtonProps, RenderProps} from './ButtonBase';
 
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
+const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
 const render = ({
     block,
     disabled,
@@ -22,29 +24,23 @@ const render = ({
     underlayColor,
     ...contentProps
 }: RenderProps) => {
-    const {backgroundColor, color, ...border} = renderStyle;
+    const {contentAnimatedStyle, labelTextAnimatedStyle, ...border} = renderStyle;
     const link = type === 'link';
     const shape = link ? 'none' : 'full';
 
     return (
-        <Container
-            accessibilityLabel={labelText}
-            accessibilityRole="button"
-            block={block}
-            testID={`button--${id}`}>
-            <TouchableRipple
+        <Container block={block} testID={`button--${id}`}>
+            <AnimatedTouchableRipple
                 {...onEvent}
                 block={block}
-                style={{
-                    ...(typeof style === 'object' && style),
-                    ...border,
-                    backgroundColor,
-                }}
                 disabled={disabled}
                 shape={shape}
+                style={[style, contentAnimatedStyle, border]}
                 underlayColor={underlayColor}>
                 <Content
                     {...contentProps}
+                    accessibilityLabel={labelText}
+                    accessibilityRole="button"
                     block={block}
                     iconShow={!!icon}
                     testID={`button__content--${id}`}
@@ -55,15 +51,15 @@ const render = ({
                         ellipsizeMode="tail"
                         numberOfLines={1}
                         size={link ? 'small' : 'large'}
-                        style={{color}}
+                        style={[labelTextAnimatedStyle]}
                         testID={`button__labelText--${id}`}
                         type={link ? 'body' : 'label'}>
                         {labelText}
                     </AnimatedLabelText>
 
-                    <Hovered eventName={eventName} underlayColor={underlayColor} />
+                    <Underlay eventName={eventName} underlayColor={underlayColor} />
                 </Content>
-            </TouchableRipple>
+            </AnimatedTouchableRipple>
 
             <Elevation level={elevation} shape={shape} />
         </Container>
