@@ -6,7 +6,7 @@ import {ElevationBase, ElevationLevel, ElevationProps, RenderProps} from './Elev
 
 const AnimatedShadow = Animated.createAnimatedComponent(Shadow);
 const render = ({id, level, renderStyle, shape, ...containerProps}: RenderProps) => {
-    const {height, opacity0, opacity1, width} = renderStyle;
+    const {height, shadow1AnimatedStyle, shadow0AnimatedStyle, width} = renderStyle;
 
     return (
         <Container {...containerProps} renderStyle={{width, height}} testID={`elevation--${id}`}>
@@ -15,7 +15,7 @@ const render = ({id, level, renderStyle, shape, ...containerProps}: RenderProps)
                 renderStyle={{width, height}}
                 shadowIndex={0}
                 shape={shape}
-                style={{opacity: opacity0}}
+                style={shadow0AnimatedStyle}
                 testID={`elevation__shadow0--${id}`}
             />
 
@@ -24,7 +24,7 @@ const render = ({id, level, renderStyle, shape, ...containerProps}: RenderProps)
                 renderStyle={{width, height}}
                 shadowIndex={1}
                 shape={shape}
-                style={{opacity: opacity1}}
+                style={shadow1AnimatedStyle}
                 testID={`elevation__shadow1--${id}`}
             />
         </Container>

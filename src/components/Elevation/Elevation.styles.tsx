@@ -8,7 +8,8 @@ type ContainerProps = {
     renderStyle?: {width?: number; height?: number};
 };
 
-interface ShadowProps extends Pick<RenderProps & ContainerProps, 'level' | 'renderStyle'> {
+interface ShadowProps
+    extends Pick<Omit<RenderProps, 'renderStyle'> & ContainerProps, 'level' | 'renderStyle'> {
     shadowIndex: 0 | 1;
 }
 

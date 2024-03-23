@@ -16,8 +16,8 @@ export interface ElevationProps
 export interface RenderProps extends Omit<ElevationProps, 'renderStyle'> {
     renderStyle: AnimatedStyle<ViewStyle> & {
         height?: number;
-        opacity0?: number;
-        opacity1?: number;
+        shadow0AnimatedStyle: AnimatedStyle<ViewStyle>;
+        shadow1AnimatedStyle: AnimatedStyle<ViewStyle>;
         width?: number;
     };
 }
@@ -30,14 +30,14 @@ export const ElevationBase = forwardRef<View, ElevationBaseProps>(
     ({defaultLevel, level: levelSource, render, renderStyle, ...renderProps}, ref) => {
         const id = useId();
         const level = levelSource ?? defaultLevel;
-        const [{shadow0Opacity, shadow1Opacity}] = useAnimated({level});
+        const [{shadow1AnimatedStyle, shadow0AnimatedStyle}] = useAnimated({level});
 
         return render({
             ...renderProps,
             id,
             level,
             ref,
-            renderStyle: {...renderStyle, opacity0: shadow0Opacity, opacity1: shadow1Opacity},
+            renderStyle: {...renderStyle, shadow1AnimatedStyle, shadow0AnimatedStyle},
         });
     },
 );
