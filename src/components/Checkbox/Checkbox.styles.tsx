@@ -1,7 +1,7 @@
 import styled, {css} from 'styled-components/native'
-import {PlatformView} from '../Common/Common.styles'
+import {PlatformInlineView} from '../Common/Common.styles'
 
-export const Container = styled(PlatformView)`
+export const Container = styled(PlatformInlineView)`
     ${({theme}) => css`
         height: ${theme.adaptSize(theme.spacing.small * 5)}px;
         width: ${theme.adaptSize(theme.spacing.small * 5)}px;

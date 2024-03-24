@@ -1,10 +1,10 @@
 import styled, {css} from 'styled-components/native'
-import {PlatformView, Shape, Typography} from '../Common/Common.styles'
+import {PlatformInlineView, Shape, Typography} from '../Common/Common.styles'
 import {RenderProps} from './CardBase'
 
 type ContainerProps = Pick<RenderProps, 'block'>
 
-export const Container = styled(PlatformView)<ContainerProps>`
+export const Container = styled(PlatformInlineView)<ContainerProps>`
     position: relative;
 
     ${({theme}) => css`

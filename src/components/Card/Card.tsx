@@ -23,6 +23,7 @@ const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText)
 const AnimatedTitleText = Animated.createAnimatedComponent(TitleText)
 const AnimatedTouchableRipple =
     Animated.createAnimatedComponent(TouchableRipple)
+
 const render = ({
     block,
     disabled,
@@ -66,10 +67,10 @@ const render = ({
                         <ContentHeader testID={`card__contentHeader--${id}`}>
                             {titleText && (
                                 <AnimatedTitleText
-                                    style={[titleTextAnimatedStyle]}
-                                    type='body'
                                     size='large'
+                                    style={[titleTextAnimatedStyle]}
                                     testID={`card__titleText--${id}`}
+                                    type='body'
                                 >
                                     {titleText}
                                 </AnimatedTitleText>
@@ -77,10 +78,10 @@ const render = ({
 
                             {subheadText && (
                                 <AnimatedSubheadText
-                                    style={[subheadTextAnimatedStyle]}
-                                    type='body'
                                     size='medium'
+                                    style={[subheadTextAnimatedStyle]}
                                     testID={`card__subheadText--${id}`}
+                                    type='body'
                                 >
                                     {subheadText}
                                 </AnimatedSubheadText>
@@ -89,10 +90,10 @@ const render = ({
 
                         {supportingText && (
                             <AnimatedSupportingText
-                                style={[subheadTextAnimatedStyle]}
-                                type='body'
                                 size='medium'
+                                style={[subheadTextAnimatedStyle]}
                                 testID={`card__supportingText--${id}`}
+                                type='body'
                             >
                                 {supportingText}
                             </AnimatedSupportingText>

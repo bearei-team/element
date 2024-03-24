@@ -9,6 +9,7 @@ import {ChipBase, ChipProps, RenderProps} from './ChipBase'
 
 const AnimatedTouchableRipple =
     Animated.createAnimatedComponent(TouchableRipple)
+
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText)
 const render = ({
     active,
@@ -36,8 +37,8 @@ const render = ({
     return (
         <Container
             accessibilityLabel={labelText}
-            testID={`chip--${id}`}
             block={block}
+            testID={`chip--${id}`}
         >
             <AnimatedTouchableRipple
                 {...onEvent}
@@ -52,8 +53,8 @@ const render = ({
                 <Content
                     {...contentProps}
                     iconShow={!!icon}
-                    trailingIconShow={!!trailingIcon}
                     testID={`chip__content--${id}`}
+                    trailingIconShow={!!trailingIcon}
                     type={type}
                 >
                     {icon && <Icon testID={`chip__icon--${id}`}>{icon}</Icon>}

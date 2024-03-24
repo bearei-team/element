@@ -1,10 +1,10 @@
 import styled, {css} from 'styled-components/native'
-import {PlatformView} from '../Common/Common.styles'
+import {PlatformInlineView} from '../Common/Common.styles'
 import {IconProps} from './Icon'
 
 type ContainerProps = Pick<IconProps, 'renderStyle'>
 
-export const Container = styled(PlatformView)<ContainerProps>`
+export const Container = styled(PlatformInlineView)<ContainerProps>`
     ${({renderStyle = {}, theme}) => {
         const {height, width} = renderStyle
 

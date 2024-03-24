@@ -81,7 +81,7 @@ export const Typography = styled.Text<TypographyProps>`
         `}
 `
 
-export const PlatformView = styled.View`
+export const PlatformInlineView = styled.View`
     align-items: center;
     cursor: default;
     display: flex;

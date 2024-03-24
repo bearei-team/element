@@ -1,35 +1,36 @@
 import {useEffect} from 'react'
-import {Animated} from 'react-native'
+import {
+    AnimatableValue,
+    SharedValue,
+    cancelAnimation,
+    interpolateColor,
+    useAnimatedStyle,
+    useSharedValue
+} from 'react-native-reanimated'
 import {useTheme} from 'styled-components/native'
 import {AnimatedTiming, useAnimatedTiming} from '../../hooks/useAnimatedTiming'
-import {useAnimatedValue} from '../../hooks/useAnimatedValue'
 import {RenderProps} from './IconButtonBase'
 
 type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type'>
 interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
-    colorAnimated: Animated.Value
-    borderAnimated: Animated.Value
+    color: SharedValue<AnimatableValue>
+    border: SharedValue<AnimatableValue>
 }
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {
-        disabled,
-        type = 'filled',
-        colorAnimated,
-        borderAnimated
-    }: ProcessAnimatedTimingOptions
+    {disabled, type = 'filled', color, border}: ProcessAnimatedTimingOptions
 ) => {
     const toValue = disabled ? 0 : 1
 
     if (type === 'outlined') {
-        return Animated.parallel([
-            animatedTiming(borderAnimated, {toValue}),
-            animatedTiming(colorAnimated, {toValue})
-        ]).start()
+        animatedTiming(border, {toValue})
+        animatedTiming(color, {toValue})
+
+        return
     }
 
-    animatedTiming(colorAnimated, {toValue}).start()
+    animatedTiming(color, {toValue})
 }
 
 export const useAnimated = ({
@@ -37,8 +38,8 @@ export const useAnimated = ({
     type = 'filled'
 }: UseAnimatedOptions) => {
     const animatedValue = disabled ? 0 : 1
-    const [borderAnimated] = useAnimatedValue(animatedValue)
-    const [colorAnimated] = useAnimatedValue(animatedValue)
+    const border = useSharedValue(animatedValue)
+    const color = useSharedValue(animatedValue)
     const theme = useTheme()
     const [animatedTiming] = useAnimatedTiming(theme)
     const disabledBackgroundColor = theme.color.convertHexToRGBA(
@@ -46,7 +47,7 @@ export const useAnimated = ({
         0.12
     )
 
-    const backgroundColorConfig = {
+    const backgroundColorType = {
         filled: {
             inputRange: [0, 1],
             outputRange: [
@@ -80,32 +81,36 @@ export const useAnimated = ({
         }
     }
 
-    const backgroundColor = colorAnimated.interpolate(
-        backgroundColorConfig[type]
-    )
-    const borderColor = borderAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [disabledBackgroundColor, theme.palette.outline.outline]
-    })
+    const contentAnimatedStyle = useAnimatedStyle(() => ({
+        ...(type !== 'standard' && {
+            backgroundColor: interpolateColor(
+                color.value,
+                backgroundColorType[type].inputRange,
+                backgroundColorType[type].outputRange
+            )
+        }),
+        ...(type === 'outlined' && {
+            borderColor: interpolateColor(
+                border.value,
+                [0, 1],
+                [disabledBackgroundColor, theme.palette.outline.outline]
+            )
+        })
+    }))
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
-            borderAnimated,
-            colorAnimated,
+            border,
+            color,
             disabled,
             type
         })
 
         return () => {
-            borderAnimated.stopAnimation()
-            colorAnimated.stopAnimation()
+            cancelAnimation(border)
+            cancelAnimation(color)
         }
-    }, [animatedTiming, borderAnimated, colorAnimated, disabled, type])
+    }, [animatedTiming, border, color, disabled, type])
 
-    return [
-        {
-            ...(type !== 'standard' && {backgroundColor}),
-            ...(type === 'outlined' && {borderColor})
-        }
-    ]
+    return [contentAnimatedStyle]
 }

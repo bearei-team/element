@@ -56,6 +56,7 @@ interface ProcessEventOptions {
 type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions
 type ProcessInitOptions = Pick<RenderProps, 'type' | 'disabled'> &
     ProcessEventOptions
+
 type ProcessStateChangeOptions = OnStateChangeOptions & ProcessElevationOptions
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) =>

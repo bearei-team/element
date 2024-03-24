@@ -10,6 +10,7 @@ import {FABBase, FABProps, RenderProps} from './FABBase'
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText)
 const AnimatedTouchableRipple =
     Animated.createAnimatedComponent(TouchableRipple)
+
 const render = ({
     accessibilityLabel,
     elevation,
@@ -32,8 +33,8 @@ const render = ({
             <AnimatedTouchableRipple
                 {...onEvent}
                 shape={shape}
-                underlayColor={underlayColor}
                 style={[style, contentAnimatedStyle]}
+                underlayColor={underlayColor}
             >
                 <Content
                     {...contentProps}

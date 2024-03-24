@@ -69,6 +69,7 @@ export const Shadow = styled(Shape)<ShadowProps>`
             shadow-radius: ${theme.adaptSize(
                 theme.elevation[levelString][shadowString].blur
             )}px;
+
             z-index: ${shadowIndex};
         `
     }};

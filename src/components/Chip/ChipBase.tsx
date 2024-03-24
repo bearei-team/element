@@ -62,8 +62,10 @@ interface ProcessEventOptions {
 type ProcessActiveOptions = Pick<RenderProps, 'active'> & ProcessEventOptions
 type ProcessDisabledElevationOptions = Pick<RenderProps, 'elevated'> &
     ProcessEventOptions
+
 type ProcessElevationOptions = Pick<RenderProps, 'elevated'> &
     ProcessEventOptions
+
 type ProcessInitOptions = Pick<
     RenderProps,
     'elevated' | 'active' | 'disabled'

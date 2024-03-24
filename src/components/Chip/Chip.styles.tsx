@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components/native'
-import {PlatformView, Typography} from '../Common/Common.styles'
+import {PlatformInlineView, Typography} from '../Common/Common.styles'
 import {RenderProps} from './ChipBase'
 
 type ContainerProps = Pick<RenderProps, 'block'>
@@ -8,7 +8,7 @@ interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
     trailingIconShow: boolean
 }
 
-export const Container = styled(PlatformView)<ContainerProps>`
+export const Container = styled(PlatformInlineView)<ContainerProps>`
     position: relative;
 
     ${({block}) =>

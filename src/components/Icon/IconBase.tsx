@@ -13,6 +13,7 @@ export type IconType = 'filled' | 'outlined' | 'round' | 'sharp' | 'twoTone'
 type BaseProps = Partial<
     Omit<SvgProps, 'width' | 'height'> & RefAttributes<View> & ViewProps
 >
+
 export interface IconProps extends BaseProps {
     eventName?: EventName
     name?: IconName
@@ -54,7 +55,6 @@ export const IconBase = forwardRef<View, IconBaseProps>(
             ...renderProps,
             id,
             ref,
-            renderStyle: {...renderStyle, animatedStyle},
             children: SvgIcon && (
                 <SvgIcon
                     fill={fill ?? theme.palette.surface.onSurfaceVariant}
@@ -62,7 +62,8 @@ export const IconBase = forwardRef<View, IconBaseProps>(
                     viewBox='0 0 24 24'
                     width='100%'
                 />
-            )
+            ),
+            renderStyle: {...renderStyle, animatedStyle}
         })
     }
 )

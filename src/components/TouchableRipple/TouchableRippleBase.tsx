@@ -133,11 +133,10 @@ const processEntryAnimatedFinished = (
     {setState, exitAnimated}: ProcessEntryAnimatedFinishedOptions
 ) =>
     exitAnimated(() =>
-        setState(
-            draft =>
-                draft.rippleSequence[sequence] &&
+        setState(draft => {
+            draft.rippleSequence[sequence] &&
                 delete draft.rippleSequence[sequence]
-        )
+        })
     )
 
 const processActive = ({

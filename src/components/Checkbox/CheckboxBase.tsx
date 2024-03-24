@@ -158,6 +158,7 @@ export const CheckboxBase = forwardRef<View, CheckboxBaseProps>(
 
         const underlayColor =
             error ? theme.palette.error.error : checkUnderlayColor
+
         const [icon] = useIcon({disabled, error, eventName, type})
         const onStateChange = useCallback(
             (_state: State, options = {} as OnStateChangeOptions) =>

@@ -1,15 +1,12 @@
-import {View} from 'react-native'
 import styled, {css} from 'styled-components/native'
+import {PlatformInlineView} from '../Common/Common.styles'
 import {RenderProps} from './IconButtonBase'
 
-type ContentProps = Pick<RenderProps, 'renderStyle'>
+type ContentProps = {
+    renderStyle?: Pick<RenderProps['renderStyle'], 'width' | 'height'>
+}
 
-export const Container = styled(View)<ContentProps>`
-    align-items: center;
-    cursor: default;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+export const Container = styled(PlatformInlineView)<ContentProps>`
     position: relative;
 
     ${({renderStyle = {}, theme}) => {

@@ -50,8 +50,10 @@ type ProcessStateChangeOptions = Pick<RenderProps, 'elevated'> &
 
 type ProcessDisabledElevationOptions = Pick<RenderProps, 'elevated'> &
     ProcessEventOptions
+
 type ProcessElevationOptions = Pick<RenderProps, 'elevated'> &
     ProcessEventOptions
+
 type ProcessInitOptions = Pick<RenderProps, 'elevated' | 'disabled'> &
     ProcessEventOptions
 
@@ -154,6 +156,7 @@ export const FABBase = forwardRef<View, FABBaseProps>(
             disabled,
             type
         })
+
         const [iconElement] = useIcon({eventName, type, icon, disabled, size})
 
         useEffect(() => {

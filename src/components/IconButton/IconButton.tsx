@@ -1,8 +1,9 @@
 import {FC, forwardRef, memo} from 'react'
 import {View} from 'react-native'
+import Animated from 'react-native-reanimated'
 import {Tooltip} from '../Tooltip/Tooltip'
 import {TouchableRipple} from '../TouchableRipple/TouchableRipple'
-import {Hovered} from '../Underlay/Hovered'
+import {Underlay} from '../Underlay/Underlay'
 import {Container, Content} from './IconButton.styles'
 import {
     IconButtonBase,
@@ -14,6 +15,8 @@ import {
 /**
  * TODO: Selected
  */
+const AnimatedTouchableRipple =
+    Animated.createAnimatedComponent(TouchableRipple)
 
 const render = ({
     disabled,
@@ -29,14 +32,14 @@ const render = ({
     tooltipVisible,
     ...contentProps
 }: RenderProps) => {
-    const {backgroundColor, height, width, ...border} = renderStyle
+    const {height, width, contentAnimatedStyle, ...border} = renderStyle
     const shape = 'full'
 
     return (
         <Container
             accessibilityRole='button'
-            testID={`iconButton--${id}`}
             renderStyle={{width, height}}
+            testID={`iconButton--${id}`}
         >
             <Tooltip
                 disabled={disabled}
@@ -46,16 +49,12 @@ const render = ({
                 type='plain'
                 visible={tooltipVisible}
             >
-                <TouchableRipple
+                <AnimatedTouchableRipple
                     {...onEvent}
                     disabled={disabled}
                     shape={shape}
+                    style={[style, contentAnimatedStyle, border]}
                     underlayColor={underlayColor}
-                    style={{
-                        ...(typeof style === 'object' && style),
-                        ...border,
-                        backgroundColor
-                    }}
                 >
                     <Content
                         {...contentProps}
@@ -63,13 +62,12 @@ const render = ({
                         testID={`iconButton__content--${id}`}
                     >
                         {icon}
-
-                        <Hovered
+                        <Underlay
                             eventName={eventName}
                             underlayColor={underlayColor}
                         />
                     </Content>
-                </TouchableRipple>
+                </AnimatedTouchableRipple>
             </Tooltip>
         </Container>
     )

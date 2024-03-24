@@ -63,13 +63,5 @@ export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
         }
     }, [animatedTiming, level, shadow])
 
-    console.info(
-        shadow0AnimatedStyle,
-        'shadow0AnimatedStyle',
-        level,
-        theme.palette.shadow.shadow,
-        theme.adaptSize(theme.elevation.level1.shadow0.opacity)
-    )
-
     return [{shadow1AnimatedStyle, shadow0AnimatedStyle}]
 }

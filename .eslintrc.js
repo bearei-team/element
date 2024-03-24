@@ -1,10 +1,9 @@
 module.exports = {
     root: true,
-    extends: '@react-native',
+    extends: ['@react-native', 'plugin:prettier/recommended'],
     rules: {
         'react/react-in-jsx-scope': 'off',
         'react/jsx-uses-react': 'off',
-        '@typescript-eslint/semi': false,
         '@typescript-eslint/no-unused-vars': [
             'error',
             {

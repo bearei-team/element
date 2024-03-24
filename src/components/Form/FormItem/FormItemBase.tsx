@@ -70,9 +70,7 @@ type ProcessInitOptions = ProcessEventOptions &
 const processValueChange = (
     {name, setFieldValue, storeValue}: ProcessValueChangeOptions,
     value?: unknown
-) => {
-    name && storeValue !== value && setFieldValue({[name]: value})
-}
+) => name && storeValue !== value && setFieldValue({[name]: value})
 
 const processValidate = async (
     value: unknown,
@@ -189,14 +187,19 @@ export const FormItemBase = forwardRef<View, FormItemBaseProps>(
                 validateFirst,
                 validate: fieldValidate
             })
-        }, [fieldValidate, name, rules, setState, signInField, validateFirst])
 
-        useEffect(
-            () => () => {
+            return () => {
                 signOut?.()
-            },
-            [signOut]
-        )
+            }
+        }, [
+            fieldValidate,
+            name,
+            rules,
+            setState,
+            signInField,
+            signOut,
+            validateFirst
+        ])
 
         if (status === 'idle') {
             return <></>

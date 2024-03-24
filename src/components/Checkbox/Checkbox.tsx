@@ -12,7 +12,6 @@ const render = ({
     icon,
     id,
     onEvent,
-
     underlayColor,
     ...contentProps
 }: RenderProps) => (

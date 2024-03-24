@@ -1,5 +1,5 @@
 import styled, {css} from 'styled-components/native'
-import {PlatformView, Typography} from '../Common/Common.styles'
+import {PlatformInlineView, Typography} from '../Common/Common.styles'
 import {RenderProps} from './FABBase'
 
 interface ContentProps extends Pick<RenderProps, 'size' | 'type'> {
@@ -8,7 +8,7 @@ interface ContentProps extends Pick<RenderProps, 'size' | 'type'> {
 
 type IconProps = Pick<RenderProps, 'size'>
 
-export const Container = styled(PlatformView)`
+export const Container = styled(PlatformInlineView)`
     position: relative;
 `
 

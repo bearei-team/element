@@ -10,6 +10,7 @@ import {ButtonBase, ButtonProps, RenderProps} from './ButtonBase'
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText)
 const AnimatedTouchableRipple =
     Animated.createAnimatedComponent(TouchableRipple)
+
 const render = ({
     block,
     disabled,
@@ -27,6 +28,7 @@ const render = ({
 }: RenderProps) => {
     const {contentAnimatedStyle, labelTextAnimatedStyle, ...border} =
         renderStyle
+
     const link = type === 'link'
     const shape = link ? 'none' : 'full'
 

@@ -21,6 +21,7 @@ export const useIcon = ({
     const scale =
         theme.adaptSize(theme.spacing.large) /
         theme.adaptSize(theme.spacing.small * 5)
+
     const fillType = {
         filled: theme.palette.primary.onPrimary,
         outlined: theme.palette.surface.onSurfaceVariant,
