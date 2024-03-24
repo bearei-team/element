@@ -1,11 +1,9 @@
-import {useRef} from 'react';
+import {useRef} from 'react'
 
 export const useLazyRef = <T>(callback: () => T) => {
-    const lazyRef = useRef<T | undefined>();
+    const lazyRef = useRef<T | undefined>()
 
-    if (lazyRef.current === undefined) {
-        lazyRef.current = callback();
-    }
+    lazyRef.current === undefined && (lazyRef.current = callback())
 
-    return [lazyRef as React.MutableRefObject<T>];
-};
+    return [lazyRef as React.MutableRefObject<T>]
+}

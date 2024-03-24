@@ -9,5 +9,6 @@
         "Pressable",
         "textalignvertical",
         "uncenter"
-    ]
+    ],
+    "editor.fontWeight": "normal"
 }

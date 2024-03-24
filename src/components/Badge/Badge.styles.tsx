@@ -1,8 +1,8 @@
-import styled, {css} from 'styled-components/native';
-import {Shape, Typography} from '../Common/Common.styles';
-import {RenderProps} from './BadgeBase';
+import styled, {css} from 'styled-components/native'
+import {Shape, Typography} from '../Common/Common.styles'
+import {RenderProps} from './BadgeBase'
 
-type ContainerProps = Pick<RenderProps, 'size' | 'renderStyle'>;
+type ContainerProps = Pick<RenderProps, 'size' | 'renderStyle'>
 
 export const Container = styled(Shape)<ContainerProps>`
     align-items: center;
@@ -36,26 +36,34 @@ export const Container = styled(Shape)<ContainerProps>`
                 height: ${theme.adaptSize(theme.spacing.small - 2)}px;
                 padding: ${theme.adaptSize(theme.spacing.extraSmall - 2)}px;
                 width: ${theme.adaptSize(theme.spacing.small - 2)}px;
-            `,
-        };
+            `
+        }
 
-        return containerSize[size];
+        return containerSize[size]
     }}
 
     ${({renderStyle = {}, theme}) => {
-        const {bottom, left, right, top} = renderStyle;
+        const {bottom, left, right, top} = renderStyle
 
         return css`
-            bottom: ${typeof bottom === 'number' ? `${theme.adaptSize(bottom)}px` : 'auto'};
-            left: ${typeof left === 'number' ? `${theme.adaptSize(left)}px` : 'auto'};
-            right: ${typeof right === 'number' ? `${theme.adaptSize(right)}px` : 'auto'};
-            top: ${typeof top === 'number' ? `${theme.adaptSize(top)}px` : 'auto'};
-        `;
+            bottom: ${typeof bottom === 'number' ?
+                `${theme.adaptSize(bottom)}px`
+            :   'auto'};
+            left: ${typeof left === 'number' ?
+                `${theme.adaptSize(left)}px`
+            :   'auto'};
+            right: ${typeof right === 'number' ?
+                `${theme.adaptSize(right)}px`
+            :   'auto'};
+            top: ${typeof top === 'number' ?
+                `${theme.adaptSize(top)}px`
+            :   'auto'};
+        `
     }}
-`;
+`
 
 export const LabelText = styled(Typography)`
     ${({theme}) => css`
         color: ${theme.palette.error.onError};
     `}
-`;
+`

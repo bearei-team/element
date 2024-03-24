@@ -1,9 +1,9 @@
-import styled, {css} from 'styled-components/native';
-import {Shape} from '../Common/Common.styles';
-import {RenderProps} from './UnderlayBase';
+import styled, {css} from 'styled-components/native'
+import {Shape} from '../Common/Common.styles'
+import {RenderProps} from './UnderlayBase'
 
 interface ContainerProps extends Pick<RenderProps, 'underlayColor'> {
-    renderStyle?: {height?: number; width?: number};
+    renderStyle?: {height?: number; width?: number}
 }
 
 export const Container = styled(Shape)<ContainerProps>`
@@ -11,13 +11,12 @@ export const Container = styled(Shape)<ContainerProps>`
     position: absolute;
     z-index: -1;
 
-    ${({theme}) =>
-        css`
-            bottom: ${theme.adaptSize(theme.spacing.none)}px;
-            left: ${theme.adaptSize(theme.spacing.none)}px;
-            right: ${theme.adaptSize(theme.spacing.none)}px;
-            top: ${theme.adaptSize(theme.spacing.none)}px;
-        `}
+    ${({theme}) => css`
+        bottom: ${theme.adaptSize(theme.spacing.none)}px;
+        left: ${theme.adaptSize(theme.spacing.none)}px;
+        right: ${theme.adaptSize(theme.spacing.none)}px;
+        top: ${theme.adaptSize(theme.spacing.none)}px;
+    `}
 
     ${({underlayColor}) =>
         underlayColor &&
@@ -26,7 +25,7 @@ export const Container = styled(Shape)<ContainerProps>`
         `}
 
     ${({renderStyle = {}}) => {
-        const {height = 0, width = 0} = renderStyle;
+        const {height = 0, width = 0} = renderStyle
 
         return (
             width !== 0 &&
@@ -34,6 +33,6 @@ export const Container = styled(Shape)<ContainerProps>`
                 height: ${height}px;
                 width: ${width}px;
             `
-        );
+        )
     }}
-`;
+`

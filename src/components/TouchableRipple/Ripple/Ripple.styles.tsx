@@ -1,11 +1,11 @@
-import styled, {css} from 'styled-components/native';
-import {Shape} from '../../Common/Common.styles';
-import {RenderProps} from './RippleBase';
+import styled, {css} from 'styled-components/native'
+import {Shape} from '../../Common/Common.styles'
+import {RenderProps} from './RippleBase'
 
 interface ContainerProps extends Pick<RenderProps, 'underlayColor' | 'active'> {
-    locationX?: number;
-    locationY?: number;
-    renderStyle?: {height?: number; width?: number};
+    locationX?: number
+    locationY?: number
+    renderStyle?: {height?: number; width?: number}
 }
 
 export const Container = styled(Shape)<ContainerProps>`
@@ -14,27 +14,27 @@ export const Container = styled(Shape)<ContainerProps>`
     position: absolute;
 
     ${({renderStyle = {}, locationY = 0, locationX = 0}) => {
-        const {height = 0, width = 0} = renderStyle;
+        const {height = 0, width = 0} = renderStyle
 
         return css`
             height: ${height}px;
             left: ${locationX}px;
             top: ${locationY}px;
             width: ${width}px;
-        `;
+        `
     }}
 
     ${({underlayColor, theme, active}) => {
-        const activeRipple = typeof active === 'boolean';
+        const activeRipple = typeof active === 'boolean'
 
         return css`
-            background-color: ${activeRipple
-                ? underlayColor
-                : theme.color.convertHexToRGBA(
-                      underlayColor ?? theme.palette.surface.surface,
-                      0.12,
-                  )};
-        `;
+            background-color: ${activeRipple ? underlayColor : (
+                theme.color.convertHexToRGBA(
+                    underlayColor ?? theme.palette.surface.surface,
+                    0.12
+                )
+            )};
+        `
     }};
 
     ${({active}) =>
@@ -43,4 +43,4 @@ export const Container = styled(Shape)<ContainerProps>`
         css`
             z-index: ${-1024};
         `};
-`;
+`

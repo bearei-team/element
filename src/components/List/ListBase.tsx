@@ -1,8 +1,8 @@
-import {RefAttributes, forwardRef, useCallback, useEffect, useId} from 'react';
-import {FlatList, FlatListProps, ListRenderItemInfo} from 'react-native';
-import {Updater, useImmer} from 'use-immer';
-import {ComponentStatus} from '../Common/interface';
-import {ListItem, ListItemProps} from './ListItem/ListItem';
+import {RefAttributes, forwardRef, useCallback, useEffect, useId} from 'react'
+import {FlatList, FlatListProps, ListRenderItemInfo} from 'react-native'
+import {Updater, useImmer} from 'use-immer'
+import {ComponentStatus} from '../Common/interface'
+import {ListItem, ListItemProps} from './ListItem/ListItem'
 
 export interface ListDataSource
     extends Pick<
@@ -16,7 +16,7 @@ export interface ListDataSource
         | 'trailing'
         | 'visible'
     > {
-    key?: string;
+    key?: string
 }
 
 type BaseProps = Partial<
@@ -36,15 +36,15 @@ type BaseProps = Partial<
             | 'size'
             | 'supportingTextNumberOfLines'
         >
->;
+>
 export interface ListProps extends BaseProps {
-    data?: ListDataSource[];
-    defaultActiveKey?: string;
+    data?: ListDataSource[]
+    defaultActiveKey?: string
 }
 
-export type RenderProps = ListProps;
+export type RenderProps = ListProps
 interface ListBaseProps extends ListProps {
-    render: (props: RenderProps) => React.JSX.Element;
+    render: (props: RenderProps) => React.JSX.Element
 }
 
 type RenderItemOptions = ListRenderItemInfo<ListDataSource> &
@@ -62,57 +62,67 @@ type RenderItemOptions = ListRenderItemInfo<ListDataSource> &
         | 'shape'
         | 'size'
         | 'supportingTextNumberOfLines'
-    >;
+    >
 
 interface InitialState {
-    activeKey?: string;
-    data: ListDataSource[];
-    status: ComponentStatus;
+    activeKey?: string
+    data: ListDataSource[]
+    status: ComponentStatus
 }
 
 interface ProcessEventOptions {
-    setState: Updater<InitialState>;
+    setState: Updater<InitialState>
 }
 
-type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>;
+type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>
 
-const processActive = ({onActive, setState}: ProcessActiveOptions, value?: string) => {
+const processActive = (
+    {onActive, setState}: ProcessActiveOptions,
+    value?: string
+) => {
     setState(draft => {
-        draft.activeKey !== value && (draft.activeKey = value);
-    });
+        draft.activeKey !== value && (draft.activeKey = value)
+    })
 
-    onActive?.(value);
-};
+    onActive?.(value)
+}
 
 const processVisible = ({setState}: ProcessEventOptions, value?: string) => {
     if (typeof value !== 'string') {
-        return;
+        return
     }
 
     setState(draft => {
         draft.data = draft.data.map(datum =>
-            datum.key === value ? {...datum, visible: false} : datum,
-        );
-    });
-};
+            datum.key === value ? {...datum, visible: false} : datum
+        )
+    })
+}
 
-const processInit = ({setState}: ProcessEventOptions, dataSources?: ListDataSource[]) =>
+const processInit = (
+    {setState}: ProcessEventOptions,
+    dataSources?: ListDataSource[]
+) =>
     dataSources &&
     setState(draft => {
-        draft.data = dataSources;
-        draft.status = 'succeeded';
-    });
+        draft.data = dataSources
+        draft.status = 'succeeded'
+    })
 
-const renderItem = ({item, supportingTextNumberOfLines, ...props}: RenderItemOptions) => (
+const renderItem = ({
+    item,
+    supportingTextNumberOfLines,
+    ...props
+}: RenderItemOptions) => (
     <ListItem
         {...item}
         {...(typeof item.supportingTextNumberOfLines !== 'number' && {
-            supportingTextNumberOfLines,
+            supportingTextNumberOfLines
         })}
         {...props}
         dataKey={item.key}
     />
-);
+)
 
 export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
     (
@@ -132,24 +142,25 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
             supportingTextNumberOfLines,
             ...renderProps
         },
-        ref,
+        ref
     ) => {
         const [{data, status, activeKey}, setState] = useImmer<InitialState>({
             activeKey: undefined,
             data: [],
-            status: 'idle',
-        });
+            status: 'idle'
+        })
 
-        const id = useId();
+        const id = useId()
         const onActive = useCallback(
-            (value?: string) => processActive({onActive: onActiveSource, setState}, value),
-            [onActiveSource, setState],
-        );
+            (value?: string) =>
+                processActive({onActive: onActiveSource, setState}, value),
+            [onActiveSource, setState]
+        )
 
         const onVisible = useCallback(
             (value?: string) => processVisible({setState}, value),
-            [setState],
-        );
+            [setState]
+        )
 
         const processRenderItem = useCallback(
             (options: ListRenderItemInfo<ListDataSource>) =>
@@ -165,7 +176,7 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
                     onVisible,
                     shape,
                     size,
-                    supportingTextNumberOfLines,
+                    supportingTextNumberOfLines
                 }),
             [
                 activeKey,
@@ -178,20 +189,23 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
                 onVisible,
                 shape,
                 size,
-                supportingTextNumberOfLines,
-            ],
-        );
+                supportingTextNumberOfLines
+            ]
+        )
 
         useEffect(() => {
-            onActive(activeKeySource ?? defaultActiveKey);
-        }, [activeKeySource, defaultActiveKey, onActive]);
+            onActive(activeKeySource ?? defaultActiveKey)
+        }, [activeKeySource, defaultActiveKey, onActive])
 
         useEffect(() => {
-            processInit({setState}, dataSources);
-        }, [dataSources, setState]);
+            processInit({setState}, dataSources)
+        }, [dataSources, setState])
 
-        if (status === 'idle' || (typeof defaultActiveKey === 'string' && !activeKey)) {
-            return <></>;
+        if (
+            status === 'idle' ||
+            (typeof defaultActiveKey === 'string' && !activeKey)
+        ) {
+            return <></>
         }
 
         return render({
@@ -199,7 +213,7 @@ export const ListBase = forwardRef<FlatList<ListDataSource>, ListBaseProps>(
             data,
             id,
             ref,
-            renderItem: processRenderItem,
-        });
-    },
-);
+            renderItem: processRenderItem
+        })
+    }
+)

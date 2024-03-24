@@ -7,8 +7,8 @@ import {
     useId,
     useImperativeHandle,
     useMemo,
-    useRef,
-} from 'react';
+    useRef
+} from 'react'
 import {
     Animated,
     LayoutRectangle,
@@ -17,147 +17,163 @@ import {
     TextInputProps,
     TextStyle,
     View,
-    ViewStyle,
-} from 'react-native';
-import {useTheme} from 'styled-components/native';
-import {Updater, useImmer} from 'use-immer';
-import {emitter} from '../../context/ModalProvider';
-import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
-import {ComponentStatus, EventName, State} from '../Common/interface';
-import {List, ListDataSource, ListProps} from '../List/List';
-import {Input, SearchList, TextField} from './Search.styles';
-import {useAnimated} from './useAnimated';
+    ViewStyle
+} from 'react-native'
+import {useTheme} from 'styled-components/native'
+import {Updater, useImmer} from 'use-immer'
+import {emitter} from '../../context/ModalProvider'
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent'
+import {ComponentStatus, EventName, State} from '../Common/interface'
+import {List, ListDataSource, ListProps} from '../List/List'
+import {Input, SearchList, TextField} from './Search.styles'
+import {useAnimated} from './useAnimated'
 
 type BaseProps = Partial<
     TextInputProps &
-        Pick<ListProps, 'activeKey' | 'onActive' | 'data' | 'defaultActiveKey'> &
+        Pick<
+            ListProps,
+            'activeKey' | 'onActive' | 'data' | 'defaultActiveKey'
+        > &
         PressableProps &
         RefAttributes<TextInput>
->;
+>
 
 export interface SearchProps extends BaseProps {
-    disabled?: boolean;
-    leading?: React.JSX.Element;
-    trailing?: React.JSX.Element;
+    disabled?: boolean
+    leading?: React.JSX.Element
+    trailing?: React.JSX.Element
 
     /**
      * The modal type has a problem with mouseover events being passed through to lower level
      * elements in macOS. This problem is caused by the fact that react-native-macos does not
      * implement the native modal and some of the mechanisms of the macos component itself.
      */
-    type?: 'standard' | 'modal';
+    type?: 'standard' | 'modal'
 }
 
 export interface RenderProps extends SearchProps {
-    containerRef: RefObject<View>;
-    eventName: EventName;
-    iconRenderStyle: {width: number; height: number};
-    input: React.JSX.Element;
-    layout: LayoutRectangle;
-    listVisible?: boolean;
-    onEvent: Omit<OnEvent, 'onBlur' | 'onFocus'>;
-    searchList?: React.JSX.Element;
-    underlayColor: string;
+    containerRef: RefObject<View>
+    eventName: EventName
+    iconRenderStyle: {width: number; height: number}
+    input: React.JSX.Element
+    layout: LayoutRectangle
+    listVisible?: boolean
+    onEvent: Omit<OnEvent, 'onBlur' | 'onFocus'>
+    searchList?: React.JSX.Element
+    underlayColor: string
 }
 
 interface SearchBaseProps extends SearchProps {
-    render: (props: RenderProps) => React.JSX.Element;
+    render: (props: RenderProps) => React.JSX.Element
 }
 
 interface InitialState {
-    data?: ListDataSource[];
-    eventName: EventName;
-    layout: LayoutRectangle & {pageX?: number; pageY?: number};
-    state: State;
-    status: ComponentStatus;
-    value?: string;
-    listVisible?: boolean;
+    data?: ListDataSource[]
+    eventName: EventName
+    layout: LayoutRectangle & {pageX?: number; pageY?: number}
+    state: State
+    status: ComponentStatus
+    value?: string
+    listVisible?: boolean
 }
 
 interface ProcessEventOptions {
-    setState: Updater<InitialState>;
+    setState: Updater<InitialState>
 }
 
-type ProcessChangeTextOptions = Pick<RenderProps, 'data' | 'onChangeText'> & ProcessEventOptions;
+type ProcessChangeTextOptions = Pick<RenderProps, 'data' | 'onChangeText'> &
+    ProcessEventOptions
 type ProcessEmitOptions = Pick<InitialState, 'status'> &
     Pick<RenderProps, 'id' | 'type'> &
-    Pick<RenderProps, 'listVisible'>;
+    Pick<RenderProps, 'listVisible'>
 
-type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
-    OnStateChangeOptions;
+type ProcessStateChangeOptions = {
+    ref?: RefObject<TextInput>
+} & ProcessEventOptions &
+    OnStateChangeOptions
 
 type ProcessContainerLayoutOptions = ProcessEventOptions &
     Pick<RenderProps, 'listVisible'> &
-    Pick<RenderProps, 'type'>;
+    Pick<RenderProps, 'type'>
 
-type RenderTextInputOptions = SearchProps;
+type RenderTextInputOptions = SearchProps
 type RenderSearchListOptions = SearchProps & {
-    containerHeight?: number;
-    containerPageX?: number;
-    containerPageY?: number;
-    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {width?: number};
-    visible?: boolean;
-};
+    containerHeight?: number
+    containerPageX?: number
+    containerPageY?: number
+    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
+        width?: number
+    }
+    visible?: boolean
+}
 
-const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
+const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus()
 const processStateChange = (
     state: State,
-    {eventName, ref, setState}: ProcessStateChangeOptions,
+    {eventName, ref, setState}: ProcessStateChangeOptions
 ) => {
     const nextEvent = {
-        pressOut: () => processFocus(ref),
-    } as Record<EventName, () => void>;
+        pressOut: () => processFocus(ref)
+    } as Record<EventName, () => void>
 
-    nextEvent[eventName]?.();
+    nextEvent[eventName]?.()
 
     setState(draft => {
         if (draft.state === 'focused' && eventName !== 'blur') {
-            return;
+            return
         }
 
-        draft.eventName = eventName;
-        draft.state = state;
-    });
-};
+        draft.eventName = eventName
+        draft.state = state
+    })
+}
 
 const processChangeText = (
     {setState, data = [], onChangeText}: ProcessChangeTextOptions,
-    text?: string,
+    text?: string
 ) => {
-    const matchedData = text
-        ? data.filter(({headline, supporting}) => {
-              const matchText = text.toLowerCase();
-              const headlineMatch = !!headline?.toLowerCase().includes(matchText);
-              const supportingTextMatch =
-                  typeof supporting === 'string' && !!supporting?.toLowerCase().includes(matchText);
+    const matchedData =
+        text ?
+            data.filter(({headline, supporting}) => {
+                const matchText = text.toLowerCase()
+                const headlineMatch = !!headline
+                    ?.toLowerCase()
+                    .includes(matchText)
+                const supportingTextMatch =
+                    typeof supporting === 'string' &&
+                    !!supporting?.toLowerCase().includes(matchText)
 
-              return headlineMatch || supportingTextMatch;
-          })
-        : [];
+                return headlineMatch || supportingTextMatch
+            })
+        :   []
 
     setState(draft => {
         if (draft.value === text) {
-            return;
+            return
         }
 
-        typeof draft.data === 'undefined' && (draft.data = matchedData);
-        draft.listVisible !== !!matchedData.length && (draft.listVisible = !!matchedData.length);
+        typeof draft.data === 'undefined' && (draft.data = matchedData)
+        draft.listVisible !== !!matchedData.length &&
+            (draft.listVisible = !!matchedData.length)
 
-        draft.value = typeof text === 'undefined' ? '' : text;
-    });
+        draft.value = typeof text === 'undefined' ? '' : text
+    })
 
-    typeof text === 'string' && onChangeText?.(text);
-};
+    typeof text === 'string' && onChangeText?.(text)
+}
 
-const processListClosed = ({setState}: ProcessEventOptions, visible?: boolean) =>
+const processListClosed = (
+    {setState}: ProcessEventOptions,
+    visible?: boolean
+) =>
     typeof visible === 'boolean' &&
     setState(draft => {
-        draft.data !== undefined && (draft.data = undefined);
-    });
+        draft.data !== undefined && (draft.data = undefined)
+    })
 
 const processContainerLayout = (
     {setState, type}: ProcessContainerLayoutOptions,
-    containerCurrent?: View | null,
+    containerCurrent?: View | null
 ) =>
     type === 'modal' &&
     containerCurrent?.measure((x, y, width, height, pageX, pageY) =>
@@ -166,7 +182,7 @@ const processContainerLayout = (
                 draft.layout.height !== height ||
                 draft.layout.pageX !== pageX ||
                 draft.layout.pageY !== pageY ||
-                draft.layout.width !== width;
+                draft.layout.width !== width
 
             if (update) {
                 draft.layout = {
@@ -175,25 +191,26 @@ const processContainerLayout = (
                     pageY,
                     width,
                     x,
-                    y,
-                };
+                    y
+                }
 
-                draft.status === 'idle' && (draft.status = 'succeeded');
+                draft.status === 'idle' && (draft.status = 'succeeded')
             }
-        }),
-    );
+        })
+    )
 
 const processEmit = (
     element: React.JSX.Element,
-    {id, status, listVisible, type}: ProcessEmitOptions,
+    {id, status, listVisible, type}: ProcessEmitOptions
 ) =>
     status === 'succeeded' &&
     typeof listVisible === 'boolean' &&
     type === 'modal' &&
-    emitter.emit('modal', {id: `search__list--${id}`, element});
+    emitter.emit('modal', {id: `search__list--${id}`, element})
 
 const processUnmount = (id: string, {type}: Pick<RenderProps, 'type'>) =>
-    type === 'modal' && emitter.emit('modal', {id: `search__list--${id}`, element: undefined});
+    type === 'modal' &&
+    emitter.emit('modal', {id: `search__list--${id}`, element: undefined})
 
 const renderTextInput = ({id, ...props}: RenderTextInputOptions) => (
     <TextField testID={`search__control--${id}`}>
@@ -210,9 +227,9 @@ const renderTextInput = ({id, ...props}: RenderTextInputOptions) => (
             enableFocusRing={false}
         />
     </TextField>
-);
+)
 
-const AnimatedSearchList = Animated.createAnimatedComponent(SearchList);
+const AnimatedSearchList = Animated.createAnimatedComponent(SearchList)
 const renderSearchList = ({
     activeKey,
     containerHeight,
@@ -223,9 +240,9 @@ const renderSearchList = ({
     id,
     onActive,
     renderStyle,
-    type,
+    type
 }: RenderSearchListOptions) => {
-    const {height, width} = renderStyle;
+    const {height, width} = renderStyle
 
     return (
         <AnimatedSearchList
@@ -233,11 +250,12 @@ const renderSearchList = ({
             containerPageX={containerPageX}
             containerPageY={containerPageY}
             renderStyle={{width}}
-            shape="extraLargeBottom"
+            shape='extraLargeBottom'
             style={{height}}
             testID={`search__list--${id}`}
             type={type}
-            visible={!!data?.length}>
+            visible={!!data?.length}
+        >
             <List
                 activeKey={activeKey}
                 data={data}
@@ -245,8 +263,8 @@ const renderSearchList = ({
                 onActive={onActive}
             />
         </AnimatedSearchList>
-    );
-};
+    )
+}
 
 export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
     (
@@ -265,52 +283,64 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
             value: valueSource,
             ...textInputProps
         },
-        ref,
+        ref
     ) => {
-        const [{value, status, data, eventName, layout, listVisible}, setState] =
-            useImmer<InitialState>({
-                data: undefined,
-                eventName: 'none',
-                layout: {} as InitialState['layout'],
-                listVisible: undefined,
-                state: 'enabled',
-                status: 'idle',
-                value: '',
-            });
+        const [
+            {value, status, data, eventName, layout, listVisible},
+            setState
+        ] = useImmer<InitialState>({
+            data: undefined,
+            eventName: 'none',
+            layout: {} as InitialState['layout'],
+            listVisible: undefined,
+            state: 'enabled',
+            status: 'idle',
+            value: ''
+        })
 
-        const containerRef = useRef<View>(null);
-        const id = useId();
-        const inputRef = useRef<TextInput>(null);
-        const theme = useTheme();
-        const placeholderTextColor = theme.palette.surface.onSurfaceVariant;
-        const underlayColor = theme.palette.surface.onSurface;
+        const containerRef = useRef<View>(null)
+        const id = useId()
+        const inputRef = useRef<TextInput>(null)
+        const theme = useTheme()
+        const placeholderTextColor = theme.palette.surface.onSurfaceVariant
+        const underlayColor = theme.palette.surface.onSurface
         const onStateChange = useCallback(
             (nextState: State, options = {} as OnStateChangeOptions) =>
-                processStateChange(nextState, {...options, ref: inputRef, setState}),
-            [setState],
-        );
+                processStateChange(nextState, {
+                    ...options,
+                    ref: inputRef,
+                    setState
+                }),
+            [setState]
+        )
 
         const onListClosed = useCallback(
             (visible?: boolean) => processListClosed({setState}, visible),
-            [setState],
-        );
+            [setState]
+        )
 
-        const [{listHeight}] = useAnimated({listVisible, onListClosed});
-        const [{onBlur, onFocus, ...onEvent}] = useOnEvent({...textInputProps, onStateChange});
+        const [{listHeight}] = useAnimated({listVisible, onListClosed})
+        const [{onBlur, onFocus, ...onEvent}] = useOnEvent({
+            ...textInputProps,
+            onStateChange
+        })
         const onChangeText = useCallback(
             (text?: string) =>
                 processChangeText(
                     {
                         data: dataSources,
                         onChangeText: onChangeTextSource,
-                        setState,
+                        setState
                     },
-                    text,
+                    text
                 ),
-            [dataSources, onChangeTextSource, setState],
-        );
+            [dataSources, onChangeTextSource, setState]
+        )
 
-        const onUnmount = useCallback(() => processUnmount(id, {type}), [id, type]);
+        const onUnmount = useCallback(
+            () => processUnmount(id, {type}),
+            [id, type]
+        )
         const input = useMemo(
             () =>
                 renderTextInput({
@@ -322,7 +352,7 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                     placeholder,
                     placeholderTextColor,
                     ref: inputRef,
-                    value,
+                    value
                 }),
             [
                 id,
@@ -332,9 +362,9 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                 placeholder,
                 placeholderTextColor,
                 textInputProps,
-                value,
-            ],
-        );
+                value
+            ]
+        )
 
         const searchList = useMemo(
             () =>
@@ -348,7 +378,7 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                     id,
                     onActive,
                     renderStyle: {height: listHeight, width: layout.width},
-                    type,
+                    type
                 }),
             [
                 activeKey,
@@ -361,35 +391,35 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                 layout.width,
                 listHeight,
                 onActive,
-                type,
-            ],
-        );
+                type
+            ]
+        )
 
         useImperativeHandle(
             ref,
             () => (inputRef?.current ? inputRef?.current : {}) as TextInput,
-            [],
-        );
+            []
+        )
 
         useEffect(() => {
-            onChangeText(valueSource ?? defaultValue);
-        }, [valueSource, defaultValue, onChangeText]);
+            onChangeText(valueSource ?? defaultValue)
+        }, [valueSource, defaultValue, onChangeText])
 
         useEffect(() => {
-            processContainerLayout({setState, type}, containerRef.current);
-            processEmit(searchList, {status, id, listVisible, type});
+            processContainerLayout({setState, type}, containerRef.current)
+            processEmit(searchList, {status, id, listVisible, type})
 
             return () => {
-                onUnmount();
-            };
-        }, [id, listVisible, onUnmount, searchList, setState, status, type]);
+                onUnmount()
+            }
+        }, [id, listVisible, onUnmount, searchList, setState, status, type])
 
         return render({
             containerRef,
             eventName,
             iconRenderStyle: {
                 height: theme.adaptSize(theme.spacing.large),
-                width: theme.adaptSize(theme.spacing.large),
+                width: theme.adaptSize(theme.spacing.large)
             },
             id,
             input,
@@ -402,7 +432,7 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
             searchList,
             trailing,
             type,
-            underlayColor,
-        });
-    },
-);
+            underlayColor
+        })
+    }
+)

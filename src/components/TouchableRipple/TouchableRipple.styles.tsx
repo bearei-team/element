@@ -1,9 +1,9 @@
-import {Pressable} from 'react-native';
-import styled, {css} from 'styled-components/native';
-import {Shape} from '../Common/Common.styles';
-import {RenderProps} from './TouchableRippleBase';
+import {Pressable} from 'react-native'
+import styled, {css} from 'styled-components/native'
+import {Shape} from '../Common/Common.styles'
+import {RenderProps} from './TouchableRippleBase'
 
-type ContainerProps = Pick<RenderProps, 'block'>;
+type ContainerProps = Pick<RenderProps, 'block'>
 
 export const Container = styled(Shape)<ContainerProps>`
     overflow: hidden;
@@ -13,9 +13,9 @@ export const Container = styled(Shape)<ContainerProps>`
         css`
             align-self: stretch;
         `}
-`;
+`
 
-export const Content = styled(Pressable)``;
+export const Content = styled(Pressable)``
 export const Inner = styled.View`
     position: relative;
-`;
+`

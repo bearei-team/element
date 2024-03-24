@@ -1,39 +1,52 @@
-import {useEffect} from 'react';
-import {Animated} from 'react-native';
-import {useTheme} from 'styled-components/native';
-import {AnimatedTiming, useAnimatedTiming} from '../../../hooks/useAnimatedTiming';
-import {useAnimatedValue} from '../../../hooks/useAnimatedValue';
-import {RenderProps} from './SupportingBase';
+import {useEffect} from 'react'
+import {
+    AnimatableValue,
+    SharedValue,
+    cancelAnimation,
+    interpolate,
+    useAnimatedStyle,
+    useSharedValue
+} from 'react-native-reanimated'
+import {useTheme} from 'styled-components/native'
+import {
+    AnimatedTiming,
+    useAnimatedTiming
+} from '../../../hooks/useAnimatedTiming'
+import {RenderProps} from './SupportingBase'
 
 interface UseAnimatedOptions extends Pick<RenderProps, 'visible'> {
-    onClosed: (value?: boolean) => void;
+    onClosed: (value?: boolean) => void
 }
 
 interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
-    opacityAnimated: Animated.Value;
+    opacity: SharedValue<AnimatableValue>
 }
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {opacityAnimated, visible, onClosed}: ProcessAnimatedTimingOptions,
+    {opacity, visible, onClosed}: ProcessAnimatedTimingOptions
 ) =>
-    animatedTiming(opacityAnimated, {toValue: visible ? 1 : 0}).start(
-        ({finished}) => finished && !visible && onClosed?.(visible),
-    );
+    animatedTiming(
+        opacity,
+        {toValue: visible ? 1 : 0},
+        finished => finished && !visible && onClosed?.(visible)
+    )
 
 export const useAnimated = ({visible, onClosed}: UseAnimatedOptions) => {
-    const [opacityAnimated] = useAnimatedValue(visible ? 1 : 0);
-    const theme = useTheme();
-    const [animatedTiming] = useAnimatedTiming(theme);
-    const opacity = opacityAnimated.interpolate({inputRange: [0, 1], outputRange: [0, 1]});
+    const opacity = useSharedValue(visible ? 1 : 0)
+    const theme = useTheme()
+    const [animatedTiming] = useAnimatedTiming(theme)
+    const animatedStyle = useAnimatedStyle(() => ({
+        opacity: interpolate(opacity.value, [0, 1], [0, 1])
+    }))
 
     useEffect(() => {
-        processAnimatedTiming(animatedTiming, {opacityAnimated, visible, onClosed});
+        processAnimatedTiming(animatedTiming, {opacity, visible, onClosed})
 
         return () => {
-            opacityAnimated.stopAnimation();
-        };
-    }, [animatedTiming, onClosed, opacityAnimated, visible]);
+            cancelAnimation(opacity)
+        }
+    }, [animatedTiming, onClosed, opacity, visible])
 
-    return [{opacity}];
-};
+    return [animatedStyle]
+}

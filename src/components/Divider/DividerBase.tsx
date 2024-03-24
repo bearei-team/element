@@ -1,23 +1,23 @@
-import {RefAttributes, forwardRef, useId} from 'react';
-import {View, ViewProps} from 'react-native';
-import {Layout, Size} from '../Common/interface';
+import {RefAttributes, forwardRef, useId} from 'react'
+import {View, ViewProps} from 'react-native'
+import {Layout, Size} from '../Common/interface'
 
 export interface DividerProps extends Partial<ViewProps & RefAttributes<View>> {
-    block?: boolean;
-    layout?: Layout;
-    renderStyle?: {width?: number; height?: number};
-    size?: Size;
-    subheader?: string;
+    block?: boolean
+    layout?: Layout
+    renderStyle?: {width?: number; height?: number}
+    size?: Size
+    subheader?: string
 }
 
-export type RenderProps = DividerProps;
+export type RenderProps = DividerProps
 export interface DividerBaseProps extends DividerProps {
-    render: (props: RenderProps) => React.JSX.Element;
+    render: (props: RenderProps) => React.JSX.Element
 }
 
 export const DividerBase = forwardRef<View, DividerBaseProps>(
     ({layout, render, size, subheader, ...renderProps}, ref) => {
-        const id = useId();
+        const id = useId()
 
         return render({
             ...renderProps,
@@ -25,7 +25,7 @@ export const DividerBase = forwardRef<View, DividerBaseProps>(
             layout,
             ref,
             size: subheader && layout === 'horizontal' ? 'small' : size,
-            subheader,
-        });
-    },
-);
+            subheader
+        })
+    }
+)

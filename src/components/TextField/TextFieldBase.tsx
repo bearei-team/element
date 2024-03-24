@@ -7,8 +7,8 @@ import {
     useId,
     useImperativeHandle,
     useMemo,
-    useRef,
-} from 'react';
+    useRef
+} from 'react'
 import {
     Animated,
     LayoutChangeEvent,
@@ -19,142 +19,162 @@ import {
     TextInputContentSizeChangeEventData,
     TextInputProps,
     TextStyle,
-    ViewStyle,
-} from 'react-native';
-import {useTheme} from 'styled-components/native';
-import {Updater, useImmer} from 'use-immer';
-import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
-import {ShapeProps} from '../Common/Common.styles';
-import {AnimatedInterpolation, EventName, State} from '../Common/interface';
-import {Input} from './TextField.styles';
-import {useAnimated} from './useAnimated';
+    ViewStyle
+} from 'react-native'
+import {useTheme} from 'styled-components/native'
+import {Updater, useImmer} from 'use-immer'
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent'
+import {ShapeProps} from '../Common/Common.styles'
+import {AnimatedInterpolation, EventName, State} from '../Common/interface'
+import {Input} from './TextField.styles'
+import {useAnimated} from './useAnimated'
 
-type TextFieldType = 'filled' | 'outlined';
+type TextFieldType = 'filled' | 'outlined'
 type InputProps = Partial<
-    TextInputProps & PressableProps & RefAttributes<TextInput> & Pick<ShapeProps, 'shape'>
->;
+    TextInputProps &
+        PressableProps &
+        RefAttributes<TextInput> &
+        Pick<ShapeProps, 'shape'>
+>
 
 export interface TextFieldProps extends InputProps {
-    disabled?: boolean;
-    error?: boolean;
-    labelText?: string;
-    leading?: React.JSX.Element;
-    supportingText?: string;
-    trailing?: React.JSX.Element;
-    type?: TextFieldType;
+    disabled?: boolean
+    error?: boolean
+    labelText?: string
+    leading?: React.JSX.Element
+    supportingText?: string
+    trailing?: React.JSX.Element
+    type?: TextFieldType
 }
 
 export interface RenderProps extends TextFieldProps {
-    contentSize?: Partial<TextInputContentSizeChangeEventData['contentSize']>;
-    eventName: EventName;
-    input: React.JSX.Element;
-    onEvent: Omit<OnEvent, 'onBlur' | 'onFocus'>;
-    state: State;
-    underlayColor: string;
-    onLabelLayout: (event: LayoutChangeEvent) => void;
+    contentSize?: Partial<TextInputContentSizeChangeEventData['contentSize']>
+    eventName: EventName
+    input: React.JSX.Element
+    onEvent: Omit<OnEvent, 'onBlur' | 'onFocus'>
+    state: State
+    underlayColor: string
+    onLabelLayout: (event: LayoutChangeEvent) => void
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
-        activeIndicatorBackgroundColor: AnimatedInterpolation;
-        activeIndicatorScaleY: AnimatedInterpolation;
-        labelInnerTranslateX: AnimatedInterpolation;
-        labelInnerTranslateY: AnimatedInterpolation;
-        labelScale: AnimatedInterpolation;
-        labelTextColor: AnimatedInterpolation;
-        labelTranslateY: AnimatedInterpolation;
-        supportingTextColor: AnimatedInterpolation;
-    };
+        activeIndicatorBackgroundColor: AnimatedInterpolation
+        activeIndicatorScaleY: AnimatedInterpolation
+        labelInnerTranslateX: AnimatedInterpolation
+        labelInnerTranslateY: AnimatedInterpolation
+        labelScale: AnimatedInterpolation
+        labelTextColor: AnimatedInterpolation
+        labelTranslateY: AnimatedInterpolation
+        supportingTextColor: AnimatedInterpolation
+    }
 }
 
 interface TextFieldBaseProps extends TextFieldProps {
-    render: (props: RenderProps) => React.JSX.Element;
+    render: (props: RenderProps) => React.JSX.Element
 }
 
 type RenderTextInputProps = TextFieldProps & {
-    renderStyle: Animated.WithAnimatedObject<TextStyle>;
-};
+    renderStyle: Animated.WithAnimatedObject<TextStyle>
+}
 
 interface InitialState {
-    contentSize?: TextInputContentSizeChangeEventData['contentSize'];
-    eventName: EventName;
-    state: State;
-    value?: string;
-    labelLayout: LayoutRectangle;
+    contentSize?: TextInputContentSizeChangeEventData['contentSize']
+    eventName: EventName
+    state: State
+    value?: string
+    labelLayout: LayoutRectangle
 }
 
 interface ProcessEventOptions {
-    setState: Updater<InitialState>;
+    setState: Updater<InitialState>
 }
 
-type ProcessContentSizeChangeOptions = Pick<RenderProps, 'onContentSizeChange'> &
-    ProcessEventOptions;
+type ProcessContentSizeChangeOptions = Pick<
+    RenderProps,
+    'onContentSizeChange'
+> &
+    ProcessEventOptions
 
-type ProcessChangeTextOptions = Pick<RenderProps, 'onChangeText'> & ProcessEventOptions;
-type ProcessStateChangeOptions = {ref?: RefObject<TextInput>} & ProcessEventOptions &
-    OnStateChangeOptions;
+type ProcessChangeTextOptions = Pick<RenderProps, 'onChangeText'> &
+    ProcessEventOptions
+type ProcessStateChangeOptions = {
+    ref?: RefObject<TextInput>
+} & ProcessEventOptions &
+    OnStateChangeOptions
 
-const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus();
-const processLabelLayout = (event: LayoutChangeEvent, {setState}: ProcessEventOptions) => {
-    const nativeEventLayout = event.nativeEvent.layout;
+const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus()
+const processLabelLayout = (
+    event: LayoutChangeEvent,
+    {setState}: ProcessEventOptions
+) => {
+    const nativeEventLayout = event.nativeEvent.layout
 
     setState(draft => {
         const update =
             draft.labelLayout.width !== nativeEventLayout.width ||
-            draft.labelLayout.height !== nativeEventLayout.height;
+            draft.labelLayout.height !== nativeEventLayout.height
 
-        update && (draft.labelLayout = nativeEventLayout);
-    });
-};
+        update && (draft.labelLayout = nativeEventLayout)
+    })
+}
 
 const processStateChange = (
     state: State,
-    {eventName, setState, ref}: ProcessStateChangeOptions,
+    {eventName, setState, ref}: ProcessStateChangeOptions
 ) => {
     const nextEvent = {
-        pressOut: () => processFocus(ref),
-    } as Record<EventName, () => void>;
+        pressOut: () => processFocus(ref)
+    } as Record<EventName, () => void>
 
-    nextEvent[eventName]?.();
+    nextEvent[eventName]?.()
 
     setState(draft => {
         if (draft.state === 'focused' && eventName !== 'blur') {
-            return;
+            return
         }
 
-        draft.eventName = eventName;
-        draft.state = state;
-    });
-};
+        draft.eventName = eventName
+        draft.state = state
+    })
+}
 
 const processContentSizeChange = (
     event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>,
-    {setState, onContentSizeChange}: ProcessContentSizeChangeOptions,
+    {setState, onContentSizeChange}: ProcessContentSizeChangeOptions
 ) => {
-    const contentSize = event.nativeEvent.contentSize;
+    const contentSize = event.nativeEvent.contentSize
 
     setState(draft => {
         if (draft.contentSize?.height === contentSize.height) {
-            return;
+            return
         }
 
-        draft.contentSize = contentSize;
-    });
+        draft.contentSize = contentSize
+    })
 
-    onContentSizeChange?.(event);
-};
+    onContentSizeChange?.(event)
+}
 
-const processChangeText = ({setState, onChangeText}: ProcessChangeTextOptions, text?: string) => {
+const processChangeText = (
+    {setState, onChangeText}: ProcessChangeTextOptions,
+    text?: string
+) => {
     setState(draft => {
         if (draft.value === text) {
-            return;
+            return
         }
 
-        draft.value = typeof text === 'undefined' ? '' : text;
-    });
+        draft.value = typeof text === 'undefined' ? '' : text
+    })
 
-    typeof text === 'string' && onChangeText?.(text);
-};
+    typeof text === 'string' && onChangeText?.(text)
+}
 
-const AnimatedTextInput = Animated.createAnimatedComponent(Input);
-const renderTextInput = ({id, renderStyle, multiline, ...inputProps}: RenderTextInputProps) => (
+const AnimatedTextInput = Animated.createAnimatedComponent(Input)
+const renderTextInput = ({
+    id,
+    renderStyle,
+    multiline,
+    ...inputProps
+}: RenderTextInputProps) => (
     <AnimatedTextInput
         {...inputProps}
         style={renderStyle}
@@ -170,7 +190,7 @@ const renderTextInput = ({id, renderStyle, multiline, ...inputProps}: RenderText
         // @ts-ignore
         enableFocusRing={false}
     />
-);
+)
 
 export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
     (
@@ -191,7 +211,7 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
             value: valueSource,
             ...textInputProps
         },
-        ref,
+        ref
     ) => {
         const [{labelLayout, eventName, state, contentSize, value}, setState] =
             useImmer<InitialState>({
@@ -199,45 +219,60 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
                 eventName: 'none',
                 state: 'enabled',
                 value: '',
-                labelLayout: {} as LayoutRectangle,
-            });
+                labelLayout: {} as LayoutRectangle
+            })
 
-        const id = useId();
-        const textFieldRef = useRef<TextInput>(null);
-        const theme = useTheme();
+        const id = useId()
+        const textFieldRef = useRef<TextInput>(null)
+        const theme = useTheme()
         const placeholderTextColor =
-            state === 'disabled'
-                ? theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 0.38)
-                : theme.palette.surface.onSurfaceVariant;
+            state === 'disabled' ?
+                theme.color.convertHexToRGBA(
+                    theme.palette.surface.onSurface,
+                    0.38
+                )
+            :   theme.palette.surface.onSurfaceVariant
 
-        const underlayColor = theme.palette.surface.onSurface;
+        const underlayColor = theme.palette.surface.onSurface
         const onContentSizeChange = useCallback(
-            (event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>) =>
+            (
+                event: NativeSyntheticEvent<TextInputContentSizeChangeEventData>
+            ) =>
                 processContentSizeChange(event, {
                     onContentSizeChange: onContentSizeChangeSource,
-                    setState,
+                    setState
                 }),
-            [onContentSizeChangeSource, setState],
-        );
+            [onContentSizeChangeSource, setState]
+        )
 
         const onChangeText = useCallback(
             (text?: string) =>
-                processChangeText({onChangeText: onChangeTextSource, setState}, text),
-            [onChangeTextSource, setState],
-        );
+                processChangeText(
+                    {onChangeText: onChangeTextSource, setState},
+                    text
+                ),
+            [onChangeTextSource, setState]
+        )
 
         const onStateChange = useCallback(
             (nextState: State, options = {} as OnStateChangeOptions) =>
-                processStateChange(nextState, {...options, setState, ref: textFieldRef}),
-            [setState],
-        );
+                processStateChange(nextState, {
+                    ...options,
+                    setState,
+                    ref: textFieldRef
+                }),
+            [setState]
+        )
 
         const onLabelLayout = useCallback(
             (event: LayoutChangeEvent) => processLabelLayout(event, {setState}),
-            [setState],
-        );
+            [setState]
+        )
 
-        const [{onBlur, onFocus, ...onEvent}] = useOnEvent({...textInputProps, onStateChange});
+        const [{onBlur, onFocus, ...onEvent}] = useOnEvent({
+            ...textInputProps,
+            onStateChange
+        })
         const [
             {
                 activeIndicatorBackgroundColor,
@@ -249,17 +284,19 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
                 labelScale,
                 labelTextColor,
                 supportingTextColor,
-                labelTranslateY,
-            },
+                labelTranslateY
+            }
         ] = useAnimated({
             disabled,
             error,
             eventName,
-            filled: [valueSource, defaultValue, placeholder, value].some(item => item),
+            filled: [valueSource, defaultValue, placeholder, value].some(
+                item => item
+            ),
             labelLayout,
             state,
-            type,
-        });
+            type
+        })
 
         const input = useMemo(
             () =>
@@ -276,7 +313,7 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
                     placeholderTextColor,
                     ref: textFieldRef,
                     renderStyle: {color: inputColor},
-                    value,
+                    value
                 }),
             [
                 disabled,
@@ -290,19 +327,22 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
                 placeholder,
                 placeholderTextColor,
                 textInputProps,
-                value,
-            ],
-        );
+                value
+            ]
+        )
 
         useImperativeHandle(
             ref,
-            () => (textFieldRef?.current ? textFieldRef?.current : {}) as TextInput,
-            [],
-        );
+            () =>
+                (textFieldRef?.current ?
+                    textFieldRef?.current
+                :   {}) as TextInput,
+            []
+        )
 
         useEffect(() => {
-            onChangeText(valueSource ?? defaultValue);
-        }, [valueSource, defaultValue, onChangeText]);
+            onChangeText(valueSource ?? defaultValue)
+        }, [valueSource, defaultValue, onChangeText])
 
         return render({
             contentSize,
@@ -322,13 +362,13 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
                 labelScale,
                 labelTextColor,
                 supportingTextColor,
-                labelTranslateY,
+                labelTranslateY
             },
             state,
             supportingText,
             trailing,
             underlayColor,
-            onLabelLayout,
-        });
-    },
-);
+            onLabelLayout
+        })
+    }
+)

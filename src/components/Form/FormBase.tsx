@@ -1,68 +1,88 @@
-import {ForwardedRef, RefAttributes, forwardRef, useEffect, useId, useMemo} from 'react';
-import {Updater, useImmer} from 'use-immer';
-import {ComponentStatus} from '../Common/interface';
+import {
+    ForwardedRef,
+    RefAttributes,
+    forwardRef,
+    useEffect,
+    useId,
+    useMemo
+} from 'react'
+import {Updater, useImmer} from 'use-immer'
+import {ComponentStatus} from '../Common/interface'
 
-import {View, ViewProps} from 'react-native';
-import {FormItem, FormItemProps} from './FormItem/FormItem';
-import {Callback, FormStore, Store} from './formStore';
-import {useForm} from './useForm';
+import {View, ViewProps} from 'react-native'
+import {FormItem, FormItemProps} from './FormItem/FormItem'
+import {Callback, FormStore, Store} from './formStore'
+import {useForm} from './useForm'
 
 /**
  * TODO: vertical
  */
 export interface FormProps<T extends Store = Store>
     extends Partial<ViewProps & RefAttributes<View> & Callback<T>> {
-    form?: FormStore<T>;
-    initialValue?: T;
-    items?: FormItemProps[];
-    layout?: 'horizontal' | 'vertical';
+    form?: FormStore<T>
+    initialValue?: T
+    items?: FormItemProps[]
+    layout?: 'horizontal' | 'vertical'
 }
 
-export type RenderProps<T extends Store> = FormProps<T>;
+export type RenderProps<T extends Store> = FormProps<T>
 interface FormBaseProps<T extends Store> extends FormProps<T> {
-    render: (props: RenderProps<T>) => React.JSX.Element;
+    render: (props: RenderProps<T>) => React.JSX.Element
 }
 
 interface InitialState {
-    status: ComponentStatus;
+    status: ComponentStatus
 }
 
 interface ProcessEventOptions {
-    setState: Updater<InitialState>;
+    setState: Updater<InitialState>
 }
 
 type ProcessInitOptions = ProcessEventOptions &
     Pick<FormStore<any>, 'setInitialValue'> &
-    Pick<FormBaseProps<Store>, 'initialValue'>;
+    Pick<FormBaseProps<Store>, 'initialValue'>
 
 type ProcessCallbackOptions = Pick<
     FormProps<any>,
     'onFinish' | 'onFinishFailed' | 'onValueChange'
 > &
-    Pick<FormStore<Store>, 'setCallback'>;
+    Pick<FormStore<Store>, 'setCallback'>
 
-type RenderChildrenOptions = Pick<FormBaseProps<{}>, 'items' | 'id'>;
+type RenderChildrenOptions = Pick<FormBaseProps<{}>, 'items' | 'id'>
 
-const processInit = ({initialValue, setInitialValue, setState}: ProcessInitOptions) =>
+const processInit = ({
+    initialValue,
+    setInitialValue,
+    setState
+}: ProcessInitOptions) =>
     setState(draft => {
         if (draft.status !== 'idle') {
-            return;
+            return
         }
 
-        initialValue && setInitialValue(initialValue);
-        draft.status = 'succeeded';
-    });
+        initialValue && setInitialValue(initialValue)
+        draft.status = 'succeeded'
+    })
 
 const processCallback = ({
     onFinish,
     onFinishFailed,
     onValueChange,
-    setCallback,
-}: ProcessCallbackOptions) => setCallback({onFinish, onFinishFailed, onValueChange});
+    setCallback
+}: ProcessCallbackOptions) =>
+    setCallback({onFinish, onFinishFailed, onValueChange})
 
-const renderChildren = (status: ComponentStatus, {items}: RenderChildrenOptions) =>
+const renderChildren = (
+    status: ComponentStatus,
+    {items}: RenderChildrenOptions
+) =>
     status === 'succeeded' &&
-    items?.map((item, index) => <FormItem {...item} key={item.name ?? index} />);
+    items?.map((item, index) => (
+        <FormItem
+            {...item}
+            key={item.name ?? index}
+        />
+    ))
 
 const FormBaseInner = <T extends Store = Store>(
     {
@@ -75,24 +95,27 @@ const FormBaseInner = <T extends Store = Store>(
         render,
         ...renderProps
     }: FormBaseProps<T>,
-    ref: ForwardedRef<View>,
+    ref: ForwardedRef<View>
 ) => {
-    const [{status}, setState] = useImmer<InitialState>({status: 'idle'});
-    const [formStore] = useForm<T>(form);
-    const {setCallback, setInitialValue} = formStore;
-    const id = useId();
-    const children = useMemo(() => renderChildren(status, {items, id}), [id, items, status]);
+    const [{status}, setState] = useImmer<InitialState>({status: 'idle'})
+    const [formStore] = useForm<T>(form)
+    const {setCallback, setInitialValue} = formStore
+    const id = useId()
+    const children = useMemo(
+        () => renderChildren(status, {items, id}),
+        [id, items, status]
+    )
 
     useEffect(() => {
-        processCallback({onFinish, onFinishFailed, onValueChange, setCallback});
-    }, [onFinish, onFinishFailed, onValueChange, setCallback]);
+        processCallback({onFinish, onFinishFailed, onValueChange, setCallback})
+    }, [onFinish, onFinishFailed, onValueChange, setCallback])
 
     useEffect(() => {
-        processInit({initialValue, setInitialValue, setState});
-    }, [initialValue, setInitialValue, setState, status]);
+        processInit({initialValue, setInitialValue, setState})
+    }, [initialValue, setInitialValue, setState, status])
 
     if (!children || status === 'idle') {
-        return <></>;
+        return <></>
     }
 
     return render({
@@ -100,8 +123,8 @@ const FormBaseInner = <T extends Store = Store>(
         children,
         form: formStore,
         id,
-        ref,
-    });
-};
+        ref
+    })
+}
 
-export const FormBase = forwardRef(FormBaseInner) as typeof FormBaseInner;
+export const FormBase = forwardRef(FormBaseInner) as typeof FormBaseInner

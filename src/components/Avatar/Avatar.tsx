@@ -1,24 +1,33 @@
-import {FC, forwardRef, memo} from 'react';
-import {View} from 'react-native';
-import {Container, LabelText} from './Avatar.styles';
-import {AvatarBase, AvatarProps, RenderProps} from './AvatarBase';
+import {FC, forwardRef, memo} from 'react'
+import {View} from 'react-native'
+import {Container, LabelText} from './Avatar.styles'
+import {AvatarBase, AvatarProps, RenderProps} from './AvatarBase'
 
 const render = ({id, labelText, ...containerProps}: RenderProps) => (
-    <Container {...containerProps} shape="full" testID={`avatar--${id}`}>
+    <Container
+        {...containerProps}
+        shape='full'
+        testID={`avatar--${id}`}
+    >
         <LabelText
-            ellipsizeMode="tail"
+            ellipsizeMode='tail'
             numberOfLines={1}
-            size="medium"
+            size='medium'
             testID={`avatar__labelText--${id}`}
-            type="title">
+            type='title'
+        >
             {labelText}
         </LabelText>
     </Container>
-);
+)
 
 const ForwardRefAvatar = forwardRef<View, AvatarProps>((props, ref) => (
-    <AvatarBase {...props} ref={ref} render={render} />
-));
+    <AvatarBase
+        {...props}
+        ref={ref}
+        render={render}
+    />
+))
 
-export const Avatar: FC<AvatarProps> = memo(ForwardRefAvatar);
-export type {AvatarProps};
+export const Avatar: FC<AvatarProps> = memo(ForwardRefAvatar)
+export type {AvatarProps}

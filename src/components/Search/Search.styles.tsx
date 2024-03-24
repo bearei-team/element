@@ -1,26 +1,26 @@
-import {TextInput} from 'react-native';
-import {css} from 'styled-components';
-import styled from 'styled-components/native';
-import {Shape} from '../Common/Common.styles';
-import {RenderProps} from './SearchBase';
+import {TextInput} from 'react-native'
+import {css} from 'styled-components'
+import styled from 'styled-components/native'
+import {Shape} from '../Common/Common.styles'
+import {RenderProps} from './SearchBase'
 
 type InnerProps = {
-    trailingShow: boolean;
-};
+    trailingShow: boolean
+}
 
 type SearchListProps = {
-    containerPageX?: number;
-    containerPageY?: number;
-    containerHeight?: number;
+    containerPageX?: number
+    containerPageY?: number
+    containerHeight?: number
     renderStyle?: {
-        width?: number;
-    };
-    visible?: boolean;
-} & Pick<RenderProps, 'type'>;
+        width?: number
+    }
+    visible?: boolean
+} & Pick<RenderProps, 'type'>
 
 export const Container = styled(Shape)`
     overflow: hidden;
-`;
+`
 
 export const Inner = styled.Pressable<InnerProps>`
     align-items: center;
@@ -29,20 +29,19 @@ export const Inner = styled.Pressable<InnerProps>`
     justify-content: space-between;
     position: relative;
 
-    ${({theme}) =>
-        css`
-            gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-            padding: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-            background-color: ${theme.palette.surface.surfaceContainerHigh};
-            height: ${theme.adaptSize(theme.spacing.small * 7)}px;
-        `};
+    ${({theme}) => css`
+        gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
+        padding: ${theme.adaptSize(theme.spacing.extraSmall)}px;
+        background-color: ${theme.palette.surface.surfaceContainerHigh};
+        height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+    `};
 
     ${({theme, trailingShow}) =>
         !trailingShow &&
         css`
             padding-right: ${theme.adaptSize(theme.spacing.medium)}px;
         `}
-`;
+`
 
 export const Leading = styled.View`
     align-items: center;
@@ -54,7 +53,7 @@ export const Leading = styled.View`
         height: ${theme.adaptSize(theme.spacing.small * 6)}px;
         width: ${theme.adaptSize(theme.spacing.small * 6)}px;
     `}
-`;
+`
 
 export const Content = styled.View`
     align-items: center;
@@ -62,11 +61,10 @@ export const Content = styled.View`
     flex-direction: row;
     flex: 1;
 
-    ${({theme}) =>
-        css`
-            height: ${theme.adaptSize(theme.spacing.small * 6)}px;
-        `};
-`;
+    ${({theme}) => css`
+        height: ${theme.adaptSize(theme.spacing.small * 6)}px;
+    `};
+`
 
 export const TextField = styled.View`
     display: flex;
@@ -75,9 +73,11 @@ export const TextField = styled.View`
     flex: 1;
 
     ${({theme}) => css`
-        height: ${theme.adaptFontSize(theme.typography.body.large.lineHeight)}px;
+        height: ${theme.adaptFontSize(
+            theme.typography.body.large.lineHeight
+        )}px;
     `};
-`;
+`
 
 export const Input = styled(TextInput)`
     flex: 1;
@@ -95,15 +95,19 @@ export const Input = styled(TextInput)`
          */
         !secureTextEntry &&
         css`
-            font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
+            font-size: ${theme.adaptFontSize(
+                theme.typography.body.large.size
+            )}px;
             font-style: ${theme.typography.body.large.style};
             font-weight: ${theme.typography.body.large.weight};
-            letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
+            letter-spacing: ${theme.adaptSize(
+                theme.typography.body.large.letterSpacing
+            )}px;
             padding: ${theme.spacing.none}px;
         `}
-`;
+`
 
-export const Trailing = styled(Leading)``;
+export const Trailing = styled(Leading)``
 export const SearchList = styled(Shape)<SearchListProps>`
     overflow: hidden;
 
@@ -121,14 +125,14 @@ export const SearchList = styled(Shape)<SearchListProps>`
         `};
 
     ${({renderStyle = {}, type}) => {
-        const {width = 0} = renderStyle;
+        const {width = 0} = renderStyle
 
         return (
             type === 'modal' &&
             css`
                 width: ${width}px;
             `
-        );
+        )
     }}
 
     ${({visible}) =>
@@ -136,4 +140,4 @@ export const SearchList = styled(Shape)<SearchListProps>`
         css`
             pointer-events: none;
         `};
-`;
+`

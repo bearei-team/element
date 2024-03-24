@@ -1,14 +1,15 @@
-import {FC, forwardRef, memo} from 'react';
-import {View} from 'react-native';
-import Animated from 'react-native-reanimated';
-import {Elevation} from '../Elevation/Elevation';
-import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
-import {Underlay} from '../Underlay/Underlay';
-import {Container, Content, Icon, LabelText} from './Chip.styles';
-import {ChipBase, ChipProps, RenderProps} from './ChipBase';
+import {FC, forwardRef, memo} from 'react'
+import {View} from 'react-native'
+import Animated from 'react-native-reanimated'
+import {Elevation} from '../Elevation/Elevation'
+import {TouchableRipple} from '../TouchableRipple/TouchableRipple'
+import {Underlay} from '../Underlay/Underlay'
+import {Container, Content, Icon, LabelText} from './Chip.styles'
+import {ChipBase, ChipProps, RenderProps} from './ChipBase'
 
-const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
-const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
+const AnimatedTouchableRipple =
+    Animated.createAnimatedComponent(TouchableRipple)
+const AnimatedLabelText = Animated.createAnimatedComponent(LabelText)
 const render = ({
     active,
     activeColor,
@@ -28,11 +29,16 @@ const render = ({
     block,
     ...contentProps
 }: RenderProps) => {
-    const {contentAnimatedStyle, labelTextAnimatedStyle, ...border} = renderStyle;
-    const shape = 'extraSmall';
+    const {contentAnimatedStyle, labelTextAnimatedStyle, ...border} =
+        renderStyle
+    const shape = 'extraSmall'
 
     return (
-        <Container accessibilityLabel={labelText} testID={`chip--${id}`} block={block}>
+        <Container
+            accessibilityLabel={labelText}
+            testID={`chip--${id}`}
+            block={block}
+        >
             <AnimatedTouchableRipple
                 {...onEvent}
                 active={active}
@@ -41,41 +47,56 @@ const render = ({
                 shape={shape}
                 style={[style, contentAnimatedStyle, border]}
                 touchableLocation={touchableLocation}
-                underlayColor={activeColor}>
+                underlayColor={activeColor}
+            >
                 <Content
                     {...contentProps}
                     iconShow={!!icon}
                     trailingIconShow={!!trailingIcon}
                     testID={`chip__content--${id}`}
-                    type={type}>
+                    type={type}
+                >
                     {icon && <Icon testID={`chip__icon--${id}`}>{icon}</Icon>}
 
                     <AnimatedLabelText
-                        ellipsizeMode="tail"
+                        ellipsizeMode='tail'
                         numberOfLines={1}
-                        size="large"
+                        size='large'
                         style={[labelTextAnimatedStyle]}
                         testID={`chip__labelText--${id}`}
-                        type="label">
+                        type='label'
+                    >
                         {labelText}
                     </AnimatedLabelText>
 
                     {trailingIcon && (
-                        <Icon testID={`chip__trailingIcon--${id}`}>{trailingIcon}</Icon>
+                        <Icon testID={`chip__trailingIcon--${id}`}>
+                            {trailingIcon}
+                        </Icon>
                     )}
 
-                    <Underlay eventName={eventName} underlayColor={underlayColor} />
+                    <Underlay
+                        eventName={eventName}
+                        underlayColor={underlayColor}
+                    />
                 </Content>
             </AnimatedTouchableRipple>
 
-            <Elevation level={elevation} shape={shape} />
+            <Elevation
+                level={elevation}
+                shape={shape}
+            />
         </Container>
-    );
-};
+    )
+}
 
 const ForwardRefChip = forwardRef<View, ChipProps>((props, ref) => (
-    <ChipBase {...props} ref={ref} render={render} />
-));
+    <ChipBase
+        {...props}
+        ref={ref}
+        render={render}
+    />
+))
 
-export const Chip: FC<ChipProps> = memo(ForwardRefChip);
-export type {ChipProps};
+export const Chip: FC<ChipProps> = memo(ForwardRefChip)
+export type {ChipProps}

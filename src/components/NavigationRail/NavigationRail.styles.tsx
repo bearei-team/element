@@ -1,5 +1,5 @@
-import {View} from 'react-native';
-import styled, {css} from 'styled-components/native';
+import {View} from 'react-native'
+import styled, {css} from 'styled-components/native'
 
 export const Container = styled(View)`
     align-items: center;
@@ -9,7 +9,7 @@ export const Container = styled(View)`
     ${({theme}) => css`
         width: ${theme.adaptSize(theme.spacing.small * 10)}px;
     `}
-`;
+`
 
 export const Destination = styled.View`
     align-items: center;
@@ -20,16 +20,17 @@ export const Destination = styled.View`
         gap: ${theme.adaptSize(theme.spacing.small)}px;
         padding: ${theme.adaptSize(theme.spacing.extraSmall + 1)}px;
     `}
-`;
+`
 
 export const Fab = styled.View`
     overflow: hidden;
 
-    ${({theme}) =>
-        css`
-            height: ${theme.adaptSize(theme.spacing.small * 7)}px;
-            margin-bottom: ${theme.adaptSize(theme.spacing.small * 8 - theme.spacing.extraSmall)}px;
-            margin-top: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-            width: ${theme.adaptSize(theme.spacing.small * 7)}px;
-        `};
-`;
+    ${({theme}) => css`
+        height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+        margin-bottom: ${theme.adaptSize(
+            theme.spacing.small * 8 - theme.spacing.extraSmall
+        )}px;
+        margin-top: ${theme.adaptSize(theme.spacing.extraSmall)}px;
+        width: ${theme.adaptSize(theme.spacing.small * 7)}px;
+    `};
+`

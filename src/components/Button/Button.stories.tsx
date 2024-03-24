@@ -1,71 +1,71 @@
-import {Meta, StoryObj} from '@storybook/react';
-import {Icon as EIIcon} from '../Icon/Icon';
-import {Button, ButtonProps} from './Button';
+import {Meta, StoryObj} from '@storybook/react'
+import {Icon as EIIcon} from '../Icon/Icon'
+import {Button, ButtonProps} from './Button'
 
 export default {
     title: 'components/Button',
     argTypes: {onPress: {action: 'pressed'}},
-    component: Button,
-} as Meta<typeof Button>;
+    component: Button
+} as Meta<typeof Button>
 
 export const Filled: StoryObj<ButtonProps> = {
     args: {
-        labelText: 'Label',
-    },
-};
+        labelText: 'Label'
+    }
+}
 
 export const Outlined: StoryObj<ButtonProps> = {
     args: {
         labelText: 'Label',
-        type: 'outlined',
-    },
-};
+        type: 'outlined'
+    }
+}
 
 export const Text: StoryObj<ButtonProps> = {
     args: {
         labelText: 'Label',
-        type: 'text',
-    },
-};
+        type: 'text'
+    }
+}
 
 export const TextIcon: StoryObj<ButtonProps> = {
     args: {
         labelText: 'Label',
         icon: <EIIcon />,
-        type: 'text',
-    },
-};
+        type: 'text'
+    }
+}
 
 export const Tonal: StoryObj<ButtonProps> = {
     args: {
         labelText: 'Label',
-        type: 'tonal',
-    },
-};
+        type: 'tonal'
+    }
+}
 
 export const Elevated: StoryObj<ButtonProps> = {
     args: {
         labelText: 'Label',
-        type: 'elevated',
-    },
-};
+        type: 'elevated'
+    }
+}
 
 export const Link: StoryObj<ButtonProps> = {
     args: {
         labelText: 'Label',
-        type: 'link',
-    },
-};
+        type: 'link'
+    }
+}
 
 export const Icon: StoryObj<ButtonProps> = {
     args: {
         labelText: 'Label',
-        icon: <EIIcon />,
-    },
-};
+        icon: <EIIcon />
+    }
+}
 
 export const block: StoryObj<ButtonProps> = {
     args: {
-        block: true,
-    },
-};
+        block: true
+    }
+}

@@ -1,6 +1,6 @@
-import React, {FC, forwardRef, memo} from 'react';
-import {Animated, View} from 'react-native';
-import {Divider} from '../../Divider/Divider';
+import React, {FC, forwardRef, memo} from 'react'
+import {Animated, View} from 'react-native'
+import {Divider} from '../../Divider/Divider'
 import {
     BackAffordance,
     CloseAffordance,
@@ -11,12 +11,12 @@ import {
     HeadlineText,
     Inner,
     PrimaryButton,
-    SecondaryButton,
-} from './Sheet.styles';
-import {RenderProps, SheetBase, SheetProps} from './SheetBase';
+    SecondaryButton
+} from './Sheet.styles'
+import {RenderProps, SheetBase, SheetProps} from './SheetBase'
 
-const AnimatedContainer = Animated.createAnimatedComponent(Container);
-const AnimatedInner = Animated.createAnimatedComponent(Inner);
+const AnimatedContainer = Animated.createAnimatedComponent(Container)
+const AnimatedInner = Animated.createAnimatedComponent(Inner)
 const render = ({
     back,
     backIcon,
@@ -33,18 +33,20 @@ const render = ({
     type,
     ...innerProps
 }: RenderProps) => {
-    const {backgroundColor, innerTranslateX, width} = renderStyle;
-    const shape = sheetPosition === 'horizontalStart' ? 'largeEnd' : 'largeStart';
+    const {backgroundColor, innerTranslateX, width} = renderStyle
+    const shape =
+        sheetPosition === 'horizontalStart' ? 'largeEnd' : 'largeStart'
 
     return (
         <AnimatedContainer
             style={{
                 backgroundColor,
-                ...(type === 'standard' && {width}),
+                ...(type === 'standard' && {width})
             }}
             testID={`sideSheet--${id}`}
             sheetPosition={sheetPosition}
-            type={type}>
+            type={type}
+        >
             <AnimatedInner
                 {...innerProps}
                 shape={shape}
@@ -52,37 +54,56 @@ const render = ({
                 type={type}
                 style={{
                     ...(typeof style === 'object' && style),
-                    ...(type === 'modal' && {transform: [{translateX: innerTranslateX}]}),
+                    ...(type === 'modal' && {
+                        transform: [{translateX: innerTranslateX}]
+                    })
                 }}
                 testID={`sideSheet__inner--${id}`}
-                accessibilityRole="alert">
+                accessibilityRole='alert'
+            >
                 <Header testID={`sideSheet__header--${id}`}>
                     {back && (
-                        <BackAffordance testID={`sideSheet__backAffordance--${id}`}>
+                        <BackAffordance
+                            testID={`sideSheet__backAffordance--${id}`}
+                        >
                             {backIcon}
                         </BackAffordance>
                     )}
 
-                    <HeadlineText size="large" type="title">
+                    <HeadlineText
+                        size='large'
+                        type='title'
+                    >
                         {headlineText}
                     </HeadlineText>
 
-                    <CloseAffordance testID={`sideSheet__closeAffordance--${id}`}>
+                    <CloseAffordance
+                        testID={`sideSheet__closeAffordance--${id}`}
+                    >
                         {closeIcon}
                     </CloseAffordance>
                 </Header>
 
-                <Content testID={`sideSheet__content--${id}`}>{content}</Content>
+                <Content testID={`sideSheet__content--${id}`}>
+                    {content}
+                </Content>
 
                 {footer && (
                     <>
-                        <Divider size="large" block={true} />
+                        <Divider
+                            size='large'
+                            block={true}
+                        />
                         <Footer testID={`sideSheet__footer--${id}`}>
-                            <PrimaryButton testID={`sideSheet__primaryButton--${id}`}>
+                            <PrimaryButton
+                                testID={`sideSheet__primaryButton--${id}`}
+                            >
                                 {primaryButton}
                             </PrimaryButton>
 
-                            <SecondaryButton testID={`sideSheet__secondaryButton--${id}`}>
+                            <SecondaryButton
+                                testID={`sideSheet__secondaryButton--${id}`}
+                            >
                                 {secondaryButton}
                             </SecondaryButton>
                         </Footer>
@@ -90,12 +111,16 @@ const render = ({
                 )}
             </AnimatedInner>
         </AnimatedContainer>
-    );
-};
+    )
+}
 
 const ForwardRefSheet = forwardRef<View, SheetProps>((props, ref) => (
-    <SheetBase {...props} ref={ref} render={render} />
-));
+    <SheetBase
+        {...props}
+        ref={ref}
+        render={render}
+    />
+))
 
-export const Sheet: FC<SheetProps> = memo(ForwardRefSheet);
-export type {SheetProps};
+export const Sheet: FC<SheetProps> = memo(ForwardRefSheet)
+export type {SheetProps}

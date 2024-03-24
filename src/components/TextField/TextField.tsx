@@ -1,6 +1,6 @@
-import {FC, forwardRef, memo} from 'react';
-import {Animated, TextInput} from 'react-native';
-import {Hovered} from '../Underlay/Hovered';
+import {FC, forwardRef, memo} from 'react'
+import {Animated, TextInput} from 'react-native'
+import {Hovered} from '../Underlay/Hovered'
 import {
     ActiveIndicator,
     Container,
@@ -14,16 +14,17 @@ import {
     LabelText,
     Leading,
     SupportingText,
-    Trailing,
-} from './TextField.styles';
-import {RenderProps, TextFieldBase, TextFieldProps} from './TextFieldBase';
+    Trailing
+} from './TextField.styles'
+import {RenderProps, TextFieldBase, TextFieldProps} from './TextFieldBase'
 
-const AnimatedActiveIndicator = Animated.createAnimatedComponent(ActiveIndicator);
-const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner);
-const AnimatedLabelInner = Animated.createAnimatedComponent(LabelInner);
-const AnimatedLabelLabel = Animated.createAnimatedComponent(Label);
-const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
-const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText);
+const AnimatedActiveIndicator =
+    Animated.createAnimatedComponent(ActiveIndicator)
+const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner)
+const AnimatedLabelInner = Animated.createAnimatedComponent(LabelInner)
+const AnimatedLabelLabel = Animated.createAnimatedComponent(Label)
+const AnimatedLabelText = Animated.createAnimatedComponent(LabelText)
+const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText)
 const render = ({
     contentSize,
     error,
@@ -38,7 +39,7 @@ const render = ({
     supportingText,
     trailing,
     underlayColor,
-    onLabelLayout,
+    onLabelLayout
 }: RenderProps) => {
     const {
         activeIndicatorBackgroundColor,
@@ -49,48 +50,59 @@ const render = ({
         labelScale,
         labelTextColor,
         supportingTextColor,
-        labelTranslateY,
-    } = renderStyle;
-    const shape = 'extraSmallTop';
-    const leadingShow = !!leading;
+        labelTranslateY
+    } = renderStyle
+    const shape = 'extraSmallTop'
+    const leadingShow = !!leading
 
     return (
         <Container
             {...(error && {
                 accessibilityLabel: supportingText,
-                accessibilityRole: 'alert',
+                accessibilityRole: 'alert'
             })}
-            testID={`textfield--${id}`}>
+            testID={`textfield--${id}`}
+        >
             <Inner testID={`textfield__inner--${id}`}>
                 <Header
                     {...onEvent}
                     {...(!error && {
                         accessibilityLabel: labelText,
-                        accessibilityRole: 'keyboardkey',
+                        accessibilityRole: 'keyboardkey'
                     })}
-                    testID={`textfield__header--${id}`}>
+                    testID={`textfield__header--${id}`}
+                >
                     <AnimatedHeaderInner
                         multiline={multiline}
                         shape={shape}
                         testID={`textfield__headerInner--${id}`}
                         leadingShow={leadingShow}
                         trailingShow={!!trailing}
-                        style={{backgroundColor}}>
+                        style={{backgroundColor}}
+                    >
                         {leading && (
-                            <Leading testID={`textfield__leading--${id}`}>{leading}</Leading>
+                            <Leading testID={`textfield__leading--${id}`}>
+                                {leading}
+                            </Leading>
                         )}
 
-                        <Content multiline={multiline} testID={`textfield__content--${id}`}>
+                        <Content
+                            multiline={multiline}
+                            testID={`textfield__content--${id}`}
+                        >
                             <Control
                                 multiline={multiline}
                                 renderStyle={{height: contentSize?.height}}
-                                testID={`textField__control--${id}`}>
+                                testID={`textField__control--${id}`}
+                            >
                                 {input}
                             </Control>
                         </Content>
 
                         {trailing && (
-                            <Trailing testID={`textfield__trailing--${id}`}>{trailing}</Trailing>
+                            <Trailing testID={`textfield__trailing--${id}`}>
+                                {trailing}
+                            </Trailing>
                         )}
 
                         <AnimatedLabelLabel
@@ -98,22 +110,25 @@ const render = ({
                             testID={`textField__label--${id}`}
                             onLayout={onLabelLayout}
                             style={{
-                                transform: [{translateY: labelTranslateY}],
-                            }}>
+                                transform: [{translateY: labelTranslateY}]
+                            }}
+                        >
                             <AnimatedLabelInner
                                 testID={`textField__labelInner--${id}`}
                                 style={{
                                     transform: [
                                         {scale: labelScale},
                                         {translateX: labelInnerTranslateX},
-                                        {translateY: labelInnerTranslateY},
-                                    ],
-                                }}>
+                                        {translateY: labelInnerTranslateY}
+                                    ]
+                                }}
+                            >
                                 <AnimatedLabelText
                                     testID={`textField__labelText--${id}`}
-                                    type="body"
-                                    size="large"
-                                    style={{color: labelTextColor}}>
+                                    type='body'
+                                    size='large'
+                                    style={{color: labelTextColor}}
+                                >
                                     {labelText}
                                 </AnimatedLabelText>
                             </AnimatedLabelInner>
@@ -123,7 +138,7 @@ const render = ({
                             testID={`textfield__activeIndicator--${id}`}
                             style={{
                                 backgroundColor: activeIndicatorBackgroundColor,
-                                transform: [{scaleY: activeIndicatorScaleY}],
+                                transform: [{scaleY: activeIndicatorScaleY}]
                             }}
                         />
 
@@ -136,19 +151,26 @@ const render = ({
                 </Header>
 
                 <AnimatedSupportingText
-                    type="body"
-                    size="small"
-                    style={{color: supportingTextColor}}>
+                    type='body'
+                    size='small'
+                    style={{color: supportingTextColor}}
+                >
                     {supportingText}
                 </AnimatedSupportingText>
             </Inner>
         </Container>
-    );
-};
+    )
+}
 
-const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>((props, ref) => (
-    <TextFieldBase {...props} ref={ref} render={render} />
-));
+const ForwardRefTextField = forwardRef<TextInput, TextFieldProps>(
+    (props, ref) => (
+        <TextFieldBase
+            {...props}
+            ref={ref}
+            render={render}
+        />
+    )
+)
 
-export const TextField: FC<TextFieldProps> = memo(ForwardRefTextField);
-export type {TextFieldProps};
+export const TextField: FC<TextFieldProps> = memo(ForwardRefTextField)
+export type {TextFieldProps}

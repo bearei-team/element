@@ -1,19 +1,22 @@
-import {Pressable} from 'react-native';
-import styled, {css} from 'styled-components/native';
-import {Shape, Typography} from '../../Common/Common.styles';
-import {RenderProps} from './SupportingBase';
+import {Pressable} from 'react-native'
+import styled, {css} from 'styled-components/native'
+import {Shape, Typography} from '../../Common/Common.styles'
+import {RenderProps} from './SupportingBase'
 
 interface ContainerProps
-    extends Pick<RenderProps, 'type' | 'supportingPosition' | 'visible' | 'renderStyle'> {
-    containerHeight?: number;
-    containerPageX?: number;
-    containerPageY?: number;
-    containerWidth?: number;
-    layoutHeight?: number;
-    layoutWidth?: number;
+    extends Pick<
+        RenderProps,
+        'type' | 'supportingPosition' | 'visible' | 'renderStyle'
+    > {
+    containerHeight?: number
+    containerPageX?: number
+    containerPageY?: number
+    containerWidth?: number
+    layoutHeight?: number
+    layoutWidth?: number
 }
 
-type InnerProps = Pick<RenderProps, 'type' | 'supportingPosition'>;
+type InnerProps = Pick<RenderProps, 'type' | 'supportingPosition'>
 
 export const Container = styled(Shape)<ContainerProps>`
     overflow: hidden;
@@ -21,12 +24,12 @@ export const Container = styled(Shape)<ContainerProps>`
     z-index: 16384;
 
     ${({renderStyle}) => {
-        const {width = 0, height = 0} = renderStyle;
+        const {width = 0, height = 0} = renderStyle
 
         return css`
             height: ${height}px;
             width: ${width}px;
-        `;
+        `
     }}
 
     ${({
@@ -37,12 +40,14 @@ export const Container = styled(Shape)<ContainerProps>`
         layoutHeight = 0,
         layoutWidth = 0,
         supportingPosition: position = 'verticalStart',
-        theme,
+        theme
     }) => {
         const supportingPosition = {
             verticalStart: css`
                 left: ${containerPageX + containerWidth / 2}px;
-                top: ${containerPageY - layoutHeight - theme.adaptSize(theme.spacing.extraSmall)}px;
+                top: ${containerPageY -
+                layoutHeight -
+                theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
             verticalEnd: css`
                 left: ${containerPageX + containerWidth / 2}px;
@@ -51,7 +56,9 @@ export const Container = styled(Shape)<ContainerProps>`
                 theme.adaptSize(theme.spacing.extraSmall)}px;
             `,
             horizontalStart: css`
-                left: ${containerPageX - layoutWidth - theme.adaptSize(theme.spacing.extraSmall)}px;
+                left: ${containerPageX -
+                layoutWidth -
+                theme.adaptSize(theme.spacing.extraSmall)}px;
                 top: ${containerPageY + containerHeight / 2}px;
             `,
             horizontalEnd: css`
@@ -60,10 +67,10 @@ export const Container = styled(Shape)<ContainerProps>`
                 theme.adaptSize(theme.spacing.extraSmall)}px;
 
                 top: ${containerPageY + containerHeight / 2}px;
-            `,
-        };
+            `
+        }
 
-        return supportingPosition[position];
+        return supportingPosition[position]
     }}
 
     ${({visible = false}) =>
@@ -72,7 +79,7 @@ export const Container = styled(Shape)<ContainerProps>`
             z-index: -16384;
             pointer-events: none;
         `}
-`;
+`
 
 export const Inner = styled(Pressable)<InnerProps>`
     position: absolute;
@@ -90,12 +97,12 @@ export const Inner = styled(Pressable)<InnerProps>`
                 padding: ${theme.adaptSize(theme.spacing.extraSmall)}px
                     ${theme.adaptSize(theme.spacing.small)}px;
             `,
-            rich: css``,
-        };
+            rich: css``
+        }
 
-        return supportingType[type];
+        return supportingType[type]
     }}
-`;
+`
 
 export const SupportingText = styled(Typography)`
     text-align: center;
@@ -104,4 +111,4 @@ export const SupportingText = styled(Typography)`
     ${({theme}) => css`
         color: ${theme.palette.inverse.inverseOnSurface};
     `}
-`;
+`

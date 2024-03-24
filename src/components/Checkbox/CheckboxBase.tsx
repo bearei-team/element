@@ -1,118 +1,131 @@
-import {forwardRef, useCallback, useEffect, useId} from 'react';
-import {View} from 'react-native';
-import {useTheme} from 'styled-components/native';
-import {Updater, useImmer} from 'use-immer';
-import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
-import {ComponentStatus, EventName, State} from '../Common/interface';
-import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
-import {useIcon} from './useIcon';
+import {forwardRef, useCallback, useEffect, useId} from 'react'
+import {View} from 'react-native'
+import {useTheme} from 'styled-components/native'
+import {Updater, useImmer} from 'use-immer'
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent'
+import {ComponentStatus, EventName, State} from '../Common/interface'
+import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple'
+import {useIcon} from './useIcon'
 
-type CheckboxType = 'selected' | 'indeterminate' | 'unselected';
+type CheckboxType = 'selected' | 'indeterminate' | 'unselected'
 export interface CheckboxProps extends TouchableRippleProps {
-    active?: boolean;
-    defaultActive?: boolean;
-    disabled?: boolean;
-    error?: boolean;
-    indeterminate?: boolean;
-    onActive?: (value?: boolean) => void;
-    type?: CheckboxType;
+    active?: boolean
+    defaultActive?: boolean
+    disabled?: boolean
+    error?: boolean
+    indeterminate?: boolean
+    onActive?: (value?: boolean) => void
+    type?: CheckboxType
 }
 
 export interface RenderProps extends CheckboxProps {
-    eventName: EventName;
-    icon: React.JSX.Element;
-    onEvent: OnEvent;
+    eventName: EventName
+    icon: React.JSX.Element
+    onEvent: OnEvent
 }
 
 interface CheckboxBaseProps extends CheckboxProps {
-    render: (props: RenderProps) => React.JSX.Element;
+    render: (props: RenderProps) => React.JSX.Element
 }
 
 interface InitialState {
-    active?: boolean;
-    eventName: EventName;
-    status: ComponentStatus;
-    type?: CheckboxType;
+    active?: boolean
+    eventName: EventName
+    status: ComponentStatus
+    type?: CheckboxType
 }
 
 interface ProcessEventOptions {
-    setState: Updater<InitialState>;
+    setState: Updater<InitialState>
 }
 
-type ProcessActiveOptions = Pick<RenderProps, 'active' | 'indeterminate' | 'onActive'> &
-    ProcessEventOptions;
+type ProcessActiveOptions = Pick<
+    RenderProps,
+    'active' | 'indeterminate' | 'onActive'
+> &
+    ProcessEventOptions
 
-type ProcessStateChangeOptions = OnStateChangeOptions & ProcessActiveOptions;
-type ProcessInitOptions = Pick<RenderProps, 'indeterminate'> & ProcessEventOptions;
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessActiveOptions
+type ProcessInitOptions = Pick<RenderProps, 'indeterminate'> &
+    ProcessEventOptions
 
-const processActive = ({setState, active, indeterminate, onActive}: ProcessActiveOptions) => {
+const processActive = ({
+    setState,
+    active,
+    indeterminate,
+    onActive
+}: ProcessActiveOptions) => {
     if (typeof active !== 'boolean') {
-        return;
+        return
     }
 
     setState(draft => {
         if (draft.active === active) {
-            return;
+            return
         }
 
-        const activeType = indeterminate ? 'indeterminate' : 'selected';
+        const activeType = indeterminate ? 'indeterminate' : 'selected'
 
-        draft.active = active;
-        draft.type = active ? activeType : 'unselected';
-    });
+        draft.active = active
+        draft.type = active ? activeType : 'unselected'
+    })
 
-    onActive?.(active);
-};
+    onActive?.(active)
+}
 
 const processStateChange = ({
     active,
     eventName,
     indeterminate,
     onActive,
-    setState,
+    setState
 }: ProcessStateChangeOptions) => {
     if (eventName === 'layout') {
-        return;
+        return
     }
 
     const nextEvent = {
-        pressOut: () => processActive({setState, onActive, active: !active, indeterminate}),
-    } as Record<EventName, () => void>;
+        pressOut: () =>
+            processActive({setState, onActive, active: !active, indeterminate})
+    } as Record<EventName, () => void>
 
-    nextEvent[eventName]?.();
+    nextEvent[eventName]?.()
 
     setState(draft => {
-        draft.eventName = eventName;
-    });
-};
+        draft.eventName = eventName
+    })
+}
 
 const processInit = ({indeterminate, setState}: ProcessInitOptions) =>
     setState(draft => {
         if (draft.status !== 'idle') {
-            return;
+            return
         }
 
         if (typeof draft.active === 'boolean') {
-            const defaultType = draft.active ? 'selected' : 'unselected';
+            const defaultType = draft.active ? 'selected' : 'unselected'
 
-            draft.type = indeterminate ? 'indeterminate' : defaultType;
+            draft.type = indeterminate ? 'indeterminate' : defaultType
         }
 
-        draft.status = 'succeeded';
-    });
+        draft.status = 'succeeded'
+    })
 
-const processIndeterminate = ({setState}: ProcessEventOptions, indeterminate?: boolean) =>
+const processIndeterminate = (
+    {setState}: ProcessEventOptions,
+    indeterminate?: boolean
+) =>
     typeof indeterminate === 'boolean' &&
     setState(draft => {
         if (indeterminate) {
-            draft.active = indeterminate;
-            draft.type = 'indeterminate';
+            draft.active = indeterminate
+            draft.type = 'indeterminate'
 
-            return;
+            return
         }
 
-        draft.type = draft.active ? 'selected' : 'unselected';
-    });
+        draft.type = draft.active ? 'selected' : 'unselected'
+    })
 
 export const CheckboxBase = forwardRef<View, CheckboxBaseProps>(
     (
@@ -126,45 +139,53 @@ export const CheckboxBase = forwardRef<View, CheckboxBaseProps>(
             render,
             ...renderProps
         },
-        ref,
+        ref
     ) => {
-        const [{active, eventName, status, type}, setState] = useImmer<InitialState>({
-            active: undefined,
-            eventName: 'none',
-            status: 'idle',
-            type: 'unselected',
-        });
+        const [{active, eventName, status, type}, setState] =
+            useImmer<InitialState>({
+                active: undefined,
+                eventName: 'none',
+                status: 'idle',
+                type: 'unselected'
+            })
 
-        const id = useId();
-        const theme = useTheme();
+        const id = useId()
+        const theme = useTheme()
         const checkUnderlayColor =
-            type === 'unselected'
-                ? theme.palette.surface.onSurfaceVariant
-                : theme.palette.primary.primary;
+            type === 'unselected' ?
+                theme.palette.surface.onSurfaceVariant
+            :   theme.palette.primary.primary
 
-        const underlayColor = error ? theme.palette.error.error : checkUnderlayColor;
-        const [icon] = useIcon({disabled, error, eventName, type});
+        const underlayColor =
+            error ? theme.palette.error.error : checkUnderlayColor
+        const [icon] = useIcon({disabled, error, eventName, type})
         const onStateChange = useCallback(
             (_state: State, options = {} as OnStateChangeOptions) =>
-                processStateChange({...options, active, indeterminate, onActive, setState}),
-            [active, indeterminate, onActive, setState],
-        );
+                processStateChange({
+                    ...options,
+                    active,
+                    indeterminate,
+                    onActive,
+                    setState
+                }),
+            [active, indeterminate, onActive, setState]
+        )
 
-        const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
+        const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange})
 
         useEffect(() => {
-            processInit({indeterminate, setState});
-            processIndeterminate({setState}, indeterminate);
+            processInit({indeterminate, setState})
+            processIndeterminate({setState}, indeterminate)
             processActive({
                 active: activeSource ?? defaultActive,
                 indeterminate,
                 setState,
-                onActive,
-            });
-        }, [activeSource, defaultActive, indeterminate, onActive, setState]);
+                onActive
+            })
+        }, [activeSource, defaultActive, indeterminate, onActive, setState])
 
         if (status === 'idle') {
-            return <></>;
+            return <></>
         }
 
         return render({
@@ -175,7 +196,7 @@ export const CheckboxBase = forwardRef<View, CheckboxBaseProps>(
             id,
             onEvent,
             ref,
-            underlayColor,
-        });
-    },
-);
+            underlayColor
+        })
+    }
+)

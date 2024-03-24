@@ -1,11 +1,11 @@
-import {View} from 'react-native';
-import styled, {css} from 'styled-components/native';
-import {Typography, TypographyProps} from '../../Common/Common.styles';
-import {RenderProps} from './NavigationBarItemBase';
+import {View} from 'react-native'
+import styled, {css} from 'styled-components/native'
+import {Typography, TypographyProps} from '../../Common/Common.styles'
+import {RenderProps} from './NavigationBarItemBase'
 
-type ContainerProps = Pick<RenderProps, 'active'>;
-type LabelTextProps = Pick<RenderProps, 'active'> & TypographyProps;
-type HeaderProps = Pick<RenderProps, 'type'>;
+type ContainerProps = Pick<RenderProps, 'active'>
+type LabelTextProps = Pick<RenderProps, 'active'> & TypographyProps
+type HeaderProps = Pick<RenderProps, 'type'>
 
 export const Container = styled(View)<ContainerProps>`
     align-items: center;
@@ -25,7 +25,7 @@ export const Container = styled(View)<ContainerProps>`
         css`
             gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
         `}
-`;
+`
 
 export const Header = styled.View<HeaderProps>`
     align-items: center;
@@ -46,7 +46,7 @@ export const Header = styled.View<HeaderProps>`
         css`
             height: ${theme.adaptSize(theme.spacing.small * 8)}px;
         `};
-`;
+`
 
 export const Icon = styled.View`
     overflow: hidden;
@@ -55,7 +55,7 @@ export const Icon = styled.View`
         height: ${theme.adaptSize(theme.spacing.large)}px;
         width: ${theme.adaptSize(theme.spacing.large)}px;
     `}
-`;
+`
 
 export const LabelText = styled(Typography)<LabelTextProps>`
     overflow: hidden;
@@ -63,6 +63,8 @@ export const LabelText = styled(Typography)<LabelTextProps>`
     user-select: none;
 
     ${({theme, active}) => css`
-        font-weight: ${active ? theme.font.weight.bold : theme.font.weight.medium};
+        font-weight: ${active ?
+            theme.font.weight.bold
+        :   theme.font.weight.medium};
     `}
-`;
+`

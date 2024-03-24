@@ -1,8 +1,8 @@
-import {View} from 'react-native';
-import styled, {css} from 'styled-components/native';
-import {RenderProps} from './IconButtonBase';
+import {View} from 'react-native'
+import styled, {css} from 'styled-components/native'
+import {RenderProps} from './IconButtonBase'
 
-type ContentProps = Pick<RenderProps, 'renderStyle'>;
+type ContentProps = Pick<RenderProps, 'renderStyle'>
 
 export const Container = styled(View)<ContentProps>`
     align-items: center;
@@ -13,14 +13,14 @@ export const Container = styled(View)<ContentProps>`
     position: relative;
 
     ${({renderStyle = {}, theme}) => {
-        const {height, width} = renderStyle;
+        const {height, width} = renderStyle
 
         return css`
             height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
             width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
-        `;
+        `
     }};
-`;
+`
 
 export const Content = styled.View<ContentProps>`
     align-items: center;
@@ -32,11 +32,11 @@ export const Content = styled.View<ContentProps>`
     z-index: 1;
 
     ${({renderStyle = {}, theme}) => {
-        const {height, width} = renderStyle;
+        const {height, width} = renderStyle
 
         return css`
             height: ${height ?? theme.adaptSize(theme.spacing.small * 5)}px;
             width: ${width ?? theme.adaptSize(theme.spacing.small * 5)}px;
-        `;
+        `
     }};
-`;
+`

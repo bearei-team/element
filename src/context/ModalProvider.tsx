@@ -1,59 +1,62 @@
-import mitt from 'mitt';
-import React, {FC} from 'react';
-import {Updater, useImmer} from 'use-immer';
+import mitt from 'mitt'
+import React, {FC} from 'react'
+import {Updater, useImmer} from 'use-immer'
 
 interface Modal {
-    element?: React.JSX.Element;
-    id: string;
+    element?: React.JSX.Element
+    id: string
 }
 
 type EmitterEvent = {
-    modal: Modal;
-};
+    modal: Modal
+}
 
 interface InitialState {
-    modals: Modal[];
+    modals: Modal[]
 }
 
 interface ProcessModalEventOptions {
-    setState: Updater<InitialState>;
+    setState: Updater<InitialState>
 }
 
 interface ItemProps {
-    element?: React.JSX.Element;
+    element?: React.JSX.Element
 }
 
 const processModal = (modal: Modal, {setState}: ProcessModalEventOptions) => {
-    const {id, element} = modal;
+    const {id, element} = modal
 
     setState(draft => {
-        const exist = draft.modals.find(item => item.id === id);
+        const exist = draft.modals.find(item => item.id === id)
 
         if (exist) {
             draft.modals = draft.modals
                 .map(item => (item.id === id ? {...item, element} : item))
-                .filter(item => item.element);
+                .filter(item => item.element)
 
-            return;
+            return
         }
 
-        draft.modals = [...draft.modals, modal];
-    });
-};
+        draft.modals = [...draft.modals, modal]
+    })
+}
 
-const Item: FC<ItemProps> = ({element}) => <>{element}</>;
+const Item: FC<ItemProps> = ({element}) => <>{element}</>
 
-export const emitter = mitt<EmitterEvent>();
+export const emitter = mitt<EmitterEvent>()
 export const ModalProvider: FC<unknown> = () => {
-    const [{modals}, setState] = useImmer<InitialState>({modals: []});
+    const [{modals}, setState] = useImmer<InitialState>({modals: []})
 
-    emitter.on('modal', modal => processModal(modal, {setState}));
+    emitter.on('modal', modal => processModal(modal, {setState}))
 
     return (
         <>
             {modals.map(({element, id}) => (
-                <Item key={id} element={element} />
+                <Item
+                    element={element}
+                    key={id}
+                />
             ))}
         </>
-    );
-};
+    )
+}

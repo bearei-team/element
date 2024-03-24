@@ -1,14 +1,14 @@
 export const omit = <T extends Record<string, unknown>, K extends keyof T>(
     object: T,
-    keys: K[],
+    keys: K[]
 ) => {
-    const result = {...object};
+    const result = {...object}
 
     keys.forEach(key => {
         if (key in result) {
-            delete result[key];
+            delete result[key]
         }
-    });
+    })
 
-    return result;
-};
+    return result
+}

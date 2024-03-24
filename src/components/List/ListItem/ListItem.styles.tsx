@@ -1,23 +1,23 @@
-import styled, {css} from 'styled-components/native';
-import {Shape, Typography} from '../../Common/Common.styles';
-import {RenderProps} from './ListItemBase';
+import styled, {css} from 'styled-components/native'
+import {Shape, Typography} from '../../Common/Common.styles'
+import {RenderProps} from './ListItemBase'
 
-type ContainerProps = Pick<RenderProps, 'itemGap'>;
+type ContainerProps = Pick<RenderProps, 'itemGap'>
 type ContentProps = {
-    supportingTextShow?: boolean;
-} & Pick<RenderProps, 'size'>;
+    supportingTextShow?: boolean
+} & Pick<RenderProps, 'size'>
 
-type InnerProps = Pick<RenderProps, 'size'>;
-type LeadingProps = Pick<RenderProps, 'size'>;
+type InnerProps = Pick<RenderProps, 'size'>
+type LeadingProps = Pick<RenderProps, 'size'>
 
-export const Container = styled.View``;
+export const Container = styled.View``
 export const Inner = styled(Shape)<ContainerProps>`
     position: relative;
 
     ${({itemGap = 0}) => css`
         margin-bottom: ${itemGap}px;
     `};
-`;
+`
 
 export const Main = styled.View`
     position: absolute;
@@ -29,7 +29,7 @@ export const Main = styled.View`
         right: ${theme.adaptSize(theme.spacing.none)}px;
         top: ${theme.adaptSize(theme.spacing.none)}px;
     `};
-`;
+`
 
 export const MainInner = styled.View<InnerProps>`
     align-items: flex-start;
@@ -63,12 +63,12 @@ export const MainInner = styled.View<InnerProps>`
                     ${theme.adaptSize(theme.spacing.medium)}px;
 
                 min-height: ${theme.adaptSize(theme.spacing.small * 9)}px;
-            `,
-        };
+            `
+        }
 
-        return contentSize[size];
+        return contentSize[size]
     }}
-`;
+`
 
 export const Leading = styled.View<LeadingProps>`
     align-items: center;
@@ -89,12 +89,12 @@ export const Leading = styled.View<LeadingProps>`
             large: css`
                 min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
                 min-width: ${theme.adaptSize(theme.spacing.small * 7)}px;
-            `,
-        };
+            `
+        }
 
-        return contentSize[size];
+        return contentSize[size]
     }}
-`;
+`
 
 export const Content = styled.View<ContentProps>`
     display: flex;
@@ -115,12 +115,12 @@ export const Content = styled.View<ContentProps>`
                 supportingTextShow &&
                 css`
                     min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
-                `,
-        };
+                `
+        }
 
-        return contentSize[size];
+        return contentSize[size]
     }}
-`;
+`
 
 export const Trailing = styled(Leading)`
     ${({theme, size = 'medium'}) => {
@@ -136,25 +136,25 @@ export const Trailing = styled(Leading)`
             large: css`
                 min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
                 min-width: ${theme.adaptSize(theme.spacing.small * 7)}px;
-            `,
-        };
+            `
+        }
 
-        return contentSize[size];
+        return contentSize[size]
     }}
-`;
+`
 
 export const Headline = styled(Typography)`
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurface};
     `}
-`;
+`
 
 export const SupportingText = styled(Typography)`
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurfaceVariant};
         height: auto;
     `}
-`;
+`
 
 export const AddonAfter = styled.View`
     position: absolute;
@@ -165,4 +165,4 @@ export const AddonAfter = styled.View`
         top: ${theme.adaptSize(theme.spacing.none)}px;
         bottom: ${theme.adaptSize(theme.spacing.none)}px;
     `};
-`;
+`

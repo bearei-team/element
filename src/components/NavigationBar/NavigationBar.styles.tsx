@@ -1,10 +1,10 @@
-import styled, {css} from 'styled-components/native';
-import {Shape, ShapeProps} from '../Common/Common.styles';
-import {RenderProps} from './NavigationBarBase';
+import styled, {css} from 'styled-components/native'
+import {Shape, ShapeProps} from '../Common/Common.styles'
+import {RenderProps} from './NavigationBarBase'
 
-type ContainerProps = Pick<RenderProps, 'block'> & ShapeProps;
+type ContainerProps = Pick<RenderProps, 'block'> & ShapeProps
 
-type DestinationProps = Pick<ContainerProps, 'block'>;
+type DestinationProps = Pick<ContainerProps, 'block'>
 
 export const Container = styled(Shape)<ContainerProps>`
     align-items: center;
@@ -21,7 +21,7 @@ export const Container = styled(Shape)<ContainerProps>`
         css`
             width: 100%;
         `}
-`;
+`
 
 export const Destination = styled.View<DestinationProps>`
     align-items: center;
@@ -31,7 +31,8 @@ export const Destination = styled.View<DestinationProps>`
 
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.small)}px;
-        padding: ${theme.spacing.none}px ${theme.adaptSize(theme.spacing.small)}px;
+        padding: ${theme.spacing.none}px
+            ${theme.adaptSize(theme.spacing.small)}px;
     `}
 
     ${({block}) =>
@@ -39,4 +40,4 @@ export const Destination = styled.View<DestinationProps>`
         css`
             flex: 1;
         `}
-`;
+`

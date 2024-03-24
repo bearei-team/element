@@ -1,14 +1,15 @@
-import {FC, forwardRef, memo} from 'react';
-import {View} from 'react-native';
-import Animated from 'react-native-reanimated';
-import {Elevation} from '../Elevation/Elevation';
-import {TouchableRipple} from '../TouchableRipple/TouchableRipple';
-import {Underlay} from '../Underlay/Underlay';
-import {Container, Content, Icon, LabelText} from './FAB.styles';
-import {FABBase, FABProps, RenderProps} from './FABBase';
+import {FC, forwardRef, memo} from 'react'
+import {View} from 'react-native'
+import Animated from 'react-native-reanimated'
+import {Elevation} from '../Elevation/Elevation'
+import {TouchableRipple} from '../TouchableRipple/TouchableRipple'
+import {Underlay} from '../Underlay/Underlay'
+import {Container, Content, Icon, LabelText} from './FAB.styles'
+import {FABBase, FABProps, RenderProps} from './FABBase'
 
-const AnimatedLabelText = Animated.createAnimatedComponent(LabelText);
-const AnimatedTouchableRipple = Animated.createAnimatedComponent(TouchableRipple);
+const AnimatedLabelText = Animated.createAnimatedComponent(LabelText)
+const AnimatedTouchableRipple =
+    Animated.createAnimatedComponent(TouchableRipple)
 const render = ({
     accessibilityLabel,
     elevation,
@@ -23,8 +24,8 @@ const render = ({
     underlayColor,
     ...contentProps
 }: RenderProps) => {
-    const {contentAnimatedStyle, labelTextAnimatedStyle} = renderStyle;
-    const shape = 'medium';
+    const {contentAnimatedStyle, labelTextAnimatedStyle} = renderStyle
+    const shape = 'medium'
 
     return (
         <Container testID={`fab--${id}`}>
@@ -32,38 +33,51 @@ const render = ({
                 {...onEvent}
                 shape={shape}
                 underlayColor={underlayColor}
-                style={[style, contentAnimatedStyle]}>
+                style={[style, contentAnimatedStyle]}
+            >
                 <Content
                     {...contentProps}
                     accessibilityLabel={labelText ?? accessibilityLabel}
-                    accessibilityRole="button"
+                    accessibilityRole='button'
                     labelTextShow={!!labelText}
                     testID={`fab__content--${id}`}
-                    type={type}>
+                    type={type}
+                >
                     {icon && <Icon testID={`fab__icon--${id}`}>{icon}</Icon>}
 
                     {labelText && (
                         <AnimatedLabelText
-                            size="large"
+                            size='large'
                             style={[labelTextAnimatedStyle]}
                             testID={`fab__labelText--${id}`}
-                            type="label">
+                            type='label'
+                        >
                             {labelText}
                         </AnimatedLabelText>
                     )}
 
-                    <Underlay eventName={eventName} underlayColor={underlayColor} />
+                    <Underlay
+                        eventName={eventName}
+                        underlayColor={underlayColor}
+                    />
                 </Content>
             </AnimatedTouchableRipple>
 
-            <Elevation level={elevation} shape={shape} />
+            <Elevation
+                level={elevation}
+                shape={shape}
+            />
         </Container>
-    );
-};
+    )
+}
 
 const ForwardRefFAB = forwardRef<View, FABProps>((props, ref) => (
-    <FABBase {...props} ref={ref} render={render} />
-));
+    <FABBase
+        {...props}
+        ref={ref}
+        render={render}
+    />
+))
 
-export const FAB: FC<FABProps> = memo(ForwardRefFAB);
-export type {FABProps};
+export const FAB: FC<FABProps> = memo(ForwardRefFAB)
+export type {FABProps}

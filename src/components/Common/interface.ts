@@ -1,9 +1,11 @@
-import {Animated} from 'react-native';
+import {Animated} from 'react-native'
 
-export type AnimatedInterpolation = Animated.AnimatedInterpolation<string | number>;
-export type BorderStyle = 'dotted' | 'solid' | 'dashed';
-export type Layout = 'horizontal' | 'vertical';
-export type Size = 'large' | 'medium' | 'small';
+export type AnimatedInterpolation = Animated.AnimatedInterpolation<
+    string | number
+>
+export type BorderStyle = 'dotted' | 'solid' | 'dashed'
+export type Layout = 'horizontal' | 'vertical'
+export type Size = 'large' | 'medium' | 'small'
 export type State =
     | 'enabled'
     | 'focused'
@@ -11,7 +13,7 @@ export type State =
     | 'longPressIn'
     | 'pressIn'
     | 'error'
-    | 'disabled';
+    | 'disabled'
 
 export type EventName =
     | 'none'
@@ -23,6 +25,6 @@ export type EventName =
     | 'hoverOut'
     | 'focus'
     | 'blur'
-    | 'layout';
+    | 'layout'
 
-export type ComponentStatus = 'idle' | 'loading' | 'failed' | 'succeeded';
+export type ComponentStatus = 'idle' | 'loading' | 'failed' | 'succeeded'

@@ -1,5 +1,5 @@
-import {CreateTransitionOptions, Theme} from '@bearei/theme';
-import {useCallback} from 'react';
+import {CreateTransitionOptions, Theme} from '@bearei/theme'
+import {useCallback} from 'react'
 import {
     AnimatableValue,
     AnimationCallback,
@@ -7,48 +7,59 @@ import {
     SharedValue,
     WithTimingConfig,
     cancelAnimation,
-    withTiming,
-} from 'react-native-reanimated';
+    withTiming
+} from 'react-native-reanimated'
 
 export interface AnimatedTimingOptions
-    extends Partial<CreateTransitionOptions & Omit<WithTimingConfig, 'duration' | 'easing'>> {
-    toValue: number;
+    extends Partial<
+        CreateTransitionOptions & Omit<WithTimingConfig, 'duration' | 'easing'>
+    > {
+    toValue: number
 }
 
-export interface AnimatedTiming {
-    (
-        sharedValue: SharedValue<AnimatableValue>,
-        options: AnimatedTimingOptions,
-        callback?: AnimationCallback,
-    ): void;
-}
+export type AnimatedTiming = (
+    sharedValue: SharedValue<AnimatableValue>,
+    options: AnimatedTimingOptions,
+    callback?: AnimationCallback
+) => void
 
 export const useAnimatedTiming = (theme: Theme) => {
     const animatedTiming = useCallback(
         (
             sharedValue: SharedValue<AnimatableValue>,
-            {duration = 'medium1', easing = 'standard', toValue, ...config}: AnimatedTimingOptions,
-            callback?: AnimationCallback,
+            {
+                duration = 'medium1',
+                easing = 'standard',
+                toValue,
+                ...config
+            }: AnimatedTimingOptions,
+            callback?: AnimationCallback
         ) => {
-            cancelAnimation(sharedValue);
+            cancelAnimation(sharedValue)
 
-            const {bezier, duration: transitionDuration} = theme.createTransition({
-                duration,
-                easing,
-            });
+            const {bezier, duration: transitionDuration} =
+                theme.createTransition({
+                    duration,
+                    easing
+                })
 
             sharedValue.value = withTiming(
                 toValue,
                 {
                     duration: transitionDuration,
-                    easing: Easing.bezier(bezier.x0, bezier.y0, bezier.x1, bezier.y1),
-                    ...config,
+                    easing: Easing.bezier(
+                        bezier.x0,
+                        bezier.y0,
+                        bezier.x1,
+                        bezier.y1
+                    ),
+                    ...config
                 },
-                callback,
-            );
+                callback
+            )
         },
-        [theme],
-    );
+        [theme]
+    )
 
-    return [animatedTiming];
-};
+    return [animatedTiming]
+}

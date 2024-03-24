@@ -1,11 +1,11 @@
-import styled, {css} from 'styled-components/native';
-import {PlatformView, Typography} from '../Common/Common.styles';
-import {RenderProps} from './ChipBase';
+import styled, {css} from 'styled-components/native'
+import {PlatformView, Typography} from '../Common/Common.styles'
+import {RenderProps} from './ChipBase'
 
-type ContainerProps = Pick<RenderProps, 'block'>;
+type ContainerProps = Pick<RenderProps, 'block'>
 interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
-    iconShow: boolean;
-    trailingIconShow: boolean;
+    iconShow: boolean
+    trailingIconShow: boolean
 }
 
 export const Container = styled(PlatformView)<ContainerProps>`
@@ -16,7 +16,7 @@ export const Container = styled(PlatformView)<ContainerProps>`
         css`
             width: 100%;
         `}
-`;
+`
 
 export const Content = styled.View<ContentProps>`
     align-items: center;
@@ -42,7 +42,9 @@ export const Content = styled.View<ContentProps>`
             input: css`
                 min-width: ${theme.adaptSize(theme.spacing.small * 8 + 3)}px;
                 padding: ${theme.adaptSize(theme.spacing.extraSmall + 2)}px
-                    ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px;
+                    ${theme.adaptSize(
+                        theme.spacing.medium - theme.spacing.extraSmall
+                    )}px;
             `,
             assist: css`
                 min-width: ${theme.adaptSize(theme.spacing.small * 8 + 3)}px;
@@ -58,10 +60,10 @@ export const Content = styled.View<ContentProps>`
                 min-width: ${theme.adaptSize(theme.spacing.small * 8 + 3)}px;
                 padding: ${theme.adaptSize(theme.spacing.extraSmall + 2)}px
                     ${theme.adaptSize(theme.spacing.medium)}px;
-            `,
-        };
+            `
+        }
 
-        return contentType[type];
+        return contentType[type]
     }}
 
     ${({iconShow, theme}) =>
@@ -75,12 +77,12 @@ export const Content = styled.View<ContentProps>`
         css`
             padding-right: ${theme.adaptSize(theme.spacing.small)}px;
         `}
-`;
+`
 
 export const LabelText = styled(Typography)`
     text-align: center;
     user-select: none;
-`;
+`
 
 export const Icon = styled.View`
     overflow: hidden;
@@ -89,4 +91,4 @@ export const Icon = styled.View`
         height: ${theme.adaptSize(theme.spacing.large - 4)}px;
         width: ${theme.adaptSize(theme.spacing.large - 4)}px;
     `}
-`;
+`

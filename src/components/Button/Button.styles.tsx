@@ -1,10 +1,10 @@
-import styled, {css} from 'styled-components/native';
-import {PlatformView, Typography} from '../Common/Common.styles';
-import {RenderProps} from './ButtonBase';
+import styled, {css} from 'styled-components/native'
+import {PlatformView, Typography} from '../Common/Common.styles'
+import {RenderProps} from './ButtonBase'
 
-type ContainerProps = Pick<RenderProps, 'block'>;
+type ContainerProps = Pick<RenderProps, 'block'>
 interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
-    iconShow: boolean;
+    iconShow: boolean
 }
 
 export const Container = styled(PlatformView)<ContainerProps>`
@@ -15,7 +15,7 @@ export const Container = styled(PlatformView)<ContainerProps>`
         css`
             width: 100%;
         `}
-`;
+`
 
 export const Content = styled.View<ContentProps>`
     align-items: center;
@@ -60,7 +60,9 @@ export const Content = styled.View<ContentProps>`
             text: css`
                 min-width: ${theme.adaptSize(theme.spacing.small * 7 + 3)}px;
                 padding: ${theme.adaptSize(theme.spacing.small + 2)}px
-                    ${theme.adaptSize(theme.spacing.medium - theme.spacing.extraSmall)}px;
+                    ${theme.adaptSize(
+                        theme.spacing.medium - theme.spacing.extraSmall
+                    )}px;
             `,
             link: css`
                 height: ${theme.adaptSize(theme.spacing.medium)}px;
@@ -69,10 +71,10 @@ export const Content = styled.View<ContentProps>`
                 min-width: ${theme.adaptSize(theme.spacing.small * 10 + 3)}px;
                 padding: ${theme.adaptSize(theme.spacing.small + 2)}px
                     ${theme.adaptSize(theme.spacing.large)}px;
-            `,
-        };
+            `
+        }
 
-        return contentType[type];
+        return contentType[type]
     }}
 
     ${({iconShow, theme, type = 'filled'}) => {
@@ -93,17 +95,17 @@ export const Content = styled.View<ContentProps>`
             link: css``,
             tonal: css`
                 padding-left: ${theme.adaptSize(theme.spacing.medium)}px;
-            `,
-        };
+            `
+        }
 
-        return iconShow && contentType[type];
+        return iconShow && contentType[type]
     }}
-`;
+`
 
 export const LabelText = styled(Typography)`
     text-align: center;
     user-select: none;
-`;
+`
 
 export const Icon = styled.View`
     overflow: hidden;
@@ -112,4 +114,4 @@ export const Icon = styled.View`
         height: ${theme.adaptSize(theme.spacing.large - 4)}px;
         width: ${theme.adaptSize(theme.spacing.large - 4)}px;
     `}
-`;
+`

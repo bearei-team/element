@@ -1,28 +1,28 @@
-import {RefAttributes, forwardRef, useId} from 'react';
-import {View, ViewProps} from 'react-native';
-import {Size} from '../Common/interface';
+import {RefAttributes, forwardRef, useId} from 'react'
+import {View, ViewProps} from 'react-native'
+import {Size} from '../Common/interface'
 
 export interface BadgeProps extends Partial<ViewProps & RefAttributes<View>> {
-    labelText?: number | string;
-    renderStyle?: {bottom?: number; left?: number; right?: number; top?: number};
-    size?: Size;
+    labelText?: number | string
+    renderStyle?: {bottom?: number; left?: number; right?: number; top?: number}
+    size?: Size
 }
 
-export type RenderProps = BadgeProps;
+export type RenderProps = BadgeProps
 interface BadgeBaseProps extends BadgeProps {
-    render: (props: RenderProps) => React.JSX.Element;
+    render: (props: RenderProps) => React.JSX.Element
 }
 
 export const BadgeBase = forwardRef<View, BadgeBaseProps>(
     ({labelText = 0, render, size = 'medium', ...renderProps}, ref) => {
-        const id = useId();
+        const id = useId()
 
         return render({
             ...renderProps,
             id,
             labelText: Number(labelText) > 999 ? '999+' : labelText,
             ref,
-            size,
-        });
-    },
-);
+            size
+        })
+    }
+)

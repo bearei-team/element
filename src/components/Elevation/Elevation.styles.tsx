@@ -1,16 +1,19 @@
-import {Elevation} from '@bearei/theme';
-import {View} from 'react-native';
-import styled, {css} from 'styled-components/native';
-import {Shape} from '../Common/Common.styles';
-import {RenderProps} from './ElevationBase';
+import {Elevation} from '@bearei/theme'
+import {View} from 'react-native'
+import styled, {css} from 'styled-components/native'
+import {Shape} from '../Common/Common.styles'
+import {RenderProps} from './ElevationBase'
 
 type ContainerProps = {
-    renderStyle?: {width?: number; height?: number};
-};
+    renderStyle?: {width?: number; height?: number}
+}
 
 interface ShadowProps
-    extends Pick<Omit<RenderProps, 'renderStyle'> & ContainerProps, 'level' | 'renderStyle'> {
-    shadowIndex: 0 | 1;
+    extends Pick<
+        Omit<RenderProps, 'renderStyle'> & ContainerProps,
+        'level' | 'renderStyle'
+    > {
+    shadowIndex: 0 | 1
 }
 
 export const Container = styled(View)<ContainerProps>`
@@ -25,7 +28,7 @@ export const Container = styled(View)<ContainerProps>`
     `};
 
     ${({renderStyle = {}}) => {
-        const {width = 0, height = 0} = renderStyle;
+        const {width = 0, height = 0} = renderStyle
 
         return (
             width !== 0 &&
@@ -33,9 +36,9 @@ export const Container = styled(View)<ContainerProps>`
                 height: ${height}px;
                 width: ${width}px;
             `
-        );
+        )
     }}
-`;
+`
 
 export const Shadow = styled(Shape)<ShadowProps>`
     position: absolute;
@@ -49,23 +52,29 @@ export const Shadow = styled(Shape)<ShadowProps>`
     `};
 
     ${({theme, level = 0, shadowIndex = 0}) => {
-        const levelString: keyof Elevation = `level${level}`;
-        const shadowString: 'shadow0' | 'shadow1' = `shadow${shadowIndex}`;
+        const levelString: keyof Elevation = `level${level}`
+        const shadowString: 'shadow0' | 'shadow1' = `shadow${shadowIndex}`
 
         return css`
             elevation: ${theme.elevation[levelString][shadowString].elevation};
             shadow-color: ${theme.palette.shadow.shadow};
-            shadow-offset: ${theme.adaptSize(theme.elevation[levelString][shadowString].x)}px
-                ${theme.adaptSize(theme.elevation[levelString][shadowString].y)}px;
+            shadow-offset: ${theme.adaptSize(
+                    theme.elevation[levelString][shadowString].x
+                )}px
+                ${theme.adaptSize(
+                    theme.elevation[levelString][shadowString].y
+                )}px;
 
             shadow-opacity: 1;
-            shadow-radius: ${theme.adaptSize(theme.elevation[levelString][shadowString].blur)}px;
+            shadow-radius: ${theme.adaptSize(
+                theme.elevation[levelString][shadowString].blur
+            )}px;
             z-index: ${shadowIndex};
-        `;
+        `
     }};
 
     ${({renderStyle = {}}) => {
-        const {width = 0, height = 0} = renderStyle;
+        const {width = 0, height = 0} = renderStyle
 
         return (
             width !== 0 &&
@@ -73,6 +82,6 @@ export const Shadow = styled(Shape)<ShadowProps>`
                 height: ${height}px;
                 width: ${width}px;
             `
-        );
+        )
     }}
-`;
+`

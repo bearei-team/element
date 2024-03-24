@@ -1,22 +1,22 @@
-import {TextInput} from 'react-native';
-import styled, {css} from 'styled-components/native';
-import {Shape, Typography, TypographyProps} from '../Common/Common.styles';
-import {RenderProps} from './TextFieldBase';
+import {TextInput} from 'react-native'
+import styled, {css} from 'styled-components/native'
+import {Shape, Typography, TypographyProps} from '../Common/Common.styles'
+import {RenderProps} from './TextFieldBase'
 
 type HeaderInnerProps = Pick<RenderProps, 'type' | 'multiline'> & {
-    leadingShow: boolean;
-    trailingShow: boolean;
-};
+    leadingShow: boolean
+    trailingShow: boolean
+}
 
 type LabelProps = {
-    leadingShow: boolean;
-} & TypographyProps;
+    leadingShow: boolean
+} & TypographyProps
 
-type ContentProps = Pick<RenderProps, 'multiline'>;
-type ControlProps = {renderStyle?: {height?: number}} & ContentProps;
-type TextInputProps = {multilineText?: boolean};
+type ContentProps = Pick<RenderProps, 'multiline'>
+type ControlProps = {renderStyle?: {height?: number}} & ContentProps
+type TextInputProps = {multilineText?: boolean}
 
-export const Container = styled.View``;
+export const Container = styled.View``
 export const Inner = styled.View`
     display: flex;
     flex-direction: column;
@@ -24,11 +24,11 @@ export const Inner = styled.View`
     ${({theme}) => css`
         gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
     `}
-`;
+`
 
 export const Header = styled.Pressable`
     cursor: text;
-`;
+`
 
 export const HeaderInner = styled(Shape)<HeaderInnerProps>`
     align-items: center;
@@ -36,12 +36,11 @@ export const HeaderInner = styled(Shape)<HeaderInnerProps>`
     flex-direction: row;
     position: relative;
 
-    ${({theme}) =>
-        css`
-            height: ${theme.adaptSize(theme.spacing.small * 7)}px;
-            padding: ${theme.adaptSize(theme.spacing.extraSmall)}px
-                ${theme.adaptSize(theme.spacing.none)}px;
-        `}
+    ${({theme}) => css`
+        height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+        padding: ${theme.adaptSize(theme.spacing.extraSmall)}px
+            ${theme.adaptSize(theme.spacing.none)}px;
+    `}
 
     ${({theme, leadingShow}) =>
         !leadingShow &&
@@ -62,7 +61,7 @@ export const HeaderInner = styled(Shape)<HeaderInnerProps>`
             height: auto;
             min-height: ${theme.adaptSize(theme.spacing.small * 7)}px;
         `}
-`;
+`
 
 export const Label = styled.View<LabelProps>`
     pointer-events: none;
@@ -78,10 +77,10 @@ export const Label = styled.View<LabelProps>`
         css`
             left: ${theme.adaptSize(theme.spacing.small * 6)}px;
         `}
-`;
+`
 
-export const LabelInner = styled.View``;
-export const LabelText = styled(Typography)``;
+export const LabelInner = styled.View``
+export const LabelText = styled(Typography)``
 export const Trailing = styled.View`
     display: flex;
     flex-direction: row;
@@ -92,16 +91,19 @@ export const Trailing = styled.View`
         height: ${theme.adaptSize(theme.spacing.small * 6)}px;
         width: ${theme.adaptSize(theme.spacing.small * 6)}px;
     `}
-`;
+`
 
-export const Leading = styled(Trailing)``;
+export const Leading = styled(Trailing)``
 export const Content = styled.View<ContentProps>`
     flex: 1;
 
     ${({theme}) => css`
         height: ${theme.adaptFontSize(theme.spacing.small * 6)}px;
-        padding: ${theme.adaptSize(theme.spacing.extraSmall + theme.spacing.medium)}px
-            ${theme.adaptSize(theme.spacing.none)}px ${theme.adaptSize(theme.spacing.extraSmall)}px;
+        padding: ${theme.adaptSize(
+                theme.spacing.extraSmall + theme.spacing.medium
+            )}px
+            ${theme.adaptSize(theme.spacing.none)}px
+            ${theme.adaptSize(theme.spacing.extraSmall)}px;
     `};
 
     ${({theme, multiline}) =>
@@ -110,7 +112,7 @@ export const Content = styled.View<ContentProps>`
             height: auto;
             min-height: ${theme.adaptFontSize(theme.spacing.small * 6)}px;
         `}
-`;
+`
 
 export const Control = styled.View<ControlProps>`
     display: flex;
@@ -124,22 +126,26 @@ export const Control = styled.View<ControlProps>`
         `};
 
     ${({theme}) => css`
-        height: ${theme.adaptFontSize(theme.typography.body.large.lineHeight)}px;
+        height: ${theme.adaptFontSize(
+            theme.typography.body.large.lineHeight
+        )}px;
     `};
 
     ${({renderStyle = {}, multiline, theme}) => {
-        const {height = 0} = renderStyle;
-        const multilineText = multiline && typeof height === 'number' && height !== 0;
+        const {height = 0} = renderStyle
+        const multilineText =
+            multiline && typeof height === 'number' && height !== 0
 
         return (
             multilineText &&
-            height > theme.adaptFontSize(theme.typography.body.large.lineHeight) &&
+            height >
+                theme.adaptFontSize(theme.typography.body.large.lineHeight) &&
             css`
                 height: ${height}px;
             `
-        );
+        )
     }};
-`;
+`
 
 /**
  * Using secureTextEntry props in macOS with text-related styles on the input box will cause the
@@ -153,10 +159,14 @@ export const Input = styled(TextInput)<TextInputProps>`
     ${({theme, secureTextEntry}) =>
         !secureTextEntry &&
         css`
-            font-size: ${theme.adaptFontSize(theme.typography.body.large.size)}px;
+            font-size: ${theme.adaptFontSize(
+                theme.typography.body.large.size
+            )}px;
             font-style: ${theme.typography.body.large.style};
             font-weight: ${theme.typography.body.large.weight};
-            letter-spacing: ${theme.adaptSize(theme.typography.body.large.letterSpacing)}px;
+            letter-spacing: ${theme.adaptSize(
+                theme.typography.body.large.letterSpacing
+            )}px;
             padding: ${theme.spacing.none}px;
         `};
 
@@ -166,13 +176,14 @@ export const Input = styled(TextInput)<TextInputProps>`
         css`
             align-self: stretch;
         `};
-`;
+`
 
 export const SupportingText = styled(Typography)`
     ${({theme}) => css`
-        padding: ${theme.adaptSize(theme.spacing.none)}px ${theme.adaptSize(theme.spacing.medium)}px;
+        padding: ${theme.adaptSize(theme.spacing.none)}px
+            ${theme.adaptSize(theme.spacing.medium)}px;
     `}
-`;
+`
 
 export const ActiveIndicator = styled.View`
     position: absolute;
@@ -183,4 +194,4 @@ export const ActiveIndicator = styled.View`
         right: ${theme.adaptSize(theme.spacing.none)}px;
         height: ${theme.adaptSize(theme.spacing.extraSmall / 2)}px;
     `}
-`;
+`

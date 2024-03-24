@@ -1,68 +1,72 @@
-import {forwardRef, useCallback, useEffect, useId, useMemo} from 'react';
-import {GestureResponderEvent, TextStyle, View, ViewStyle} from 'react-native';
-import {AnimatedStyle} from 'react-native-reanimated';
-import {Updater, useImmer} from 'use-immer';
-import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent';
-import {Button} from '../Button/Button';
-import {ComponentStatus, EventName, State} from '../Common/interface';
-import {ElevationLevel} from '../Elevation/Elevation';
-import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple';
-import {useAnimated} from './useAnimated';
-import {useBorder} from './useBorder';
-import {useUnderlayColor} from './useUnderlayColor';
+import {forwardRef, useCallback, useEffect, useId, useMemo} from 'react'
+import {GestureResponderEvent, TextStyle, View, ViewStyle} from 'react-native'
+import {AnimatedStyle} from 'react-native-reanimated'
+import {Updater, useImmer} from 'use-immer'
+import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent'
+import {Button} from '../Button/Button'
+import {ComponentStatus, EventName, State} from '../Common/interface'
+import {ElevationLevel} from '../Elevation/Elevation'
+import {TouchableRippleProps} from '../TouchableRipple/TouchableRipple'
+import {useAnimated} from './useAnimated'
+import {useBorder} from './useBorder'
+import {useUnderlayColor} from './useUnderlayColor'
 
-type CardType = 'elevated' | 'filled' | 'outlined';
+type CardType = 'elevated' | 'filled' | 'outlined'
 export interface CardProps extends TouchableRippleProps {
-    block?: boolean;
-    footer?: boolean;
-    onPrimaryButtonPress?: (event: GestureResponderEvent) => void;
-    onSecondaryButtonPress?: (event: GestureResponderEvent) => void;
-    primaryButton?: React.JSX.Element;
-    primaryButtonLabelText?: string;
-    secondaryButton?: React.JSX.Element;
-    secondaryButtonLabelText?: string;
-    subheadText?: string;
-    subheadTitleText?: string;
-    supportingText?: string;
-    titleText?: string;
-    type?: CardType;
+    block?: boolean
+    footer?: boolean
+    onPrimaryButtonPress?: (event: GestureResponderEvent) => void
+    onSecondaryButtonPress?: (event: GestureResponderEvent) => void
+    primaryButton?: React.JSX.Element
+    primaryButtonLabelText?: string
+    secondaryButton?: React.JSX.Element
+    secondaryButtonLabelText?: string
+    subheadText?: string
+    subheadTitleText?: string
+    supportingText?: string
+    titleText?: string
+    type?: CardType
 }
 
 export interface RenderProps extends CardProps {
-    elevation: ElevationLevel;
-    eventName: EventName;
-    onEvent: OnEvent;
+    elevation: ElevationLevel
+    eventName: EventName
+    onEvent: OnEvent
     renderStyle: AnimatedStyle<ViewStyle> & {
-        contentAnimatedStyle: AnimatedStyle<ViewStyle>;
-        subheadTextAnimatedStyle: AnimatedStyle<TextStyle>;
-        titleTextAnimatedStyle: AnimatedStyle<TextStyle>;
-    };
+        contentAnimatedStyle: AnimatedStyle<ViewStyle>
+        subheadTextAnimatedStyle: AnimatedStyle<TextStyle>
+        titleTextAnimatedStyle: AnimatedStyle<TextStyle>
+    }
 }
 
 interface CardBaseProps extends CardProps {
-    render: (props: RenderProps) => React.JSX.Element;
+    render: (props: RenderProps) => React.JSX.Element
 }
 
 interface InitialState {
-    elevation?: ElevationLevel;
-    eventName: EventName;
-    status: ComponentStatus;
+    elevation?: ElevationLevel
+    eventName: EventName
+    status: ComponentStatus
 }
 
 interface ProcessEventOptions {
-    setState: Updater<InitialState>;
+    setState: Updater<InitialState>
 }
 
-type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions;
-type ProcessInitOptions = Pick<RenderProps, 'type' | 'disabled'> & ProcessEventOptions;
-type ProcessStateChangeOptions = OnStateChangeOptions & ProcessElevationOptions;
+type ProcessElevationOptions = Pick<RenderProps, 'type'> & ProcessEventOptions
+type ProcessInitOptions = Pick<RenderProps, 'type' | 'disabled'> &
+    ProcessEventOptions
+type ProcessStateChangeOptions = OnStateChangeOptions & ProcessElevationOptions
 
 const processCorrectionCoefficient = ({type}: Pick<RenderProps, 'type'>) =>
-    type === 'elevated' ? 1 : 0;
+    type === 'elevated' ? 1 : 0
 
-const processElevation = (state: State, {type = 'filled', setState}: ProcessElevationOptions) => {
+const processElevation = (
+    state: State,
+    {type = 'filled', setState}: ProcessElevationOptions
+) => {
     if (!['elevated', 'filled', 'tonal'].includes(type)) {
-        return;
+        return
     }
 
     const level = {
@@ -72,17 +76,18 @@ const processElevation = (state: State, {type = 'filled', setState}: ProcessElev
         focused: 0,
         hovered: 1,
         longPressIn: 0,
-        pressIn: 0,
-    };
+        pressIn: 0
+    }
 
-    const correctionCoefficient = processCorrectionCoefficient({type});
+    const correctionCoefficient = processCorrectionCoefficient({type})
 
     setState(draft => {
         draft.elevation = (
-            state === 'disabled' ? level[state] : level[state] + correctionCoefficient
-        ) as ElevationLevel;
-    });
-};
+            state === 'disabled' ?
+                level[state]
+            :   level[state] + correctionCoefficient) as ElevationLevel
+    })
+}
 
 /**
  * FIXME:
@@ -92,40 +97,43 @@ const processElevation = (state: State, {type = 'filled', setState}: ProcessElev
  */
 const processStateChange = (
     state: State,
-    {eventName, type, setState}: ProcessStateChangeOptions,
+    {eventName, type, setState}: ProcessStateChangeOptions
 ) => {
     if (eventName === 'layout') {
-        return;
+        return
     }
 
-    processElevation(state, {type, setState});
+    processElevation(state, {type, setState})
     setState(draft => {
-        draft.eventName = eventName;
-    });
-};
+        draft.eventName = eventName
+    })
+}
 
 const processInit = ({type, setState, disabled}: ProcessInitOptions) =>
     setState(draft => {
         if (draft.status !== 'idle') {
-            return;
+            return
         }
 
-        type === 'elevated' && !disabled && (draft.elevation = 1);
-        draft.status = 'succeeded';
-    });
+        type === 'elevated' && !disabled && (draft.elevation = 1)
+        draft.status = 'succeeded'
+    })
 
-const processDisabledElevation = ({type, setState}: ProcessInitOptions, disabled?: boolean) =>
+const processDisabledElevation = (
+    {type, setState}: ProcessInitOptions,
+    disabled?: boolean
+) =>
     typeof disabled === 'boolean' &&
     type === 'elevated' &&
     setState(draft => {
-        draft.status === 'succeeded' && (draft.elevation = disabled ? 0 : 1);
-    });
+        draft.status === 'succeeded' && (draft.elevation = disabled ? 0 : 1)
+    })
 
 const processDisabled = ({setState}: ProcessEventOptions, disabled?: boolean) =>
     disabled &&
     setState(draft => {
-        draft.status === 'succeeded' && (draft.eventName = 'none');
-    });
+        draft.status === 'succeeded' && (draft.eventName = 'none')
+    })
 
 export const CardBase = forwardRef<View, CardBaseProps>(
     (
@@ -142,31 +150,37 @@ export const CardBase = forwardRef<View, CardBaseProps>(
             type = 'filled',
             ...renderProps
         },
-        ref,
+        ref
     ) => {
-        const [{elevation, eventName, status}, setState] = useImmer<InitialState>({
-            elevation: undefined,
-            eventName: 'none',
-            status: 'idle',
-        });
+        const [{elevation, eventName, status}, setState] =
+            useImmer<InitialState>({
+                elevation: undefined,
+                eventName: 'none',
+                status: 'idle'
+            })
 
-        const id = useId();
-        const [underlayColor] = useUnderlayColor({type});
+        const id = useId()
+        const [underlayColor] = useUnderlayColor({type})
         const onStateChange = useCallback(
             (state: State, options = {} as OnStateChangeOptions) =>
                 processStateChange(state, {...options, type, setState}),
-            [setState, type],
-        );
+            [setState, type]
+        )
 
-        const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange});
-        const [{contentAnimatedStyle, subheadTextAnimatedStyle, titleTextAnimatedStyle}] =
-            useAnimated({
-                disabled,
-                eventName,
-                type,
-            });
+        const [onEvent] = useOnEvent({...renderProps, disabled, onStateChange})
+        const [
+            {
+                contentAnimatedStyle,
+                subheadTextAnimatedStyle,
+                titleTextAnimatedStyle
+            }
+        ] = useAnimated({
+            disabled,
+            eventName,
+            type
+        })
 
-        const [border] = useBorder({type});
+        const [border] = useBorder({type})
         const primaryButtonElement = useMemo(
             () =>
                 primaryButton ?? (
@@ -174,11 +188,16 @@ export const CardBase = forwardRef<View, CardBaseProps>(
                         disabled={disabled}
                         labelText={primaryButtonLabelText}
                         onPress={onPrimaryButtonPress}
-                        type="filled"
+                        type='filled'
                     />
                 ),
-            [disabled, onPrimaryButtonPress, primaryButton, primaryButtonLabelText],
-        );
+            [
+                disabled,
+                onPrimaryButtonPress,
+                primaryButton,
+                primaryButtonLabelText
+            ]
+        )
 
         const secondaryButtonElement = useMemo(
             () =>
@@ -187,20 +206,25 @@ export const CardBase = forwardRef<View, CardBaseProps>(
                         disabled={disabled}
                         labelText={secondaryButtonLabelText}
                         onPress={onSecondaryButtonPress}
-                        type="outlined"
+                        type='outlined'
                     />
                 ),
-            [disabled, onSecondaryButtonPress, secondaryButton, secondaryButtonLabelText],
-        );
+            [
+                disabled,
+                onSecondaryButtonPress,
+                secondaryButton,
+                secondaryButtonLabelText
+            ]
+        )
 
         useEffect(() => {
-            processInit({setState, type, disabled});
-            processDisabled({setState}, disabled);
-            processDisabledElevation({setState, type}, disabled);
-        }, [disabled, setState, type]);
+            processInit({setState, type, disabled})
+            processDisabled({setState}, disabled)
+            processDisabledElevation({setState, type}, disabled)
+        }, [disabled, setState, type])
 
         if (status === 'idle') {
-            return <></>;
+            return <></>
         }
 
         return render({
@@ -220,8 +244,8 @@ export const CardBase = forwardRef<View, CardBaseProps>(
                 ...border,
                 contentAnimatedStyle,
                 subheadTextAnimatedStyle,
-                titleTextAnimatedStyle,
-            },
-        });
-    },
-);
+                titleTextAnimatedStyle
+            }
+        })
+    }
+)

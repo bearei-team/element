@@ -1,4 +1,4 @@
-import styled, {css} from 'styled-components/native';
+import styled, {css} from 'styled-components/native'
 
 export const Container = styled.View`
     height: 100%;
@@ -7,9 +7,8 @@ export const Container = styled.View`
     width: 100%;
     z-index: 8192;
 
-    ${({theme}) =>
-        css`
-            left: ${theme.adaptSize(theme.spacing.none)}px;
-            top: ${theme.adaptSize(theme.spacing.none)}px;
-        `}
-`;
+    ${({theme}) => css`
+        left: ${theme.adaptSize(theme.spacing.none)}px;
+        top: ${theme.adaptSize(theme.spacing.none)}px;
+    `}
+`

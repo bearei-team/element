@@ -1,12 +1,12 @@
-import styled, {css} from 'styled-components/native';
-import {PlatformView} from '../Common/Common.styles';
+import styled, {css} from 'styled-components/native'
+import {PlatformView} from '../Common/Common.styles'
 
 export const Container = styled(PlatformView)`
     ${({theme}) => css`
         height: ${theme.adaptSize(theme.spacing.small * 5)}px;
         width: ${theme.adaptSize(theme.spacing.small * 5)}px;
     `}
-`;
+`
 
 export const Content = styled.View`
     align-items: center;
@@ -21,7 +21,7 @@ export const Content = styled.View`
         height: ${theme.adaptSize(theme.spacing.small * 5)}px;
         width: ${theme.adaptSize(theme.spacing.small * 5)}px;
     `};
-`;
+`
 
 export const Icon = styled.View`
     overflow: hidden;
@@ -30,4 +30,4 @@ export const Icon = styled.View`
         height: ${theme.adaptSize(theme.spacing.large)}px;
         width: ${theme.adaptSize(theme.spacing.large)}px;
     `}
-`;
+`

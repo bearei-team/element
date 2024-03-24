@@ -1,16 +1,16 @@
-import styled, {css} from 'styled-components/native';
-import {PlatformView, Typography} from '../Common/Common.styles';
-import {RenderProps} from './FABBase';
+import styled, {css} from 'styled-components/native'
+import {PlatformView, Typography} from '../Common/Common.styles'
+import {RenderProps} from './FABBase'
 
 interface ContentProps extends Pick<RenderProps, 'size' | 'type'> {
-    labelTextShow: boolean;
+    labelTextShow: boolean
 }
 
-type IconProps = Pick<RenderProps, 'size'>;
+type IconProps = Pick<RenderProps, 'size'>
 
 export const Container = styled(PlatformView)`
     position: relative;
-`;
+`
 
 export const Content = styled.View<ContentProps>`
     align-items: center;
@@ -37,29 +37,33 @@ export const Content = styled.View<ContentProps>`
                 height: ${theme.adaptSize(theme.spacing.small * 12)}px;
                 min-width: ${theme.adaptSize(theme.spacing.small * 12)}px;
                 padding: ${theme.adaptSize(theme.spacing.extraLarge - 2)}px;
-            `,
-        };
+            `
+        }
 
-        return contentSize[size];
+        return contentSize[size]
     }}
 
     ${({theme, labelTextShow}) =>
         labelTextShow &&
         css`
-            gap: ${theme.adaptSize(theme.spacing.small + theme.spacing.extraSmall)}px;
+            gap: ${theme.adaptSize(
+                theme.spacing.small + theme.spacing.extraSmall
+            )}px;
             height: ${theme.adaptSize(theme.spacing.small * 7)}px;
             min-width: ${theme.adaptSize(theme.spacing.small * 7)}px;
             padding: ${theme.adaptSize(theme.spacing.medium)}px
-                ${theme.adaptSize(theme.spacing.large - theme.spacing.extraSmall)}px
+                ${theme.adaptSize(
+                    theme.spacing.large - theme.spacing.extraSmall
+                )}px
                 ${theme.adaptSize(theme.spacing.medium)}px
                 ${theme.adaptSize(theme.spacing.medium)}px;
         `}
-`;
+`
 
 export const LabelText = styled(Typography)`
     text-align: center;
     user-select: none;
-`;
+`
 
 export const Icon = styled.View<IconProps>`
     overflow: hidden;
@@ -75,11 +79,15 @@ export const Icon = styled.View<IconProps>`
                 width: ${theme.adaptSize(theme.spacing.large)}px;
             `,
             large: css`
-                height: ${theme.adaptSize(theme.spacing.extraLarge + theme.spacing.extraSmall)}px;
-                width: ${theme.adaptSize(theme.spacing.extraLarge + theme.spacing.extraSmall)}px;
-            `,
-        };
+                height: ${theme.adaptSize(
+                    theme.spacing.extraLarge + theme.spacing.extraSmall
+                )}px;
+                width: ${theme.adaptSize(
+                    theme.spacing.extraLarge + theme.spacing.extraSmall
+                )}px;
+            `
+        }
 
-        return contentSize[size];
+        return contentSize[size]
     }}
-`;
+`

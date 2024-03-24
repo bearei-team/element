@@ -1,10 +1,10 @@
-import {FC, forwardRef, memo} from 'react';
-import {View} from 'react-native';
-import Animated from 'react-native-reanimated';
-import {Container} from './Ripple.styles';
-import {RenderProps, RippleBase, RippleProps} from './RippleBase';
+import {FC, forwardRef, memo} from 'react'
+import {View} from 'react-native'
+import Animated from 'react-native-reanimated'
+import {Container} from './Ripple.styles'
+import {RenderProps, RippleBase, RippleProps} from './RippleBase'
 
-const AnimatedContainer = Animated.createAnimatedComponent(Container);
+const AnimatedContainer = Animated.createAnimatedComponent(Container)
 const render = ({
     active,
     id,
@@ -14,7 +14,7 @@ const render = ({
     style,
     ...containerProps
 }: RenderProps) => {
-    const {height, width, animatedStyle} = renderStyle;
+    const {height, width, animatedStyle} = renderStyle
 
     return (
         <AnimatedContainer
@@ -23,16 +23,20 @@ const render = ({
             locationX={locationX}
             locationY={locationY}
             renderStyle={{height, width}}
-            shape="full"
+            shape='full'
             style={[style, animatedStyle]}
             testID={`ripple--${id}`}
         />
-    );
-};
+    )
+}
 
 const ForwardRefRipple = forwardRef<View, RippleProps>((props, ref) => (
-    <RippleBase {...props} render={render} ref={ref} />
-));
+    <RippleBase
+        {...props}
+        ref={ref}
+        render={render}
+    />
+))
 
-export const Ripple: FC<RippleProps> = memo(ForwardRefRipple);
-export type {RippleProps};
+export const Ripple: FC<RippleProps> = memo(ForwardRefRipple)
+export type {RippleProps}

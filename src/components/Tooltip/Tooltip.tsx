@@ -1,8 +1,8 @@
-import {FC, forwardRef, memo} from 'react';
-import {View} from 'react-native';
-import {Supporting} from './Supporting/Supporting';
-import {Container, Content} from './Tooltip.styles';
-import {RenderProps, TooltipBase, TooltipProps} from './TooltipBase';
+import {FC, forwardRef, memo} from 'react'
+import {View} from 'react-native'
+import {Supporting} from './Supporting/Supporting'
+import {Container, Content} from './Tooltip.styles'
+import {RenderProps, TooltipBase, TooltipProps} from './TooltipBase'
 
 /**
  * TODO: "rich"
@@ -19,8 +19,14 @@ const render = ({
     visible,
     ...containerProps
 }: RenderProps) => (
-    <Container {...containerProps} testID={`tooltip--${id}`}>
-        <Content {...onEvent} testID={`tooltip__content--${id}`}>
+    <Container
+        {...containerProps}
+        testID={`tooltip--${id}`}
+    >
+        <Content
+            {...onEvent}
+            testID={`tooltip__content--${id}`}
+        >
             {children}
         </Content>
 
@@ -34,11 +40,15 @@ const render = ({
             />
         )}
     </Container>
-);
+)
 
 const ForwardRefTooltip = forwardRef<View, TooltipProps>((props, ref) => (
-    <TooltipBase {...props} ref={ref} render={render} />
-));
+    <TooltipBase
+        {...props}
+        ref={ref}
+        render={render}
+    />
+))
 
-export const Tooltip: FC<TooltipProps> = memo(ForwardRefTooltip);
-export type {TooltipProps};
+export const Tooltip: FC<TooltipProps> = memo(ForwardRefTooltip)
+export type {TooltipProps}

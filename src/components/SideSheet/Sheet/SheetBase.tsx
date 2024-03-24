@@ -1,48 +1,50 @@
-import {RefAttributes, forwardRef, useId, useMemo} from 'react';
-import {Animated, ModalProps, View, ViewProps, ViewStyle} from 'react-native';
-import {OnEvent} from '../../../hooks/useOnEvent';
-import {Button} from '../../Button/Button';
-import {ShapeProps} from '../../Common/Common.styles';
-import {Icon} from '../../Icon/Icon';
-import {IconButton} from '../../IconButton/IconButton';
-import {useAnimated} from './useAnimated';
+import {RefAttributes, forwardRef, useId, useMemo} from 'react'
+import {Animated, ModalProps, View, ViewProps, ViewStyle} from 'react-native'
+import {OnEvent} from '../../../hooks/useOnEvent'
+import {Button} from '../../Button/Button'
+import {ShapeProps} from '../../Common/Common.styles'
+import {Icon} from '../../Icon/Icon'
+import {IconButton} from '../../IconButton/IconButton'
+import {useAnimated} from './useAnimated'
 
 export interface SheetProps
-    extends Partial<ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & ModalProps> {
-    back?: boolean;
-    backIcon?: React.JSX.Element;
-    closeIcon?: React.JSX.Element;
-    content?: React.JSX.Element;
-    disabledClose?: boolean;
-    footer?: boolean;
-    headlineText?: string;
-    onClose?: () => void;
-    onClosed?: () => void;
-    onPrimaryButtonEvent?: OnEvent;
-    onSecondaryButtonEvent?: OnEvent;
-    primaryButton?: React.JSX.Element;
-    primaryButtonLabelText?: string;
-    secondaryButton?: React.JSX.Element;
-    secondaryButtonLabelText?: string;
-    sheetPosition?: 'horizontalStart' | 'horizontalEnd';
-    visible?: boolean;
+    extends Partial<
+        ViewProps & RefAttributes<View> & Pick<ShapeProps, 'shape'> & ModalProps
+    > {
+    back?: boolean
+    backIcon?: React.JSX.Element
+    closeIcon?: React.JSX.Element
+    content?: React.JSX.Element
+    disabledClose?: boolean
+    footer?: boolean
+    headlineText?: string
+    onClose?: () => void
+    onClosed?: () => void
+    onPrimaryButtonEvent?: OnEvent
+    onSecondaryButtonEvent?: OnEvent
+    primaryButton?: React.JSX.Element
+    primaryButtonLabelText?: string
+    secondaryButton?: React.JSX.Element
+    secondaryButtonLabelText?: string
+    sheetPosition?: 'horizontalStart' | 'horizontalEnd'
+    visible?: boolean
 
     /**
      * The modal type has a problem with mouseover events being passed through to lower level
      * elements in macOS. This problem is caused by the fact that react-native-macos does not
      * implement the native modal and some of the mechanisms of the macos component itself.
      */
-    type?: 'standard' | 'modal';
+    type?: 'standard' | 'modal'
 }
 
 export interface RenderProps extends SheetProps {
     renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
-        innerTranslateX: Animated.AnimatedInterpolation<string | number>;
-    };
+        innerTranslateX: Animated.AnimatedInterpolation<string | number>
+    }
 }
 
 interface SheetBaseProps extends SheetProps {
-    render: (props: RenderProps) => React.JSX.Element;
+    render: (props: RenderProps) => React.JSX.Element
 }
 
 export const SheetBase = forwardRef<View, SheetBaseProps>(
@@ -66,40 +68,50 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             visible,
             ...renderProps
         },
-        ref,
+        ref
     ) => {
         const [renderStyle] = useAnimated({
             onClosed,
             sheetPosition,
             type,
-            visible,
-        });
+            visible
+        })
 
-        const id = useId();
+        const id = useId()
         const backIconElement = useMemo(
             () =>
                 backIcon ?? (
                     <IconButton
-                        icon={<Icon type="filled" name="arrowBack" />}
+                        icon={
+                            <Icon
+                                type='filled'
+                                name='arrowBack'
+                            />
+                        }
                         onPressOut={onClose}
-                        type="standard"
+                        type='standard'
                     />
                 ),
-            [backIcon, onClose],
-        );
+            [backIcon, onClose]
+        )
 
         const closeIconElement = useMemo(
             () =>
                 closeIcon ?? (
                     <IconButton
                         disabled={disabledClose}
-                        icon={<Icon type="filled" name="close" />}
+                        icon={
+                            <Icon
+                                type='filled'
+                                name='close'
+                            />
+                        }
                         onPressOut={onClose}
-                        type="standard"
+                        type='standard'
                     />
                 ),
-            [closeIcon, disabledClose, onClose],
-        );
+            [closeIcon, disabledClose, onClose]
+        )
 
         const primaryButtonElement = useMemo(
             () =>
@@ -107,11 +119,11 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
                     <Button
                         {...onPrimaryButtonEvent}
                         labelText={primaryButtonLabelText}
-                        type="filled"
+                        type='filled'
                     />
                 ),
-            [onPrimaryButtonEvent, primaryButton, primaryButtonLabelText],
-        );
+            [onPrimaryButtonEvent, primaryButton, primaryButtonLabelText]
+        )
 
         const secondaryButtonElement = useMemo(
             () =>
@@ -119,11 +131,11 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
                     <Button
                         {...onSecondaryButtonEvent}
                         labelText={secondaryButtonLabelText}
-                        type="outlined"
+                        type='outlined'
                     />
                 ),
-            [onSecondaryButtonEvent, secondaryButton, secondaryButtonLabelText],
-        );
+            [onSecondaryButtonEvent, secondaryButton, secondaryButtonLabelText]
+        )
 
         return render({
             ...renderProps,
@@ -136,7 +148,7 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             ref,
             renderStyle,
             secondaryButton: secondaryButtonElement,
-            type,
-        });
-    },
-);
+            type
+        })
+    }
+)
