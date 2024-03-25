@@ -21,7 +21,7 @@ interface UseAnimatedOptions
         'trailingButton' | 'itemGap' | 'closeIcon' | 'visible' | 'onClosed'
     > {
     active?: boolean
-    addonAfterLayoutWidth?: number
+    afterAffordanceLayoutWidth?: number
     addonBeforeLayoutWidth?: number
     eventName: EventName
     layoutHeight?: number
@@ -92,7 +92,7 @@ export const useAnimated = ({
     trailingButton,
     trailingEventName,
     visible,
-    addonAfterLayoutWidth = 0
+    afterAffordanceLayoutWidth = 0
 }: UseAnimatedOptions) => {
     const visibleValue = visible ? 1 : 0
     const height = useSharedValue(
@@ -117,7 +117,7 @@ export const useAnimated = ({
                 translateX: interpolate(
                     innerTranslateX.value,
                     [0, 1],
-                    [0, -addonAfterLayoutWidth]
+                    [0, -afterAffordanceLayoutWidth]
                 )
             }
         ]

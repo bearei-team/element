@@ -47,7 +47,7 @@ const render = ({
     const {containerAnimatedStyle, innerAnimatedStyle, trailingAnimatedStyle} =
         renderStyle
 
-    const addon = beforeAffordance || afterAffordance
+    const affordance = beforeAffordance || afterAffordance
 
     return (
         <AnimatedContainer
@@ -57,7 +57,7 @@ const render = ({
             testID={`listItem--${id}`}
         >
             <AnimatedInner
-                {...(addon && {shape})}
+                {...(affordance && {shape})}
                 itemGap={itemGap}
                 onLayout={onLayout}
                 testID={`listItem__inner--${id}`}
@@ -66,7 +66,7 @@ const render = ({
                 {beforeAffordance && (
                     <BeforeAffordance
                         onLayout={onAddonAfterLayout}
-                        testID={`listItem__before--${id}`}
+                        testID={`listItem__beforeAffordance--${id}`}
                     >
                         {beforeAffordance}
                     </BeforeAffordance>
@@ -74,7 +74,7 @@ const render = ({
 
                 <Main testID={`listItem_main--${id}`}>
                     <TouchableRipple
-                        {...(!addon && {shape})}
+                        {...(!affordance && {shape})}
                         {...onTouchableRippleEvent}
                         active={active}
                         touchableLocation={touchableLocation}
@@ -157,7 +157,7 @@ const render = ({
                 {afterAffordance && (
                     <AfterAffordance
                         onLayout={onAddonAfterLayout}
-                        testID={`listItem__addonAfter--${id}`}
+                        testID={`listItem__afterAffordance--${id}`}
                     >
                         {afterAffordance}
                     </AfterAffordance>

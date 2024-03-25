@@ -78,7 +78,7 @@ interface ListItemBaseProps extends ListItemProps {
 
 interface InitialState {
     active?: boolean
-    addonAfterLayout: LayoutRectangle
+    afterAffordanceLayout: LayoutRectangle
     addonBeforeLayout: LayoutRectangle
     closed?: boolean
     eventName: EventName
@@ -149,10 +149,10 @@ const processAddonAfterLayout = (
 
     setState(draft => {
         const updateLayout =
-            draft.addonAfterLayout.width !== nativeEventLayout.width ||
-            draft.addonAfterLayout.height !== nativeEventLayout.height
+            draft.afterAffordanceLayout.width !== nativeEventLayout.width ||
+            draft.afterAffordanceLayout.height !== nativeEventLayout.height
 
-        updateLayout && (draft.addonAfterLayout = nativeEventLayout)
+        updateLayout && (draft.afterAffordanceLayout = nativeEventLayout)
     })
 }
 
@@ -292,7 +292,7 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
     ) => {
         const [
             {
-                addonAfterLayout,
+                afterAffordanceLayout,
                 addonBeforeLayout,
                 eventName,
                 layout,
@@ -302,7 +302,7 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             },
             setState
         ] = useImmer<InitialState>({
-            addonAfterLayout: {} as LayoutRectangle,
+            afterAffordanceLayout: {} as LayoutRectangle,
             addonBeforeLayout: {} as LayoutRectangle,
             eventName: 'none',
             layout: {} as LayoutRectangle,
@@ -326,7 +326,7 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             {containerAnimatedStyle, trailingAnimatedStyle, innerAnimatedStyle}
         ] = useAnimated({
             active,
-            addonAfterLayoutWidth: addonAfterLayout.width,
+            afterAffordanceLayoutWidth: afterAffordanceLayout.width,
             addonBeforeLayoutWidth: addonBeforeLayout.width,
             closeIcon,
             eventName,

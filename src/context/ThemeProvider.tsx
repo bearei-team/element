@@ -18,7 +18,7 @@ export const ThemeProvider: FC<ThemeProps> = ({
 }) => {
     const {adaptFontSize, adaptSize} = adapt(adaptOptions)
     const colorScheme = useColorScheme() ?? 'light'
-    const memoizedChildren = useMemo(() => children, [children])
+    const childrenNode = useMemo(() => children, [children])
     const OS = Platform.OS
 
     return (
@@ -32,7 +32,7 @@ export const ThemeProvider: FC<ThemeProps> = ({
             }}
         >
             <ModalProvider />
-            {memoizedChildren}
+            {childrenNode}
         </StyledComponentThemeProvider>
     )
 }
