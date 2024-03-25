@@ -15,7 +15,6 @@ export interface ShapeProps {
 export interface TypographyProps {
     size?: Size
     type?: keyof ThemeTypography
-    multiline?: boolean
 }
 
 export const Shape = styled(View)<ShapeProps>`
@@ -56,10 +55,12 @@ export const Shape = styled(View)<ShapeProps>`
 `
 
 export const Typography = styled.Text<TypographyProps>`
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+
     ${({theme, type = 'title', size = 'medium'}) => css`
-        align-items: center;
         color: ${theme.palette.surface.onSurfaceVariant};
-        display: flex;
         font-size: ${theme.adaptFontSize(theme.typography[type][size].size)}px;
         font-style: ${theme.typography[type][size].style};
         font-weight: ${theme.typography[type][size].weight};
@@ -71,14 +72,6 @@ export const Typography = styled.Text<TypographyProps>`
             theme.typography[type][size].lineHeight
         )}px;
     `}
-
-    ${({theme, type = 'title', size = 'medium', multiline = false}) =>
-        multiline &&
-        css`
-            line-height: ${theme.adaptSize(
-                theme.typography[type][size].lineHeight
-            )}px;
-        `}
 `
 
 export const PlatformInlineView = styled.View`

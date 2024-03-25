@@ -87,17 +87,13 @@ const processActive = (
     onActive?.(value)
 }
 
-const processVisible = ({setState}: ProcessEventOptions, value?: string) => {
-    if (typeof value !== 'string') {
-        return
-    }
-
+const processVisible = ({setState}: ProcessEventOptions, value?: string) =>
+    typeof value === 'string' &&
     setState(draft => {
         draft.data = draft.data.map(datum =>
             datum.key === value ? {...datum, visible: false} : datum
         )
     })
-}
 
 const processInit = (
     {setState}: ProcessEventOptions,

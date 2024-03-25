@@ -6,7 +6,6 @@ import React, {
     useMemo
 } from 'react'
 import {
-    Animated,
     GestureResponderEvent,
     LayoutChangeEvent,
     LayoutRectangle,
@@ -14,6 +13,7 @@ import {
     View,
     ViewStyle
 } from 'react-native'
+import {AnimatedStyle} from 'react-native-reanimated'
 import {DefaultTheme, useTheme} from 'styled-components/native'
 import {Updater, useImmer} from 'use-immer'
 import {
@@ -21,13 +21,7 @@ import {
     OnStateChangeOptions,
     useOnEvent
 } from '../../../hooks/useOnEvent'
-import {
-    AnimatedInterpolation,
-    ComponentStatus,
-    EventName,
-    Size,
-    State
-} from '../../Common/interface'
+import {ComponentStatus, EventName, Size, State} from '../../Common/interface'
 import {Icon, IconName, IconType} from '../../Icon/Icon'
 import {IconButton} from '../../IconButton/IconButton'
 import {TouchableRippleProps} from '../../TouchableRipple/TouchableRipple'
@@ -35,6 +29,8 @@ import {useAnimated} from './useAnimated'
 
 export interface ListItemProps extends TouchableRippleProps {
     activeKey?: string
+    addonAfter?: React.JSX.Element
+    addonBefore?: React.JSX.Element
     closeIcon?: boolean
     closeIconName?: IconName
     closeIconType?: IconType
@@ -58,8 +54,6 @@ export interface ListItemProps extends TouchableRippleProps {
      * effect when custom trailing exists.
      */
     trailingButton?: boolean
-    addonAfter?: React.JSX.Element
-    addonBefore?: React.JSX.Element
 }
 
 export interface RenderProps extends ListItemProps {
@@ -69,12 +63,10 @@ export interface RenderProps extends ListItemProps {
     onAddonAfterLayout: (event: LayoutChangeEvent) => void
     onAddonBeforeLayout: (event: LayoutChangeEvent) => void
     onEvent: OnEvent
-    renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
-        containerHeight: AnimatedInterpolation
-        height: number
-        trailingOpacity: AnimatedInterpolation
-        width: number
-        scaleX: AnimatedInterpolation
+    renderStyle: {
+        containerAnimatedStyle: AnimatedStyle<ViewStyle>
+        mainAnimatedStyle: AnimatedStyle<ViewStyle>
+        trailingAnimatedStyle: AnimatedStyle<ViewStyle>
     }
     touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>
     underlayColor: string
@@ -86,6 +78,8 @@ interface ListItemBaseProps extends ListItemProps {
 
 interface InitialState {
     active?: boolean
+    addonAfterLayout: LayoutRectangle
+    addonBeforeLayout: LayoutRectangle
     closed?: boolean
     eventName: EventName
     layout: LayoutRectangle
@@ -93,8 +87,6 @@ interface InitialState {
     status: ComponentStatus
     touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>
     trailingEventName: EventName
-    addonBeforeLayout: LayoutRectangle
-    addonAfterLayout: LayoutRectangle
 }
 
 interface ProcessEventOptions {
@@ -126,11 +118,11 @@ const processLayout = (
     const nativeEventLayout = event.nativeEvent.layout
 
     setState(draft => {
-        const update =
+        const updateLayout =
             draft.layout.width !== nativeEventLayout.width ||
             draft.layout.height !== nativeEventLayout.height
 
-        update && (draft.layout = nativeEventLayout)
+        updateLayout && (draft.layout = nativeEventLayout)
     })
 }
 
@@ -141,11 +133,11 @@ const processAddonBeforeLayout = (
     const nativeEventLayout = event.nativeEvent.layout
 
     setState(draft => {
-        const update =
+        const updateLayout =
             draft.addonBeforeLayout.width !== nativeEventLayout.width ||
             draft.addonBeforeLayout.height !== nativeEventLayout.height
 
-        update && (draft.addonBeforeLayout = nativeEventLayout)
+        updateLayout && (draft.addonBeforeLayout = nativeEventLayout)
     })
 }
 
@@ -156,11 +148,11 @@ const processAddonAfterLayout = (
     const nativeEventLayout = event.nativeEvent.layout
 
     setState(draft => {
-        const update =
+        const updateLayout =
             draft.addonAfterLayout.width !== nativeEventLayout.width ||
             draft.addonAfterLayout.height !== nativeEventLayout.height
 
-        update && (draft.addonAfterLayout = nativeEventLayout)
+        updateLayout && (draft.addonAfterLayout = nativeEventLayout)
     })
 }
 
@@ -205,10 +197,11 @@ const processStateChange = (
 
     nextEvent[eventName]?.()
 
-    setState(draft => {
-        draft.eventName = eventName
-        draft.state = state
-    })
+    eventName !== 'layout' &&
+        setState(draft => {
+            draft.eventName = eventName
+            draft.state = state
+        })
 }
 
 const processTrailingEvent = (
@@ -225,6 +218,7 @@ const processTrailingEvent = (
 
 const processClosed = ({onClosed}: ProcessClosedOptions, dataKey?: string) =>
     onClosed?.(dataKey)
+
 const processTrailingHoverIn = ({setState}: ProcessEventOptions) =>
     processTrailingEvent('hoverIn', {setState})
 
@@ -244,29 +238,32 @@ const renderTrailing = ({
     const trailingElement =
         trailing ? cloneElement(trailing, {onHoverIn, onHoverOut}) : trailing
 
+    const icon = (
+        <Icon
+            name={closeIconName}
+            type={closeIconType}
+        />
+    )
+
+    const renderStyle =
+        size === 'small' ?
+            {
+                height: theme.adaptSize(theme.spacing.large),
+                width: theme.adaptSize(theme.spacing.large)
+            }
+        :   {
+                height: theme.adaptSize(theme.spacing.small * 5),
+                width: theme.adaptSize(theme.spacing.small * 5)
+            }
+
     return closeIcon ?
             <IconButton
-                icon={
-                    <Icon
-                        name={closeIconName}
-                        type={closeIconType}
-                    />
-                }
-                onPressOut={onPressOut}
+                icon={icon}
                 onHoverIn={onHoverIn}
                 onHoverOut={onHoverOut}
+                onPressOut={onPressOut}
+                renderStyle={renderStyle}
                 type='standard'
-                renderStyle={
-                    size === 'small' ?
-                        {
-                            width: theme.adaptSize(theme.spacing.large),
-                            height: theme.adaptSize(theme.spacing.large)
-                        }
-                    :   {
-                            width: theme.adaptSize(theme.spacing.small * 5),
-                            height: theme.adaptSize(theme.spacing.small * 5)
-                        }
-                }
             />
         :   trailingElement
 }
@@ -282,25 +279,25 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             itemGap,
             onActive,
             onClosed: onClosedSource,
+            onVisible,
             render,
             size = 'medium',
             supporting,
             trailing,
             trailingButton,
             visible,
-            onVisible,
             ...renderProps
         },
         ref
     ) => {
         const [
             {
-                touchableLocation,
                 addonAfterLayout,
                 addonBeforeLayout,
                 eventName,
                 layout,
                 state,
+                touchableLocation,
                 trailingEventName
             },
             setState
@@ -325,16 +322,16 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             [dataKey, onClosedSource]
         )
 
-        const [{height, trailingOpacity, scaleX}] = useAnimated({
+        const [
+            {containerAnimatedStyle, trailingAnimatedStyle, mainAnimatedStyle}
+        ] = useAnimated({
             active,
             addonAfterLayoutWidth: addonAfterLayout.width,
             addonBeforeLayoutWidth: addonBeforeLayout.width,
             closeIcon,
             eventName,
             itemGap,
-            // layoutHeight: layout.height,
-
-            layout,
+            layoutHeight: layout.height,
             onClosed,
             state,
             trailingButton,
@@ -359,6 +356,7 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             () => processTrailingHoverIn({setState}),
             [setState]
         )
+
         const onTrailingHoverOut = useCallback(
             () => processTrailingHoverOut({setState}),
             [setState]
@@ -368,6 +366,7 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             () => onVisible?.(dataKey),
             [dataKey, onVisible]
         )
+
         const onAddonBeforeLayout = useCallback(
             (event: LayoutChangeEvent) =>
                 processAddonBeforeLayout(event, {setState}),
@@ -384,16 +383,16 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             () =>
                 renderTrailing({
                     closeIcon,
+                    closeIconName,
+                    closeIconType,
                     onEvent: {
                         onHoverIn: onTrailingHoverIn,
                         onHoverOut: onTrailingHoverOut,
                         onPressOut: onTrailingPressOut
                     },
-                    closeIconName,
-                    closeIconType,
+                    size,
                     theme,
-                    trailing,
-                    size
+                    trailing
                 }),
             [
                 closeIcon,
@@ -420,11 +419,9 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             onEvent,
             ref,
             renderStyle: {
-                containerHeight: height,
-                height: layout.height,
-                scaleX,
-                trailingOpacity,
-                width: layout.width
+                containerAnimatedStyle,
+                trailingAnimatedStyle,
+                mainAnimatedStyle
             },
             size,
             supporting,

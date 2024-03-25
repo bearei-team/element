@@ -1,9 +1,11 @@
 import {FC, forwardRef, memo} from 'react'
-import {Animated, View} from 'react-native'
+import {View} from 'react-native'
+import Animated from 'react-native-reanimated'
 import {TouchableRipple} from '../../TouchableRipple/TouchableRipple'
-import {Hovered} from '../../Underlay/Hovered'
+import {Underlay} from '../../Underlay/Underlay'
 import {
     AddonAfter,
+    AddonBefore,
     Container,
     Content,
     Headline,
@@ -17,18 +19,19 @@ import {
 import {ListItemBase, ListItemProps, RenderProps} from './ListItemBase'
 
 const AnimatedContainer = Animated.createAnimatedComponent(Container)
+const AnimatedInner = Animated.createAnimatedComponent(Inner)
 const AnimatedTrailing = Animated.createAnimatedComponent(Trailing)
-const AnimatedMain = Animated.createAnimatedComponent(Main)
 const render = ({
     active,
     activeColor,
     addonAfter,
     addonBefore,
     eventName,
-    itemGap,
     headline,
     id,
+    itemGap,
     leading,
+    onAddonAfterLayout,
     onEvent,
     renderStyle,
     shape,
@@ -38,29 +41,38 @@ const render = ({
     touchableLocation,
     trailing,
     underlayColor,
-    onAddonAfterLayout,
     ...innerProps
 }: RenderProps) => {
     const {onLayout, ...onTouchableRippleEvent} = onEvent
-    const {containerHeight, trailingOpacity, scaleX} = renderStyle
+    const {containerAnimatedStyle, mainAnimatedStyle, trailingAnimatedStyle} =
+        renderStyle
+
     const addon = addonBefore || addonAfter
 
     return (
         <AnimatedContainer
             accessibilityLabel={headline}
             accessibilityRole='list'
-            style={{height: containerHeight}}
+            style={[containerAnimatedStyle]}
             testID={`listItem--${id}`}
         >
-            <Inner
+            <AnimatedInner
                 {...(addon && {shape})}
                 itemGap={itemGap}
+                onLayout={onLayout}
                 testID={`listItem__inner--${id}`}
+                style={[mainAnimatedStyle]}
             >
-                <AnimatedMain
-                    testID={`listItem_main--${id}`}
-                    style={{transform: [{scaleX}]}}
-                >
+                {addonBefore && (
+                    <AddonBefore
+                        onLayout={onAddonAfterLayout}
+                        testID={`listItem__before--${id}`}
+                    >
+                        {addonBefore}
+                    </AddonBefore>
+                )}
+
+                <Main testID={`listItem_main--${id}`}>
                     <TouchableRipple
                         {...(!addon && {shape})}
                         {...onTouchableRippleEvent}
@@ -72,7 +84,6 @@ const render = ({
                             {...innerProps}
                             size={size}
                             testID={`listItem__inner--${id}`}
-                            onLayout={onLayout}
                         >
                             {leading && (
                                 <Leading
@@ -93,26 +104,16 @@ const render = ({
                                 }
                                 testID={`listItem__content--${id}`}
                             >
-                                {size === 'small' ?
-                                    <SupportingText
-                                        ellipsizeMode='tail'
-                                        numberOfLines={1}
-                                        size='medium'
-                                        testID={`listItem__supportingText--${id}`}
-                                        type='body'
-                                    >
-                                        {headline}
-                                    </SupportingText>
-                                :   <Headline
-                                        ellipsizeMode='tail'
-                                        numberOfLines={1}
-                                        size='large'
-                                        testID={`listItem__headline--${id}`}
-                                        type='body'
-                                    >
-                                        {headline}
-                                    </Headline>
-                                }
+                                <Headline
+                                    ellipsizeMode='tail'
+                                    headlineSize={size}
+                                    numberOfLines={1}
+                                    size={size === 'small' ? 'medium' : 'large'}
+                                    testID={`listItem__headline--${id}`}
+                                    type='body'
+                                >
+                                    {headline}
+                                </Headline>
 
                                 {supporting &&
                                     size !== 'small' &&
@@ -138,30 +139,30 @@ const render = ({
                             {trailing && (
                                 <AnimatedTrailing
                                     size={size}
-                                    style={{opacity: trailingOpacity}}
+                                    style={[trailingAnimatedStyle]}
                                     testID={`listItem__trailingInner--${id}`}
                                 >
                                     {trailing}
                                 </AnimatedTrailing>
                             )}
 
-                            <Hovered
+                            <Underlay
                                 eventName={eventName}
                                 underlayColor={underlayColor}
                             />
                         </MainInner>
                     </TouchableRipple>
-                </AnimatedMain>
+                </Main>
 
                 {addonAfter && (
                     <AddonAfter
-                        testID={`listItem__addonAfterInner--${id}`}
                         onLayout={onAddonAfterLayout}
+                        testID={`listItem__addonAfter--${id}`}
                     >
                         {addonAfter}
                     </AddonAfter>
                 )}
-            </Inner>
+            </AnimatedInner>
         </AnimatedContainer>
     )
 }

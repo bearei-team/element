@@ -51,10 +51,10 @@ interface SupportingBaseProps extends SupportingProps {
 }
 
 interface InitialState {
+    closed?: boolean
     containerLayout: LayoutRectangle & {pageX: number; pageY: number}
     layout: LayoutRectangle
     status: ComponentStatus
-    closed?: boolean
     visible?: boolean
 }
 
@@ -77,11 +77,11 @@ const processLayout = (
     const nativeEventLayout = event.nativeEvent.layout
 
     setState(draft => {
-        const update =
+        const updateLayout =
             draft.layout.width !== nativeEventLayout.width ||
             draft.layout.height !== nativeEventLayout.height
 
-        update && (draft.layout = nativeEventLayout)
+        updateLayout && (draft.layout = nativeEventLayout)
     })
 }
 
@@ -90,12 +90,11 @@ const processStateChange = ({
     eventName,
     setState,
     onVisible
-}: ProcessStateChangeOptions) => {
-    eventName === 'layout' &&
+}: ProcessStateChangeOptions) =>
+    eventName === 'layout' ?
         processLayout(event as LayoutChangeEvent, {setState})
-    ;['hoverIn', 'hoverOut', 'pressIn'].includes(eventName) &&
+    :   ['hoverIn', 'hoverOut', 'pressIn'].includes(eventName) &&
         onVisible(eventName === 'hoverIn')
-}
 
 const processEmit = (
     supporting: React.JSX.Element,
@@ -126,11 +125,11 @@ const processContainerLayout = (
     visible &&
     containerCurrent?.measure((x, y, width, height, pageX, pageY) =>
         setState(draft => {
-            const update =
+            const updateLayout =
                 draft.containerLayout.pageX !== pageX ||
                 draft.containerLayout.pageY !== pageY
 
-            if (update) {
+            if (updateLayout) {
                 draft.containerLayout = {
                     height,
                     pageX,

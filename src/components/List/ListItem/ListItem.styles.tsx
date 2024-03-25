@@ -9,10 +9,16 @@ type ContentProps = {
 
 type InnerProps = Pick<RenderProps, 'size'>
 type LeadingProps = Pick<RenderProps, 'size'>
+type HeadlineProps = {headlineSize: RenderProps['size']}
 
-export const Container = styled.View``
+export const Container = styled.View`
+    overflow: hidden;
+`
+
 export const Inner = styled(Shape)<ContainerProps>`
-    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
 
     ${({itemGap = 0}) => css`
         margin-bottom: ${itemGap}px;
@@ -20,14 +26,11 @@ export const Inner = styled(Shape)<ContainerProps>`
 `
 
 export const Main = styled.View`
-    position: absolute;
-    z-index: 2;
+    min-width: 100%;
+    flex: 1;
 
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surface};
-        left: ${theme.adaptSize(theme.spacing.none)}px;
-        right: ${theme.adaptSize(theme.spacing.none)}px;
-        top: ${theme.adaptSize(theme.spacing.none)}px;
     `};
 `
 
@@ -42,12 +45,11 @@ export const MainInner = styled.View<InnerProps>`
     ${({theme, size = 'medium'}) => {
         const contentSize = {
             small: css`
+                align-items: center;
                 gap: ${theme.adaptSize(theme.spacing.small)}px;
                 padding: ${theme.adaptSize(theme.spacing.none)}px
                     ${theme.adaptSize(theme.spacing.medium)}px;
 
-                min-height: ${theme.adaptSize(theme.spacing.extraLarge)}px;
-                align-items: center;
                 height: ${theme.adaptSize(theme.spacing.small * 5)}px;
             `,
             medium: css`
@@ -97,15 +99,17 @@ export const Leading = styled.View<LeadingProps>`
 `
 
 export const Content = styled.View<ContentProps>`
+    align-self: stretch;
     display: flex;
     flex-direction: column;
     flex: 1;
     justify-content: center;
-    align-self: stretch;
 
     ${({theme, size = 'medium', supportingTextShow}) => {
         const contentSize = {
-            small: css``,
+            small: css`
+                min-height: ${theme.adaptSize(theme.spacing.small * 5)}px;
+            `,
             medium:
                 supportingTextShow &&
                 css`
@@ -143,10 +147,16 @@ export const Trailing = styled(Leading)`
     }}
 `
 
-export const Headline = styled(Typography)`
+export const Headline = styled(Typography)<HeadlineProps>`
     ${({theme}) => css`
         color: ${theme.palette.surface.onSurface};
     `}
+
+    ${({headlineSize = 'medium', theme}) =>
+        headlineSize === 'small' &&
+        css`
+            color: ${theme.palette.surface.onSurfaceVariant};
+        `}
 `
 
 export const SupportingText = styled(Typography)`
@@ -156,13 +166,5 @@ export const SupportingText = styled(Typography)`
     `}
 `
 
-export const AddonAfter = styled.View`
-    position: absolute;
-    z-index: 1;
-
-    ${({theme}) => css`
-        right: ${theme.adaptSize(theme.spacing.none)}px;
-        top: ${theme.adaptSize(theme.spacing.none)}px;
-        bottom: ${theme.adaptSize(theme.spacing.none)}px;
-    `};
-`
+export const AddonBefore = styled.View``
+export const AddonAfter = styled(AddonBefore)``

@@ -99,6 +99,7 @@ export const useAnimated = ({
         theme.palette.surface.onSurface,
         0.38
     )
+
     const backgroundColorType = {
         elevated: {
             inputRange: [0, 1],

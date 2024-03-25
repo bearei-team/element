@@ -76,8 +76,8 @@ export const Container = styled(Shape)<ContainerProps>`
     ${({visible = false}) =>
         !visible &&
         css`
-            z-index: -16384;
             pointer-events: none;
+            z-index: -16384;
         `}
 `
 

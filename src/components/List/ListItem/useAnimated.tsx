@@ -1,11 +1,17 @@
 import {useEffect} from 'react'
-import {Animated, LayoutRectangle} from 'react-native'
+import {
+    AnimatableValue,
+    SharedValue,
+    cancelAnimation,
+    interpolate,
+    useAnimatedStyle,
+    useSharedValue
+} from 'react-native-reanimated'
 import {useTheme} from 'styled-components/native'
 import {
     AnimatedTiming,
     useAnimatedTiming
 } from '../../../hooks/useAnimatedTiming'
-import {useAnimatedValue} from '../../../hooks/useAnimatedValue'
 import {EventName, State} from '../../Common/interface'
 import {RenderProps} from './ListItemBase'
 
@@ -18,51 +24,42 @@ interface UseAnimatedOptions
     addonAfterLayoutWidth?: number
     addonBeforeLayoutWidth?: number
     eventName: EventName
-    layout?: LayoutRectangle
+    layoutHeight?: number
     state: State
     trailingEventName: EventName
 }
 
 interface ProcessVisibleAnimatedOptions
     extends Pick<UseAnimatedOptions, 'visible' | 'onClosed'> {
-    heightAnimated: Animated.Value
+    height: SharedValue<AnimatableValue>
 }
 
-interface ProcessAddonAnimatedOptions
+interface ProcessActiveAnimatedOptions
     extends Pick<UseAnimatedOptions, 'active'> {
-    addonAfterAnimated: Animated.Value
-    addonBeforeAnimated: Animated.Value
+    contentTranslateX: SharedValue<AnimatableValue>
 }
 
 interface ProcessTrailingAnimatedTimingOptions extends UseAnimatedOptions {
-    trailingAnimated: Animated.Value
+    trailingOpacity: SharedValue<AnimatableValue>
 }
 
 const processVisibleAnimated = (
     animatedTiming: AnimatedTiming,
-    {heightAnimated, onClosed, visible}: ProcessVisibleAnimatedOptions
+    {height, onClosed, visible}: ProcessVisibleAnimatedOptions
 ) =>
     typeof visible === 'boolean' &&
-    animatedTiming(heightAnimated, {toValue: visible ? 1 : 0}).start(
-        ({finished}) => finished && !visible && onClosed?.()
+    animatedTiming(
+        height,
+        {toValue: visible ? 1 : 0},
+        finished => finished && !visible && onClosed?.()
     )
 
-const processAddonAnimated = (
+const processActiveAnimated = (
     animatedTiming: AnimatedTiming,
-    {
-        addonBeforeAnimated,
-        addonAfterAnimated,
-        active
-    }: ProcessAddonAnimatedOptions
-) => {
-    const toValue = active ? 1 : 0
-
+    {contentTranslateX, active}: ProcessActiveAnimatedOptions
+) =>
     typeof active === 'boolean' &&
-        Animated.parallel([
-            animatedTiming(addonBeforeAnimated, {toValue}),
-            animatedTiming(addonAfterAnimated, {toValue})
-        ]).start()
-}
+    animatedTiming(contentTranslateX, {toValue: active ? 1 : 0})
 
 const processTrailingAnimatedTiming = (
     animatedTiming: AnimatedTiming,
@@ -72,16 +69,16 @@ const processTrailingAnimatedTiming = (
         state,
         trailingButton,
         trailingEventName,
-        trailingAnimated
+        trailingOpacity
     }: ProcessTrailingAnimatedTimingOptions
 ) => {
     const toValue = state !== 'enabled' ? 1 : 0
 
     ;[trailingButton, closeIcon].includes(true) &&
-        animatedTiming(trailingAnimated, {
+        animatedTiming(trailingOpacity, {
             toValue:
                 [eventName, trailingEventName].includes('hoverIn') ? 1 : toValue
-        }).start()
+        })
 }
 
 export const useAnimated = ({
@@ -89,7 +86,7 @@ export const useAnimated = ({
     closeIcon,
     eventName,
     itemGap = 0,
-    layout = {} as LayoutRectangle,
+    layoutHeight = 0,
     onClosed,
     state,
     trailingButton,
@@ -97,33 +94,34 @@ export const useAnimated = ({
     visible,
     addonAfterLayoutWidth = 0
 }: UseAnimatedOptions) => {
-    const {width: layoutWidth = 0, height: layoutHeight = 0} = layout
-    const [heightAnimated] = useAnimatedValue(
-        typeof visible === 'boolean' ?
-            visible ? 1
-            :   0
-        :   1
+    const visibleValue = visible ? 1 : 0
+    const height = useSharedValue(
+        typeof visible === 'boolean' ? visibleValue : 1
     )
-    const [trailingAnimated] = useAnimatedValue(trailingButton ? 0 : 1)
-    const addonDefaultValue = active ? 1 : 0
-    const [addonBeforeAnimated] = useAnimatedValue(addonDefaultValue)
-    const [addonAfterAnimated] = useAnimatedValue(addonDefaultValue)
+
+    const trailingOpacity = useSharedValue(trailingButton ? 0 : 1)
+    const contentTranslateX = useSharedValue(0)
     const theme = useTheme()
     const [animatedTiming] = useAnimatedTiming(theme)
-    const trailingOpacity = trailingAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 1]
-    })
+    const containerAnimatedStyle = useAnimatedStyle(() => ({
+        height: interpolate(height.value, [0, 1], [0, layoutHeight + itemGap])
+    }))
 
-    const height = heightAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, layoutHeight + itemGap]
-    })
+    const trailingAnimatedStyle = useAnimatedStyle(() => ({
+        opacity: interpolate(height.value, [0, 1], [0, 1])
+    }))
 
-    const scaleX = addonAfterAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [1 - addonAfterLayoutWidth / layoutWidth, 1]
-    })
+    const mainAnimatedStyle = useAnimatedStyle(() => ({
+        transform: [
+            {
+                translateX: interpolate(
+                    contentTranslateX.value,
+                    [0, 1],
+                    [0, -addonAfterLayoutWidth]
+                )
+            }
+        ]
+    }))
 
     useEffect(() => {
         processTrailingAnimatedTiming(animatedTiming, {
@@ -132,11 +130,11 @@ export const useAnimated = ({
             state,
             trailingButton,
             trailingEventName,
-            trailingAnimated
+            trailingOpacity
         })
 
         return () => {
-            trailingAnimated.stopAnimation()
+            cancelAnimation(trailingOpacity)
         }
     }, [
         animatedTiming,
@@ -145,33 +143,28 @@ export const useAnimated = ({
         state,
         trailingButton,
         trailingEventName,
-        trailingAnimated
+        trailingOpacity
     ])
-
-    useEffect(() => {
-        processAddonAnimated(animatedTiming, {
-            active,
-            addonAfterAnimated,
-            addonBeforeAnimated
-        })
-
-        return () => {
-            addonBeforeAnimated.stopAnimation()
-            addonAfterAnimated.stopAnimation()
-        }
-    }, [active, addonAfterAnimated, addonBeforeAnimated, animatedTiming])
 
     useEffect(() => {
         processVisibleAnimated(animatedTiming, {
             visible,
-            heightAnimated,
+            height,
             onClosed
         })
 
         return () => {
-            heightAnimated.stopAnimation()
+            cancelAnimation(height)
         }
-    }, [animatedTiming, heightAnimated, onClosed, visible])
+    }, [animatedTiming, height, onClosed, visible])
 
-    return [{height, trailingOpacity, scaleX}]
+    useEffect(() => {
+        processActiveAnimated(animatedTiming, {contentTranslateX, active})
+
+        return () => {
+            cancelAnimation(contentTranslateX)
+        }
+    }, [active, animatedTiming, contentTranslateX])
+
+    return [{containerAnimatedStyle, trailingAnimatedStyle, mainAnimatedStyle}]
 }
