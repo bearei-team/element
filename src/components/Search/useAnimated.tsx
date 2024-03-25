@@ -36,7 +36,7 @@ export const useAnimated = ({
     const listHeight = useSharedValue(listVisible ? 1 : 0)
     const theme = useTheme()
     const [animatedTiming] = useAnimatedTiming(theme)
-    const labelTextAnimatedStyle = useAnimatedStyle(() => ({
+    const listAnimatedStyle = useAnimatedStyle(() => ({
         height: interpolate(
             listHeight.value,
             [0, 1],
@@ -56,5 +56,5 @@ export const useAnimated = ({
         }
     }, [animatedTiming, listHeight, listVisible, onListClosed])
 
-    return [labelTextAnimatedStyle]
+    return [listAnimatedStyle]
 }

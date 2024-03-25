@@ -10,9 +10,6 @@ import {
     useRef
 } from 'react'
 import {
-    Animated,
-    LayoutChangeEvent,
-    LayoutRectangle,
     NativeSyntheticEvent,
     PressableProps,
     TextInput,
@@ -21,11 +18,12 @@ import {
     TextStyle,
     ViewStyle
 } from 'react-native'
+import Animated, {AnimatedStyle} from 'react-native-reanimated'
 import {useTheme} from 'styled-components/native'
 import {Updater, useImmer} from 'use-immer'
 import {OnEvent, OnStateChangeOptions, useOnEvent} from '../../hooks/useOnEvent'
 import {ShapeProps} from '../Common/Common.styles'
-import {AnimatedInterpolation, EventName, State} from '../Common/interface'
+import {EventName, State} from '../Common/interface'
 import {Input} from './TextField.styles'
 import {useAnimated} from './useAnimated'
 
@@ -54,16 +52,11 @@ export interface RenderProps extends TextFieldProps {
     onEvent: Omit<OnEvent, 'onBlur' | 'onFocus'>
     state: State
     underlayColor: string
-    onLabelLayout: (event: LayoutChangeEvent) => void
-    renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
-        activeIndicatorBackgroundColor: AnimatedInterpolation
-        activeIndicatorScaleY: AnimatedInterpolation
-        labelInnerTranslateX: AnimatedInterpolation
-        labelInnerTranslateY: AnimatedInterpolation
-        labelScale: AnimatedInterpolation
-        labelTextColor: AnimatedInterpolation
-        labelTranslateY: AnimatedInterpolation
-        supportingTextColor: AnimatedInterpolation
+    renderStyle: {
+        activeIndicatorAnimatedStyle: AnimatedStyle<ViewStyle>
+        headerInnerAnimatedStyle: AnimatedStyle<ViewStyle>
+        labelTextAnimatedStyle: AnimatedStyle<TextStyle>
+        supportingTextAnimatedStyle: AnimatedStyle<TextStyle>
     }
 }
 
@@ -72,7 +65,7 @@ interface TextFieldBaseProps extends TextFieldProps {
 }
 
 type RenderTextInputProps = TextFieldProps & {
-    renderStyle: Animated.WithAnimatedObject<TextStyle>
+    renderStyle: {inputAnimatedStyle: AnimatedStyle<TextStyle>}
 }
 
 interface InitialState {
@@ -80,7 +73,6 @@ interface InitialState {
     eventName: EventName
     state: State
     value?: string
-    labelLayout: LayoutRectangle
 }
 
 interface ProcessEventOptions {
@@ -95,31 +87,21 @@ type ProcessContentSizeChangeOptions = Pick<
 
 type ProcessChangeTextOptions = Pick<RenderProps, 'onChangeText'> &
     ProcessEventOptions
+
 type ProcessStateChangeOptions = {
     ref?: RefObject<TextInput>
 } & ProcessEventOptions &
     OnStateChangeOptions
 
 const processFocus = (ref?: RefObject<TextInput>) => ref?.current?.focus()
-const processLabelLayout = (
-    event: LayoutChangeEvent,
-    {setState}: ProcessEventOptions
-) => {
-    const nativeEventLayout = event.nativeEvent.layout
-
-    setState(draft => {
-        const update =
-            draft.labelLayout.width !== nativeEventLayout.width ||
-            draft.labelLayout.height !== nativeEventLayout.height
-
-        update && (draft.labelLayout = nativeEventLayout)
-    })
-}
-
 const processStateChange = (
     state: State,
     {eventName, setState, ref}: ProcessStateChangeOptions
 ) => {
+    if (eventName === 'layout') {
+        return
+    }
+
     const nextEvent = {
         pressOut: () => processFocus(ref)
     } as Record<EventName, () => void>
@@ -174,23 +156,27 @@ const renderTextInput = ({
     renderStyle,
     multiline,
     ...inputProps
-}: RenderTextInputProps) => (
-    <AnimatedTextInput
-        {...inputProps}
-        style={renderStyle}
-        testID={`textField__input--${id}`}
-        multiline={multiline}
-        multilineText={multiline}
-        /**
-         * enableFocusRing is used to disable the focus style in macOS,
-         * this parameter has been implemented and is available.
-         * However, react-native-macos does not have an official typescript declaration for this parameter,
-         * so using it directly in a typescript will result in an undefined parameter.
-         */
-        // @ts-ignore
-        enableFocusRing={false}
-    />
-)
+}: RenderTextInputProps) => {
+    const {inputAnimatedStyle} = renderStyle
+
+    return (
+        <AnimatedTextInput
+            {...inputProps}
+            /**
+             * enableFocusRing is used to disable the focus style in macOS,
+             * this parameter has been implemented and is available.
+             * However, react-native-macos does not have an official typescript declaration for this parameter,
+             * so using it directly in a typescript will result in an undefined parameter.
+             */
+            // @ts-ignore
+            enableFocusRing={false}
+            multiline={multiline}
+            multilineText={multiline}
+            style={[inputAnimatedStyle]}
+            testID={`textField__input--${id}`}
+        />
+    )
+}
 
 export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
     (
@@ -213,13 +199,12 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
         },
         ref
     ) => {
-        const [{labelLayout, eventName, state, contentSize, value}, setState] =
+        const [{eventName, state, contentSize, value}, setState] =
             useImmer<InitialState>({
                 contentSize: undefined,
                 eventName: 'none',
                 state: 'enabled',
-                value: '',
-                labelLayout: {} as LayoutRectangle
+                value: ''
             })
 
         const id = useId()
@@ -264,27 +249,18 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
             [setState]
         )
 
-        const onLabelLayout = useCallback(
-            (event: LayoutChangeEvent) => processLabelLayout(event, {setState}),
-            [setState]
-        )
-
         const [{onBlur, onFocus, ...onEvent}] = useOnEvent({
             ...textInputProps,
             onStateChange
         })
+
         const [
             {
-                activeIndicatorBackgroundColor,
-                activeIndicatorScaleY,
-                backgroundColor,
-                inputColor,
-                labelInnerTranslateX,
-                labelInnerTranslateY,
-                labelScale,
-                labelTextColor,
-                supportingTextColor,
-                labelTranslateY
+                activeIndicatorAnimatedStyle,
+                headerInnerAnimatedStyle,
+                inputAnimatedStyle,
+                labelTextAnimatedStyle,
+                supportingTextAnimatedStyle
             }
         ] = useAnimated({
             disabled,
@@ -293,7 +269,6 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
             filled: [valueSource, defaultValue, placeholder, value].some(
                 item => item
             ),
-            labelLayout,
             state,
             type
         })
@@ -312,13 +287,13 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
                     placeholder,
                     placeholderTextColor,
                     ref: textFieldRef,
-                    renderStyle: {color: inputColor},
+                    renderStyle: {inputAnimatedStyle},
                     value
                 }),
             [
                 disabled,
                 id,
-                inputColor,
+                inputAnimatedStyle,
                 multiline,
                 onBlur,
                 onChangeText,
@@ -354,21 +329,15 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
             multiline,
             onEvent: {...onEvent},
             renderStyle: {
-                activeIndicatorBackgroundColor,
-                activeIndicatorScaleY,
-                backgroundColor,
-                labelInnerTranslateX,
-                labelInnerTranslateY,
-                labelScale,
-                labelTextColor,
-                supportingTextColor,
-                labelTranslateY
+                activeIndicatorAnimatedStyle,
+                headerInnerAnimatedStyle,
+                labelTextAnimatedStyle,
+                supportingTextAnimatedStyle
             },
             state,
             supportingText,
             trailing,
-            underlayColor,
-            onLabelLayout
+            underlayColor
         })
     }
 )

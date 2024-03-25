@@ -1,8 +1,15 @@
 import {useCallback, useEffect, useMemo} from 'react'
-import {Animated, LayoutRectangle} from 'react-native'
+import {
+    AnimatableValue,
+    SharedValue,
+    cancelAnimation,
+    interpolate,
+    interpolateColor,
+    useAnimatedStyle,
+    useSharedValue
+} from 'react-native-reanimated'
 import {useTheme} from 'styled-components/native'
 import {AnimatedTiming, useAnimatedTiming} from '../../hooks/useAnimatedTiming'
-import {useAnimatedValue} from '../../hooks/useAnimatedValue'
 import {EventName, State} from '../Common/interface'
 import {RenderProps} from './TextFieldBase'
 
@@ -10,42 +17,41 @@ interface UseAnimatedOptions
     extends Pick<RenderProps, 'type' | 'error' | 'disabled'> {
     eventName: EventName
     filled: boolean
-    labelLayout: LayoutRectangle
     state: State
 }
 
 interface ProcessEnabledOptions extends Pick<UseAnimatedOptions, 'error'> {
-    activeIndicatorAnimated: Animated.Value
+    activeIndicatorScaleY: SharedValue<AnimatableValue>
     animatedTiming: AnimatedTiming
-    colorAnimated: Animated.Value
+    color: SharedValue<AnimatableValue>
     filledToValue: number
-    inputAnimated: Animated.Value
-    labelAnimated: Animated.Value
-    supportingTextAnimated: Animated.Value
+    inputColor: SharedValue<AnimatableValue>
+    labelText: SharedValue<AnimatableValue>
+    supportingText: SharedValue<AnimatableValue>
 }
 
 interface ProcessDisabledOptions {
-    activeIndicatorAnimated: Animated.Value
+    activeIndicatorScaleY: SharedValue<AnimatableValue>
     animatedTiming: AnimatedTiming
-    backgroundColorAnimated: Animated.Value
-    colorAnimated: Animated.Value
-    inputAnimated: Animated.Value
-    supportingTextAnimated: Animated.Value
+    color: SharedValue<AnimatableValue>
+    headerInnerBackgroundColor: SharedValue<AnimatableValue>
+    inputColor: SharedValue<AnimatableValue>
+    supportingText: SharedValue<AnimatableValue>
 }
 
 interface ProcessErrorOptions {
-    activeIndicatorAnimated: Animated.Value
+    activeIndicatorScaleY: SharedValue<AnimatableValue>
     animatedTiming: AnimatedTiming
-    colorAnimated: Animated.Value
-    inputAnimated: Animated.Value
-    supportingTextAnimated: Animated.Value
+    color: SharedValue<AnimatableValue>
+    inputColor: SharedValue<AnimatableValue>
+    supportingText: SharedValue<AnimatableValue>
 }
 
 interface ProcessFocusedOptions extends Pick<UseAnimatedOptions, 'error'> {
-    activeIndicatorAnimated: Animated.Value
+    activeIndicatorScaleY: SharedValue<AnimatableValue>
     animatedTiming: AnimatedTiming
-    colorAnimated: Animated.Value
-    labelAnimated: Animated.Value
+    color: SharedValue<AnimatableValue>
+    labelText: SharedValue<AnimatableValue>
 }
 
 interface ProcessStateAnimatedOptions {
@@ -59,81 +65,70 @@ type ProcessDisabledAnimatedOptions = ProcessStateAnimatedOptions &
     Pick<UseAnimatedOptions, 'disabled'>
 
 const processEnabled = ({
-    activeIndicatorAnimated,
+    activeIndicatorScaleY,
     animatedTiming,
-    colorAnimated,
+    color,
     error,
     filledToValue,
-    inputAnimated,
-    labelAnimated,
-    supportingTextAnimated
+    inputColor,
+    labelText,
+    supportingText
 }: ProcessEnabledOptions) => {
     if (error) {
-        return animatedTiming(labelAnimated, {toValue: filledToValue}).start()
+        return animatedTiming(labelText, {toValue: filledToValue})
     }
 
-    const compositeAnimations = [
-        animatedTiming(activeIndicatorAnimated, {toValue: 0}),
-        animatedTiming(colorAnimated, {toValue: 1}),
-        animatedTiming(inputAnimated, {toValue: 1}),
-        animatedTiming(labelAnimated, {toValue: filledToValue}),
-        animatedTiming(supportingTextAnimated, {toValue: 1})
-    ]
-
-    Animated.parallel(compositeAnimations).start()
+    animatedTiming(activeIndicatorScaleY, {toValue: 0})
+    animatedTiming(color, {toValue: 1})
+    animatedTiming(inputColor, {toValue: 1})
+    animatedTiming(labelText, {toValue: filledToValue})
+    animatedTiming(supportingText, {toValue: 1})
 }
 
 const processDisabled = ({
-    activeIndicatorAnimated,
+    activeIndicatorScaleY,
     animatedTiming,
-    backgroundColorAnimated,
-    colorAnimated,
-    inputAnimated,
-    supportingTextAnimated
+    color,
+    headerInnerBackgroundColor,
+    inputColor,
+    supportingText
 }: ProcessDisabledOptions) => {
     const toValue = 0
 
-    Animated.parallel([
-        animatedTiming(activeIndicatorAnimated, {toValue}),
-        animatedTiming(backgroundColorAnimated, {toValue}),
-        animatedTiming(colorAnimated, {toValue}),
-        animatedTiming(inputAnimated, {toValue}),
-        animatedTiming(supportingTextAnimated, {toValue})
-    ]).start()
+    animatedTiming(activeIndicatorScaleY, {toValue})
+    animatedTiming(color, {toValue})
+    animatedTiming(headerInnerBackgroundColor, {toValue})
+    animatedTiming(inputColor, {toValue})
+    animatedTiming(supportingText, {toValue})
 }
 
 const processError = ({
-    activeIndicatorAnimated,
+    activeIndicatorScaleY,
     animatedTiming,
-    colorAnimated,
-    inputAnimated,
-    supportingTextAnimated
-}: ProcessErrorOptions) =>
-    Animated.parallel([
-        animatedTiming(activeIndicatorAnimated, {toValue: 1}),
-        animatedTiming(colorAnimated, {toValue: 3}),
-        animatedTiming(inputAnimated, {toValue: 1}),
-        animatedTiming(supportingTextAnimated, {toValue: 2})
-    ]).start()
+    color,
+    inputColor,
+    supportingText
+}: ProcessErrorOptions) => {
+    animatedTiming(activeIndicatorScaleY, {toValue: 1})
+    animatedTiming(color, {toValue: 3})
+    animatedTiming(inputColor, {toValue: 1})
+    animatedTiming(supportingText, {toValue: 2})
+}
 
 const processFocused = ({
-    activeIndicatorAnimated,
+    activeIndicatorScaleY,
     animatedTiming,
-    colorAnimated,
+    color,
     error,
-    labelAnimated
+    labelText
 }: ProcessFocusedOptions) => {
     if (error) {
-        return animatedTiming(labelAnimated, {toValue: 0}).start()
+        return animatedTiming(labelText, {toValue: 0})
     }
 
-    const compositeAnimations = [
-        animatedTiming(activeIndicatorAnimated, {toValue: 1}),
-        animatedTiming(colorAnimated, {toValue: 2}),
-        animatedTiming(labelAnimated, {toValue: 0})
-    ]
-
-    Animated.parallel(compositeAnimations).start()
+    animatedTiming(activeIndicatorScaleY, {toValue: 1})
+    animatedTiming(color, {toValue: 2})
+    animatedTiming(labelText, {toValue: 0})
 }
 
 const processStateAnimated = (
@@ -161,40 +156,35 @@ export const useAnimated = ({
     disabled,
     error,
     filled,
-    labelLayout,
     state,
     type = 'filled'
 }: UseAnimatedOptions) => {
     const theme = useTheme()
-    const {width: labelLayoutWidth = 0, height: labelLayoutHeight = 0} =
-        labelLayout
     const disabledAnimatedValue = disabled ? 0 : 1
     const defaultAnimatedValue = {
-        activeIndicatorAnimated: error ? 1 : 0,
-        colorAnimated: error ? 3 : 1,
-        inputAnimated: error ? 3 : 1,
-        supportingTextAnimated: error ? 2 : 1
+        activeIndicatorScaleY: error ? 1 : 0,
+        color: error ? 3 : 1,
+        inputColor: error ? 3 : 1,
+        supportingText: error ? 2 : 1
     }
 
-    const [activeIndicatorAnimated] = useAnimatedValue(
+    const activeIndicatorScaleY = useSharedValue(
         disabled ?
             disabledAnimatedValue
-        :   defaultAnimatedValue.activeIndicatorAnimated
+        :   defaultAnimatedValue.activeIndicatorScaleY
     )
 
-    const [backgroundColorAnimated] = useAnimatedValue(disabledAnimatedValue)
-    const [colorAnimated] = useAnimatedValue(
-        disabled ? disabledAnimatedValue : defaultAnimatedValue.colorAnimated
+    const headerInnerBackgroundColor = useSharedValue(disabledAnimatedValue)
+    const color = useSharedValue(
+        disabled ? disabledAnimatedValue : defaultAnimatedValue.color
     )
 
-    const [inputAnimated] = useAnimatedValue(
-        disabled ? disabledAnimatedValue : defaultAnimatedValue.inputAnimated
+    const inputColor = useSharedValue(
+        disabled ? disabledAnimatedValue : defaultAnimatedValue.inputColor
     )
 
-    const [supportingTextAnimated] = useAnimatedValue(
-        disabled ?
-            disabledAnimatedValue
-        :   defaultAnimatedValue.supportingTextAnimated
+    const supportingText = useSharedValue(
+        disabled ? disabledAnimatedValue : defaultAnimatedValue.supportingText
     )
 
     const [animatedTiming] = useAnimatedTiming(theme)
@@ -207,9 +197,10 @@ export const useAnimated = ({
         theme.palette.surface.onSurface,
         0.38
     )
+
     const filledToValue = filled ? 0 : 1
-    const [labelAnimated] = useAnimatedValue(filledToValue)
-    const backgroundColorConfig = {
+    const labelText = useSharedValue(filledToValue)
+    const backgroundColorType = {
         filled: {
             inputRange: [0, 1],
             outputRange: [
@@ -229,174 +220,190 @@ export const useAnimated = ({
         }
     }
 
-    const inputColor = useMemo(
-        () =>
-            inputAnimated.interpolate({
-                inputRange: [0, 1],
-                outputRange: [
-                    disabledColor,
-                    theme.color.convertHexToRGBA(
-                        theme.palette.surface.onSurface,
-                        1
-                    )
-                ]
-            }),
-        [
-            disabledColor,
-            inputAnimated,
-            theme.color,
-            theme.palette.surface.onSurface
+    const headerInnerAnimatedStyle = useAnimatedStyle(() => ({
+        backgroundColor: interpolateColor(
+            headerInnerBackgroundColor.value,
+            backgroundColorType[type].inputRange,
+            backgroundColorType[type].outputRange
+        )
+    }))
+
+    const inputAnimatedStyle = useAnimatedStyle(() => ({
+        color: interpolateColor(
+            color.value,
+            [0, 1],
+            [
+                disabledColor,
+                theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 1)
+            ]
+        )
+    }))
+
+    const labelTextAnimatedStyle = useAnimatedStyle(() => ({
+        fontSize: interpolate(
+            labelText.value,
+            [0, 1],
+            [
+                theme.adaptFontSize(theme.typography.body.small.size),
+                theme.adaptFontSize(theme.typography.body.large.size)
+            ]
+        ),
+        letterSpacing: interpolate(
+            labelText.value,
+            [0, 1],
+            [
+                theme.adaptFontSize(theme.typography.body.small.letterSpacing),
+                theme.adaptFontSize(theme.typography.body.large.letterSpacing)
+            ]
+        ),
+        height: interpolate(
+            labelText.value,
+            [0, 1],
+            [
+                theme.adaptFontSize(theme.typography.body.small.lineHeight),
+                theme.adaptFontSize(theme.typography.body.large.lineHeight)
+            ]
+        ),
+        lineHeight: interpolate(
+            labelText.value,
+            [0, 1],
+            [
+                theme.adaptFontSize(theme.typography.body.small.lineHeight),
+                theme.adaptFontSize(theme.typography.body.large.lineHeight)
+            ]
+        ),
+        color: interpolateColor(
+            color.value,
+            [0, 1, 2, 3],
+            [
+                disabledColor,
+                theme.color.convertHexToRGBA(
+                    theme.palette.surface.onSurfaceVariant,
+                    1
+                ),
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
+                theme.color.convertHexToRGBA(theme.palette.error.error, 1)
+            ]
+        ),
+        transform: [
+            {
+                translateY: interpolate(
+                    labelText.value,
+                    [0, 1],
+                    [-theme.adaptSize(theme.spacing.small), 0]
+                )
+            }
         ]
-    )
+    }))
 
-    const labelTextColor = colorAnimated.interpolate({
-        inputRange: [0, 1, 2, 3],
-        outputRange: [
-            disabledColor,
-            theme.color.convertHexToRGBA(
-                theme.palette.surface.onSurfaceVariant,
-                1
-            ),
-            theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
-            theme.color.convertHexToRGBA(theme.palette.error.error, 1)
-        ]
-    })
+    const activeIndicatorAnimatedStyle = useAnimatedStyle(() => ({
+        backgroundColor: interpolateColor(
+            color.value,
+            [0, 1, 2, 3],
+            [
+                disabledColor,
+                theme.color.convertHexToRGBA(
+                    theme.palette.surface.onSurfaceVariant,
+                    1
+                ),
+                theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
+                theme.color.convertHexToRGBA(theme.palette.error.error, 1)
+            ]
+        ),
+        height: interpolate(
+            activeIndicatorScaleY.value,
+            [0, theme.adaptSize(theme.spacing.extraSmall / 4)],
+            [1, theme.adaptSize(theme.spacing.extraSmall / 2 + 1)]
+        )
+    }))
 
-    const activeIndicatorBackgroundColor = colorAnimated.interpolate({
-        inputRange: [0, 1, 2, 3],
-        outputRange: [
-            disabledColor,
-            theme.color.convertHexToRGBA(
-                theme.palette.surface.onSurfaceVariant,
-                1
-            ),
-            theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
-            theme.color.convertHexToRGBA(theme.palette.error.error, 1)
-        ]
-    })
-
-    const backgroundColor = backgroundColorAnimated.interpolate(
-        backgroundColorConfig[type]
-    )
-    const scale =
-        theme.adaptFontSize(theme.typography.body.small.size) /
-        theme.adaptFontSize(theme.typography.body.large.size)
-
-    const labelTranslateY = labelAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [-theme.adaptSize(theme.spacing.small), 0]
-    })
-
-    const labelInnerTranslateX = labelAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [-(labelLayoutWidth * (1 - scale)) / 2, 0]
-    })
-
-    const labelInnerTranslateY = labelAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [-(labelLayoutHeight * (1 - scale)) / 2, 0]
-    })
-
-    const labelScale = labelAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [scale, 1]
-    })
-
-    const activeIndicatorScaleY = activeIndicatorAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0.5, 1]
-    })
-
-    const supportingTextColor = supportingTextAnimated.interpolate({
-        inputRange: [0, 1, 2],
-        outputRange: [
-            disabledColor,
-            theme.color.convertHexToRGBA(
-                theme.palette.surface.onSurfaceVariant,
-                1
-            ),
-            theme.color.convertHexToRGBA(theme.palette.error.error, 1)
-        ]
-    })
+    const supportingTextAnimatedStyle = useAnimatedStyle(() => ({
+        color: interpolateColor(
+            supportingText.value,
+            [0, 1, 2],
+            [
+                disabledColor,
+                theme.color.convertHexToRGBA(
+                    theme.palette.surface.onSurfaceVariant,
+                    1
+                ),
+                theme.color.convertHexToRGBA(theme.palette.error.error, 1)
+            ]
+        )
+    }))
 
     const processEnabledState = useCallback(
         () =>
             processEnabled({
-                activeIndicatorAnimated,
+                activeIndicatorScaleY,
                 animatedTiming,
-                colorAnimated,
+                color,
                 error,
                 filledToValue,
-                inputAnimated,
-                labelAnimated,
-                supportingTextAnimated
+                inputColor,
+                labelText,
+                supportingText
             }),
         [
-            activeIndicatorAnimated,
+            activeIndicatorScaleY,
             animatedTiming,
-            colorAnimated,
+            color,
             error,
             filledToValue,
-            inputAnimated,
-            labelAnimated,
-            supportingTextAnimated
+            inputColor,
+            labelText,
+            supportingText
         ]
     )
 
     const processDisabledState = useCallback(
         () =>
             processDisabled({
-                activeIndicatorAnimated,
+                activeIndicatorScaleY,
                 animatedTiming,
-                backgroundColorAnimated,
-                colorAnimated,
-                inputAnimated,
-                supportingTextAnimated
+                headerInnerBackgroundColor,
+                color,
+                inputColor,
+                supportingText
             }),
         [
-            activeIndicatorAnimated,
+            activeIndicatorScaleY,
             animatedTiming,
-            backgroundColorAnimated,
-            colorAnimated,
-            inputAnimated,
-            supportingTextAnimated
+            headerInnerBackgroundColor,
+            color,
+            inputColor,
+            supportingText
         ]
     )
 
     const processErrorState = useCallback(
         () =>
             processError({
-                activeIndicatorAnimated,
+                activeIndicatorScaleY,
                 animatedTiming,
-                colorAnimated,
-                inputAnimated,
-                supportingTextAnimated
+                color,
+                inputColor,
+                supportingText
             }),
         [
-            activeIndicatorAnimated,
+            activeIndicatorScaleY,
             animatedTiming,
-            colorAnimated,
-            inputAnimated,
-            supportingTextAnimated
+            color,
+            inputColor,
+            supportingText
         ]
     )
 
     const processFocusedState = useCallback(
         () =>
             processFocused({
-                activeIndicatorAnimated,
+                activeIndicatorScaleY,
                 animatedTiming,
-                colorAnimated,
+                color,
                 error,
-                labelAnimated
+                labelText
             }),
-        [
-            activeIndicatorAnimated,
-            animatedTiming,
-            colorAnimated,
-            error,
-            labelAnimated
-        ]
+        [activeIndicatorScaleY, animatedTiming, color, error, labelText]
     )
 
     const stateAnimated = useMemo(
@@ -421,38 +428,33 @@ export const useAnimated = ({
         processDisabledAnimated(state, {disabled, stateAnimated})
 
         return () => {
-            activeIndicatorAnimated.stopAnimation()
-            backgroundColorAnimated.stopAnimation()
-            colorAnimated.stopAnimation()
-            inputAnimated.stopAnimation()
-            labelAnimated.stopAnimation()
-            supportingTextAnimated.stopAnimation()
+            cancelAnimation(activeIndicatorScaleY)
+            cancelAnimation(headerInnerBackgroundColor)
+            cancelAnimation(color)
+            cancelAnimation(inputColor)
+            cancelAnimation(labelText)
+            cancelAnimation(supportingText)
         }
     }, [
-        activeIndicatorAnimated,
-        backgroundColorAnimated,
-        colorAnimated,
+        activeIndicatorScaleY,
+        headerInnerBackgroundColor,
+        color,
         disabled,
         error,
-        inputAnimated,
-        labelAnimated,
+        inputColor,
+        labelText,
         state,
         stateAnimated,
-        supportingTextAnimated
+        supportingText
     ])
 
     return [
         {
-            activeIndicatorBackgroundColor,
-            activeIndicatorScaleY,
-            backgroundColor,
-            inputColor,
-            labelInnerTranslateX,
-            labelInnerTranslateY,
-            labelScale,
-            labelTextColor,
-            supportingTextColor,
-            labelTranslateY
+            activeIndicatorAnimatedStyle,
+            headerInnerAnimatedStyle,
+            inputAnimatedStyle,
+            labelTextAnimatedStyle,
+            supportingTextAnimatedStyle
         }
     ]
 }

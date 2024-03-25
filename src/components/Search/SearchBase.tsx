@@ -104,7 +104,7 @@ type RenderSearchListOptions = SearchProps & {
     containerPageY?: number
     renderStyle: {
         width?: number
-        labelTextAnimatedStyle: AnimatedStyle<ViewStyle>
+        listAnimatedStyle: AnimatedStyle<ViewStyle>
     }
     visible?: boolean
 }
@@ -223,7 +223,6 @@ const renderTextInput = ({id, ...props}: RenderTextInputOptions) => (
     <TextField testID={`search__control--${id}`}>
         <Input
             {...props}
-            testID={`search__input--${id}`}
             /**
              * enableFocusRing is used to disable the focus style in macOS,
              * this parameter has been implemented and is available.
@@ -232,6 +231,7 @@ const renderTextInput = ({id, ...props}: RenderTextInputOptions) => (
              */
             // @ts-ignore
             enableFocusRing={false}
+            testID={`search__input--${id}`}
         />
     </TextField>
 )
@@ -249,7 +249,7 @@ const renderSearchList = ({
     renderStyle,
     type
 }: RenderSearchListOptions) => {
-    const {labelTextAnimatedStyle, width} = renderStyle
+    const {listAnimatedStyle, width} = renderStyle
 
     return (
         <AnimatedSearchList
@@ -258,7 +258,7 @@ const renderSearchList = ({
             containerPageY={containerPageY}
             renderStyle={{width}}
             shape='extraLargeBottom'
-            style={[labelTextAnimatedStyle]}
+            style={[listAnimatedStyle]}
             testID={`search__list--${id}`}
             type={type}
             visible={!!data?.length}
@@ -326,7 +326,7 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
             [setState]
         )
 
-        const [labelTextAnimatedStyle] = useAnimated({
+        const [listAnimatedStyle] = useAnimated({
             listVisible,
             onListClosed
         })
@@ -384,7 +384,7 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                     defaultActiveKey,
                     id,
                     onActive,
-                    renderStyle: {labelTextAnimatedStyle, width: layout.width},
+                    renderStyle: {listAnimatedStyle, width: layout.width},
                     type
                 }),
             [
@@ -392,7 +392,7 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                 data,
                 defaultActiveKey,
                 id,
-                labelTextAnimatedStyle,
+                listAnimatedStyle,
                 layout.height,
                 layout.pageX,
                 layout.pageY,

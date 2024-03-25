@@ -1,6 +1,7 @@
 import {FC, forwardRef, memo} from 'react'
-import {Animated, TextInput} from 'react-native'
-import {Hovered} from '../Underlay/Hovered'
+import {TextInput} from 'react-native'
+import Animated from 'react-native-reanimated'
+import {Underlay} from '../Underlay/Underlay'
 import {
     ActiveIndicator,
     Container,
@@ -9,8 +10,6 @@ import {
     Header,
     HeaderInner,
     Inner,
-    Label,
-    LabelInner,
     LabelText,
     Leading,
     SupportingText,
@@ -20,9 +19,8 @@ import {RenderProps, TextFieldBase, TextFieldProps} from './TextFieldBase'
 
 const AnimatedActiveIndicator =
     Animated.createAnimatedComponent(ActiveIndicator)
+
 const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner)
-const AnimatedLabelInner = Animated.createAnimatedComponent(LabelInner)
-const AnimatedLabelLabel = Animated.createAnimatedComponent(Label)
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText)
 const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText)
 const render = ({
@@ -38,20 +36,15 @@ const render = ({
     renderStyle,
     supportingText,
     trailing,
-    underlayColor,
-    onLabelLayout
+    underlayColor
 }: RenderProps) => {
     const {
-        activeIndicatorBackgroundColor,
-        activeIndicatorScaleY,
-        backgroundColor,
-        labelInnerTranslateX,
-        labelInnerTranslateY,
-        labelScale,
-        labelTextColor,
-        supportingTextColor,
-        labelTranslateY
+        activeIndicatorAnimatedStyle,
+        headerInnerAnimatedStyle,
+        labelTextAnimatedStyle,
+        supportingTextAnimatedStyle
     } = renderStyle
+
     const shape = 'extraSmallTop'
     const leadingShow = !!leading
 
@@ -73,12 +66,12 @@ const render = ({
                     testID={`textfield__header--${id}`}
                 >
                     <AnimatedHeaderInner
+                        leadingShow={leadingShow}
                         multiline={multiline}
                         shape={shape}
+                        style={[headerInnerAnimatedStyle]}
                         testID={`textfield__headerInner--${id}`}
-                        leadingShow={leadingShow}
                         trailingShow={!!trailing}
-                        style={{backgroundColor}}
                     >
                         {leading && (
                             <Leading testID={`textfield__leading--${id}`}>
@@ -105,44 +98,22 @@ const render = ({
                             </Trailing>
                         )}
 
-                        <AnimatedLabelLabel
+                        <AnimatedLabelText
                             leadingShow={leadingShow}
-                            testID={`textField__label--${id}`}
-                            onLayout={onLabelLayout}
-                            style={{
-                                transform: [{translateY: labelTranslateY}]
-                            }}
+                            size='large'
+                            style={[labelTextAnimatedStyle]}
+                            testID={`textField__labelText--${id}`}
+                            type='body'
                         >
-                            <AnimatedLabelInner
-                                testID={`textField__labelInner--${id}`}
-                                style={{
-                                    transform: [
-                                        {scale: labelScale},
-                                        {translateX: labelInnerTranslateX},
-                                        {translateY: labelInnerTranslateY}
-                                    ]
-                                }}
-                            >
-                                <AnimatedLabelText
-                                    testID={`textField__labelText--${id}`}
-                                    type='body'
-                                    size='large'
-                                    style={{color: labelTextColor}}
-                                >
-                                    {labelText}
-                                </AnimatedLabelText>
-                            </AnimatedLabelInner>
-                        </AnimatedLabelLabel>
+                            {labelText}
+                        </AnimatedLabelText>
 
                         <AnimatedActiveIndicator
                             testID={`textfield__activeIndicator--${id}`}
-                            style={{
-                                backgroundColor: activeIndicatorBackgroundColor,
-                                transform: [{scaleY: activeIndicatorScaleY}]
-                            }}
+                            style={[activeIndicatorAnimatedStyle]}
                         />
 
-                        <Hovered
+                        <Underlay
                             eventName={eventName}
                             opacities={[0, 0.08]}
                             underlayColor={underlayColor}
@@ -151,9 +122,9 @@ const render = ({
                 </Header>
 
                 <AnimatedSupportingText
-                    type='body'
                     size='small'
-                    style={{color: supportingTextColor}}
+                    style={[supportingTextAnimatedStyle]}
+                    type='body'
                 >
                     {supportingText}
                 </AnimatedSupportingText>

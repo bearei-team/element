@@ -63,7 +63,7 @@ export const HeaderInner = styled(Shape)<HeaderInnerProps>`
         `}
 `
 
-export const Label = styled.View<LabelProps>`
+export const LabelText = styled(Typography)<LabelProps>`
     pointer-events: none;
     position: absolute;
 
@@ -79,8 +79,6 @@ export const Label = styled.View<LabelProps>`
         `}
 `
 
-export const LabelInner = styled.View``
-export const LabelText = styled(Typography)``
 export const Trailing = styled.View`
     display: flex;
     flex-direction: row;
@@ -162,11 +160,13 @@ export const Input = styled(TextInput)<TextInputProps>`
             font-size: ${theme.adaptFontSize(
                 theme.typography.body.large.size
             )}px;
+
             font-style: ${theme.typography.body.large.style};
             font-weight: ${theme.typography.body.large.weight};
             letter-spacing: ${theme.adaptSize(
                 theme.typography.body.large.letterSpacing
             )}px;
+
             padding: ${theme.spacing.none}px;
         `};
 
@@ -192,6 +192,5 @@ export const ActiveIndicator = styled.View`
         bottom: ${theme.adaptSize(theme.spacing.none)}px;
         left: ${theme.adaptSize(theme.spacing.none)}px;
         right: ${theme.adaptSize(theme.spacing.none)}px;
-        height: ${theme.adaptSize(theme.spacing.extraSmall / 2)}px;
     `}
 `
