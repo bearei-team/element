@@ -2,7 +2,7 @@ import {FC, forwardRef, memo} from 'react'
 import {TextInput} from 'react-native'
 import {Divider} from '../Divider/Divider'
 import {Icon} from '../Icon/Icon'
-import {Hovered} from '../Underlay/Hovered'
+import {Underlay} from '../Underlay/Underlay'
 import {Container, Content, Inner, Leading, Trailing} from './Search.styles'
 import {RenderProps, SearchBase, SearchProps} from './SearchBase'
 
@@ -41,9 +41,9 @@ const render = ({
                 <Leading testID={`search__leading--${id}`}>
                     {leading ?? (
                         <Icon
-                            type='outlined'
                             name='search'
                             renderStyle={iconRenderStyle}
+                            type='outlined'
                         />
                     )}
                 </Leading>
@@ -55,20 +55,20 @@ const render = ({
                     </Trailing>
                 )}
 
-                <Hovered
+                <Underlay
                     eventName={eventName}
                     opacities={[0, 0.08]}
-                    shape={listVisible ? 'extraLargeTop' : shape}
                     underlayColor={underlayColor}
                 />
             </Inner>
 
             {listVisible && (
                 <Divider
-                    size='large'
                     block={true}
+                    size='large'
                 />
             )}
+
             {type === 'standard' && <>{searchList}</>}
         </Container>
     )

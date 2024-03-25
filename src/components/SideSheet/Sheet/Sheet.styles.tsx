@@ -10,8 +10,8 @@ type InnerProps = ContainerProps
 export const Container = styled(View)<ContainerProps>`
     display: flex;
     flex-direction: row;
-    overflow: hidden;
     flex: 1;
+    overflow: hidden;
 
     ${({sheetPosition = 'horizontalEnd', type}) => {
         const innerPosition = {
@@ -33,9 +33,9 @@ export const Inner = styled(Shape)<InnerProps>`
 
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surfaceContainerLow};
-        width: ${theme.adaptSize(theme.spacing.small * 40)}px;
         min-height: ${theme.adaptSize(theme.spacing.small * 80)}px;
         padding-bottom: ${theme.adaptSize(theme.spacing.large)}px;
+        width: ${theme.adaptSize(theme.spacing.small * 40)}px;
     `}
 
     ${({sheetPosition = 'horizontalEnd', type, theme}) => {
@@ -62,6 +62,7 @@ export const Header = styled.View<HeaderProps>`
         height: ${theme.adaptSize(
             theme.spacing.small * 9 + theme.spacing.extraSmall
         )}px;
+
         padding: ${theme.adaptSize(
                 theme.spacing.medium - theme.spacing.extraSmall
             )}px

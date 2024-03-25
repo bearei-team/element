@@ -30,10 +30,10 @@ export const Inner = styled.Pressable<InnerProps>`
     position: relative;
 
     ${({theme}) => css`
-        gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
-        padding: ${theme.adaptSize(theme.spacing.extraSmall)}px;
         background-color: ${theme.palette.surface.surfaceContainerHigh};
+        gap: ${theme.adaptSize(theme.spacing.extraSmall)}px;
         height: ${theme.adaptSize(theme.spacing.small * 7)}px;
+        padding: ${theme.adaptSize(theme.spacing.extraSmall)}px;
     `};
 
     ${({theme, trailingShow}) =>
@@ -67,9 +67,9 @@ export const Content = styled.View`
 `
 
 export const TextField = styled.View`
+    align-items: center;
     display: flex;
     flex-direction: row;
-    align-items: center;
     flex: 1;
 
     ${({theme}) => css`
@@ -88,21 +88,24 @@ export const Input = styled(TextInput)`
 
     ${({theme, secureTextEntry}) =>
         /**
-         * Using secureTextEntry props in macOS with text-related styles on the input box will cause the
-         * enableFocusRing setting to be invalidated. It is uncertain whether this is a bug in
-         * react-native-macos or a native bug. As a temporary workaround, if you use secureTextEntry
-         * in macos, it does not provide text styles.
+         * Using secureTextEntry props in macOS with text-related styles on the
+         * input box will cause the enableFocusRing setting to be invalidated.
+         * It is uncertain whether this is a bug in react-native-macos or a
+         * native bug. As a temporary workaround, if you use secureTextEntry in
+         * macos, it does not provide text styles.
          */
         !secureTextEntry &&
         css`
             font-size: ${theme.adaptFontSize(
                 theme.typography.body.large.size
             )}px;
+
             font-style: ${theme.typography.body.large.style};
             font-weight: ${theme.typography.body.large.weight};
             letter-spacing: ${theme.adaptSize(
                 theme.typography.body.large.letterSpacing
             )}px;
+
             padding: ${theme.spacing.none}px;
         `}
 `

@@ -1,8 +1,14 @@
-import {useEffect, useMemo} from 'react'
-import {Animated} from 'react-native'
+import {useEffect} from 'react'
+import {
+    AnimatableValue,
+    SharedValue,
+    cancelAnimation,
+    interpolate,
+    useAnimatedStyle,
+    useSharedValue
+} from 'react-native-reanimated'
 import {useTheme} from 'styled-components/native'
 import {AnimatedTiming, useAnimatedTiming} from '../../hooks/useAnimatedTiming'
-import {useAnimatedValue} from '../../hooks/useAnimatedValue'
 
 interface UseAnimatedOptions {
     listVisible?: boolean
@@ -10,51 +16,45 @@ interface UseAnimatedOptions {
 }
 
 interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
-    listHeightAnimated: Animated.Value
+    listHeight: SharedValue<AnimatableValue>
 }
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {
-        listHeightAnimated,
-        listVisible,
-        onListClosed
-    }: ProcessAnimatedTimingOptions
+    {listHeight, listVisible, onListClosed}: ProcessAnimatedTimingOptions
 ) =>
-    animatedTiming(listHeightAnimated, {toValue: listVisible ? 1 : 0}).start(
-        ({finished}) => finished && !listVisible && onListClosed(listVisible)
+    animatedTiming(
+        listHeight,
+        {toValue: listVisible ? 1 : 0},
+        finished => finished && !listVisible && onListClosed(listVisible)
     )
 
 export const useAnimated = ({
     listVisible,
     onListClosed
 }: UseAnimatedOptions) => {
-    const [listHeightAnimated] = useAnimatedValue(listVisible ? 1 : 0)
+    const listHeight = useSharedValue(listVisible ? 1 : 0)
     const theme = useTheme()
     const [animatedTiming] = useAnimatedTiming(theme)
-    const listHeight = useMemo(
-        () =>
-            listHeightAnimated.interpolate({
-                inputRange: [0, 1],
-                outputRange: [
-                    theme.adaptSize(theme.spacing.none),
-                    theme.adaptSize(theme.spacing.small * 40)
-                ]
-            }),
-        [listHeightAnimated, theme]
-    )
+    const labelTextAnimatedStyle = useAnimatedStyle(() => ({
+        height: interpolate(
+            listHeight.value,
+            [0, 1],
+            [0, theme.adaptSize(theme.spacing.small * 40)]
+        )
+    }))
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
-            listHeightAnimated,
+            listHeight,
             listVisible,
             onListClosed
         })
 
         return () => {
-            listHeightAnimated.stopAnimation()
+            cancelAnimation(listHeight)
         }
-    }, [animatedTiming, listHeightAnimated, listVisible, onListClosed])
+    }, [animatedTiming, listHeight, listVisible, onListClosed])
 
-    return [{listHeight}]
+    return [labelTextAnimatedStyle]
 }

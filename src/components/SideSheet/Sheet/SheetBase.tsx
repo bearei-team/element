@@ -1,5 +1,6 @@
 import {RefAttributes, forwardRef, useId, useMemo} from 'react'
-import {Animated, ModalProps, View, ViewProps, ViewStyle} from 'react-native'
+import {ModalProps, View, ViewProps, ViewStyle} from 'react-native'
+import {AnimatedStyle} from 'react-native-reanimated'
 import {OnEvent} from '../../../hooks/useOnEvent'
 import {Button} from '../../Button/Button'
 import {ShapeProps} from '../../Common/Common.styles'
@@ -38,8 +39,9 @@ export interface SheetProps
 }
 
 export interface RenderProps extends SheetProps {
-    renderStyle: Animated.WithAnimatedObject<ViewStyle> & {
-        innerTranslateX: Animated.AnimatedInterpolation<string | number>
+    renderStyle: {
+        contentAnimatedStyle: AnimatedStyle<ViewStyle>
+        innerAnimatedStyle: AnimatedStyle<ViewStyle>
     }
 }
 
@@ -143,11 +145,11 @@ export const SheetBase = forwardRef<View, SheetBaseProps>(
             closeIcon: closeIconElement,
             headlineText,
             id,
-            sheetPosition,
             primaryButton: primaryButtonElement,
             ref,
             renderStyle,
             secondaryButton: secondaryButtonElement,
+            sheetPosition,
             type
         })
     }

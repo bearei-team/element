@@ -7,8 +7,8 @@ import {ListItem, ListItemProps} from './ListItem/ListItem'
 export interface ListDataSource
     extends Pick<
         ListItemProps,
-        | 'addonAfter'
-        | 'addonBefore'
+        | 'afterAffordance'
+        | 'beforeAffordance'
         | 'headline'
         | 'leading'
         | 'supporting'

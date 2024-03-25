@@ -1,12 +1,19 @@
 import {useEffect} from 'react'
-import {Animated} from 'react-native'
+import {
+    AnimatableValue,
+    SharedValue,
+    cancelAnimation,
+    interpolate,
+    interpolateColor,
+    useAnimatedStyle,
+    useSharedValue
+} from 'react-native-reanimated'
 import {useTheme} from 'styled-components/native'
 import {
     AnimatedTiming,
     AnimatedTimingOptions,
     useAnimatedTiming
 } from '../../../hooks/useAnimatedTiming'
-import {useAnimatedValue} from '../../../hooks/useAnimatedValue'
 import {RenderProps} from './SheetBase'
 
 type UseAnimatedOptions = Pick<
@@ -14,9 +21,9 @@ type UseAnimatedOptions = Pick<
     'visible' | 'sheetPosition' | 'type' | 'onClosed'
 >
 interface ScreenAnimatedOptions extends Pick<UseAnimatedOptions, 'onClosed'> {
-    backgroundAnimated: Animated.Value
-    translateXAnimated: Animated.Value
-    widthAnimated: Animated.Value
+    backgroundColor: SharedValue<AnimatableValue>
+    innerTranslateX: SharedValue<AnimatableValue>
+    width: SharedValue<AnimatableValue>
 }
 
 type ProcessAnimatedTimingOptions = ScreenAnimatedOptions &
@@ -24,11 +31,7 @@ type ProcessAnimatedTimingOptions = ScreenAnimatedOptions &
 
 const enterScreen = (
     animatedTiming: AnimatedTiming,
-    {
-        backgroundAnimated,
-        translateXAnimated,
-        widthAnimated
-    }: ScreenAnimatedOptions
+    {backgroundColor, innerTranslateX, width}: ScreenAnimatedOptions
 ) => {
     const animatedTimingOptions = {
         duration: 'medium3',
@@ -36,41 +39,33 @@ const enterScreen = (
         toValue: 1
     } as AnimatedTimingOptions
 
-    Animated.parallel([
-        animatedTiming(backgroundAnimated, animatedTimingOptions),
-        animatedTiming(translateXAnimated, animatedTimingOptions),
-        animatedTiming(widthAnimated, animatedTimingOptions)
-    ]).start()
+    animatedTiming(backgroundColor, animatedTimingOptions)
+    animatedTiming(innerTranslateX, animatedTimingOptions)
+    animatedTiming(width, animatedTimingOptions)
 }
 
 const exitScreen = (
     animatedTiming: AnimatedTiming,
-    {
-        backgroundAnimated,
-        translateXAnimated,
-        widthAnimated,
-        onClosed
-    }: ScreenAnimatedOptions
+    {backgroundColor, innerTranslateX, width, onClosed}: ScreenAnimatedOptions
 ) => {
     const animatedTimingOptions = {
         duration: 'short3',
         easing: 'emphasizedAccelerate',
         toValue: 0
     } as AnimatedTimingOptions
-    Animated.parallel([
-        animatedTiming(backgroundAnimated, animatedTimingOptions),
-        animatedTiming(translateXAnimated, animatedTimingOptions),
-        animatedTiming(widthAnimated, animatedTimingOptions)
-    ]).start(({finished}) => finished && onClosed?.())
+
+    animatedTiming(backgroundColor, animatedTimingOptions)
+    animatedTiming(innerTranslateX, animatedTimingOptions)
+    animatedTiming(width, animatedTimingOptions, onClosed)
 }
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {
-        backgroundAnimated,
-        translateXAnimated,
+        backgroundColor,
+        innerTranslateX,
         visible,
-        widthAnimated,
+        width,
         onClosed
     }: ProcessAnimatedTimingOptions
 ) => {
@@ -79,9 +74,9 @@ const processAnimatedTiming = (
     }
 
     const screenAnimatedOptions = {
-        backgroundAnimated,
-        translateXAnimated,
-        widthAnimated
+        backgroundColor,
+        innerTranslateX,
+        width
     }
 
     visible ?
@@ -96,61 +91,80 @@ export const useAnimated = ({
     onClosed
 }: UseAnimatedOptions) => {
     const animatedValue = visible ? 1 : 0
-    const [backgroundAnimated] = useAnimatedValue(animatedValue)
-    const [translateXAnimated] = useAnimatedValue(animatedValue)
-    const [widthAnimated] = useAnimatedValue(animatedValue)
+    const backgroundColor = useSharedValue(animatedValue)
+    const width = useSharedValue(animatedValue)
+    const innerTranslateX = useSharedValue(animatedValue)
     const theme = useTheme()
     const [animatedTiming] = useAnimatedTiming(theme)
-    const backgroundColor = backgroundAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [
-            theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0),
-            type === 'standard' ?
-                theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0)
-            :   theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0.32)
-        ]
-    })
+    const contentAnimatedStyle = useAnimatedStyle(() => ({
+        backgroundColor: interpolateColor(
+            backgroundColor.value,
+            [0, 1],
+            [
+                theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0),
+                type === 'standard' ?
+                    theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0)
+                :   theme.color.convertHexToRGBA(
+                        theme.palette.scrim.scrim,
+                        0.32
+                    )
+            ]
+        ),
+        ...(type === 'standard' && {
+            width: interpolate(
+                width.value,
+                [0, 1],
+                [
+                    0,
+                    theme.adaptSize(
+                        theme.spacing.small * 40 + theme.spacing.medium
+                    )
+                ]
+            )
+        })
+    }))
 
-    const innerTranslateX = translateXAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [
-            sheetPosition === 'horizontalEnd' ?
-                theme.adaptSize(theme.spacing.small * 40)
-            :   -theme.adaptSize(theme.spacing.small * 40),
-            theme.adaptSize(theme.spacing.none)
-        ]
-    })
-
-    const width = widthAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [
-            theme.adaptSize(theme.spacing.small * 0),
-            theme.adaptSize(theme.spacing.small * 40 + theme.spacing.medium)
-        ]
-    })
+    const innerAnimatedStyle = useAnimatedStyle(() => ({
+        ...(type === 'modal' && {
+            transform: [
+                {
+                    translateX: interpolate(
+                        innerTranslateX.value,
+                        [0, 1],
+                        [
+                            sheetPosition === 'horizontalEnd' ?
+                                theme.adaptSize(theme.spacing.small * 40)
+                            :   -theme.adaptSize(theme.spacing.small * 40),
+                            theme.adaptSize(theme.spacing.none)
+                        ]
+                    )
+                }
+            ]
+        })
+    }))
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
-            backgroundAnimated,
-            translateXAnimated,
+            backgroundColor,
+            innerTranslateX,
+            onClosed,
             visible,
-            widthAnimated,
-            onClosed
+            width
         })
 
         return () => {
-            backgroundAnimated.stopAnimation()
-            translateXAnimated.stopAnimation()
-            widthAnimated.stopAnimation()
+            cancelAnimation(backgroundColor)
+            cancelAnimation(innerTranslateX)
+            cancelAnimation(width)
         }
     }, [
         animatedTiming,
-        backgroundAnimated,
+        backgroundColor,
         onClosed,
-        translateXAnimated,
+        innerTranslateX,
         visible,
-        widthAnimated
+        width
     ])
 
-    return [{backgroundColor, innerTranslateX, width}]
+    return [{contentAnimatedStyle, innerAnimatedStyle}]
 }

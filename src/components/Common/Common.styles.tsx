@@ -22,12 +22,15 @@ export const Shape = styled(View)<ShapeProps>`
         border-bottom-left-radius: ${theme.adaptSize(
             theme.shape[shape].bottomLeft
         )}px;
+
         border-bottom-right-radius: ${theme.adaptSize(
             theme.shape[shape].bottomRight
         )}px;
+
         border-top-left-radius: ${theme.adaptSize(
             theme.shape[shape].topLeft
         )}px;
+
         border-top-right-radius: ${theme.adaptSize(
             theme.shape[shape].topRight
         )}px;
@@ -68,6 +71,7 @@ export const Typography = styled.Text<TypographyProps>`
         letter-spacing: ${theme.adaptSize(
             theme.typography[type][size].letterSpacing
         )}px;
+
         line-height: ${theme.adaptSize(
             theme.typography[type][size].lineHeight
         )}px;

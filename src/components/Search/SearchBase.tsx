@@ -10,15 +10,14 @@ import {
     useRef
 } from 'react'
 import {
-    Animated,
     LayoutRectangle,
     PressableProps,
     TextInput,
     TextInputProps,
-    TextStyle,
     View,
     ViewStyle
 } from 'react-native'
+import Animated, {AnimatedStyle} from 'react-native-reanimated'
 import {useTheme} from 'styled-components/native'
 import {Updater, useImmer} from 'use-immer'
 import {emitter} from '../../context/ModalProvider'
@@ -44,9 +43,10 @@ export interface SearchProps extends BaseProps {
     trailing?: React.JSX.Element
 
     /**
-     * The modal type has a problem with mouseover events being passed through to lower level
-     * elements in macOS. This problem is caused by the fact that react-native-macos does not
-     * implement the native modal and some of the mechanisms of the macos component itself.
+     * The modal type has a problem with mouseover events being passed through
+     * to lower level elements in macOS. This problem is caused by the fact that
+     * react-native-macos does not implement the native modal and some of the
+     * mechanisms of the macos component itself.
      */
     type?: 'standard' | 'modal'
 }
@@ -71,10 +71,10 @@ interface InitialState {
     data?: ListDataSource[]
     eventName: EventName
     layout: LayoutRectangle & {pageX?: number; pageY?: number}
+    listVisible?: boolean
     state: State
     status: ComponentStatus
     value?: string
-    listVisible?: boolean
 }
 
 interface ProcessEventOptions {
@@ -83,6 +83,7 @@ interface ProcessEventOptions {
 
 type ProcessChangeTextOptions = Pick<RenderProps, 'data' | 'onChangeText'> &
     ProcessEventOptions
+
 type ProcessEmitOptions = Pick<InitialState, 'status'> &
     Pick<RenderProps, 'id' | 'type'> &
     Pick<RenderProps, 'listVisible'>
@@ -101,8 +102,9 @@ type RenderSearchListOptions = SearchProps & {
     containerHeight?: number
     containerPageX?: number
     containerPageY?: number
-    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
+    renderStyle: {
         width?: number
+        labelTextAnimatedStyle: AnimatedStyle<ViewStyle>
     }
     visible?: boolean
 }
@@ -112,6 +114,10 @@ const processStateChange = (
     state: State,
     {eventName, ref, setState}: ProcessStateChangeOptions
 ) => {
+    if (eventName === 'layout') {
+        return
+    }
+
     const nextEvent = {
         pressOut: () => processFocus(ref)
     } as Record<EventName, () => void>
@@ -139,6 +145,7 @@ const processChangeText = (
                 const headlineMatch = !!headline
                     ?.toLowerCase()
                     .includes(matchText)
+
                 const supportingTextMatch =
                     typeof supporting === 'string' &&
                     !!supporting?.toLowerCase().includes(matchText)
@@ -178,13 +185,13 @@ const processContainerLayout = (
     type === 'modal' &&
     containerCurrent?.measure((x, y, width, height, pageX, pageY) =>
         setState(draft => {
-            const update =
+            const updateLayout =
                 draft.layout.height !== height ||
                 draft.layout.pageX !== pageX ||
                 draft.layout.pageY !== pageY ||
                 draft.layout.width !== width
 
-            if (update) {
+            if (updateLayout) {
                 draft.layout = {
                     height,
                     pageX,
@@ -242,7 +249,7 @@ const renderSearchList = ({
     renderStyle,
     type
 }: RenderSearchListOptions) => {
-    const {height, width} = renderStyle
+    const {labelTextAnimatedStyle, width} = renderStyle
 
     return (
         <AnimatedSearchList
@@ -251,7 +258,7 @@ const renderSearchList = ({
             containerPageY={containerPageY}
             renderStyle={{width}}
             shape='extraLargeBottom'
-            style={{height}}
+            style={[labelTextAnimatedStyle]}
             testID={`search__list--${id}`}
             type={type}
             visible={!!data?.length}
@@ -319,7 +326,11 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
             [setState]
         )
 
-        const [{listHeight}] = useAnimated({listVisible, onListClosed})
+        const [labelTextAnimatedStyle] = useAnimated({
+            listVisible,
+            onListClosed
+        })
+
         const [{onBlur, onFocus, ...onEvent}] = useOnEvent({
             ...textInputProps,
             onStateChange
@@ -337,10 +348,6 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
             [dataSources, onChangeTextSource, setState]
         )
 
-        const onUnmount = useCallback(
-            () => processUnmount(id, {type}),
-            [id, type]
-        )
         const input = useMemo(
             () =>
                 renderTextInput({
@@ -377,7 +384,7 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                     defaultActiveKey,
                     id,
                     onActive,
-                    renderStyle: {height: listHeight, width: layout.width},
+                    renderStyle: {labelTextAnimatedStyle, width: layout.width},
                     type
                 }),
             [
@@ -385,11 +392,11 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
                 data,
                 defaultActiveKey,
                 id,
+                labelTextAnimatedStyle,
                 layout.height,
                 layout.pageX,
                 layout.pageY,
                 layout.width,
-                listHeight,
                 onActive,
                 type
             ]
@@ -410,9 +417,9 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
             processEmit(searchList, {status, id, listVisible, type})
 
             return () => {
-                onUnmount()
+                processUnmount(id, {type})
             }
-        }, [id, listVisible, onUnmount, searchList, setState, status, type])
+        }, [id, listVisible, searchList, setState, status, type])
 
         return render({
             containerRef,

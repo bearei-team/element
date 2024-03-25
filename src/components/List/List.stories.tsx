@@ -115,7 +115,7 @@ export const Addon: StoryObj<ListProps> = {
                         style={{backgroundColor: 'red', width: 24, height: 24}}
                     />
                 ),
-                addonAfter: (
+                afterAffordance: (
                     <View
                         style={{backgroundColor: 'red', width: 84, height: 40}}
                     />
@@ -132,7 +132,7 @@ export const Addon: StoryObj<ListProps> = {
                         renderStyle={{width: 24, height: 24}}
                     />
                 ),
-                addonAfter: (
+                afterAffordance: (
                     <View
                         style={{backgroundColor: 'red', width: 84, height: 40}}
                     />
@@ -149,7 +149,7 @@ export const Addon: StoryObj<ListProps> = {
                         renderStyle={{width: 24, height: 24}}
                     />
                 ),
-                addonAfter: (
+                afterAffordance: (
                     <View
                         style={{backgroundColor: 'red', width: 84, height: 40}}
                     />
@@ -166,7 +166,7 @@ export const Addon: StoryObj<ListProps> = {
                         renderStyle={{width: 24, height: 24}}
                     />
                 ),
-                addonAfter: (
+                afterAffordance: (
                     <View
                         style={{backgroundColor: 'red', width: 84, height: 40}}
                     />

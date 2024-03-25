@@ -4,8 +4,8 @@ import Animated from 'react-native-reanimated'
 import {TouchableRipple} from '../../TouchableRipple/TouchableRipple'
 import {Underlay} from '../../Underlay/Underlay'
 import {
-    AddonAfter,
-    AddonBefore,
+    AfterAffordance,
+    BeforeAffordance,
     Container,
     Content,
     Headline,
@@ -24,8 +24,8 @@ const AnimatedTrailing = Animated.createAnimatedComponent(Trailing)
 const render = ({
     active,
     activeColor,
-    addonAfter,
-    addonBefore,
+    afterAffordance,
+    beforeAffordance,
     eventName,
     headline,
     id,
@@ -44,10 +44,10 @@ const render = ({
     ...innerProps
 }: RenderProps) => {
     const {onLayout, ...onTouchableRippleEvent} = onEvent
-    const {containerAnimatedStyle, mainAnimatedStyle, trailingAnimatedStyle} =
+    const {containerAnimatedStyle, innerAnimatedStyle, trailingAnimatedStyle} =
         renderStyle
 
-    const addon = addonBefore || addonAfter
+    const addon = beforeAffordance || afterAffordance
 
     return (
         <AnimatedContainer
@@ -61,15 +61,15 @@ const render = ({
                 itemGap={itemGap}
                 onLayout={onLayout}
                 testID={`listItem__inner--${id}`}
-                style={[mainAnimatedStyle]}
+                style={[innerAnimatedStyle]}
             >
-                {addonBefore && (
-                    <AddonBefore
+                {beforeAffordance && (
+                    <BeforeAffordance
                         onLayout={onAddonAfterLayout}
                         testID={`listItem__before--${id}`}
                     >
-                        {addonBefore}
-                    </AddonBefore>
+                        {beforeAffordance}
+                    </BeforeAffordance>
                 )}
 
                 <Main testID={`listItem_main--${id}`}>
@@ -154,13 +154,13 @@ const render = ({
                     </TouchableRipple>
                 </Main>
 
-                {addonAfter && (
-                    <AddonAfter
+                {afterAffordance && (
+                    <AfterAffordance
                         onLayout={onAddonAfterLayout}
                         testID={`listItem__addonAfter--${id}`}
                     >
-                        {addonAfter}
-                    </AddonAfter>
+                        {afterAffordance}
+                    </AfterAffordance>
                 )}
             </AnimatedInner>
         </AnimatedContainer>

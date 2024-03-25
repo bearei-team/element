@@ -34,15 +34,11 @@ const processClose = ({setState}: ProcessEventOptions) =>
     })
 
 const processClosed = ({onClose}: ProcessClosedOptions) => onClose?.()
-const processVisible = ({setState}: ProcessEventOptions, visible?: boolean) => {
-    if (typeof visible !== 'boolean') {
-        return
-    }
-
+const processVisible = ({setState}: ProcessEventOptions, visible?: boolean) =>
+    typeof visible === 'boolean' &&
     setState(draft => {
         draft.visible !== visible && (draft.visible = visible)
     })
-}
 
 const processEmit = (
     sheet: React.JSX.Element,

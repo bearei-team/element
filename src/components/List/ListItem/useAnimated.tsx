@@ -36,7 +36,7 @@ interface ProcessVisibleAnimatedOptions
 
 interface ProcessActiveAnimatedOptions
     extends Pick<UseAnimatedOptions, 'active'> {
-    contentTranslateX: SharedValue<AnimatableValue>
+    innerTranslateX: SharedValue<AnimatableValue>
 }
 
 interface ProcessTrailingAnimatedTimingOptions extends UseAnimatedOptions {
@@ -56,10 +56,10 @@ const processVisibleAnimated = (
 
 const processActiveAnimated = (
     animatedTiming: AnimatedTiming,
-    {contentTranslateX, active}: ProcessActiveAnimatedOptions
+    {innerTranslateX, active}: ProcessActiveAnimatedOptions
 ) =>
     typeof active === 'boolean' &&
-    animatedTiming(contentTranslateX, {toValue: active ? 1 : 0})
+    animatedTiming(innerTranslateX, {toValue: active ? 1 : 0})
 
 const processTrailingAnimatedTiming = (
     animatedTiming: AnimatedTiming,
@@ -100,7 +100,7 @@ export const useAnimated = ({
     )
 
     const trailingOpacity = useSharedValue(trailingButton ? 0 : 1)
-    const contentTranslateX = useSharedValue(0)
+    const innerTranslateX = useSharedValue(0)
     const theme = useTheme()
     const [animatedTiming] = useAnimatedTiming(theme)
     const containerAnimatedStyle = useAnimatedStyle(() => ({
@@ -111,11 +111,11 @@ export const useAnimated = ({
         opacity: interpolate(height.value, [0, 1], [0, 1])
     }))
 
-    const mainAnimatedStyle = useAnimatedStyle(() => ({
+    const innerAnimatedStyle = useAnimatedStyle(() => ({
         transform: [
             {
                 translateX: interpolate(
-                    contentTranslateX.value,
+                    innerTranslateX.value,
                     [0, 1],
                     [0, -addonAfterLayoutWidth]
                 )
@@ -159,12 +159,12 @@ export const useAnimated = ({
     }, [animatedTiming, height, onClosed, visible])
 
     useEffect(() => {
-        processActiveAnimated(animatedTiming, {contentTranslateX, active})
+        processActiveAnimated(animatedTiming, {innerTranslateX, active})
 
         return () => {
-            cancelAnimation(contentTranslateX)
+            cancelAnimation(innerTranslateX)
         }
-    }, [active, animatedTiming, contentTranslateX])
+    }, [active, animatedTiming, innerTranslateX])
 
-    return [{containerAnimatedStyle, trailingAnimatedStyle, mainAnimatedStyle}]
+    return [{containerAnimatedStyle, trailingAnimatedStyle, innerAnimatedStyle}]
 }

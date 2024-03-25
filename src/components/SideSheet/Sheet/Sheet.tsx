@@ -1,5 +1,6 @@
 import React, {FC, forwardRef, memo} from 'react'
-import {Animated, View} from 'react-native'
+import {View} from 'react-native'
+import Animated from 'react-native-reanimated'
 import {Divider} from '../../Divider/Divider'
 import {
     BackAffordance,
@@ -33,33 +34,25 @@ const render = ({
     type,
     ...innerProps
 }: RenderProps) => {
-    const {backgroundColor, innerTranslateX, width} = renderStyle
+    const {innerAnimatedStyle, contentAnimatedStyle} = renderStyle
     const shape =
         sheetPosition === 'horizontalStart' ? 'largeEnd' : 'largeStart'
 
     return (
         <AnimatedContainer
-            style={{
-                backgroundColor,
-                ...(type === 'standard' && {width})
-            }}
-            testID={`sideSheet--${id}`}
             sheetPosition={sheetPosition}
+            style={[contentAnimatedStyle]}
+            testID={`sideSheet--${id}`}
             type={type}
         >
             <AnimatedInner
                 {...innerProps}
+                accessibilityRole='alert'
                 shape={shape}
                 sheetPosition={sheetPosition}
-                type={type}
-                style={{
-                    ...(typeof style === 'object' && style),
-                    ...(type === 'modal' && {
-                        transform: [{translateX: innerTranslateX}]
-                    })
-                }}
+                style={[style, innerAnimatedStyle]}
                 testID={`sideSheet__inner--${id}`}
-                accessibilityRole='alert'
+                type={type}
             >
                 <Header testID={`sideSheet__header--${id}`}>
                     {back && (
@@ -91,9 +84,10 @@ const render = ({
                 {footer && (
                     <>
                         <Divider
-                            size='large'
                             block={true}
+                            size='large'
                         />
+
                         <Footer testID={`sideSheet__footer--${id}`}>
                             <PrimaryButton
                                 testID={`sideSheet__primaryButton--${id}`}

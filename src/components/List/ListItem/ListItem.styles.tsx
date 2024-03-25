@@ -166,5 +166,5 @@ export const SupportingText = styled(Typography)`
     `}
 `
 
-export const AddonBefore = styled.View``
-export const AddonAfter = styled(AddonBefore)``
+export const BeforeAffordance = styled.View``
+export const AfterAffordance = styled(BeforeAffordance)``

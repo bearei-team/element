@@ -29,8 +29,8 @@ import {useAnimated} from './useAnimated'
 
 export interface ListItemProps extends TouchableRippleProps {
     activeKey?: string
-    addonAfter?: React.JSX.Element
-    addonBefore?: React.JSX.Element
+    afterAffordance?: React.JSX.Element
+    beforeAffordance?: React.JSX.Element
     closeIcon?: boolean
     closeIconName?: IconName
     closeIconType?: IconType
@@ -65,7 +65,7 @@ export interface RenderProps extends ListItemProps {
     onEvent: OnEvent
     renderStyle: {
         containerAnimatedStyle: AnimatedStyle<ViewStyle>
-        mainAnimatedStyle: AnimatedStyle<ViewStyle>
+        innerAnimatedStyle: AnimatedStyle<ViewStyle>
         trailingAnimatedStyle: AnimatedStyle<ViewStyle>
     }
     touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>
@@ -323,7 +323,7 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
         )
 
         const [
-            {containerAnimatedStyle, trailingAnimatedStyle, mainAnimatedStyle}
+            {containerAnimatedStyle, trailingAnimatedStyle, innerAnimatedStyle}
         ] = useAnimated({
             active,
             addonAfterLayoutWidth: addonAfterLayout.width,
@@ -421,7 +421,7 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             renderStyle: {
                 containerAnimatedStyle,
                 trailingAnimatedStyle,
-                mainAnimatedStyle
+                innerAnimatedStyle
             },
             size,
             supporting,
