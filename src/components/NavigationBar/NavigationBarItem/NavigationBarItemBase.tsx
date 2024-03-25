@@ -7,15 +7,14 @@ import {
     useMemo
 } from 'react'
 import {
-    Animated,
     GestureResponderEvent,
     NativeTouchEvent,
     PressableProps,
     TextStyle,
     View,
-    ViewProps,
-    ViewStyle
+    ViewProps
 } from 'react-native'
+import {AnimatedStyle} from 'react-native-reanimated'
 import {useTheme} from 'styled-components/native'
 import {Updater, useImmer} from 'use-immer'
 import {
@@ -24,7 +23,7 @@ import {
     useOnEvent
 } from '../../../hooks/useOnEvent'
 import {ShapeProps} from '../../Common/Common.styles'
-import {AnimatedInterpolation, EventName, State} from '../../Common/interface'
+import {EventName, State} from '../../Common/interface'
 import {Icon, IconProps} from '../../Icon/Icon'
 import {useAnimated} from './useAnimated'
 
@@ -37,11 +36,11 @@ export interface NavigationBarItemProps
             PressableProps
     > {
     activeKey?: string
-    type?: NavigationBarType
     dataKey?: string
     icon?: React.JSX.Element
     labelText?: string
     onActive?: (key?: string) => void
+    type?: NavigationBarType
 }
 
 export interface RenderProps extends NavigationBarItemProps {
@@ -49,10 +48,8 @@ export interface RenderProps extends NavigationBarItemProps {
     activeColor: string
     eventName: EventName
     onEvent: OnEvent
+    renderStyle: {labelTextAnimatedStyle: AnimatedStyle<TextStyle>}
     touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>
-    renderStyle: Animated.WithAnimatedObject<TextStyle & ViewStyle> & {
-        labelHeight: AnimatedInterpolation
-    }
     underlayColor: string
 }
 
@@ -102,6 +99,10 @@ const processStateChange = ({
     dataKey,
     onActive
 }: ProcessStateChangeOptions) => {
+    if (eventName === 'layout') {
+        return
+    }
+
     const nextEvent = {
         pressOut: () =>
             processPressOut(event as GestureResponderEvent, {
@@ -146,7 +147,7 @@ export const NavigationBarItemBase = forwardRef<
         const activeColor = theme.palette.secondary.secondaryContainer
         const underlayColor = theme.palette.surface.onSurface
         const active = activeKey === dataKey
-        const [{height, color}] = useAnimated({active, type})
+        const [labelTextAnimatedStyle] = useAnimated({active, type})
         const iconLayout = useMemo(
             () => ({
                 width: theme.adaptSize(theme.spacing.large),
@@ -172,6 +173,7 @@ export const NavigationBarItemBase = forwardRef<
             disabled: false,
             onStateChange
         })
+
         const iconElement = useMemo(
             () =>
                 cloneElement<IconProps>(icon, {
@@ -189,10 +191,10 @@ export const NavigationBarItemBase = forwardRef<
             icon: iconElement,
             id,
             onEvent,
+            ref,
+            renderStyle: {labelTextAnimatedStyle},
             touchableLocation,
             type,
-            ref,
-            renderStyle: {color, labelHeight: height},
             underlayColor
         })
     }

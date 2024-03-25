@@ -60,19 +60,15 @@ interface RenderItemOptions {
 
 type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>
 
-const renderItems = (
-    status: ComponentStatus,
-    {activeKey, type, data, onActive}: RenderItemOptions
-) =>
-    status === 'succeeded' &&
+const renderItems = ({activeKey, type, data, onActive}: RenderItemOptions) =>
     data.map(({key, ...props}) => (
         <NavigationBarItem
             {...props}
             activeKey={activeKey}
-            type={type}
             dataKey={key}
             key={key}
             onActive={onActive}
+            type={type}
         />
     ))
 
@@ -126,13 +122,13 @@ export const NavigationBarBase = forwardRef<View, NavigationBaseProps>(
 
         const children = useMemo(
             () =>
-                renderItems(status, {
+                renderItems({
                     activeKey,
                     data,
                     onActive,
                     type
                 }),
-            [activeKey, type, data, onActive, status]
+            [activeKey, type, data, onActive]
         )
 
         useEffect(() => {

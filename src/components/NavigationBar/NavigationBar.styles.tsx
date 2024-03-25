@@ -1,17 +1,11 @@
 import styled, {css} from 'styled-components/native'
-import {Shape, ShapeProps} from '../Common/Common.styles'
+import {PlatformInlineView, ShapeProps} from '../Common/Common.styles'
 import {RenderProps} from './NavigationBarBase'
 
 type ContainerProps = Pick<RenderProps, 'block'> & ShapeProps
-
 type DestinationProps = Pick<ContainerProps, 'block'>
 
-export const Container = styled(Shape)<ContainerProps>`
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-
+export const Container = styled(PlatformInlineView)<ContainerProps>`
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surfaceContainer};
     `}

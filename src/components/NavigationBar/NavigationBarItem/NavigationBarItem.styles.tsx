@@ -11,8 +11,8 @@ export const Container = styled(View)<ContainerProps>`
     align-items: center;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     flex: 1;
+    justify-content: center;
 
     ${({theme}) => css`
         height: ${theme.adaptSize(theme.spacing.small * 10)}px;
