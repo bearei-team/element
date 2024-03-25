@@ -39,7 +39,7 @@ export interface NavigationBarItemProps
     dataKey?: string
     icon?: React.JSX.Element
     labelText?: string
-    onActive?: (key?: string) => void
+    onActive?: (value?: string) => void
     type?: NavigationBarType
 }
 

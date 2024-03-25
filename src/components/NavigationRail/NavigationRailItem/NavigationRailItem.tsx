@@ -1,7 +1,8 @@
 import {FC, forwardRef, memo} from 'react'
-import {Animated, View} from 'react-native'
+import {View} from 'react-native'
+import Animated from 'react-native-reanimated'
 import {TouchableRipple} from '../../TouchableRipple/TouchableRipple'
-import {Hovered} from '../../Underlay/Hovered'
+import {Underlay} from '../../Underlay/Underlay'
 import {Container, Header, Icon, LabelText} from './NavigationRailItem.styles'
 import {
     NavigationRailItemBase,
@@ -25,7 +26,7 @@ const render = ({
     underlayColor,
     ...containerProps
 }: RenderProps) => {
-    const {color, labelHeight} = renderStyle
+    const {labelTextAnimatedStyle} = renderStyle
     const shape = type === 'block' ? 'full' : 'large'
 
     return (
@@ -50,7 +51,8 @@ const render = ({
                     <Icon testID={`navigationRailItem__icon--${id}`}>
                         {icon}
                     </Icon>
-                    <Hovered
+
+                    <Underlay
                         eventName={eventName}
                         underlayColor={underlayColor}
                     />
@@ -61,7 +63,7 @@ const render = ({
                 <AnimatedLabelText
                     active={active}
                     size='medium'
-                    style={{color, height: labelHeight}}
+                    style={[labelTextAnimatedStyle]}
                     testID={`navigationRailItem__labelText--${id}`}
                     type='label'
                 >
@@ -85,4 +87,5 @@ const ForwardRefNavigationRailItem = forwardRef<View, NavigationRailItemProps>(
 export const NavigationRailItem: FC<NavigationRailItemProps> = memo(
     ForwardRefNavigationRailItem
 )
+
 export type {NavigationRailItemProps, NavigationRailType}

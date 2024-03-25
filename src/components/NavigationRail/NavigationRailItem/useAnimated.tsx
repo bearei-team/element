@@ -1,11 +1,18 @@
 import {useEffect} from 'react'
-import {Animated} from 'react-native'
+import {
+    AnimatableValue,
+    SharedValue,
+    cancelAnimation,
+    interpolate,
+    interpolateColor,
+    useAnimatedStyle,
+    useSharedValue
+} from 'react-native-reanimated'
 import {useTheme} from 'styled-components/native'
 import {
     AnimatedTiming,
     useAnimatedTiming
 } from '../../../hooks/useAnimatedTiming'
-import {useAnimatedValue} from '../../../hooks/useAnimatedValue'
 import {RenderProps} from './NavigationRailItemBase'
 
 interface UseAnimatedOptions extends Pick<RenderProps, 'active' | 'type'> {
@@ -13,47 +20,50 @@ interface UseAnimatedOptions extends Pick<RenderProps, 'active' | 'type'> {
 }
 
 interface ProcessAnimatedTimingOptions extends UseAnimatedOptions {
-    labelAnimated: Animated.Value
+    labelText: SharedValue<AnimatableValue>
 }
 
 const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
-    {type, active, labelAnimated}: ProcessAnimatedTimingOptions
+    {type, active, labelText}: ProcessAnimatedTimingOptions
 ) => {
     type === 'segment' &&
         typeof active === 'boolean' &&
-        animatedTiming(labelAnimated, {
+        animatedTiming(labelText, {
             toValue: active ? 1 : 0
-        }).start()
+        })
 }
 
 export const useAnimated = ({active, type}: UseAnimatedOptions) => {
-    const [labelAnimated] = useAnimatedValue(type === 'block' || active ? 1 : 0)
+    const labelText = useSharedValue(type === 'block' || active ? 1 : 0)
     const theme = useTheme()
     const [animatedTiming] = useAnimatedTiming(theme)
-    const height = labelAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, theme.typography.label.medium.lineHeight]
-    })
-
-    const color = labelAnimated.interpolate({
-        inputRange: [0, 1],
-        outputRange: [
-            theme.color.convertHexToRGBA(
-                theme.palette.surface.onSurfaceVariant,
-                1
-            ),
-            theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 1)
-        ]
-    })
+    const labelTextAnimatedStyle = useAnimatedStyle(() => ({
+        height: interpolate(
+            labelText.value,
+            [0, 1],
+            [0, theme.adaptSize(theme.typography.label.medium.lineHeight)]
+        ),
+        color: interpolateColor(
+            labelText.value,
+            [0, 1],
+            [
+                theme.color.convertHexToRGBA(
+                    theme.palette.surface.onSurfaceVariant,
+                    1
+                ),
+                theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 1)
+            ]
+        )
+    }))
 
     useEffect(() => {
-        processAnimatedTiming(animatedTiming, {active, type, labelAnimated})
+        processAnimatedTiming(animatedTiming, {active, type, labelText})
 
         return () => {
-            labelAnimated.stopAnimation()
+            cancelAnimation(labelText)
         }
-    }, [active, animatedTiming, type, labelAnimated])
+    }, [active, animatedTiming, type, labelText])
 
-    return [{height, color}]
+    return [labelTextAnimatedStyle]
 }

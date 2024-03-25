@@ -59,11 +59,7 @@ interface RenderItemOptions {
 
 type ProcessActiveOptions = ProcessEventOptions & Pick<RenderProps, 'onActive'>
 
-const renderItems = (
-    status: ComponentStatus,
-    {activeKey, type, data, onActive}: RenderItemOptions
-) =>
-    status === 'succeeded' &&
+const renderItems = ({activeKey, type, data, onActive}: RenderItemOptions) =>
     data.map(({key, ...props}) => (
         <NavigationRailItem
             {...props}
@@ -130,13 +126,13 @@ export const NavigationRailBase = forwardRef<View, NavigationBaseProps>(
 
         const children = useMemo(
             () =>
-                renderItems(status, {
+                renderItems({
                     activeKey,
                     data,
                     onActive,
                     type
                 }),
-            [activeKey, type, data, onActive, status]
+            [activeKey, type, data, onActive]
         )
 
         useEffect(() => {

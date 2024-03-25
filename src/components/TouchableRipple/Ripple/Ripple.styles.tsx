@@ -9,7 +9,6 @@ interface ContainerProps extends Pick<RenderProps, 'underlayColor' | 'active'> {
 }
 
 export const Container = styled(Shape)<ContainerProps>`
-    overflow: hidden;
     pointer-events: none;
     position: absolute;
 
