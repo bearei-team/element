@@ -219,7 +219,7 @@ export const useAnimated = ({
                 backgroundColorType[type].outputRange
             )
         }),
-        ...(notBorderColor && {
+        ...(!notBorderColor && {
             borderColor: interpolateColor(
                 border.value,
                 borderColorInputRange,

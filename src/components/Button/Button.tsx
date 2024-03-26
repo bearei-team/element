@@ -30,7 +30,7 @@ const render = ({
         renderStyle
 
     const link = type === 'link'
-    const shape = link ? 'none' : 'full'
+    const shape = link ? 'extraSmallTop' : 'full'
 
     return (
         <Container
@@ -49,7 +49,6 @@ const render = ({
                     {...contentProps}
                     accessibilityLabel={labelText}
                     accessibilityRole='button'
-                    block={block}
                     iconShow={!!icon}
                     testID={`button__content--${id}`}
                     type={type}

@@ -15,6 +15,7 @@ export interface ShapeProps {
 export interface TypographyProps {
     size?: Size
     type?: keyof ThemeTypography
+    multiline?: boolean
 }
 
 export const Shape = styled(View)<ShapeProps>`
@@ -76,6 +77,12 @@ export const Typography = styled.Text<TypographyProps>`
             theme.typography[type][size].lineHeight
         )}px;
     `}
+
+    ${({multiline}) =>
+        multiline &&
+        css`
+            height: auto;
+        `}
 `
 
 export const PlatformInlineView = styled.View`

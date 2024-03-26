@@ -3,7 +3,7 @@ import {PlatformInlineView, Typography} from '../Common/Common.styles'
 import {RenderProps} from './ButtonBase'
 
 type ContainerProps = Pick<RenderProps, 'block'>
-interface ContentProps extends Pick<RenderProps, 'type' | 'block'> {
+interface ContentProps extends Pick<RenderProps, 'type'> {
     iconShow: boolean
 }
 

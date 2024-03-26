@@ -12,6 +12,7 @@ export const Container = styled(Shape)<ContainerProps>`
         block &&
         css`
             align-self: stretch;
+            flex: 1;
         `}
 `
 

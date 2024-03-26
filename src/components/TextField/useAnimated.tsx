@@ -259,13 +259,18 @@ export const useAnimated = ({
         theme.color.convertHexToRGBA(theme.palette.error.error, 1)
     ]
 
+    const labelTranslateYOutputRange = [
+        -theme.adaptSize(theme.spacing.small),
+        0
+    ]
+
     const labelAnimatedStyle = useAnimatedStyle(() => ({
         transform: [
             {
                 translateY: interpolate(
                     labelText.value,
                     [0, 1],
-                    [-theme.adaptSize(theme.spacing.small), 0]
+                    labelTranslateYOutputRange
                 )
             }
         ]
@@ -297,15 +302,6 @@ export const useAnimated = ({
             [0, 1, 2, 3],
             labelTextColorOutputRange
         )
-        // transform: [
-        //     {
-        //         translateY: interpolate(
-        //             labelText.value,
-        //             [0, 1],
-        //             [-theme.adaptSize(theme.spacing.small), 0]
-        //         )
-        //     }
-        // ]
     }))
 
     const activeIndicatorBackgroundColorOutputRange = [
