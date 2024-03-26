@@ -33,6 +33,7 @@ const processOutlinedAnimated = (
 ) => {
     const value =
         disabled ? 0 : borderColorInputRange[borderColorInputRange.length - 2]
+
     const responseEvent =
         type === 'link' ?
             [
@@ -208,16 +209,17 @@ export const useAnimated = ({
         theme.palette.primary.primary
     ]
 
+    const notBackgroundColor = ['text', 'link'].includes(type)
+    const notBorderColor = !['text', 'link'].includes(type)
     const contentAnimatedStyle = useAnimatedStyle(() => ({
-        ...(!['text', 'link'].includes(type) && {
+        ...(!notBackgroundColor && {
             backgroundColor: interpolateColor(
                 color.value,
                 backgroundColorType[type].inputRange,
                 backgroundColorType[type].outputRange
             )
         }),
-
-        ...(['outlined', 'link'].includes(type) && {
+        ...(notBorderColor && {
             borderColor: interpolateColor(
                 border.value,
                 borderColorInputRange,

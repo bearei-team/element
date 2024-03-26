@@ -7,6 +7,7 @@ import {
     SharedValue,
     WithTimingConfig,
     cancelAnimation,
+    runOnJS,
     withTiming
 } from 'react-native-reanimated'
 
@@ -55,7 +56,10 @@ export const useAnimatedTiming = (theme: Theme) => {
                     ),
                     ...config
                 },
-                callback
+                finished => {
+                    'worklet'
+                    callback && runOnJS(callback)(finished)
+                }
             )
         },
         [theme]
