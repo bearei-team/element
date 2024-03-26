@@ -14,7 +14,7 @@ import {RenderProps} from './ButtonBase'
 type UseAnimatedOptions = Pick<RenderProps, 'disabled' | 'type' | 'eventName'>
 interface ProcessOutlinedAnimatedOptions extends UseAnimatedOptions {
     border: SharedValue<AnimatableValue>
-    borderInputRange: number[]
+    borderColorInputRange: number[]
 }
 
 interface ProcessAnimatedTimingOptions extends ProcessOutlinedAnimatedOptions {
@@ -25,13 +25,14 @@ const processOutlinedAnimated = (
     animatedTiming: AnimatedTiming,
     {
         border,
-        borderInputRange,
+        borderColorInputRange,
         disabled,
         eventName,
         type
     }: ProcessOutlinedAnimatedOptions
 ) => {
-    const value = disabled ? 0 : borderInputRange[borderInputRange.length - 2]
+    const value =
+        disabled ? 0 : borderColorInputRange[borderColorInputRange.length - 2]
     const responseEvent =
         type === 'link' ?
             [
@@ -44,7 +45,7 @@ const processOutlinedAnimated = (
             ].includes(eventName)
         :   eventName === 'focus'
 
-    const toValue = responseEvent ? borderInputRange[2] : value
+    const toValue = responseEvent ? borderColorInputRange[2] : value
 
     return animatedTiming(border, {toValue})
 }
@@ -53,7 +54,7 @@ const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {
         border,
-        borderInputRange,
+        borderColorInputRange,
         color,
         disabled,
         eventName,
@@ -65,7 +66,7 @@ const processAnimatedTiming = (
     if (['link', 'outlined'].includes(type)) {
         processOutlinedAnimated(animatedTiming, {
             border,
-            borderInputRange,
+            borderColorInputRange,
             disabled,
             eventName,
             type
@@ -87,7 +88,7 @@ export const useAnimated = ({
     const animatedValue = disabled ? 0 : 1
     const border = useSharedValue(animatedValue)
     const color = useSharedValue(animatedValue)
-    const borderInputRange = useMemo(() => [0, 1, 2], [])
+    const borderColorInputRange = useMemo(() => [0, 1, 2], [])
     const theme = useTheme()
     const [animatedTiming] = useAnimatedTiming(theme)
     const disabledBackgroundColor = theme.color.convertHexToRGBA(
@@ -199,6 +200,14 @@ export const useAnimated = ({
         }
     }
 
+    const borderColorOutputRange = [
+        disabledBackgroundColor,
+        type === 'link' ?
+            theme.color.convertHexToRGBA(theme.palette.outline.outline, 0)
+        :   theme.color.convertHexToRGBA(theme.palette.outline.outline, 1),
+        theme.palette.primary.primary
+    ]
+
     const contentAnimatedStyle = useAnimatedStyle(() => ({
         ...(!['text', 'link'].includes(type) && {
             backgroundColor: interpolateColor(
@@ -209,19 +218,11 @@ export const useAnimated = ({
         }),
 
         ...(['outlined', 'link'].includes(type) && {
-            borderColor: interpolateColor(border.value, borderInputRange, [
-                disabledBackgroundColor,
-                type === 'link' ?
-                    theme.color.convertHexToRGBA(
-                        theme.palette.outline.outline,
-                        0
-                    )
-                :   theme.color.convertHexToRGBA(
-                        theme.palette.outline.outline,
-                        1
-                    ),
-                theme.palette.primary.primary
-            ])
+            borderColor: interpolateColor(
+                border.value,
+                borderColorInputRange,
+                borderColorOutputRange
+            )
         })
     }))
 
@@ -236,7 +237,7 @@ export const useAnimated = ({
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
             border,
-            borderInputRange,
+            borderColorInputRange,
             color,
             disabled,
             eventName,
@@ -250,7 +251,7 @@ export const useAnimated = ({
     }, [
         animatedTiming,
         border,
-        borderInputRange,
+        borderColorInputRange,
         color,
         disabled,
         eventName,

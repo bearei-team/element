@@ -17,7 +17,7 @@ type UseAnimatedOptions = Pick<
 >
 interface ProcessOutlinedAnimatedOptions extends UseAnimatedOptions {
     border: SharedValue<AnimatableValue>
-    borderInputRange: number[]
+    borderColorInputRange: number[]
 }
 
 interface ProcessAnimatedTimingOptions extends ProcessOutlinedAnimatedOptions {
@@ -28,13 +28,14 @@ const processOutlinedAnimated = (
     animatedTiming: AnimatedTiming,
     {
         border,
-        borderInputRange,
+        borderColorInputRange,
         disabled,
         eventName
     }: ProcessOutlinedAnimatedOptions
 ) => {
-    const value = disabled ? 0 : borderInputRange[borderInputRange.length - 2]
-    const toValue = eventName === 'focus' ? borderInputRange[2] : value
+    const value =
+        disabled ? 0 : borderColorInputRange[borderColorInputRange.length - 2]
+    const toValue = eventName === 'focus' ? borderColorInputRange[2] : value
 
     return animatedTiming(border, {toValue})
 }
@@ -43,7 +44,7 @@ const processAnimatedTiming = (
     animatedTiming: AnimatedTiming,
     {
         border,
-        borderInputRange,
+        borderColorInputRange,
         color,
         disabled,
         elevated,
@@ -55,7 +56,7 @@ const processAnimatedTiming = (
     if (!elevated) {
         processOutlinedAnimated(animatedTiming, {
             border,
-            borderInputRange,
+            borderColorInputRange,
             disabled,
             eventName
         })
@@ -77,7 +78,7 @@ export const useAnimated = ({
     const animatedValue = disabled ? 0 : 1
     const border = useSharedValue(animatedValue)
     const color = useSharedValue(animatedValue)
-    const borderInputRange = useMemo(() => [0, 1, 2], [])
+    const borderColorInputRange = useMemo(() => [0, 1, 2], [])
     const theme = useTheme()
     const [animatedTiming] = useAnimatedTiming(theme)
     const disabledBackgroundColor = theme.color.convertHexToRGBA(
@@ -218,6 +219,12 @@ export const useAnimated = ({
         }
     }
 
+    const borderColorOutputRange = [
+        disabledBackgroundColor,
+        theme.color.convertHexToRGBA(theme.palette.outline.outline, 1),
+        theme.color.convertHexToRGBA(theme.palette.surface.surface, 1)
+    ]
+
     const contentAnimatedStyle = useAnimatedStyle(() => ({
         backgroundColor: interpolateColor(
             color.value,
@@ -226,11 +233,11 @@ export const useAnimated = ({
         ),
 
         ...(!elevated && {
-            borderColor: interpolateColor(border.value, borderInputRange, [
-                disabledBackgroundColor,
-                theme.color.convertHexToRGBA(theme.palette.outline.outline, 1),
-                theme.color.convertHexToRGBA(theme.palette.surface.surface, 1)
-            ])
+            borderColor: interpolateColor(
+                border.value,
+                borderColorInputRange,
+                borderColorOutputRange
+            )
         })
     }))
 
@@ -245,7 +252,7 @@ export const useAnimated = ({
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {
             border,
-            borderInputRange,
+            borderColorInputRange,
             color,
             disabled,
             elevated,
@@ -259,7 +266,7 @@ export const useAnimated = ({
     }, [
         animatedTiming,
         border,
-        borderInputRange,
+        borderColorInputRange,
         color,
         disabled,
         elevated,

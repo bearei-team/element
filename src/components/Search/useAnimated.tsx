@@ -36,12 +36,9 @@ export const useAnimated = ({
     const listHeight = useSharedValue(listVisible ? 1 : 0)
     const theme = useTheme()
     const [animatedTiming] = useAnimatedTiming(theme)
+    const listHeightOutputRange = [0, theme.adaptSize(theme.spacing.small * 40)]
     const listAnimatedStyle = useAnimatedStyle(() => ({
-        height: interpolate(
-            listHeight.value,
-            [0, 1],
-            [0, theme.adaptSize(theme.spacing.small * 40)]
-        )
+        height: interpolate(listHeight.value, [0, 1], listHeightOutputRange)
     }))
 
     useEffect(() => {

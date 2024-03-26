@@ -228,63 +228,38 @@ export const useAnimated = ({
         )
     }))
 
+    const inputColorOutputRange = [
+        disabledColor,
+        theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 1)
+    ]
+
     const inputAnimatedStyle = useAnimatedStyle(() => ({
-        color: interpolateColor(
-            color.value,
-            [0, 1],
-            [
-                disabledColor,
-                theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 1)
-            ]
-        )
+        color: interpolateColor(color.value, [0, 1], inputColorOutputRange)
     }))
 
-    const labelTextAnimatedStyle = useAnimatedStyle(() => ({
-        fontSize: interpolate(
-            labelText.value,
-            [0, 1],
-            [
-                theme.adaptFontSize(theme.typography.body.small.size),
-                theme.adaptFontSize(theme.typography.body.large.size)
-            ]
-        ),
-        letterSpacing: interpolate(
-            labelText.value,
-            [0, 1],
-            [
-                theme.adaptFontSize(theme.typography.body.small.letterSpacing),
-                theme.adaptFontSize(theme.typography.body.large.letterSpacing)
-            ]
-        ),
-        height: interpolate(
-            labelText.value,
-            [0, 1],
-            [
-                theme.adaptFontSize(theme.typography.body.small.lineHeight),
-                theme.adaptFontSize(theme.typography.body.large.lineHeight)
-            ]
-        ),
-        lineHeight: interpolate(
-            labelText.value,
-            [0, 1],
-            [
-                theme.adaptFontSize(theme.typography.body.small.lineHeight),
-                theme.adaptFontSize(theme.typography.body.large.lineHeight)
-            ]
-        ),
-        color: interpolateColor(
-            color.value,
-            [0, 1, 2, 3],
-            [
-                disabledColor,
-                theme.color.convertHexToRGBA(
-                    theme.palette.surface.onSurfaceVariant,
-                    1
-                ),
-                theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
-                theme.color.convertHexToRGBA(theme.palette.error.error, 1)
-            ]
-        ),
+    const labelTextFontSizeOutputRange = [
+        theme.adaptFontSize(theme.typography.body.small.size),
+        theme.adaptFontSize(theme.typography.body.large.size)
+    ]
+
+    const labelTextLetterSpacingOutputRange = [
+        theme.adaptSize(theme.typography.body.small.letterSpacing),
+        theme.adaptSize(theme.typography.body.large.letterSpacing)
+    ]
+
+    const labelTextHeightOutputRange = [
+        theme.adaptSize(theme.typography.body.small.lineHeight),
+        theme.adaptSize(theme.typography.body.large.lineHeight)
+    ]
+
+    const labelTextColorOutputRange = [
+        disabledColor,
+        theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
+        theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
+        theme.color.convertHexToRGBA(theme.palette.error.error, 1)
+    ]
+
+    const labelAnimatedStyle = useAnimatedStyle(() => ({
         transform: [
             {
                 translateY: interpolate(
@@ -296,39 +271,79 @@ export const useAnimated = ({
         ]
     }))
 
+    const labelTextAnimatedStyle = useAnimatedStyle(() => ({
+        fontSize: interpolate(
+            labelText.value,
+            [0, 1],
+            labelTextFontSizeOutputRange
+        ),
+        letterSpacing: interpolate(
+            labelText.value,
+            [0, 1],
+            labelTextLetterSpacingOutputRange
+        ),
+        height: interpolate(
+            labelText.value,
+            [0, 1],
+            labelTextHeightOutputRange
+        ),
+        lineHeight: interpolate(
+            labelText.value,
+            [0, 1],
+            labelTextHeightOutputRange
+        ),
+        color: interpolateColor(
+            color.value,
+            [0, 1, 2, 3],
+            labelTextColorOutputRange
+        )
+        // transform: [
+        //     {
+        //         translateY: interpolate(
+        //             labelText.value,
+        //             [0, 1],
+        //             [-theme.adaptSize(theme.spacing.small), 0]
+        //         )
+        //     }
+        // ]
+    }))
+
+    const activeIndicatorBackgroundColorOutputRange = [
+        disabledColor,
+        theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
+        theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
+        theme.color.convertHexToRGBA(theme.palette.error.error, 1)
+    ]
+
+    const activeIndicatorHeightOutputRange = [
+        theme.adaptSize(theme.spacing.extraSmall / 4),
+        theme.adaptSize(theme.spacing.extraSmall / 2 + 1)
+    ]
+
     const activeIndicatorAnimatedStyle = useAnimatedStyle(() => ({
         backgroundColor: interpolateColor(
             color.value,
             [0, 1, 2, 3],
-            [
-                disabledColor,
-                theme.color.convertHexToRGBA(
-                    theme.palette.surface.onSurfaceVariant,
-                    1
-                ),
-                theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
-                theme.color.convertHexToRGBA(theme.palette.error.error, 1)
-            ]
+            activeIndicatorBackgroundColorOutputRange
         ),
         height: interpolate(
             activeIndicatorScaleY.value,
-            [0, theme.adaptSize(theme.spacing.extraSmall / 4)],
-            [1, theme.adaptSize(theme.spacing.extraSmall / 2 + 1)]
+            [0, 1],
+            activeIndicatorHeightOutputRange
         )
     }))
+
+    const supportingTextColorOutputRange = [
+        disabledColor,
+        theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
+        theme.color.convertHexToRGBA(theme.palette.error.error, 1)
+    ]
 
     const supportingTextAnimatedStyle = useAnimatedStyle(() => ({
         color: interpolateColor(
             supportingText.value,
             [0, 1, 2],
-            [
-                disabledColor,
-                theme.color.convertHexToRGBA(
-                    theme.palette.surface.onSurfaceVariant,
-                    1
-                ),
-                theme.color.convertHexToRGBA(theme.palette.error.error, 1)
-            ]
+            supportingTextColorOutputRange
         )
     }))
 
@@ -453,6 +468,7 @@ export const useAnimated = ({
             activeIndicatorAnimatedStyle,
             headerInnerAnimatedStyle,
             inputAnimatedStyle,
+            labelAnimatedStyle,
             labelTextAnimatedStyle,
             supportingTextAnimatedStyle
         }

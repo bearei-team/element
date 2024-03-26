@@ -38,22 +38,26 @@ export const useAnimated = ({active, type}: UseAnimatedOptions) => {
     const labelText = useSharedValue(type === 'block' || active ? 1 : 0)
     const theme = useTheme()
     const [animatedTiming] = useAnimatedTiming(theme)
+    const labelTextHeightOutputRange = [
+        0,
+        theme.adaptSize(theme.typography.label.medium.lineHeight)
+    ]
+
+    const labelTextColorOutputRange = [
+        theme.color.convertHexToRGBA(theme.palette.surface.onSurfaceVariant, 1),
+        theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 1)
+    ]
+
     const labelTextAnimatedStyle = useAnimatedStyle(() => ({
         height: interpolate(
             labelText.value,
             [0, 1],
-            [0, theme.adaptSize(theme.typography.label.medium.lineHeight)]
+            labelTextHeightOutputRange
         ),
         color: interpolateColor(
             labelText.value,
             [0, 1],
-            [
-                theme.color.convertHexToRGBA(
-                    theme.palette.surface.onSurfaceVariant,
-                    1
-                ),
-                theme.color.convertHexToRGBA(theme.palette.surface.onSurface, 1)
-            ]
+            labelTextColorOutputRange
         )
     }))
 

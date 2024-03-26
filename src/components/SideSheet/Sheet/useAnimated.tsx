@@ -56,7 +56,11 @@ const exitScreen = (
 
     animatedTiming(backgroundColor, animatedTimingOptions)
     animatedTiming(innerTranslateX, animatedTimingOptions)
-    animatedTiming(width, animatedTimingOptions, onClosed)
+    animatedTiming(
+        width,
+        animatedTimingOptions,
+        finished => finished && onClosed?.()
+    )
 }
 
 const processAnimatedTiming = (
@@ -96,33 +100,35 @@ export const useAnimated = ({
     const innerTranslateX = useSharedValue(animatedValue)
     const theme = useTheme()
     const [animatedTiming] = useAnimatedTiming(theme)
+    const contentBackgroundColorOutputRange = [
+        theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0),
+        type === 'standard' ?
+            theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0)
+        :   theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0.32)
+    ]
+
+    const contentWidthOutputRange = [
+        0,
+        theme.adaptSize(theme.spacing.small * 40 + theme.spacing.medium)
+    ]
+
     const contentAnimatedStyle = useAnimatedStyle(() => ({
         backgroundColor: interpolateColor(
             backgroundColor.value,
             [0, 1],
-            [
-                theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0),
-                type === 'standard' ?
-                    theme.color.convertHexToRGBA(theme.palette.scrim.scrim, 0)
-                :   theme.color.convertHexToRGBA(
-                        theme.palette.scrim.scrim,
-                        0.32
-                    )
-            ]
+            contentBackgroundColorOutputRange
         ),
         ...(type === 'standard' && {
-            width: interpolate(
-                width.value,
-                [0, 1],
-                [
-                    0,
-                    theme.adaptSize(
-                        theme.spacing.small * 40 + theme.spacing.medium
-                    )
-                ]
-            )
+            width: interpolate(width.value, [0, 1], contentWidthOutputRange)
         })
     }))
+
+    const innerTranslateXOutputRange = [
+        sheetPosition === 'horizontalEnd' ?
+            theme.adaptSize(theme.spacing.small * 40)
+        :   -theme.adaptSize(theme.spacing.small * 40),
+        theme.adaptSize(theme.spacing.none)
+    ]
 
     const innerAnimatedStyle = useAnimatedStyle(() => ({
         ...(type === 'modal' && {
@@ -131,12 +137,7 @@ export const useAnimated = ({
                     translateX: interpolate(
                         innerTranslateX.value,
                         [0, 1],
-                        [
-                            sheetPosition === 'horizontalEnd' ?
-                                theme.adaptSize(theme.spacing.small * 40)
-                            :   -theme.adaptSize(theme.spacing.small * 40),
-                            theme.adaptSize(theme.spacing.none)
-                        ]
+                        innerTranslateXOutputRange
                     )
                 }
             ]

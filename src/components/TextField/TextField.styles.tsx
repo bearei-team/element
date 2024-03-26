@@ -63,7 +63,7 @@ export const HeaderInner = styled(Shape)<HeaderInnerProps>`
         `}
 `
 
-export const LabelText = styled(Typography)<LabelProps>`
+export const Label = styled.View<LabelProps>`
     pointer-events: none;
     position: absolute;
 
@@ -79,6 +79,7 @@ export const LabelText = styled(Typography)<LabelProps>`
         `}
 `
 
+export const LabelText = styled(Typography)``
 export const Trailing = styled.View`
     display: flex;
     flex-direction: row;

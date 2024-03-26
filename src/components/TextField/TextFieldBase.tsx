@@ -55,6 +55,7 @@ export interface RenderProps extends TextFieldProps {
     renderStyle: {
         activeIndicatorAnimatedStyle: AnimatedStyle<ViewStyle>
         headerInnerAnimatedStyle: AnimatedStyle<ViewStyle>
+        labelAnimatedStyle: AnimatedStyle<ViewStyle>
         labelTextAnimatedStyle: AnimatedStyle<TextStyle>
         supportingTextAnimatedStyle: AnimatedStyle<TextStyle>
     }
@@ -259,6 +260,7 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
                 activeIndicatorAnimatedStyle,
                 headerInnerAnimatedStyle,
                 inputAnimatedStyle,
+                labelAnimatedStyle,
                 labelTextAnimatedStyle,
                 supportingTextAnimatedStyle
             }
@@ -331,6 +333,7 @@ export const TextFieldBase = forwardRef<TextInput, TextFieldBaseProps>(
             renderStyle: {
                 activeIndicatorAnimatedStyle,
                 headerInnerAnimatedStyle,
+                labelAnimatedStyle,
                 labelTextAnimatedStyle,
                 supportingTextAnimatedStyle
             },

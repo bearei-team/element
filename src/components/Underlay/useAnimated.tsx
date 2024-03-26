@@ -50,12 +50,9 @@ export const useAnimated = ({
         [activeValue]
     )
 
+    const opacityInputRange = opacities.map((_value, index) => index)
     const animatedStyle = useAnimatedStyle(() => ({
-        opacity: interpolate(
-            opacity.value,
-            opacities.map((_value, index) => index),
-            opacities
-        )
+        opacity: interpolate(opacity.value, opacityInputRange, opacities)
     }))
 
     useEffect(() => {

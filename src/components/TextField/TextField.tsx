@@ -10,6 +10,7 @@ import {
     Header,
     HeaderInner,
     Inner,
+    Label,
     LabelText,
     Leading,
     SupportingText,
@@ -22,6 +23,7 @@ const AnimatedActiveIndicator =
 
 const AnimatedHeaderInner = Animated.createAnimatedComponent(HeaderInner)
 const AnimatedLabelText = Animated.createAnimatedComponent(LabelText)
+const AnimatedLabel = Animated.createAnimatedComponent(Label)
 const AnimatedSupportingText = Animated.createAnimatedComponent(SupportingText)
 const render = ({
     contentSize,
@@ -41,6 +43,7 @@ const render = ({
     const {
         activeIndicatorAnimatedStyle,
         headerInnerAnimatedStyle,
+        labelAnimatedStyle,
         labelTextAnimatedStyle,
         supportingTextAnimatedStyle
     } = renderStyle
@@ -98,15 +101,20 @@ const render = ({
                             </Trailing>
                         )}
 
-                        <AnimatedLabelText
+                        <AnimatedLabel
                             leadingShow={leadingShow}
-                            size='large'
-                            style={[labelTextAnimatedStyle]}
-                            testID={`textField__labelText--${id}`}
-                            type='body'
+                            style={[labelAnimatedStyle]}
+                            testID={`textField__label--${id}`}
                         >
-                            {labelText}
-                        </AnimatedLabelText>
+                            <AnimatedLabelText
+                                size='large'
+                                style={[labelTextAnimatedStyle]}
+                                testID={`textField__labelText--${id}`}
+                                type='body'
+                            >
+                                {labelText}
+                            </AnimatedLabelText>
+                        </AnimatedLabel>
 
                         <AnimatedActiveIndicator
                             testID={`textfield__activeIndicator--${id}`}
