@@ -139,11 +139,6 @@ export const useAnimated = ({
             scale,
             sequence
         })
-
-        return () => {
-            cancelAnimation(opacity)
-            cancelAnimation(scale)
-        }
     }, [
         active,
         animatedTiming,
@@ -152,6 +147,14 @@ export const useAnimated = ({
         scale,
         sequence
     ])
+
+    useEffect(
+        () => () => {
+            cancelAnimation(opacity)
+            cancelAnimation(scale)
+        },
+        [opacity, scale]
+    )
 
     return [animatedStyle]
 }

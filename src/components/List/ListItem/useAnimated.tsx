@@ -132,10 +132,6 @@ export const useAnimated = ({
             trailingEventName,
             trailingOpacity
         })
-
-        return () => {
-            cancelAnimation(trailingOpacity)
-        }
     }, [
         animatedTiming,
         closeIcon,
@@ -152,19 +148,20 @@ export const useAnimated = ({
             height,
             onClosed
         })
-
-        return () => {
-            cancelAnimation(height)
-        }
     }, [animatedTiming, height, onClosed, visible])
 
     useEffect(() => {
         processActiveAnimated(animatedTiming, {innerTranslateX, active})
-
-        return () => {
-            cancelAnimation(innerTranslateX)
-        }
     }, [active, animatedTiming, innerTranslateX])
+
+    useEffect(
+        () => () => {
+            cancelAnimation(trailingOpacity)
+            cancelAnimation(innerTranslateX)
+            cancelAnimation(height)
+        },
+        [height, innerTranslateX, trailingOpacity]
+    )
 
     return [{containerAnimatedStyle, trailingAnimatedStyle, innerAnimatedStyle}]
 }

@@ -415,11 +415,14 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
         useEffect(() => {
             processContainerLayout({setState, type}, containerRef.current)
             processEmit(searchList, {status, id, listVisible, type})
-
-            return () => {
-                processUnmount(id, {type})
-            }
         }, [id, listVisible, searchList, setState, status, type])
+
+        useEffect(
+            () => () => {
+                processUnmount(id, {type})
+            },
+            [id, type]
+        )
 
         return render({
             containerRef,

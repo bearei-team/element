@@ -42,11 +42,14 @@ export const useAnimated = ({visible, onClosed}: UseAnimatedOptions) => {
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {opacity, visible, onClosed})
-
-        return () => {
-            cancelAnimation(opacity)
-        }
     }, [animatedTiming, onClosed, opacity, visible])
+
+    useEffect(
+        () => () => {
+            cancelAnimation(opacity)
+        },
+        [opacity]
+    )
 
     return [animatedStyle]
 }

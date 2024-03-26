@@ -39,11 +39,14 @@ export const useAnimated = ({eventName}: UseAnimatedOptions) => {
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {eventName, scale})
-
-        return () => {
-            cancelAnimation(scale)
-        }
     }, [animatedTiming, eventName, scale])
+
+    useEffect(
+        () => () => {
+            cancelAnimation(scale)
+        },
+        [scale]
+    )
 
     return [{animatedStyle}]
 }

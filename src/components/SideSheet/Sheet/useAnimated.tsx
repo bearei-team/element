@@ -152,12 +152,6 @@ export const useAnimated = ({
             visible,
             width
         })
-
-        return () => {
-            cancelAnimation(backgroundColor)
-            cancelAnimation(innerTranslateX)
-            cancelAnimation(width)
-        }
     }, [
         animatedTiming,
         backgroundColor,
@@ -166,6 +160,15 @@ export const useAnimated = ({
         visible,
         width
     ])
+
+    useEffect(
+        () => () => {
+            cancelAnimation(backgroundColor)
+            cancelAnimation(innerTranslateX)
+            cancelAnimation(width)
+        },
+        [backgroundColor, innerTranslateX, width]
+    )
 
     return [{contentAnimatedStyle, innerAnimatedStyle}]
 }

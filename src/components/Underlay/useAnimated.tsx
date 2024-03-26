@@ -57,11 +57,14 @@ export const useAnimated = ({
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {event, eventName, opacity})
-
-        return () => {
-            cancelAnimation(opacity)
-        }
     }, [animatedTiming, event, eventName, opacity])
+
+    useEffect(
+        () => () => {
+            cancelAnimation(opacity)
+        },
+        [opacity]
+    )
 
     return [animatedStyle]
 }

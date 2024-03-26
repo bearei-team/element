@@ -105,12 +105,15 @@ export const useAnimated = ({
             disabled,
             type
         })
+    }, [animatedTiming, border, color, disabled, type])
 
-        return () => {
+    useEffect(
+        () => () => {
             cancelAnimation(border)
             cancelAnimation(color)
-        }
-    }, [animatedTiming, border, color, disabled, type])
+        },
+        [border, color]
+    )
 
     return [contentAnimatedStyle]
 }

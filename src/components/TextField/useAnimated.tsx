@@ -437,15 +437,6 @@ export const useAnimated = ({
         processStateAnimated(state, {stateAnimated})
         processNonerrorAnimated(state, {stateAnimated, disabled, error})
         processDisabledAnimated(state, {disabled, stateAnimated})
-
-        return () => {
-            cancelAnimation(activeIndicatorScaleY)
-            cancelAnimation(headerInnerBackgroundColor)
-            cancelAnimation(color)
-            cancelAnimation(inputColor)
-            cancelAnimation(labelText)
-            cancelAnimation(supportingText)
-        }
     }, [
         activeIndicatorScaleY,
         headerInnerBackgroundColor,
@@ -458,6 +449,25 @@ export const useAnimated = ({
         stateAnimated,
         supportingText
     ])
+
+    useEffect(
+        () => () => {
+            cancelAnimation(activeIndicatorScaleY)
+            cancelAnimation(headerInnerBackgroundColor)
+            cancelAnimation(color)
+            cancelAnimation(inputColor)
+            cancelAnimation(labelText)
+            cancelAnimation(supportingText)
+        },
+        [
+            activeIndicatorScaleY,
+            color,
+            headerInnerBackgroundColor,
+            inputColor,
+            labelText,
+            supportingText
+        ]
+    )
 
     return [
         {

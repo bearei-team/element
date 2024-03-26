@@ -63,11 +63,14 @@ export const useAnimated = ({active, type}: UseAnimatedOptions) => {
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {active, type, labelText})
-
-        return () => {
-            cancelAnimation(labelText)
-        }
     }, [active, animatedTiming, type, labelText])
+
+    useEffect(
+        () => () => {
+            cancelAnimation(labelText)
+        },
+        [labelText]
+    )
 
     return [labelTextAnimatedStyle]
 }

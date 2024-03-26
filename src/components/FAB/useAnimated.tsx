@@ -140,11 +140,14 @@ export const useAnimated = ({
 
     useEffect(() => {
         processAnimatedTiming(animatedTiming, {color, disabled})
-
-        return () => {
-            cancelAnimation(color)
-        }
     }, [animatedTiming, color, disabled])
+
+    useEffect(
+        () => () => {
+            cancelAnimation(color)
+        },
+        [color]
+    )
 
     return [{contentAnimatedStyle, labelTextAnimatedStyle}]
 }

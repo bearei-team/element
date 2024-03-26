@@ -170,11 +170,6 @@ export const useAnimated = ({
             eventName,
             type
         })
-
-        return () => {
-            cancelAnimation(border)
-            cancelAnimation(color)
-        }
     }, [
         animatedTiming,
         border,
@@ -184,6 +179,14 @@ export const useAnimated = ({
         eventName,
         type
     ])
+
+    useEffect(
+        () => () => {
+            cancelAnimation(border)
+            cancelAnimation(color)
+        },
+        [border, color]
+    )
 
     return [
         {
