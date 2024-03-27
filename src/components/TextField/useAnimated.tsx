@@ -237,6 +237,23 @@ export const useAnimated = ({
         color: interpolateColor(color.value, [0, 1], inputColorOutputRange)
     }))
 
+    const labelTranslateYOutputRange = [
+        -theme.adaptSize(theme.spacing.small),
+        0
+    ]
+
+    const labelAnimatedStyle = useAnimatedStyle(() => ({
+        transform: [
+            {
+                translateY: interpolate(
+                    labelText.value,
+                    [0, 1],
+                    labelTranslateYOutputRange
+                )
+            }
+        ]
+    }))
+
     const labelTextFontSizeOutputRange = [
         theme.adaptFontSize(theme.typography.body.small.size),
         theme.adaptFontSize(theme.typography.body.large.size)
@@ -258,23 +275,6 @@ export const useAnimated = ({
         theme.color.convertHexToRGBA(theme.palette.primary.primary, 1),
         theme.color.convertHexToRGBA(theme.palette.error.error, 1)
     ]
-
-    const labelTranslateYOutputRange = [
-        -theme.adaptSize(theme.spacing.small),
-        0
-    ]
-
-    const labelAnimatedStyle = useAnimatedStyle(() => ({
-        transform: [
-            {
-                translateY: interpolate(
-                    labelText.value,
-                    [0, 1],
-                    labelTranslateYOutputRange
-                )
-            }
-        ]
-    }))
 
     const labelTextAnimatedStyle = useAnimatedStyle(() => ({
         fontSize: interpolate(

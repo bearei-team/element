@@ -22,9 +22,9 @@ interface UseAnimatedOptions
     > {
     active?: boolean
     afterAffordanceLayoutWidth?: number
-    addonBeforeLayoutWidth?: number
+    beforeAffordanceLayoutWidth?: number
     eventName: EventName
-    layoutHeight?: number
+    innerLayoutHeight?: number
     state: State
     trailingEventName: EventName
 }
@@ -86,7 +86,7 @@ export const useAnimated = ({
     closeIcon,
     eventName,
     itemGap = 0,
-    layoutHeight = 0,
+    innerLayoutHeight = 0,
     onClosed,
     state,
     trailingButton,
@@ -104,23 +104,46 @@ export const useAnimated = ({
     const theme = useTheme()
     const [animatedTiming] = useAnimatedTiming(theme)
     const containerAnimatedStyle = useAnimatedStyle(() => ({
-        height: interpolate(height.value, [0, 1], [0, layoutHeight + itemGap])
+        ...(innerLayoutHeight !== 0 && {
+            height: interpolate(
+                height.value,
+                [0, 1],
+                [0, innerLayoutHeight + itemGap]
+            )
+        })
     }))
 
     const trailingAnimatedStyle = useAnimatedStyle(() => ({
         opacity: interpolate(height.value, [0, 1], [0, 1])
     }))
 
+    /**
+     * FIXME:
+     * The transform property in react-native-macos 0.72.* has
+     * various bugs that cause problems when using transform to
+     * implement offsets. Here is a temporary implementation using
+     * left.
+     *
+     * Original realization:
+     * @example
+     * ```ts
+     *   transform: [
+     *      {
+     *          translateX: interpolate(
+     *              innerTranslateX.value,
+     *              [0, 1],
+     *              [0, -afterAffordanceLayoutWidth]
+     *          )
+     *      }
+     * ]
+     * ```
+     */
     const innerAnimatedStyle = useAnimatedStyle(() => ({
-        transform: [
-            {
-                translateX: interpolate(
-                    innerTranslateX.value,
-                    [0, 1],
-                    [0, -afterAffordanceLayoutWidth]
-                )
-            }
-        ]
+        left: interpolate(
+            innerTranslateX.value,
+            [0, 1],
+            [0, -afterAffordanceLayoutWidth]
+        )
     }))
 
     useEffect(() => {

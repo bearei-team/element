@@ -215,9 +215,10 @@ const processEmit = (
     type === 'modal' &&
     emitter.emit('modal', {id: `search__list--${id}`, element})
 
-const processUnmount = (id: string, {type}: Pick<RenderProps, 'type'>) =>
+const processUnmount = (id: string, {type}: Pick<RenderProps, 'type'>) => {
     type === 'modal' &&
-    emitter.emit('modal', {id: `search__list--${id}`, element: undefined})
+        emitter.emit('modal', {id: `search__list--${id}`, element: undefined})
+}
 
 const renderTextInput = ({id, ...props}: RenderTextInputOptions) => (
     <TextField testID={`search__control--${id}`}>
@@ -417,12 +418,7 @@ export const SearchBase = forwardRef<TextInput, SearchBaseProps>(
             processEmit(searchList, {status, id, listVisible, type})
         }, [id, listVisible, searchList, setState, status, type])
 
-        useEffect(
-            () => () => {
-                processUnmount(id, {type})
-            },
-            [id, type]
-        )
+        useEffect(() => () => processUnmount(id, {type}), [id, type])
 
         return render({
             containerRef,

@@ -41,9 +41,11 @@ const render = ({
     touchableLocation,
     trailing,
     underlayColor,
+    containerLayout,
+    onContainerLayout,
+    onInnerLayout,
     ...innerProps
 }: RenderProps) => {
-    const {onLayout, ...onTouchableRippleEvent} = onEvent
     const {containerAnimatedStyle, innerAnimatedStyle, trailingAnimatedStyle} =
         renderStyle
 
@@ -55,13 +57,14 @@ const render = ({
             accessibilityRole='list'
             style={[containerAnimatedStyle]}
             testID={`listItem--${id}`}
+            onLayout={onContainerLayout}
         >
             <AnimatedInner
                 {...(affordance && {shape})}
                 itemGap={itemGap}
-                onLayout={onLayout}
-                testID={`listItem__inner--${id}`}
+                onLayout={onInnerLayout}
                 style={[innerAnimatedStyle]}
+                testID={`listItem__inner--${id}`}
             >
                 {beforeAffordance && (
                     <BeforeAffordance
@@ -72,10 +75,13 @@ const render = ({
                     </BeforeAffordance>
                 )}
 
-                <Main testID={`listItem_main--${id}`}>
+                <Main
+                    {...(!affordance && {shape})}
+                    renderStyle={{width: containerLayout?.width}}
+                    testID={`listItem_main--${id}`}
+                >
                     <TouchableRipple
-                        {...(!affordance && {shape})}
-                        {...onTouchableRippleEvent}
+                        {...onEvent}
                         active={active}
                         touchableLocation={touchableLocation}
                         underlayColor={activeColor}

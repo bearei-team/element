@@ -44,12 +44,7 @@ export const useAnimated = ({visible, onClosed}: UseAnimatedOptions) => {
         processAnimatedTiming(animatedTiming, {opacity, visible, onClosed})
     }, [animatedTiming, onClosed, opacity, visible])
 
-    useEffect(
-        () => () => {
-            cancelAnimation(opacity)
-        },
-        [opacity]
-    )
+    useEffect(() => () => cancelAnimation(opacity), [opacity])
 
     return [animatedStyle]
 }

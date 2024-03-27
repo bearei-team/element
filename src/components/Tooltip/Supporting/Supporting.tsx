@@ -37,6 +37,7 @@ const render = ({
                 width === 0 ? {opacity: width} : animatedStyle,
 
                 /**
+                 * FIXME:
                  * The transform property in react-native-macos 0.72.* has
                  * various bugs that cause problems when using transform to
                  * implement offsets. Here is a temporary implementation using

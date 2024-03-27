@@ -48,9 +48,10 @@ const processEmit = (
     type === 'modal' &&
     emitter.emit('modal', {id: `sideSheet__${id}`, element: sheet})
 
-const processUnmount = (id: string, {type}: Pick<RenderProps, 'type'>) =>
+const processUnmount = (id: string, {type}: Pick<RenderProps, 'type'>) => {
     type === 'modal' &&
-    emitter.emit('modal', {id: `sideSheet__${id}`, element: undefined})
+        emitter.emit('modal', {id: `sideSheet__${id}`, element: undefined})
+}
 
 export const SideSheetBase = forwardRef<View, SideSheetBaseProps>(
     (
@@ -94,12 +95,7 @@ export const SideSheetBase = forwardRef<View, SideSheetBaseProps>(
             processEmit(sheet, {id, visible, type})
         }, [id, sheet, type, visible])
 
-        useEffect(
-            () => () => {
-                processUnmount(id, {type})
-            },
-            [id, type]
-        )
+        useEffect(() => () => processUnmount(id, {type}), [id, type])
 
         return type === 'standard' ? sheet : <></>
     }

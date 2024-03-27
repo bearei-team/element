@@ -189,12 +189,7 @@ export const FormItemBase = forwardRef<View, FormItemBaseProps>(
             })
         }, [fieldValidate, name, rules, setState, signInField, validateFirst])
 
-        useEffect(
-            () => () => {
-                signOut?.()
-            },
-            [signOut]
-        )
+        useEffect(() => () => signOut?.(), [signOut])
 
         if (status === 'idle') {
             return <></>

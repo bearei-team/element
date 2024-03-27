@@ -49,12 +49,7 @@ export const useAnimated = ({
         })
     }, [animatedTiming, listHeight, listVisible, onListClosed])
 
-    useEffect(
-        () => () => {
-            cancelAnimation(listHeight)
-        },
-        [listHeight]
-    )
+    useEffect(() => () => cancelAnimation(listHeight), [listHeight])
 
     return [listAnimatedStyle]
 }

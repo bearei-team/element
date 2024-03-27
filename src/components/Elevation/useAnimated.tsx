@@ -59,12 +59,7 @@ export const useAnimated = ({level = 0}: UseAnimatedOptions) => {
         processAnimatedTiming(animatedTiming, {level, shadow})
     }, [animatedTiming, level, shadow])
 
-    useEffect(
-        () => () => {
-            cancelAnimation(shadow)
-        },
-        [shadow]
-    )
+    useEffect(() => () => cancelAnimation(shadow), [shadow])
 
     return [{shadow1AnimatedStyle, shadow0AnimatedStyle}]
 }

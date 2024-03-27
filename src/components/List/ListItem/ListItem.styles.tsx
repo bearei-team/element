@@ -8,30 +8,47 @@ type ContentProps = {
 } & Pick<RenderProps, 'size'>
 
 type InnerProps = Pick<RenderProps, 'size'>
+type MainProps = {
+    renderStyle?: {width?: number}
+}
+
 type LeadingProps = Pick<RenderProps, 'size'>
 type HeadlineProps = {headlineSize: RenderProps['size']}
 
 export const Container = styled.View`
     overflow: hidden;
+    position: relative;
 `
 
 export const Inner = styled(Shape)<ContainerProps>`
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
+    position: absolute;
 
-    ${({itemGap = 0}) => css`
+    ${({itemGap = 0, theme}) => css`
+        left: ${theme.adaptSize(theme.spacing.none)}px;
         margin-bottom: ${itemGap}px;
+        min-width: 100%;
+        right: ${theme.adaptSize(theme.spacing.none)}px;
+        top: ${theme.adaptSize(theme.spacing.none)}px;
     `};
 `
 
-export const Main = styled.View`
-    min-width: 100%;
-    flex: 1;
+export const Main = styled(Shape)<MainProps>`
+    overflow: hidden;
 
     ${({theme}) => css`
         background-color: ${theme.palette.surface.surface};
     `};
+
+    ${({renderStyle = {}}) => {
+        const {width = 0} = renderStyle
+
+        return css`
+            width: ${width}px;
+        `
+    }};
 `
 
 export const MainInner = styled.View<InnerProps>`

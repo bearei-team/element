@@ -62,7 +62,9 @@ export interface RenderProps extends ListItemProps {
     eventName: EventName
     onAddonAfterLayout: (event: LayoutChangeEvent) => void
     onAddonBeforeLayout: (event: LayoutChangeEvent) => void
+    onContainerLayout: (event: LayoutChangeEvent) => void
     onEvent: OnEvent
+    onInnerLayout: (event: LayoutChangeEvent) => void
     renderStyle: {
         containerAnimatedStyle: AnimatedStyle<ViewStyle>
         innerAnimatedStyle: AnimatedStyle<ViewStyle>
@@ -70,6 +72,7 @@ export interface RenderProps extends ListItemProps {
     }
     touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>
     underlayColor: string
+    containerLayout: LayoutRectangle
 }
 
 interface ListItemBaseProps extends ListItemProps {
@@ -79,10 +82,11 @@ interface ListItemBaseProps extends ListItemProps {
 interface InitialState {
     active?: boolean
     afterAffordanceLayout: LayoutRectangle
-    addonBeforeLayout: LayoutRectangle
+    beforeAffordanceLayout: LayoutRectangle
     closed?: boolean
+    containerLayout: LayoutRectangle
     eventName: EventName
-    layout: LayoutRectangle
+    innerLayout: LayoutRectangle
     state: State
     status: ComponentStatus
     touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>
@@ -111,7 +115,7 @@ interface RenderTrailingOptions
     onEvent: Partial<OnEvent>
 }
 
-const processLayout = (
+const processContainerLayout = (
     event: LayoutChangeEvent,
     {setState}: ProcessEventOptions
 ) => {
@@ -119,10 +123,25 @@ const processLayout = (
 
     setState(draft => {
         const updateLayout =
-            draft.layout.width !== nativeEventLayout.width ||
-            draft.layout.height !== nativeEventLayout.height
+            draft.containerLayout.width !== nativeEventLayout.width ||
+            draft.containerLayout.height !== nativeEventLayout.height
 
-        updateLayout && (draft.layout = nativeEventLayout)
+        updateLayout && (draft.containerLayout = nativeEventLayout)
+    })
+}
+
+const processInnerLayout = (
+    event: LayoutChangeEvent,
+    {setState}: ProcessEventOptions
+) => {
+    const nativeEventLayout = event.nativeEvent.layout
+
+    setState(draft => {
+        const updateLayout =
+            draft.innerLayout.width !== nativeEventLayout.width ||
+            draft.innerLayout.height !== nativeEventLayout.height
+
+        updateLayout && (draft.innerLayout = nativeEventLayout)
     })
 }
 
@@ -134,10 +153,10 @@ const processAddonBeforeLayout = (
 
     setState(draft => {
         const updateLayout =
-            draft.addonBeforeLayout.width !== nativeEventLayout.width ||
-            draft.addonBeforeLayout.height !== nativeEventLayout.height
+            draft.beforeAffordanceLayout.width !== nativeEventLayout.width ||
+            draft.beforeAffordanceLayout.height !== nativeEventLayout.height
 
-        updateLayout && (draft.addonBeforeLayout = nativeEventLayout)
+        updateLayout && (draft.beforeAffordanceLayout = nativeEventLayout)
     })
 }
 
@@ -184,8 +203,11 @@ const processStateChange = (
         setState
     }: ProcessStateChangeOptions
 ) => {
+    if (eventName === 'layout') {
+        return
+    }
+
     const nextEvent = {
-        layout: () => processLayout(event as LayoutChangeEvent, {setState}),
         pressOut: () =>
             processPressOut(event as GestureResponderEvent, {
                 activeKey,
@@ -197,11 +219,10 @@ const processStateChange = (
 
     nextEvent[eventName]?.()
 
-    eventName !== 'layout' &&
-        setState(draft => {
-            draft.eventName = eventName
-            draft.state = state
-        })
+    setState(draft => {
+        draft.eventName = eventName
+        draft.state = state
+    })
 }
 
 const processTrailingEvent = (
@@ -293,9 +314,10 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
         const [
             {
                 afterAffordanceLayout,
-                addonBeforeLayout,
+                beforeAffordanceLayout,
+                containerLayout,
                 eventName,
-                layout,
+                innerLayout,
                 state,
                 touchableLocation,
                 trailingEventName
@@ -303,9 +325,10 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             setState
         ] = useImmer<InitialState>({
             afterAffordanceLayout: {} as LayoutRectangle,
-            addonBeforeLayout: {} as LayoutRectangle,
+            beforeAffordanceLayout: {} as LayoutRectangle,
+            containerLayout: {} as LayoutRectangle,
             eventName: 'none',
-            layout: {} as LayoutRectangle,
+            innerLayout: {} as LayoutRectangle,
             state: 'enabled',
             status: 'idle',
             touchableLocation: {} as InitialState['touchableLocation'],
@@ -327,11 +350,15 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
         ] = useAnimated({
             active,
             afterAffordanceLayoutWidth: afterAffordanceLayout.width,
-            addonBeforeLayoutWidth: addonBeforeLayout.width,
+
+            /**
+             * TODO:
+             */
+            beforeAffordanceLayoutWidth: beforeAffordanceLayout.width,
             closeIcon,
             eventName,
+            innerLayoutHeight: innerLayout?.height,
             itemGap,
-            layoutHeight: layout.height,
             onClosed,
             state,
             trailingButton,
@@ -365,6 +392,17 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
         const onTrailingPressOut = useCallback(
             () => onVisible?.(dataKey),
             [dataKey, onVisible]
+        )
+
+        const onContainerLayout = useCallback(
+            (event: LayoutChangeEvent) =>
+                processContainerLayout(event, {setState}),
+            [setState]
+        )
+
+        const onInnerLayout = useCallback(
+            (event: LayoutChangeEvent) => processInnerLayout(event, {setState}),
+            [setState]
         )
 
         const onAddonBeforeLayout = useCallback(
@@ -416,12 +454,15 @@ export const ListItemBase = forwardRef<View, ListItemBaseProps>(
             itemGap,
             onAddonAfterLayout,
             onAddonBeforeLayout,
+            onContainerLayout,
+            onInnerLayout,
             onEvent,
             ref,
+            containerLayout,
             renderStyle: {
                 containerAnimatedStyle,
-                trailingAnimatedStyle,
-                innerAnimatedStyle
+                innerAnimatedStyle,
+                trailingAnimatedStyle
             },
             size,
             supporting,
