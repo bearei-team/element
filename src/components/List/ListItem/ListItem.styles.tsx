@@ -29,7 +29,6 @@ export const Inner = styled(Shape)<ContainerProps>`
     ${({itemGap = 0, theme}) => css`
         left: ${theme.adaptSize(theme.spacing.none)}px;
         margin-bottom: ${itemGap}px;
-        min-width: 100%;
         right: ${theme.adaptSize(theme.spacing.none)}px;
         top: ${theme.adaptSize(theme.spacing.none)}px;
     `};

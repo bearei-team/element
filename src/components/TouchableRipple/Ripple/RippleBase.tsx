@@ -58,8 +58,8 @@ const processContainerLayout = (
     containerCurrent?.measure((x, y, width, height, pageX, pageY) =>
         setState(draft => {
             const updateLayout =
-                draft?.containerLayout?.pageX !== pageX ||
-                draft?.containerLayout?.pageY !== pageY
+                draft?.containerLayout?.width !== width ||
+                draft?.containerLayout?.height !== height
 
             if (updateLayout) {
                 draft.containerLayout = {
@@ -114,6 +114,7 @@ export const RippleBase = forwardRef<View, RippleBaseProps>(
         const radius = Math.sqrt(
             Math.pow(centerX + offsetX, 2) + Math.pow(centerY + offsetY, 2)
         )
+
         const diameter = radius * 2
         const [animatedStyle] = useAnimated({
             active,
@@ -124,7 +125,7 @@ export const RippleBase = forwardRef<View, RippleBaseProps>(
 
         useEffect(() => {
             processContainerLayout({setState}, containerCurrent)
-        }, [containerCurrent, setState])
+        }, [containerCurrent, setState, touchableLocation])
 
         if (status === 'idle') {
             return <></>

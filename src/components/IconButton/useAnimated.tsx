@@ -82,13 +82,11 @@ export const useAnimated = ({
     }
 
     const contentAnimatedStyle = useAnimatedStyle(() => ({
-        ...(type !== 'standard' && {
-            backgroundColor: interpolateColor(
-                color.value,
-                backgroundColorType[type].inputRange,
-                backgroundColorType[type].outputRange
-            )
-        }),
+        backgroundColor: interpolateColor(
+            color.value,
+            backgroundColorType[type].inputRange,
+            backgroundColorType[type].outputRange
+        ),
         ...(type === 'outlined' && {
             borderColor: interpolateColor(
                 border.value,

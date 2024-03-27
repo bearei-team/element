@@ -70,9 +70,9 @@ export interface RenderProps extends ListItemProps {
         innerAnimatedStyle: AnimatedStyle<ViewStyle>
         trailingAnimatedStyle: AnimatedStyle<ViewStyle>
     }
+    containerLayout: LayoutRectangle
     touchableLocation?: Pick<NativeTouchEvent, 'locationX' | 'locationY'>
     underlayColor: string
-    containerLayout: LayoutRectangle
 }
 
 interface ListItemBaseProps extends ListItemProps {
@@ -248,12 +248,12 @@ const processTrailingHoverOut = ({setState}: ProcessEventOptions) =>
 
 const renderTrailing = ({
     closeIcon,
+    closeIconName,
+    closeIconType,
     onEvent,
     size,
     theme,
-    trailing,
-    closeIconName,
-    closeIconType
+    trailing
 }: RenderTrailingOptions) => {
     const {onHoverIn, onHoverOut, onPressOut} = onEvent
     const trailingElement =

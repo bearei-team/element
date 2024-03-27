@@ -83,16 +83,16 @@ const processTrailingAnimatedTiming = (
 
 export const useAnimated = ({
     active,
+    afterAffordanceLayoutWidth = 0,
     closeIcon,
     eventName,
-    itemGap = 0,
     innerLayoutHeight = 0,
+    itemGap = 0,
     onClosed,
     state,
     trailingButton,
     trailingEventName,
-    visible,
-    afterAffordanceLayoutWidth = 0
+    visible
 }: UseAnimatedOptions) => {
     const visibleValue = visible ? 1 : 0
     const height = useSharedValue(

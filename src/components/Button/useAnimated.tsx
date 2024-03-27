@@ -210,7 +210,7 @@ export const useAnimated = ({
     ]
 
     const notBackgroundColor = ['text', 'link'].includes(type)
-    const notBorderColor = !['text', 'link'].includes(type)
+    const notBorderColor = !['outlined', 'link'].includes(type)
     const contentAnimatedStyle = useAnimatedStyle(() => ({
         ...(!notBackgroundColor && {
             backgroundColor: interpolateColor(

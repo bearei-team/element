@@ -26,13 +26,16 @@ const render = ({
     activeColor,
     afterAffordance,
     beforeAffordance,
+    containerLayout,
     eventName,
     headline,
     id,
     itemGap,
     leading,
     onAddonAfterLayout,
+    onContainerLayout,
     onEvent,
+    onInnerLayout,
     renderStyle,
     shape,
     size,
@@ -41,9 +44,6 @@ const render = ({
     touchableLocation,
     trailing,
     underlayColor,
-    containerLayout,
-    onContainerLayout,
-    onInnerLayout,
     ...innerProps
 }: RenderProps) => {
     const {containerAnimatedStyle, innerAnimatedStyle, trailingAnimatedStyle} =
@@ -55,9 +55,9 @@ const render = ({
         <AnimatedContainer
             accessibilityLabel={headline}
             accessibilityRole='list'
+            onLayout={onContainerLayout}
             style={[containerAnimatedStyle]}
             testID={`listItem--${id}`}
-            onLayout={onContainerLayout}
         >
             <AnimatedInner
                 {...(affordance && {shape})}
